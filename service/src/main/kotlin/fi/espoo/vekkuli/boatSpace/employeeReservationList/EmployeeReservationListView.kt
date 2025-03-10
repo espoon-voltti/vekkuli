@@ -1,10 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList
 
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AmenityFilter
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.ExceptionsFilter
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SectionFilter
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.TextSearchFilter
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.WarningFilter
+import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ListFilters
@@ -19,7 +15,8 @@ class EmployeeReservationListView(
     private val warningFilter: WarningFilter,
     private val exceptionsFilter: ExceptionsFilter,
     private val amenityFilter: AmenityFilter,
-    private val sectionFilter: SectionFilter
+    private val sectionFilter: SectionFilter,
+    private val sendMessageView: SendMessageView
 ) : BaseView() {
     fun render(
         harbors: List<Location>,
@@ -116,7 +113,9 @@ class EmployeeReservationListView(
                             </div>
                             <div>${exceptionsFilter.render(params.exceptionsFilter == true)}</div>
                         </div>
-
+                        <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">
+                            ${sendMessageView.renderLink(reservations.totalRows)}
+                        </div>
                         <div class="reservation-list form-section block">
                             <div class='table-container'>
                                 <table class="table is-hoverable">
@@ -212,8 +211,8 @@ class EmployeeReservationListView(
                             </div>
                             <div id="loader" class="htmx-indicator has-text-centered">${icons.spinner}</div>
                         </div>
-                    </form>
-                </div>
+                    </form>                    
+                </div>                
             </section>
             """.trimIndent()
     }
