@@ -457,11 +457,11 @@ class ReserverDetailsReservationsContainer(
                 
                 ${p.invoicePayments.joinToString("\n") { i ->
                     """
-                    <tr class='settlement-row'>
+                    <tr class='settlement-row' ${addTestId("settlement-row")}>
                         <td>${t("citizenDetails.payments.settlement")}</td>
                         <td></td>
                         <td></td>
-                        <td>${i.invoiceNumber}</td>
+                        <td ${addTestId("settlement-invoice-number")}>${i.invoiceNumber}</td>
                         <td></td>
                         <td></td>
                         <td></td>

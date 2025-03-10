@@ -3,6 +3,9 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
+import fi.espoo.vekkuli.boatSpace.invoice.InvoicePaymentService
+import fi.espoo.vekkuli.boatSpace.invoice.MockInvoicePaymentClient
+import fi.espoo.vekkuli.boatSpace.invoice.Receipt
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
@@ -12,7 +15,9 @@ import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -23,6 +28,9 @@ import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage as CitizenReserveBoat
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
+    @Autowired
+    private lateinit var invoicePaymentService: InvoicePaymentService
+
     private fun fillAndTestForm(formPage: BoatSpaceFormPage) {
         formPage.submitButton.click()
 
@@ -159,6 +167,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
 
             assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice(invoiceAddress = "Test street 1, 12345")
+
+            MockInvoicePaymentClient.payments.add(
+                Receipt(100000, BigDecimal(418), "2024-04-22", "VEK_100000")
+            )
+            invoicePaymentService.fetchAndStoreInvoicePayments()
+
             citizenDetailsPage.paymentsNavi.click()
 
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
@@ -168,6 +182,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("22.04.2024") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("418,00") }
+
+            page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("100000") }
+            page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("418,00") }
+
             citizenDetailsPage.refundPaymentButton.click()
             citizenDetailsPage.refundPaymentModalConfirm.click()
 

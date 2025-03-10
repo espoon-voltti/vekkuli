@@ -23,6 +23,10 @@ class InvoicePaymentService(
     //    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     // To test this in staging, setting the scheduler to run once per hour
     @Scheduled(fixedRate = 1000 * 60 * 60)
+    fun scheduleFetchAndStoreInvoicePayments() {
+        fetchAndStoreInvoicePayments()
+    }
+
     fun fetchAndStoreInvoicePayments() {
         val invoicePaymentResponse = invoicePaymentClient.getPayments()
         val invoicePayments = invoicePaymentResponse.receipts.map { createInvoicePayment(it) }
