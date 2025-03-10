@@ -5,4 +5,5 @@ data class ReservationWarning(
     val boatId: Int?,
     val trailerId: Int?,
     val key: String,
+    val infoText: String?,
 )

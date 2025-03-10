@@ -76,6 +76,7 @@ interface ReservationWarningRepository {
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        infoText: String? = null,
         keys: List<String>,
     ): Unit
 
@@ -87,7 +88,10 @@ interface ReservationWarningRepository {
         keys: List<String>,
     ): Unit
 
-    fun deleteReservationWarningsForReservation(reservationId: Int)
+    fun deleteReservationWarningsForReservation(
+        reservationId: Int,
+        key: String? = null
+    )
 }
 
 @Service
@@ -214,7 +218,7 @@ class BoatReservationService(
             }
 
             if (warnings.isNotEmpty()) {
-                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, warnings)
+                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, keys = warnings)
             }
         }
     }
@@ -279,7 +283,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, warnings)
+            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, keys = warnings)
         }
     }
 
@@ -400,6 +404,13 @@ class BoatReservationService(
     ) {
         if (keys.isEmpty()) return
         reservationWarningRepo.setReservationWarningsAcknowledged(reservationId, boatOrTrailerId, keys)
+    }
+
+    fun addAcknowledgementMemo(
+        reservationId: Int,
+        userId: UUID,
+        infoText: String
+    ) {
         val reservation = getReservationWithDependencies(reservationId)
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("No reservation or reservation has no reserver")
@@ -414,8 +425,14 @@ class BoatReservationService(
         infoText: String
     ) {
         if (keys.isEmpty()) return
-        getReservationsForBoat(boatId).forEach {
+        val reservationsForBoat = getReservationsForBoat(boatId)
+
+        reservationsForBoat.forEach {
             acknowledgeWarnings(it.id, userId, boatId, keys, infoText)
+        }
+        val (id) = reservationsForBoat.first()
+        if (infoText.isNotEmpty()) {
+            addAcknowledgementMemo(id, userId, infoText)
         }
     }
 
@@ -429,6 +446,10 @@ class BoatReservationService(
         val reservationsWithTrailer = getReservationsForTrailer(trailerId)
         reservationsWithTrailer.forEach {
             acknowledgeWarnings(it.id, userId, trailerId, keys, infoText)
+        }
+        val (id) = reservationsWithTrailer.first()
+        if (infoText.isNotEmpty()) {
+            addAcknowledgementMemo(id, userId, infoText)
         }
     }
 

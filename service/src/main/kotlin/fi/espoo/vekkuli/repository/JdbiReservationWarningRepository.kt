@@ -15,27 +15,27 @@ class JdbiReservationWarningRepository(
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        infoText: String?,
         keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
-            val sql = StringBuilder()
-
-            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, key) VALUES ")
-            sql.append(
-                keys
-                    .mapIndexed { index, _ ->
-                        "(:reservationId, :boatId, :trailerId, :key$index)"
-                    }.joinToString(", ")
-            )
-
-            val query = handle.createUpdate(sql.toString())
-            query.bind("reservationId", reservationId)
-            query.bind("boatId", boatId)
-            query.bind("trailerId", trailerId)
-            keys.forEachIndexed { index, key ->
-                query.bind("key$index", key)
+            val batch =
+                handle.prepareBatch(
+                    """
+                    INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, info_text, key) 
+                    VALUES (:reservationId, :boatId, :trailerId, :infoText, :key)
+                    """.trimIndent()
+                )
+            for (key in keys) {
+                batch
+                    .bind("reservationId", reservationId)
+                    .bind("boatId", boatId)
+                    .bind("trailerId", trailerId)
+                    .bind("infoText", infoText)
+                    .bind("key", key)
+                    .add()
             }
-            query.execute()
+            batch.execute()
         }
 
     override fun getWarningsForReservation(reservationId: Int): List<ReservationWarning> =
@@ -74,16 +74,25 @@ class JdbiReservationWarningRepository(
                 .execute()
         }
 
-    override fun deleteReservationWarningsForReservation(reservationId: Int) {
+    override fun deleteReservationWarningsForReservation(
+        reservationId: Int,
+        key: String?
+    ) {
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createUpdate(
-                    """
+            val query =
+                handle
+                    .createUpdate(
+                        """
                     DELETE from reservation_warning
                     WHERE reservation_id = :reservationId
+                    ${if (key != null) " AND key = :key" else "" }
                     """
-                ).bind("reservationId", reservationId)
-                .execute()
+                    ).bind("reservationId", reservationId)
+            if (key != null) {
+                query.bind("key", key)
+            }
+
+            query.execute()
         }
     }
 }

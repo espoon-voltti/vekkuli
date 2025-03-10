@@ -229,4 +229,11 @@ class CitizenDetailsPage(
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
     val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
+    val addNewGeneralWarningLink: Locator = getByDataTestId("add-general-warning")
+    val acknowledgeGeneralWarningLink: Locator = getByDataTestId("acknowledge-general-warning")
+    val generalWarningModal: Locator = getByDataTestId("general-warning-modal")
+    val generalWarningInfoInput: Locator = getByDataTestId("general-warning-info-input")
+    val generalWarningSaveBtn: Locator = getByDataTestId("warning-info-save-button")
+    val generalWarningUpdateBtn: Locator = getByDataTestId("warning-info-update-button")
+    val generalWarningAcknowledgeBtn: Locator = getByDataTestId("warning-info-acknowledge-button")
 }
