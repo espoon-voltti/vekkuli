@@ -101,7 +101,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         // Update created date to today because it is automatically set to real time
         jdbi.inTransactionUnchecked { tx ->
             tx
-                .createUpdate("UPDATE boat_space_reservation SET created = :created::date")
+                .createUpdate("UPDATE payment SET created = :created::date")
                 .bind("created", today)
                 .bind("id", resId)
                 .execute()
@@ -256,6 +256,14 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 endDate = today.plusMonths(12),
                 boatId = boatId,
                 status = ReservationStatus.Confirmed
+            )
+        )
+
+        insertDevPayment(
+            DevPayment(
+                reserverId = citizenIdLeo,
+                reservationId = resId,
+                paid = today.atStartOfDay()
             )
         )
 

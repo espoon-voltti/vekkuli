@@ -22,16 +22,6 @@ class ReportingView(
                 )
             )
 
-        val boatSpaceReportStartDateInputField =
-            formComponents.dateInput(
-                DateInputOptions(
-                    id = "reportingDate",
-                    labelKey = "reporting.filter.reportingDate",
-                    value = timeProvider.getCurrentDate().toString(),
-                    autoWidth = true
-                )
-            )
-
         val freeBoatSpaceReportStartDateInputField =
             formComponents.dateInput(
                 DateInputOptions(
@@ -92,34 +82,7 @@ class ReportingView(
                         </div>                                              
                     </form>
                 </div>
-                
-                <div class="container">
-                    <form id="form"
-                          method="get"
-                          action="/virkailija/admin/reporting/boat-space-report"
-                          class="block"
-                    >
-                        <h2>${t("reporting.boatSpaceReport")}</h2>
-                        
-                        <p class="reports-info">${t("reporting.boatSpaceReportInfo")}</p>
-                                                
-                        <div class='columns'>
-                            <div class='column'>
-                                $boatSpaceReportStartDateInputField
-                            </div>
-                            <div class='column'>
-                                <button id="submit-button"
-                                    class="button is-primary"
-                                    type="submit"
-                                    data-testid="boat-space-report-button"
-                                >
-                                    ${t("reporting.submit")}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
+              
                 <div class="container">
                     <form id="form"
                           method="get"
