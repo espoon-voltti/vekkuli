@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.domain.PaymentType
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.utils.amenityToText
 import fi.espoo.vekkuli.utils.boatSpaceTypeToText
 import fi.espoo.vekkuli.utils.boatTypeToText
@@ -78,13 +79,12 @@ fun getStickerReport(
                     LEFT JOIN price ON price.id = bs.price_id
                 WHERE 
                     bsr.reserver_id IS NOT NULL
-                    AND :minCreated <= bsr.created::date
-                    AND :minCreated::date >= bsr.start_date 
-                    AND :minCreated::date <= bsr.end_date
+                    AND :minPaymentCreated::date <= p.created::date
+                    AND :minPaymentCreated::date <= bsr.end_date
                     AND bsr.status = 'Confirmed'
                     AND p.status = 'Success'
                 """.trimIndent()
-            ).bind("minCreated", createdCutoffDate)
+            ).bind("minPaymentCreated", createdCutoffDate)
             .mapTo<StickerReportRow>()
             .list()
     }
@@ -196,7 +196,8 @@ data class BoatSpaceReportRow(
     val endDate: LocalDate?,
     val paid: LocalDateTime?,
     val creationType: CreationType?,
-    val boatSpaceType: BoatSpaceType?
+    val boatSpaceType: BoatSpaceType?,
+    val reservationStatus: ReservationStatus?,
 )
 
 fun getFreeBoatSpaceReport(
@@ -207,7 +208,13 @@ fun getFreeBoatSpaceReport(
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.startDate != null }
+): List<BoatSpaceReportRow> =
+    getBoatSpaceReport(jdbi, reportDate).filter {
+        it.startDate != null &&
+            (
+                it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced
+            )
+    }
 
 fun getTerminatedBoatSpaceReport(
     jdbi: Jdbi,
@@ -240,7 +247,8 @@ fun getBoatSpaceReport(
                     bsr.end_date,
                     p.paid,
                     bsr.creation_type,
-                    bs.type AS boat_space_type
+                    bs.type AS boat_space_type,
+                    bsr.status AS reservation_status
                 FROM boat_space bs
                      LEFT JOIN location l ON l.id = bs.location_id
                      LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
