@@ -135,7 +135,7 @@ jobs:
 
       - name: Build builder and push to GHCR
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         id: builder
         with:
           context: ${{ env.path }}
