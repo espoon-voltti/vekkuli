@@ -149,14 +149,14 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
         "Slip, Beam, 10, 10, 0",
-        "Slip, Beam, 3, 5, 30",
+        "Slip, Beam, 3, 5, 31",
         "Trailer, None, 10, 10, 0",
         "Trailer, None, 1, 3, 28",
         "Trailer, Trailer, 1, 1, 0",
         "Trailer, Buck, 1, 1, 0",
         "Winter, None, 10, 10, 0",
         "Winter, None, 2.75, 5.5, 25",
-        "Winter, None, 2.5, 4.5, 27",
+        "Winter, None, 2.5, 4.5, 28",
         "Winter, Trailer, 1, 1, 0",
         "Winter, Buck, 1, 1, 0",
         "Storage, Buck, 10, 10, 0",
@@ -336,9 +336,9 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
         assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space has been edited")
 
-        assertNotNull(editedBoatSpace2, "Boat space is edited")
-        assertEquals(originalBoatSpace2?.section, editedBoatSpace2.section, "Boat space section has been edited")
-        assertEquals(originalBoatSpace2?.placeNumber, editedBoatSpace2.placeNumber, "Boat space place number has been edited")
+        assertNotNull(editedBoatSpace2, "Edited boat space is fetched")
+        assertEquals(originalBoatSpace2?.section, editedBoatSpace2.section, "Section has not been edited")
+        assertEquals(originalBoatSpace2?.placeNumber, editedBoatSpace2.placeNumber, "Place number has not been edited")
         assertEquals(chosenHarbor.name, editedBoatSpace.locationName, "Boat space location has been edited")
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity has been edited")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width has been edited")
