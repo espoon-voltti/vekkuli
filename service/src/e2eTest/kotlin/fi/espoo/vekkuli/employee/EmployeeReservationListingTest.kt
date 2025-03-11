@@ -71,7 +71,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }
-        assertThat(listingPage.sendMassMessageLink).not().hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"));
+        assertThat(listingPage.sendMassMessageLink).not().hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
     }
