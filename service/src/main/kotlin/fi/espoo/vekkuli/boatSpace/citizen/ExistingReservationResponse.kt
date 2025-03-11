@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
@@ -28,6 +29,7 @@ data class ExistingReservationResponse(
     val trailer: Trailer?,
     val canRenew: Boolean,
     val canSwitch: Boolean,
+    val canTerminate: Boolean,
     val status: ReservationStatus,
     val paymentDate: LocalDate?,
     val dueDate: LocalDate?
@@ -75,7 +77,8 @@ class ExistingReservationResponseMapper(
     private val renewalPolicyService: RenewalPolicyService,
     private val switchPolicyService: SwitchPolicyService,
     private val citizenAccessControl: CitizenAccessControl,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
+    private val boatSpaceReservationRepository: BoatSpaceReservationRepository
 ) {
     fun toActiveReservationResponse(boatSpaceReservation: BoatSpaceReservationDetails) = toReservationResponse(boatSpaceReservation, true)
 
@@ -97,6 +100,7 @@ class ExistingReservationResponseMapper(
 
         val canRenew = getCanRenew(boatSpaceReservation.id, reserverId)
         val canSwitch = getCanSwitch(boatSpaceReservation.id, reserverId)
+        val canTerminate = getCanTerminate(boatSpaceReservation.id)
 
         val isActive =
             if (isActive !== null) {
@@ -140,6 +144,7 @@ class ExistingReservationResponseMapper(
             trailer = formatTrailer(trailer),
             canRenew = canRenew,
             canSwitch = canSwitch,
+            canTerminate = canTerminate,
             status = boatSpaceReservation.status,
             dueDate = boatSpaceReservation.invoiceDueDate
         )
@@ -227,6 +232,15 @@ class ExistingReservationResponseMapper(
                     reservationId,
                     reserverId
                 ).success
+        } else {
+            false
+        }
+
+    private fun getCanTerminate(reservationId: Int): Boolean =
+        if (reservationId != null) {
+            boatSpaceReservationRepository.getBoatSpaceReservationDetails(reservationId)?.let {
+                it.terminationTimestamp == null
+            } ?: false
         } else {
             false
         }

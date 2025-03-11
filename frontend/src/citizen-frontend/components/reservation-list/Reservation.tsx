@@ -34,6 +34,7 @@ export default React.memo(function Reservation({
 }) {
   const canSwitch = reservation.allowedReservationOperations.includes('Switch')
   const canRenew = reservation.allowedReservationOperations.includes('Renew')
+  const canTerminate = reservation.allowedReservationOperations.includes('Terminate')
 
   const i18n = useTranslation()
   const [buttonsVisible, setButtonsVisible] = useState(true)
@@ -187,7 +188,7 @@ export default React.memo(function Reservation({
         )}
         {buttonsVisible && (
           <Buttons>
-            {onTerminate && (
+            {onTerminate && canTerminate && (
               <Button
                 type="danger-outlined"
                 action={onTerminate}

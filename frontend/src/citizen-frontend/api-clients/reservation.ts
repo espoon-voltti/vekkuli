@@ -223,6 +223,7 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
     const operationsList: ReservationOperation[] = []
     if (json.canRenew) operationsList.push('Renew')
     if (json.canSwitch) operationsList.push('Switch')
+    if (json.canTerminate) operationsList.push('Terminate')
     return operationsList
   }
 
