@@ -36,7 +36,14 @@ class MessageSendingController(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceReservationFilter
     ): ResponseEntity<String> {
-        if (request.getAuthenticatedUser()?.isEmployee() != true) {
+        val authenticatedUser = request.getAuthenticatedUser()
+        authenticatedUser?.let {
+            logger.audit(
+                it,
+                "OPEN_SEND_MASS_EMAILS_MODAL",
+            )
+        }
+        if (authenticatedUser?.isEmployee() != true) {
             throw Unauthorized()
         }
 
