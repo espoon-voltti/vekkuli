@@ -130,6 +130,8 @@ class CitizenDetailsPage(
     val settlementRows: Locator = getByDataTestId("settlement-row")
     val refundPaymentButton: Locator = getByDataTestId("refund-payment-button")
     val refundPaymentModalConfirm: Locator = getByDataTestId("refund-payment-modal-confirm")
+    val ackPaymentButton: Locator = getByDataTestId("invoice-payment-rw-button")
+    val ackPaymentModalConfirm: Locator = page.getByTestId("ack-modal-confirm")
 
     val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 

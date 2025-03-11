@@ -59,6 +59,22 @@ class JdbiReservationWarningRepository(
                 .map { it.value.first() }
         }
 
+    override fun getWarningsForReserver(reserverId: UUID): List<ReservationWarning> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                        SELECT *
+                        FROM reservation_warning
+                        WHERE reservation_id IN (SELECT id FROM boat_space_reservation WHERE reserver_id = :reserverId)
+                        """
+                ).bind("reserverId", reserverId)
+                .mapTo<ReservationWarning>()
+                .list()
+                .groupBy { "${it.reservationId}${it.key}${it.boatId}${it.trailerId}" }
+                .map { it.value.first() }
+        }
+
     override fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,

@@ -1119,6 +1119,18 @@ ul {
   }
 }
 
+.warning-attention {
+  display: none;
+  height: 16px;
+  width: 16px;
+  background-color: $warning;
+  border-radius: 50%;
+  margin-left: 10px;
+  &.on {
+    display: inline-block;
+  }
+}
+
 .discount-info {
   font-size: 13px;
 }

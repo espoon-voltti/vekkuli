@@ -191,6 +191,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
             citizenDetailsPage.paymentsNavi.click()
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Hyvitetty") }
+
+            citizenDetailsPage.ackPaymentButton.click()
+            citizenDetailsPage.ackPaymentModalConfirm.click()
+            assertThat(citizenDetailsPage.ackPaymentButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

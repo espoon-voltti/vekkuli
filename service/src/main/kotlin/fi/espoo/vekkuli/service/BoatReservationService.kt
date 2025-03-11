@@ -84,6 +84,8 @@ interface ReservationWarningRepository {
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
+    fun getWarningsForReserver(reservationId: UUID): List<ReservationWarning>
+
     fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
