@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId

@@ -207,11 +207,11 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get all boat spaces`() {
-        val params = BoatSpaceListParams()
+        val params = BoatSpaceListParams().copy(paginationEnd = 3000)
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(2438, boatSpaces.size, "No boat spaces are fetched")
+        assertEquals(2438, boatSpaces.items.size, "No boat spaces are fetched")
     }
 
     @Test
@@ -228,7 +228,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(17, boatSpaces.size, "Correct number of boat spaces are fetched")
+        assertEquals(17, boatSpaces.items.size, "Correct number of boat spaces are fetched")
     }
 
     @Test
@@ -282,7 +282,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                         sortBy = BoatSpaceFilterColumn.RESERVER,
                         ascending = true
                     )
-                ).first { it.id == boatSpaceId }
+                ).items
+                .first { it.id == boatSpaceId }
         assertEquals(boatSpace.reserverId, reservation.reserverId, "Correct reserver is fetched")
 
         terminateReservationService.terminateBoatSpaceReservationAsOwner(
@@ -300,7 +301,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                         sortBy = BoatSpaceFilterColumn.RESERVER,
                         ascending = true
                     )
-                ).first { it.id == boatSpaceId }
+                ).items
+                .first { it.id == boatSpaceId }
         assertEquals(boatSpaceAfterTermination.reserverId, null, "Reserver is null after termination")
     }
 
