@@ -61,9 +61,7 @@ class ReservationGeneralWarningView : BaseView() {
                                 <textarea 
                                     ${addTestId("general-warning-info-input")} 
                                     class="textarea" rows="1" 
-                                    name="infoText">
-                                        ${generalWarning?.infoText ?: ""}
-                                </textarea>
+                                    name="infoText">${generalWarning?.infoText ?: ""}</textarea>
                             </div>
                         </div>
                         <div class="block">

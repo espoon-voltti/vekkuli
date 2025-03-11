@@ -73,7 +73,7 @@ class ReservationGeneralWarningController {
             reservationId,
             null,
             null,
-            infoText,
+            infoText.trim(),
             listOf(generalWarningsKey)
         )
 
@@ -84,7 +84,7 @@ class ReservationGeneralWarningController {
                 ReservationWarning(
                     reservationId,
                     key = generalWarningsKey,
-                    infoText = infoText,
+                    infoText = infoText.trim(),
                     boatId = null,
                     trailerId = null
                 )
@@ -107,7 +107,7 @@ class ReservationGeneralWarningController {
             reservationId,
             null,
             null,
-            infoText,
+            infoText.trim(),
             listOf(generalWarningsKey)
         )
 
@@ -118,7 +118,7 @@ class ReservationGeneralWarningController {
                 ReservationWarning(
                     reservationId,
                     key = generalWarningsKey,
-                    infoText = infoText,
+                    infoText = infoText.trim(),
                     boatId = null,
                     trailerId = null
                 )
@@ -139,7 +139,7 @@ class ReservationGeneralWarningController {
 
         warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
         if (infoText.isNotEmpty()) {
-            memoService.insertMemo(reserverId, userId, infoText)
+            memoService.insertMemo(reserverId, userId, infoText.trim())
         }
         return ResponseEntity.ok(
             reservationWarningView.renderContent(
