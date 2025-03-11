@@ -90,6 +90,8 @@ interface ReservationWarningRepository {
         keys: List<String>,
     ): Unit
 
+    fun deleteReservationWarning(id: UUID)
+
     fun deleteReservationWarningsForReservation(
         reservationId: Int,
         key: String? = null

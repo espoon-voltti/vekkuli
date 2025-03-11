@@ -79,6 +79,19 @@ class JdbiReservationWarningRepository(
                 .execute()
         }
 
+    override fun deleteReservationWarning(id: UUID) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    DELETE FROM reservation_warning
+                    WHERE id = :id
+                    """
+                ).bind("id", id)
+                .execute()
+        }
+    }
+
     override fun deleteReservationWarningsForReservation(
         reservationId: Int,
         key: String?

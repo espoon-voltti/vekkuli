@@ -431,6 +431,54 @@ class ReserverDetailsReservationsContainer(
             </div>
             """.trimIndent()
 
+        fun createAckInvoicePaymentReservationWarningButton(reservationWarningId: UUID): String =
+            """
+            <div class="column" x-data="{invoicePaymentRWModal: false}">
+                <a class="is-link has-text-danger"
+                    id="invoice-payment-rw-button-$reservationWarningId"
+                    data-testid="invoice-payment-rw-button"
+                   x-on:click="invoicePaymentRWModal = true">
+                    <span>${t("citizenDetails.payments.ackRW")}</span>
+                </a>
+                <div class="modal" x-show="invoicePaymentRWModal" style="display:none;">
+                    <div class="modal-underlay" @click="invoicePaymentRWModal = false"></div>
+                    <div class="modal-content invoice-payment-ack-modal">
+                        <form hx-post="/virkailija/kayttaja/${reserver.id}/maksut/kuittaa/$reservationWarningId"
+                              hx-swap="outerHTML"
+                              hx-target="#reserver-details"
+                             >                            
+                            <div class="block">
+                                <h2>${t("citizenDetails.payments.ackRW.title")}</h2>
+                                <div class="block">
+                                    <h4>${t("citizenDetails.payments.ackRW.description")}</h3>
+                                    <input type="text" name="content" class="input">
+                                </div>
+                                <div>
+                                    ${warningBox.render(t("citizenDetails.payments.ackRW.info"))}
+                                </div>
+                            </div>
+                            
+                            <div class="block">
+                                <button id="ack-modal-cancel"
+                                        class="button"
+                                        x-on:click="invoicePaymentRWModal = false"
+                                        type="button">
+                                    ${t("cancel")}
+                                </button>
+                                <button
+                                        id="ack-modal-confirm"
+                                        class="button is-primary"
+                                        type="submit">
+                                    ${t("citizenDetails.payments.ackRW.confirm")}
+                                </button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+
         val paymentHistoryRowsHtml =
             paymentHistory.joinToString("\n") { p ->
                 // language=HTML
@@ -480,7 +528,14 @@ class ReserverDetailsReservationsContainer(
                         <td>${i.paymentDate.format(fullDateFormat)}</td>
                         <td>${formatInt(i.amountPaidCents)}</td>
                         <td></td>
-                        <td></td>
+                        <td>${if (i.reservationWarningId != null) {
+                        createAckInvoicePaymentReservationWarningButton(
+                            i.reservationWarningId
+                        )
+                    } else {
+                        ""
+                    }}
+                        </td>
                     </tr>
                     """
                 }}

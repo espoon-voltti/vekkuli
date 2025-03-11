@@ -56,7 +56,8 @@ class CitizenUserController(
     private val trailerCard: TrailerCard,
     private val editCitizen: EditCitizen,
     private val paymentService: PaymentService,
-    private val sentMessageModalView: SentMessageModalView
+    private val sentMessageModalView: SentMessageModalView,
+    private val reservationWarningRepository: ReservationWarningRepository
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -313,6 +314,36 @@ class CitizenUserController(
         val history = paymentService.getReserverPaymentHistory(reserver.id)
 
         return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
+    }
+
+    @PostMapping("/virkailija/kayttaja/{citizenId}/maksut/kuittaa/{reservationWarningId}")
+    @ResponseBody
+    fun ackInvoicePayment(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable reservationWarningId: UUID,
+        @RequestParam content: String
+    ): String {
+        try {
+            request.getAuthenticatedUser()?.let {
+                logger.audit(
+                    it,
+                    "CITIZEN_PROFILE_ACK_INVOICE_PAYMENT",
+                    mapOf("targetId" to citizenId.toString(), "objectId" to reservationWarningId.toString())
+                )
+            }
+            val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
+            val reserver =
+                reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
+            val memo = "Suorituksen kuittaus" + if (content.isNotEmpty()) ": $content" else ""
+            memoService.insertMemo(citizenId, userId, memo)
+            reservationWarningRepository.deleteReservationWarning(reservationWarningId)
+            val history = paymentService.getReserverPaymentHistory(reserver.id)
+            return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
+        } catch (e: Exception) {
+            println("DDEBUG $e")
+            throw e
+        }
     }
 
     @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset")
