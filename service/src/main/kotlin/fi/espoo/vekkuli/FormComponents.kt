@@ -310,6 +310,7 @@ class FormComponents {
                         ${if (options.rows != null) "rows=\"${options.rows}\"" else ""}
                         id="${options.id}"
                         name="${options.name}"
+                        ${addTestId(options.id)}
                         ${options.attributes}>${options.value}</textarea>
                    $errorContainer
                 </div>

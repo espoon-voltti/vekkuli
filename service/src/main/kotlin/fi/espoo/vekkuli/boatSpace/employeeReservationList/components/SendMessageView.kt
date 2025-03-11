@@ -24,7 +24,8 @@ class SendMessageView(
                 hx-boost="false"
                 hx-push-url="false"
                 hx-include="#reservation-filter-form"
-                hx-get="/virkailija/viestit/massa/modal">${t("employee.messages.title", listOf(totalRows.toString()))}
+                hx-get="/virkailija/viestit/massa/modal"
+                ${addTestId("send-mass-email-link")}>${t("employee.messages.title", listOf(totalRows.toString()))}
             </a>
             """.trimIndent()
     }
@@ -55,8 +56,6 @@ class SendMessageView(
                     value = ""
                 )
             )
-        // todo: spinner to send button, amount of recipients
-
         return modalBuilder
             .setTitle(t("employee.messages.modal.title"))
             .setForm {
@@ -75,8 +74,8 @@ class SendMessageView(
             .setContent(
                 """
                 <div class='columns is-multiline'>
-                    <div class="column is-full">
-                        Varauksia $reservationCount kpl, viestin vastaanottajia $recipientCount kpl.
+                    <div class="column is-full" ${addTestId("send-mass-email-modal-subtitle")}>
+                    ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipientCount.toString()))}
                     </div>
                     <div class="column is-full">
                         $messageTitleField                        
