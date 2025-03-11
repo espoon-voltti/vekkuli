@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
@@ -65,7 +66,7 @@ class BoatSpaceList(
         """.trimIndent()
 
     fun render(
-        boatSpaces: BoatSpacePaginationResult<BoatSpaceListRow>,
+        boatSpaces: PaginatedResult<BoatSpaceListRow>,
         searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         paymentClasses: List<Price>,
@@ -174,13 +175,13 @@ class BoatSpaceList(
                       </div>
                     </div>
                 </div>
-                <div class="employee-filter-containeris-justify-content-space-between">
+                <div class="employee-filter-container">
                     <button ${addTestId(
             "open-edit-modal"
         )} :disabled='editBoatSpaceIds.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                 </div>
             </div>
-            <div id='table-container'class='reservation-list form-section block'>
+            <div class='reservation-list form-section block'>
                 <div class='table-container'>
                     <table class="table is-hoverable">
                     
@@ -266,8 +267,7 @@ class BoatSpaceList(
                         </tbody>
                     </table>
                 </div>
-                <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
-            <div id="reservation-list-load-more-container" hx-swap-oob="true" class="has-text-centered" >
+            <div hx-swap-oob="true" class="has-text-centered" >
                                 <button 
                                     class="button is-primary is-fullwidth"
                                     hx-get="/virkailija/venepaikat/selaa/rivit"
@@ -285,7 +285,7 @@ class BoatSpaceList(
                                         paginationSize: $paginationSize,
                                         paginationTotalRows: ${boatSpaces.totalRows},
                                         paginationResultsLeft: ${boatSpaces.totalRows - paginationStartFrom},
-                                        hasMore: ${boatSpaces.totalRows > paginationEndTo}
+                                        hasMore: ${boatSpaces.totalRows - paginationStartFrom > 0}
                                     }" x-show="hasMore"
                                     @htmx:after-request="
                                         paginationStart = paginationEnd;
@@ -298,6 +298,8 @@ class BoatSpaceList(
                                     ${t("showMore")} (<span x-text="paginationResultsLeft"></span>)
                                 </button>
                             </div>
+                        <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
+                            
                         </div>
         </form>
         ${editModal.render(harbors, paymentClasses)}

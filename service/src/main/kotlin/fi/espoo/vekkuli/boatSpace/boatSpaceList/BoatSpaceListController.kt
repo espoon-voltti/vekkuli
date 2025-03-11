@@ -29,7 +29,6 @@ data class BoatSpaceListRow(
     private val widthCm: Int,
     private val lengthCm: Int,
     val description: String,
-    val excludedBoatTypes: List<BoatType>? = null,
     val locationName: String?,
     val locationAddress: String?,
     private val priceCents: Int,
@@ -150,6 +149,12 @@ class BoatSpaceListController {
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceListParams
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_BOAT_SPACE_SEARCH_ROWS")
+        }
+
+        request.ensureEmployeeId()
+
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params)
 

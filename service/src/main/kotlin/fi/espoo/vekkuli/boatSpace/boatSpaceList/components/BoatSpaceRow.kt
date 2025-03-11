@@ -23,9 +23,11 @@ class BoatSpaceRow : BaseView() {
     // language=HTML
     fun editCheckBox(result: BoatSpaceListRow) =
         """
-         <label class="checkbox">
-            <input name="edit" id="edit-boat-space-${result.id}" type="checkbox" value="${result.id}" x-model='editBoatSpaces' />
-        </label>
+             <label class="checkbox">
+                <input name="spaceId"  ${addTestId(
+            "edit-boat-space-${result.id}"
+        )} type="checkbox" value="${result.id}" x-model='editBoatSpaceIds' />
+            </label>
         """.trimIndent()
 
     // language=HTML

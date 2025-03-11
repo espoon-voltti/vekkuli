@@ -231,7 +231,6 @@ class JdbiBoatSpaceRepository(
                     location.address AS location_address,
                     price.price_cents,
                     price.name as price_class,
-                    ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types,
                     r.name as reserver_name,
                     r.id as reserver_id,
                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
@@ -239,7 +238,6 @@ class JdbiBoatSpaceRepository(
                 FROM boat_space bs    
                 JOIN location ON bs.location_id = location.id
                 JOIN price ON bs.price_id = price.id
-                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                 LEFT JOIN (
                     SELECT boat_space_id, reserver_id, storage_type
                     FROM boat_space_reservation
@@ -250,10 +248,9 @@ class JdbiBoatSpaceRepository(
 
                 LEFT JOIN reserver r ON r.id = bsr.reserver_id
                 $filterQuery
-                GROUP BY bs.id, bs.location_id, bs.price_id, 
-                     location.name, location.address, 
-                     price.price_cents, price.name, 
-                     r.name, r.id, bs.place_number, bs.section
+                GROUP BY bs.id, location.name, location.address,
+                    price.price_cents, price.name,
+                    r.name, r.id
                 $sortByQuery
                 $paginationQuery
                 """.trimIndent()
@@ -322,7 +319,6 @@ class JdbiBoatSpaceRepository(
                 FROM boat_space bs
                 JOIN location ON bs.location_id = location.id
                 JOIN price ON bs.price_id = price.id
-                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                 LEFT JOIN (
                     SELECT boat_space_id, reserver_id, storage_type
                     FROM boat_space_reservation
