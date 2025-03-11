@@ -30,7 +30,8 @@ class OrganizationMemberAdd(
                 size="$listSize" 
                 name='citizenIdOption' 
                 hx-get="/virkailija/yhteiso/$organizationId/jasenet/lisaa"
-                 hx-include="[name='citizenId']"
+                hx-trigger="change delay:0.01s" 
+                hx-include="[name='citizenId']"
                 hx-target="#add-members-container"
                 hx-swap="innerHTML"
                 @change="updateFullName">
