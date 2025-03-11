@@ -1601,4 +1601,29 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         assertThat(formPage.getErrorModal().root).isVisible()
     }
+
+    @Test
+    fun `Should validate that boat numeric specs are greater than zero before form submission`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+
+        formPage.fillFormAndSubmit {
+            boatSection.widthInput.fill("0")
+            boatSection.lengthInput.fill("0")
+            boatSection.depthInput.fill("0")
+            boatSection.weightInput.fill("0")
+        }
+
+        assertThat(boatSection.widthError).isVisible()
+        assertThat(boatSection.lengthError).isVisible()
+        assertThat(boatSection.depthError).isVisible()
+        assertThat(boatSection.weightError).isVisible()
+        assertThat(formPage.validationWarning).isVisible()
+    }
 }
