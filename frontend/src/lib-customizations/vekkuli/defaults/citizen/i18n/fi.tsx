@@ -149,7 +149,7 @@ export default {
       authenticationRequired:
         'Paikan varaaminen vaatii vahvan tunnistautumisen ja venepaikka maksetaan varaamisen yhteydessä. Varausjärjestelmä toimii parhaiten Google Chrome ja Edge selaimilla.',
       boatRequired:
-        'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
+        'Vain veneen omistaja tai haltija voi varata laituri-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
       contactInfo:
         'Jos et voi tunnistautua sähköisesti tai varaat ensimmäistä kertaa yhteisön (yritys tai seura) puolesta, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
       preparations:
@@ -159,14 +159,14 @@ export default {
     },
     periods: {
       Slip: {
-        title: 'Venepaikkojen varaaminen 2025',
+        title: 'Laituripaikkojen varaaminen 2025',
         season: (season: string) => `Veneilykausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa venepaikansa vuokrausta`,
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa laituripaikansa vuokrausta`,
           (period: string) =>
-            `${period} vain espoolaiset* voivat varata venepaikkoja`,
-          (period: string) => `${period} kaikki voivat varata venepaikkoja`
+            `${period} vain espoolaiset* voivat varata laituripaikkoja`,
+          (period: string) => `${period} kaikki voivat varata laituripaikkoja`
         ]
       },
       Trailer: {
@@ -199,7 +199,7 @@ export default {
         ]
       },
       footNote:
-        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
+        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata laituri-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
       footNote2:
         '** 14.9.2025 asti kaikki voivat varata säilytyspaikkoja kuluvalle kaudelle'
     },
@@ -276,7 +276,7 @@ export default {
         title: 'Venepaikkojen varaaminen 2025',
         periods: {
           newReservations:
-            'Venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025. Varaus on veneilykaudelle 10.6.–14.9.2025.',
+            'Laituripaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025. Varaus on veneilykaudelle 10.6.–14.9.2025.',
           trailerReservations:
             'Suomenojan traileripaikkojen varaaminen 1.5.–31.12.2025. Varaus on kaudelle 1.5.2025–30.4.2026.',
           winter:
