@@ -7,11 +7,11 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.service.CreateBoatSpaceParams
 import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -388,5 +388,48 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width has been edited")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
         assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space has been edited\"")
+    }
+
+    @Test
+    fun `boat space can be deleted`() {
+        val boatSpaceId = listOf(100, 101)
+        boatSpaceService.deleteBoatSpace(boatSpaceId)
+        val boatSpace = boatSpaceRepository.getBoatSpace(boatSpaceId[0])
+        assertNull(boatSpace, "First boat space is correctly deleted")
+        val boatSpace2 = boatSpaceRepository.getBoatSpace(boatSpaceId[1])
+        assertNull(boatSpace2, "Second boat space is correctly deleted")
+    }
+
+    @Test
+    fun `boat space can be added`() {
+        deleteAllReservations(jdbi)
+        deleteAllBoatSpaces(jdbi)
+        val params =
+            CreateBoatSpaceParams(
+                1,
+                BoatSpaceType.Slip,
+                "A",
+                1,
+                BoatSpaceAmenity.Beam,
+                100,
+                200,
+                1,
+                true,
+                "This is description"
+            )
+        val boatSpaceId =
+            boatSpaceService.createBoatSpace(
+                params
+            )
+
+        val boatSpace = boatSpaceRepository.getBoatSpace(boatSpaceId)
+        assertNotNull(boatSpace, "Boat space is created")
+        assertEquals(params.section, boatSpace.section, "Section is correct")
+        assertEquals(params.placeNumber, boatSpace.placeNumber, "Boat space place number is correct")
+        assertEquals(params.amenity, boatSpace.amenity, "Boat space amenity is correct")
+        assertEquals(params.widthCm, boatSpace.widthCm, "Boat space width is correct")
+        assertEquals(params.lengthCm, boatSpace.lengthCm, "Boat space length is correct")
+        assertEquals(params.isActive, boatSpace.isActive, "Boat space is active")
+        assertEquals(params.description, boatSpace.description, "Boat space description is correct")
     }
 }

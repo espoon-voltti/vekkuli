@@ -35,6 +35,19 @@ data class EditBoatSpaceParams(
     val isActive: Boolean?
 )
 
+data class CreateBoatSpaceParams(
+    val locationId: Int,
+    val type: BoatSpaceType,
+    val section: String,
+    val placeNumber: Int,
+    val amenity: BoatSpaceAmenity,
+    val widthCm: Int,
+    val lengthCm: Int,
+    val priceId: Int,
+    val isActive: Boolean,
+    val description: String
+)
+
 interface BoatSpaceRepository {
     fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int>
 
@@ -56,6 +69,10 @@ interface BoatSpaceRepository {
     )
 
     fun getBoatSpaceCount(filter: SqlExpr): Int
+
+    fun deleteBoatSpace(boatSpaceIds: List<Int>)
+
+    fun createBoatSpace(params: CreateBoatSpaceParams): Int
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -163,4 +180,8 @@ class BoatSpaceService(
         }
         boatSpaceRepo.editBoatSpaces(boatSpaceIds, editParams)
     }
+
+    fun createBoatSpace(params: CreateBoatSpaceParams): Int = boatSpaceRepo.createBoatSpace(params)
+
+    fun deleteBoatSpace(boatSpaceIds: List<Int>) = boatSpaceRepo.deleteBoatSpace(boatSpaceIds)
 }
