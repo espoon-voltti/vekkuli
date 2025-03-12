@@ -45,7 +45,6 @@ data class CreateBoatSpaceParams(
     val lengthCm: Int,
     val priceId: Int,
     val isActive: Boolean,
-    val description: String
 )
 
 interface BoatSpaceRepository {

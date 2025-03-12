@@ -628,7 +628,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description,
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                         ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types,
                         CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
@@ -639,7 +639,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    GROUP BY bsr.id, location.name, price.id, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
+                    GROUP BY bsr.id, location.name, price.id, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm
                     """.trimIndent()
                 )
             query.bind("id", id)
@@ -1161,7 +1161,6 @@ class JdbiBoatSpaceReservationRepository(
         SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, r.discount_percentage,
           location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
           bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-          bs.description,
           CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place
         """.trimIndent()
 

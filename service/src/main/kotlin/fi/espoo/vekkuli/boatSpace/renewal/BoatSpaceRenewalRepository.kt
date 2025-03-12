@@ -160,7 +160,6 @@ class BoatSpaceRenewalRepository(
         """SELECT bsr.*, r.name,  r.email, r.phone, r.type as reserver_type,
                 location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                 bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                  bs.description,
                   CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place
             FROM boat_space_reservation bsr
             JOIN reserver r ON bsr.reserver_id = r.id

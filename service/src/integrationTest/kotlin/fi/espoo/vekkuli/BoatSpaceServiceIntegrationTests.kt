@@ -414,8 +414,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 100,
                 200,
                 1,
-                true,
-                "This is description"
+                true
             )
         val boatSpaceId =
             boatSpaceService.createBoatSpace(
@@ -430,6 +429,5 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(params.widthCm, boatSpace.widthCm, "Boat space width is correct")
         assertEquals(params.lengthCm, boatSpace.lengthCm, "Boat space length is correct")
         assertEquals(params.isActive, boatSpace.isActive, "Boat space is active")
-        assertEquals(params.description, boatSpace.description, "Boat space description is correct")
     }
 }

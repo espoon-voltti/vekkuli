@@ -105,9 +105,9 @@ abstract class IntegrationTestBase {
                 .createUpdate(
                     """
                 INSERT INTO boat_space (
-                    id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description
+                    id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm
                 ) VALUES (
-                    :id, :type, :locationId, :priceId, :section, :placeNumber, :amenity, :widthCm, :lengthCm, :description
+                    :id, :type, :locationId, :priceId, :section, :placeNumber, :amenity, :widthCm, :lengthCm
                 )
                 """
                 ).bindKotlin(boatSpace)

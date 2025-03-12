@@ -28,7 +28,6 @@ data class BoatSpaceListRow(
     val amenity: BoatSpaceAmenity,
     private val widthCm: Int,
     private val lengthCm: Int,
-    val description: String,
     val locationName: String?,
     val locationAddress: String?,
     private val priceCents: Int,

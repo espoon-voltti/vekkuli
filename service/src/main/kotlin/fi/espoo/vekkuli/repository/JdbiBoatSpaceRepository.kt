@@ -226,7 +226,6 @@ class JdbiBoatSpaceRepository(
                     bs.amenity,
                     bs.width_cm,
                     bs.length_cm,
-                    bs.description,
                     bs.is_active,
                     location.name AS location_name, 
                     location.address AS location_address,
@@ -361,7 +360,6 @@ class JdbiBoatSpaceRepository(
                     amenity,
                     width_cm,
                     length_cm,
-                    description,
                     created,
                     updated,
                     is_active
@@ -374,7 +372,6 @@ class JdbiBoatSpaceRepository(
                     :amenity,
                     :widthCm,
                     :lengthCm,
-                    :description,
                     :currentTime,
                     :currentTime,
                     :isActive
@@ -389,7 +386,6 @@ class JdbiBoatSpaceRepository(
             query.bind("amenity", params.amenity)
             query.bind("widthCm", params.widthCm)
             query.bind("lengthCm", params.lengthCm)
-            query.bind("description", params.description)
             query.bind("isActive", params.isActive)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query
