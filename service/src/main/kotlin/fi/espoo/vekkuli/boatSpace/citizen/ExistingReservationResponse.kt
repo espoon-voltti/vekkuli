@@ -92,7 +92,8 @@ class ExistingReservationResponseMapper(
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(boatSpaceReservation.id) ?: throw NotFound()
 
-        val boatSpace = spaceReservationService.getBoatSpaceRelatedToReservation(boatSpaceReservation.id) ?: throw NotFound()
+        val boatSpace =
+            spaceReservationService.getBoatSpaceRelatedToReservation(boatSpaceReservation.id) ?: throw NotFound()
 
         val boat = getBoat(reservationWithDependencies)
 
@@ -237,11 +238,7 @@ class ExistingReservationResponseMapper(
         }
 
     private fun getCanTerminate(reservationId: Int): Boolean =
-        if (reservationId != null) {
-            boatSpaceReservationRepository.getBoatSpaceReservationDetails(reservationId)?.let {
-                it.terminationTimestamp == null
-            } ?: false
-        } else {
-            false
-        }
+        boatSpaceReservationRepository.getBoatSpaceReservationDetails(reservationId)?.let {
+            it.status != ReservationStatus.Cancelled
+        } ?: false
 }
