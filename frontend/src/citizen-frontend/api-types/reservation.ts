@@ -128,6 +128,7 @@ export type ExistingBoatSpaceReservationResponse = {
   boatSpace: BoatSpace
   canRenew: boolean
   canSwitch: boolean
+  canTerminate: boolean
   created: string
   startDate: string
   endDate: string

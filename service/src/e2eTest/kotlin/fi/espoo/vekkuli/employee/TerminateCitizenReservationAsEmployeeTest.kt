@@ -244,6 +244,56 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee can terminate reservation to end in the future and citizen can no longer terminate the reservation`() {
+        try {
+            val listingPage = ReservationListPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            val weeksAddedToEndTime = 2L
+            val endDate = timeProvider.getCurrentDate().plusWeeks(weeksAddedToEndTime)
+            val terminationComment = "Test comment"
+            val terminationReason = ReservationTerminationReasonOptions.RuleViolation
+
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+
+            // Expired list is not on the page
+            assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+
+            citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+
+            // Opens up information from the first reservation of the first user
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
+
+            // Fills the form
+            citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
+            citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
+            citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
+
+            citizenDetailsPage.terminateReservationModalConfirm.click()
+
+            // Shows a success message in modal
+            assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
+
+            // Hides the modal and the expired list is on the page, but not visible
+            citizenDetailsPage.hideModalWindow()
+
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
+
+            CitizenHomePage(page).loginAsLeoKorhonen()
+            val citizenCitizenDetailsPage = CitizenCitizenDetailsPage(page)
+            citizenCitizenDetailsPage.navigateToPage()
+            assertThat(citizenDetailsPage.terminateReservationButton).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `Employee sees an error message if the termination is unsuccessful`() {
         try {
             val listingPage = ReservationListPage(page)

@@ -84,6 +84,7 @@ class ReserveAndTerminateFlowTest : ReserveTest() {
         // Check that the boat space is not yet in the expired list
         assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+        assertThat(citizenDetailsPage.terminateReservationAsEmployeeButton).isHidden()
 
         // Check that it's shown as terminated with the correct reason and end date
         assertThat(
