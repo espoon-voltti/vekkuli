@@ -1,6 +1,7 @@
 import {
   BoatSpaceAmenity,
   BoatSpaceType,
+  boatSpaceTypes,
   BoatType,
   Harbor,
   harbors
@@ -54,13 +55,14 @@ export function transformFromStateToStoredState(
   state: StateOf<SearchForm>
 ): StoredSearchState {
   const branch = state.boatSpaceType.domValue as BoatSpaceType
-  return ['Slip', 'Trailer', 'Winter', 'Storage'].reduce(
+
+  return boatSpaceTypes.reduce(
     (acc, key) => ({
       ...acc,
       [key]: convertSpaceStateToBranchSearchState(
         branch === key
           ? state.boatSpaceUnionForm.state
-          : state.boatSpaceUnionCache[branch]
+          : state.boatSpaceUnionCache[key]
       )
     }),
     { branch }

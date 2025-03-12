@@ -102,7 +102,6 @@ function buildBranchDefaultValues(
   let boatType: BoatType = 'OutboardMotor'
   let harbors: Harbor[] = []
   let amenities: BoatSpaceAmenity[] = []
-
   if (switchInfo && switchInfo.spaceType === branch) {
     if (switchInfo.width) width = formatInputNumberValue(switchInfo.width)
     if (switchInfo.width) length = formatInputNumberValue(switchInfo.length)
@@ -121,7 +120,6 @@ function buildBranchDefaultValues(
       harbors = storedSearchState[branch].harbors
     }
   }
-
   return {
     width,
     length,
@@ -136,7 +134,7 @@ export function buildDefaultValues(
   switchInfo: SwitchReservationInformation | undefined
 ): initialFormStateDefaultValues {
   return {
-    branch: storedSearchState?.branch || 'Slip',
+    branch: switchInfo?.spaceType || storedSearchState?.branch || 'Slip',
     Slip: buildBranchDefaultValues('Slip', storedSearchState, switchInfo),
     Trailer: buildBranchDefaultValues('Trailer', storedSearchState, switchInfo),
     Winter: buildBranchDefaultValues('Winter', storedSearchState, switchInfo),

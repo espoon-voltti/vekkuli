@@ -40,7 +40,6 @@ type SearchPageProps = {
 
 export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   const i18n = useTranslation()
-
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
@@ -99,7 +98,8 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   )
   useEffect(() => {
     setFreeSpacesSearchParams(debouncedFreeSpacesSearchParams)
-  }, [debouncedFreeSpacesSearchParams])
+    if (!switchInfo) setSearchState(transformFromStateToStoredState(bind.state))
+  }, [debouncedFreeSpacesSearchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const searchResult = freeSpaces.isSuccess
     ? {
@@ -112,7 +112,6 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
       }
 
   const onReserveButtonPress = (spaceId: number) => {
-    setSearchState(transformFromStateToStoredState(bind.state))
     if (userLoggedIn) {
       setSelectedBoatSpace(spaceId)
     } else {
