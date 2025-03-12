@@ -23,8 +23,8 @@ export type StoredSearchState = {
 
 export type BranchSearchState = {
   boatType: BoatType
-  width: number
-  length: number
+  width?: number
+  length?: number
   amenities: BoatSpaceAmenity[]
   harbors: Harbor[]
 }
@@ -53,19 +53,18 @@ export default useStoredSearchState
 export function transformFromStateToStoredState(
   state: StateOf<SearchForm>
 ): StoredSearchState {
-  return {
-    branch: state.boatSpaceType.domValue as BoatSpaceType,
-    Slip: convertSpaceStateToBranchSearchState(state.boatSpaceUnionCache.Slip),
-    Trailer: convertSpaceStateToBranchSearchState(
-      state.boatSpaceUnionCache.Trailer
-    ),
-    Winter: convertSpaceStateToBranchSearchState(
-      state.boatSpaceUnionCache.Winter
-    ),
-    Storage: convertSpaceStateToBranchSearchState(
-      state.boatSpaceUnionCache.Storage
-    )
-  }
+  const branch = state.boatSpaceType.domValue as BoatSpaceType
+  return ['Slip', 'Trailer', 'Winter', 'Storage'].reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: convertSpaceStateToBranchSearchState(
+        branch === key
+          ? state.boatSpaceUnionForm.state
+          : state.boatSpaceUnionCache[branch]
+      )
+    }),
+    { branch }
+  ) as StoredSearchState
 }
 
 function convertSpaceStateToBranchSearchState(
@@ -76,8 +75,8 @@ function convertSpaceStateToBranchSearchState(
     : spaceState.amenities.domValues
   return {
     boatType: spaceState.boatType.domValue as BoatType,
-    width: parseFloat(spaceState.width),
-    length: parseFloat(spaceState.length),
+    width: parseFloat(spaceState.width) || undefined,
+    length: parseFloat(spaceState.length) || undefined,
     amenities: amenities as BoatSpaceAmenity[],
     harbors: harbors.filter((h) => {
       return spaceState.harbor.domValues.includes(h.value)

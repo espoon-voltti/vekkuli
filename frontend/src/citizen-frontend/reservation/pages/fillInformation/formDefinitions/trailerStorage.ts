@@ -1,3 +1,4 @@
+import { formatInputNumberValue } from 'citizen-frontend/shared/formatters'
 import { Trailer } from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
 import { mapped, object, required } from 'lib-common/form/form'
@@ -44,15 +45,16 @@ function initialTrailerInfoState(
   storedState?: StoredSearchState,
   initialTrailer?: Trailer
 ): StateOf<TrailerInfoForm> {
+  let width = initialTrailer?.width.toString() ?? positiveNumber.empty().value
+  let length = initialTrailer?.length.toString() ?? positiveNumber.empty().value
+
+  if (storedState && storedState.Trailer !== undefined) {
+    width = formatInputNumberValue(storedState.Trailer.width)
+    length = formatInputNumberValue(storedState.Trailer.length)
+  }
   return {
     registrationNumber: initialTrailer?.registrationNumber ?? '',
-    width:
-      storedState?.width ??
-      initialTrailer?.width.toString() ??
-      positiveNumber.empty().value,
-    length:
-      storedState?.length ??
-      initialTrailer?.length.toString() ??
-      positiveNumber.empty().value
+    width: width,
+    length: length
   }
 }

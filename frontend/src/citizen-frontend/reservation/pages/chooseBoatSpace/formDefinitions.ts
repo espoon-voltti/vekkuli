@@ -1,5 +1,6 @@
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
 import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
+import { formatInputNumberValue } from 'citizen-frontend/shared/formatters'
 import {
   BoatSpaceAmenity,
   BoatSpaceType,
@@ -22,7 +23,6 @@ import {
 import { OutputOf, StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
-import { formatNumber } from '../../../shared/formatters'
 import { StoredSearchState } from '../useStoredSearchState'
 
 const searchSpaceParamsForm = object({
@@ -104,14 +104,14 @@ function buildBranchDefaultValues(
   let amenities: BoatSpaceAmenity[] = []
 
   if (switchInfo && switchInfo.spaceType === branch) {
-    if (switchInfo.width) width = formatNumber(switchInfo.width, 2, '.')
-    if (switchInfo.width) length = formatNumber(switchInfo.length, 2, '.')
+    if (switchInfo.width) width = formatInputNumberValue(switchInfo.width)
+    if (switchInfo.width) length = formatInputNumberValue(switchInfo.length)
     if (switchInfo.boatType) boatType = switchInfo.boatType
   } else if (storedSearchState && storedSearchState[branch]) {
     if (storedSearchState[branch].width)
-      width = formatNumber(storedSearchState[branch].width, 2, '.')
+      width = formatInputNumberValue(storedSearchState[branch].width)
     if (storedSearchState[branch].length)
-      length = formatNumber(storedSearchState[branch].length, 2, '.')
+      length = formatInputNumberValue(storedSearchState[branch].length)
     if (storedSearchState[branch].boatType)
       boatType = storedSearchState[branch].boatType
     if (storedSearchState[branch].amenities.length) {

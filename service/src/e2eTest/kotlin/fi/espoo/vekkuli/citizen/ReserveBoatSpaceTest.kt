@@ -322,7 +322,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
 
             CitizenHomePage(page).loginAsLeoKorhonen()
-
             val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateToPage()
             reservationPage.startReservingBoatSpace012()

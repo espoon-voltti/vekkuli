@@ -31,6 +31,13 @@ export function formatNumber(
     : ''
 }
 
+export function formatInputNumberValue(value: number | undefined): string {
+  if (value === undefined || !value) {
+    return ''
+  }
+  return value.toString()
+}
+
 export function formatPrice(value: number): string {
   return value.toFixed(2).replace('.', ',')
 }
