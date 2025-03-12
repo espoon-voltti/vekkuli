@@ -215,6 +215,15 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should get paginated boat spaces`() {
+        val params = BoatSpaceListParams().copy(paginationStart = 0, paginationEnd = 10, amenity = listOf(BoatSpaceAmenity.Beam))
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+
+        assertEquals(10, boatSpaces.items.size, "Correct number of boat spaces are fetched when pagination is set")
+        assertEquals(true, boatSpaces.items.all { it.amenity == BoatSpaceAmenity.Beam }, "Correct filter is applied")
+    }
+
+    @Test
     fun `should get boat spaces filtered`() {
         val params =
             BoatSpaceListParams(
