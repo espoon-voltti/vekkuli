@@ -216,6 +216,7 @@ class JdbiBoatSpaceRepository(
         jdbi.withHandleUnchecked { handle ->
             val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
             val paginationQuery = pagination?.toSql() ?: ""
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
             val sql =
                 """
                 SELECT 
@@ -234,7 +235,11 @@ class JdbiBoatSpaceRepository(
                     r.id as reserver_id,
                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                     r.type as reserver_type
-                ${buildBoatSpacePickQuery(filter)}
+                ${buildBoatSpacePickQuery()}
+                $filterQuery
+                    GROUP BY bs.id, location.name, location.address,
+                        price.price_cents, price.name,
+                        r.name, r.id
                 $sortByQuery
                 $paginationQuery
                 """.trimIndent()
@@ -247,9 +252,8 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpaceListRow>().toList()
         }
 
-    private fun buildBoatSpacePickQuery(filter: SqlExpr): String {
-        val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
-        return (
+    private fun buildBoatSpacePickQuery(): String =
+        (
             """FROM boat_space bs    
                     JOIN location ON bs.location_id = location.id
                     JOIN price ON bs.price_id = price.id
@@ -260,14 +264,9 @@ class JdbiBoatSpaceRepository(
                             (status IN ('Confirmed', 'Invoiced') AND end_date >= :endDateCut)
                             OR (status = 'Cancelled' AND end_date > :endDateCut)
                     ) bsr ON bsr.boat_space_id = bs.id
-    
                     LEFT JOIN reserver r ON r.id = bsr.reserver_id
-                    $filterQuery
-                    GROUP BY bs.id, location.name, location.address,
-                        price.price_cents, price.name,
-                        r.name, r.id"""
+                    """
         )
-    }
 
     override fun getSections(): List<String> =
         jdbi.withHandleUnchecked { handle ->
@@ -318,11 +317,14 @@ class JdbiBoatSpaceRepository(
 
     override fun getBoatSpaceCount(filter: SqlExpr,): Int =
         jdbi.withHandleUnchecked { handle ->
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
 
             val sql =
                 """
-                SELECT COUNT(*)
-                ${buildBoatSpacePickQuery(filter)}
+                SELECT COUNT(DISTINCT bs.id)
+                ${buildBoatSpacePickQuery()}
+                $filterQuery
+                
                 """.trimIndent()
 
             val query = handle.createQuery(sql)

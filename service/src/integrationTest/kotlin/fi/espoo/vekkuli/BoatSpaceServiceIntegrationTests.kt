@@ -207,11 +207,11 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get all boat spaces`() {
-        val params = BoatSpaceListParams().copy(paginationEnd = 3000)
+        val params = BoatSpaceListParams()
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(2438, boatSpaces.items.size, "No boat spaces are fetched")
+        assertEquals(2438, boatSpaces.totalRows, "No boat spaces are fetched")
     }
 
     @Test
@@ -219,6 +219,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val params = BoatSpaceListParams().copy(paginationStart = 0, paginationEnd = 10, amenity = listOf(BoatSpaceAmenity.Beam))
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
+        assertEquals(1859, boatSpaces.totalRows, "Correct number of boat spaces are fetched when pagination is set")
         assertEquals(10, boatSpaces.items.size, "Correct number of boat spaces are fetched when pagination is set")
         assertEquals(true, boatSpaces.items.all { it.amenity == BoatSpaceAmenity.Beam }, "Correct filter is applied")
     }
@@ -237,7 +238,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(17, boatSpaces.items.size, "Correct number of boat spaces are fetched")
+        assertEquals(17, boatSpaces.totalRows, "Correct number of boat spaces are fetched")
     }
 
     @Test

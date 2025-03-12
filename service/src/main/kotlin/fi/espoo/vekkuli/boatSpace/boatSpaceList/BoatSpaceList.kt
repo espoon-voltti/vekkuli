@@ -267,7 +267,7 @@ class BoatSpaceList(
                         </tbody>
                     </table>
                 </div>
-            <div hx-swap-oob="true" class="has-text-centered" >
+            <div id="boat-space-load-more-container" hx-swap-oob="true" class="has-text-centered" >
                                 <button 
                                     class="button is-primary is-fullwidth"
                                     hx-get="/virkailija/venepaikat/selaa/rivit"
