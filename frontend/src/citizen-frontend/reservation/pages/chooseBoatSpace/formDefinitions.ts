@@ -104,7 +104,7 @@ function buildBranchDefaultValues(
   let amenities: BoatSpaceAmenity[] = []
   if (switchInfo && switchInfo.spaceType === branch) {
     if (switchInfo.width) width = formatInputNumberValue(switchInfo.width)
-    if (switchInfo.width) length = formatInputNumberValue(switchInfo.length)
+    if (switchInfo.length) length = formatInputNumberValue(switchInfo.length)
     if (switchInfo.boatType) boatType = switchInfo.boatType
   } else if (storedSearchState && storedSearchState[branch]) {
     if (storedSearchState[branch].width)
