@@ -45,19 +45,17 @@ interface InvoicePaymentClient {
     fun getPayments(): InvoicePaymentResponse
 }
 
-@Profile("test || local")
+@Profile("!(staging || production)")
 @Service
 class MockInvoicePaymentClient : InvoicePaymentClient {
-    private var payments: List<Receipt> = listOf()
+    companion object {
+        var payments: MutableList<Receipt> = mutableListOf()
+    }
 
     override fun getPayments(): InvoicePaymentResponse = InvoicePaymentResponse(receipts = payments)
-
-    fun setPayments(payments: List<Receipt>) {
-        this.payments = payments
-    }
 }
 
-@Profile("!(test || local)")
+@Profile("staging || production")
 @Service
 class EspiInvoicePaymentClient(
     val espiEnv: EspiEnv,

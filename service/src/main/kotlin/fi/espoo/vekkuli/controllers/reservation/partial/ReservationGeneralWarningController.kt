@@ -70,7 +70,9 @@ class ReservationGeneralWarningController {
         logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_SET_GENERAL_WARNING")
 
         warningsRepository.addReservationWarnings(
+            UUID.randomUUID(),
             reservationId,
+            null,
             null,
             null,
             infoText.trim(),
@@ -82,10 +84,12 @@ class ReservationGeneralWarningController {
                 reservationId,
                 reserverId,
                 ReservationWarning(
+                    UUID.randomUUID(),
                     reservationId,
                     key = generalWarningsKey,
                     infoText = infoText.trim(),
                     boatId = null,
+                    invoiceNumber = null,
                     trailerId = null
                 )
             )
@@ -104,7 +108,9 @@ class ReservationGeneralWarningController {
 
         warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
         warningsRepository.addReservationWarnings(
+            UUID.randomUUID(),
             reservationId,
+            null,
             null,
             null,
             infoText.trim(),
@@ -116,11 +122,13 @@ class ReservationGeneralWarningController {
                 reservationId,
                 reserverId,
                 ReservationWarning(
+                    UUID.randomUUID(),
                     reservationId,
                     key = generalWarningsKey,
                     infoText = infoText.trim(),
                     boatId = null,
-                    trailerId = null
+                    trailerId = null,
+                    invoiceNumber = null
                 )
             )
         )

@@ -130,6 +130,18 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
+    override fun getInvoiceWithInvoiceNumber(invoiceNumber: Int): Invoice? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM invoice WHERE invoice_number = :invoiceNumber
+                    """.trimIndent()
+                ).bind("invoiceNumber", invoiceNumber)
+                .mapTo<Invoice>()
+                .firstOrNull()
+        }
+
     override fun getPayment(stamp: UUID): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle

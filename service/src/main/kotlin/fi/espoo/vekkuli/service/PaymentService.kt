@@ -48,8 +48,11 @@ class PaymentService(
             PaymentHistory(
                 paymentDetails = it,
                 invoicePayments =
-                    if (it.paymentType == PaymentType.Invoice && it.paymentReference.isNotEmpty()) {
-                        invoicePaymentRepository.getInvoicePayments(it.paymentReference.toLong())
+                    if (it.paymentType == PaymentType.Invoice &&
+                        it.paymentReference.isNotEmpty() &&
+                        it.paymentReference.toLongOrNull() != null
+                    ) {
+                        invoicePaymentRepository.getInvoicePaymentsWithReservationWarningInfo(it.paymentReference.toLong())
                     } else {
                         emptyList()
                     }

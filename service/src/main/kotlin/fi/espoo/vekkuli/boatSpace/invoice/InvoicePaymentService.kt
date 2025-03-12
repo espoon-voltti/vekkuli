@@ -1,25 +1,51 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.repository.InvoicePaymentRepository
+import fi.espoo.vekkuli.repository.PaymentRepository
+import fi.espoo.vekkuli.service.ReservationWarningRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.util.UUID
 
 @Service
 class InvoicePaymentService(
     private val invoicePaymentClient: InvoicePaymentClient,
-    private val invoicePaymentRepository: InvoicePaymentRepository
+    private val invoicePaymentRepository: InvoicePaymentRepository,
+    private val paymentRepository: PaymentRepository,
+    private val reservationWarningRepository: ReservationWarningRepository
 ) {
-//    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    val logger = KotlinLogging.logger {}
+
+    //    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     // To test this in staging, setting the scheduler to run once per hour
     @Scheduled(fixedRate = 1000 * 60 * 60)
+    fun scheduleFetchAndStoreInvoicePayments() {
+        fetchAndStoreInvoicePayments()
+    }
+
     fun fetchAndStoreInvoicePayments() {
         val invoicePaymentResponse = invoicePaymentClient.getPayments()
         val invoicePayments = invoicePaymentResponse.receipts.map { createInvoicePayment(it) }
         if (invoicePayments.isNotEmpty()) {
             invoicePaymentRepository.insertInvoicePayments(invoicePayments)
+            invoicePayments.forEach { invoicePayment ->
+                paymentRepository.getInvoiceWithInvoiceNumber(invoicePayment.invoiceNumber)?.let { invoice ->
+                    reservationWarningRepository.addReservationWarnings(
+                        UUID.randomUUID(),
+                        invoice.reservationId,
+                        null,
+                        null,
+                        invoicePayment.invoiceNumber,
+                        null,
+                        listOf(ReservationWarningType.InvoicePayment.name)
+                    )
+                } ?: logger.error { "No invoice found for invoice payment: $invoicePayment" }
+            }
         }
     }
 
@@ -50,5 +76,13 @@ data class InvoicePayment(
     val transactionNumber: Int,
     val amountPaidCents: Int,
     val paymentDate: LocalDate,
-    val invoiceNumber: Int
+    val invoiceNumber: Int,
+)
+
+data class InvoicePaymentWithReservationWarningId(
+    val transactionNumber: Int,
+    val amountPaidCents: Int,
+    val paymentDate: LocalDate,
+    val invoiceNumber: Int,
+    val reservationWarningId: UUID?
 )

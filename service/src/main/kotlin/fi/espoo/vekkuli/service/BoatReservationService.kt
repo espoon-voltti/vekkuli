@@ -73,20 +73,26 @@ sealed class PaymentProcessResult {
 
 interface ReservationWarningRepository {
     fun addReservationWarnings(
+        id: UUID,
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        invoiceNumber: Int?,
         infoText: String? = null,
         keys: List<String>,
     ): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
+    fun getWarningsForReserver(reservationId: UUID): List<ReservationWarning>
+
     fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
         keys: List<String>,
     ): Unit
+
+    fun deleteReservationWarning(id: UUID)
 
     fun deleteReservationWarningsForReservation(
         reservationId: Int,
@@ -218,7 +224,7 @@ class BoatReservationService(
             }
 
             if (warnings.isNotEmpty()) {
-                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, keys = warnings)
+                reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), it.id, null, trailerId, null, keys = warnings)
             }
         }
     }
@@ -283,7 +289,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, keys = warnings)
+            reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), reservationId, boatId, null, null, keys = warnings)
         }
     }
 

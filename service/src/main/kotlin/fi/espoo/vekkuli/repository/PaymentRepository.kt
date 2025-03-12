@@ -34,5 +34,7 @@ interface PaymentRepository {
 
     fun getInvoice(reservationId: Int): Invoice?
 
+    fun getInvoiceWithInvoiceNumber(invoiceNumber: Int): Invoice?
+
     fun getReserverPaymentDetails(reserverId: UUID): List<PaymentDetails>
 }
