@@ -191,7 +191,7 @@ val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"
 
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
-    val ascending: Boolean = false,
+    val ascending: Boolean = true,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
     val payment: List<PaymentFilter> = listOf<PaymentFilter>(PaymentFilter.CONFIRMED, PaymentFilter.INVOICED, PaymentFilter.CANCELLED),

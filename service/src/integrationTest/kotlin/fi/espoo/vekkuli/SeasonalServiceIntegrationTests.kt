@@ -660,7 +660,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(3, reservations.totalRows, "reservations are out filtered correctly")
-        assertEquals(listOf(200, 177, 1), reservations.items.map { it.boatSpaceId }, "correct reservations are returned")
+        assertEquals(listOf(1, 177, 200), reservations.items.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
