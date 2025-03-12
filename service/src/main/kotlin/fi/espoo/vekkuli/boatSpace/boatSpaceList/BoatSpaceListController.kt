@@ -138,7 +138,7 @@ class BoatSpaceListController {
                 decimalToInt(params.width),
                 decimalToInt(params.length),
                 params.payment,
-                params.boatSpaceState == BoatSpaceState.Active
+                if (params.boatSpaceState == null) null else params.boatSpaceState == BoatSpaceState.Active
             )
         )
     }
