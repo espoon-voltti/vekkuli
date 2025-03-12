@@ -190,9 +190,11 @@ class CitizenContainerForEmployee(
                 name='citizenIdOption' 
                 hx-get="/virkailija/venepaikka/varaus/$reservationId"
                 hx-include="#form"
-                hx-trigger="change" 
+                hx-trigger="change delay:0.01s" 
                 hx-select="#form"
-                hx-target="#form" @change="updateFullName">
+                hx-target="#form"
+                hx-swap="outerHTML"
+                @change="updateFullName">
                 ${citizensSearchContent.searchContentList(citizens)}
             </select>
 
