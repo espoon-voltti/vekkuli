@@ -273,6 +273,8 @@ class ReserveBoatSpacePage(
         form.fillFormAndSubmit {
             getBoatSection().widthInput.fill("2")
             getBoatSection().lengthInput.fill("5")
+            getTrailerStorageTypeSection().trailerWidthInput.fill("1")
+            getTrailerStorageTypeSection().trailerLengthInput.fill("3")
             getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         PaymentPage(page).payReservation()

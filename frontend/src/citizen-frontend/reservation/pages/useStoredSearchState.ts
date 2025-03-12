@@ -31,7 +31,7 @@ export type BranchSearchState = {
 
 function useStoredSearchState(): [
   StoredSearchState,
-  (newState: StoredSearchState) => void
+  (newState: StoredSearchState | null) => void
 ] {
   const [storedValue, setStoredValue] = useLocalStorage(
     'searchState',
@@ -41,7 +41,7 @@ function useStoredSearchState(): [
 
   const state = JSON.parse(storedValue) as StoredSearchState
 
-  const setState = (newState: StoredSearchState) => {
+  const setState = (newState: StoredSearchState | null) => {
     setStoredValue(JSON.stringify(newState))
   }
 

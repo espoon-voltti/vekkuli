@@ -1,3 +1,4 @@
+import { formatNumber } from 'citizen-frontend/shared/formatters'
 import { number, positiveNumber, string } from 'lib-common/form/fields'
 import {
   multiSelect,
@@ -98,9 +99,10 @@ function initialBoatInfoFormState(
     return transformBoatToFormBoat(defaultBoat, i18n, excludedBoatTypes)
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
-  if (boatSpaceType == 'Slip') {
-    width = storedSearchState?.width ?? positiveNumber.empty().value
-    length = storedSearchState?.length ?? positiveNumber.empty().value
+
+  if (boatSpaceType == 'Slip' && storedSearchState?.Slip !== undefined) {
+    width = formatNumber(storedSearchState.Slip.width ?? 0, 2, '.')
+    length = formatNumber(storedSearchState.Slip.length ?? 0, 2, '.')
   }
 
   const acceptedBoatTypes = getAcceptedBoatTypes(excludedBoatTypes)
@@ -109,7 +111,9 @@ function initialBoatInfoFormState(
     id: 0,
     name: '',
     type: {
-      domValue: storedSearchState?.boatType ?? 'OutboardMotor',
+      domValue:
+        (storedSearchState && storedSearchState[boatSpaceType]?.boatType) ??
+        'OutboardMotor',
       options: acceptedBoatTypes.map((type) => ({
         domValue: type,
         label: (i18n: Translations) => i18n.boatSpace.boatType[type],

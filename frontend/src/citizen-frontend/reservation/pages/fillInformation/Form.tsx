@@ -104,7 +104,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           input: formBind.value()
         })
 
-        setSearchState({})
+        setSearchState(null)
         if (updatedReservation.status === 'Confirmed')
           return navigate(
             `/kuntalainen/venepaikka/vahvistus/${updatedReservation.id}`
