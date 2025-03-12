@@ -30,6 +30,9 @@ class MessageSendingController(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    // ensure the messages are sent to all recipients regardless of pagination
+    private val paginationEnd = 100000
+
     @GetMapping("/massa/modal")
     @ResponseBody
     fun sendMessageModal(
@@ -48,7 +51,7 @@ class MessageSendingController(
         }
 
         val reservations =
-            reservationListService.getBoatSpaceReservations(params)
+            reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
         val recipients = getDistinctRecipients(reservations)
         return ResponseEntity.ok(
             sendMessageView.renderSendMessageModal(reservations.totalRows, recipients.size)
@@ -73,7 +76,7 @@ class MessageSendingController(
             val user = request.getAuthenticatedUser() ?: throw Unauthorized()
 
             val reservations =
-                reservationListService.getBoatSpaceReservations(params)
+                reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
             val recipients = getDistinctRecipients(reservations)
 
             messageService.sendEmails(
