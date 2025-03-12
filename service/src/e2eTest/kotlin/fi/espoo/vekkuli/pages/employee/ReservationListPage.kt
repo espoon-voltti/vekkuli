@@ -45,6 +45,13 @@ class ReservationListPage(
     val exceptionsFilter = filterLocator("exceptions")
     val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
+    val sendMassMessageLink = getByDataTestId("send-mass-email-link")
+    val sendMassMessageForm = getByDataTestId("send-mass-email")
+    val sendMassMessageModalSubtitle = getByDataTestId("send-mass-email-modal-subtitle")
+    val sendMassMessageTitleInput = getByDataTestId("message-title")
+    val sendMassMessageContentInput = getByDataTestId("message-content")
+    val sendMassMessageModalSubmit = getByDataTestId("send-mass-email-modal-confirm")
+    val sendMassMessageModalSuccess = getByDataTestId("message-sent-success-modal")
 
     fun boatSpace(customer: String) =
         getByDataTestId("reserver-name")

@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.context.ActiveProfiles
+import java.util.regex.Pattern
+import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class EmployeeReservationListingTest : PlaywrightTest() {
@@ -62,6 +65,53 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
         listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
         page.waitForCondition { listingPage.reservations.count() == 5 }
+    }
+
+    @Test
+    fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+        assertThat(listingPage.sendMassMessageLink).not().hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
+        listingPage.sendMassMessageLink.click()
+        assertThat(listingPage.sendMassMessageForm).isVisible()
+    }
+
+    @Test
+    fun `Send mass email link is disabled when reservation list is empty`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+        listingPage.searchInput("phoneSearch").fill("8888888888")
+        listingPage.searchInput("phoneSearch").blur()
+        page.waitForCondition { listingPage.reservations.count() == 0 }
+        assertThat(listingPage.sendMassMessageLink).hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
+    }
+
+    @Test
+    fun `Email is sent to filtered recipients with mass message`() {
+        val expectedReservationCount = 5
+        val expectedSentEmailCount = 4
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == expectedReservationCount }
+        listingPage.sendMassMessageLink.click()
+        assertThat(listingPage.sendMassMessageForm).isVisible()
+        assertThat(listingPage.sendMassMessageModalSubtitle).containsText(
+            "Varauksia $expectedReservationCount kpl, viestin vastaanottajia $expectedSentEmailCount kpl."
+        )
+        val emailSubject = "Email message title"
+        val emailBody = "Email message content"
+        listingPage.sendMassMessageTitleInput.fill(emailSubject)
+        listingPage.sendMassMessageTitleInput.blur()
+        listingPage.sendMassMessageContentInput.fill(emailBody)
+        listingPage.sendMassMessageContentInput.blur()
+
+        listingPage.sendMassMessageModalSubmit.click()
+        assertThat(listingPage.sendMassMessageModalSuccess).isVisible()
+
+        messageService.sendScheduledEmails()
+        assertEquals(expectedSentEmailCount, SendEmailServiceMock.emails.size)
+        val email = SendEmailServiceMock.emails[0]
+        assertEquals(email.subject, emailSubject)
+        assertEquals(email.body, emailBody)
     }
 
     @Test

@@ -61,6 +61,7 @@ class ModalBuilder {
         // language=HTML
         return """
             <div 
+                id="modal"
                 class="modal" 
                 x-data="{ $modalStateId: true }" 
                 x-show="$modalStateId" 
