@@ -1,16 +1,17 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
-import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.math.BigDecimal
-import java.util.UUID
 
 data class BoatSpaceListParams(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
@@ -20,7 +21,9 @@ data class BoatSpaceListParams(
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
     val boatSpaceState: List<BoatSpaceState> = emptyList(),
     val sectionFilter: List<String> = emptyList(),
-    val edit: List<String> = emptyList()
+    val edit: List<String> = emptyList(),
+    val paginationStart: Int = 0,
+    val paginationEnd: Int = 50
 )
 
 data class BoatSpaceListEditParams(
@@ -41,7 +44,9 @@ class BoatSpaceList(
     private val expandingSelectionFilter: ExpandingSelectionFilter,
     private val filters: ListFilters,
     private val formComponents: FormComponents,
-    private val editModal: EditModal
+    private val editModal: EditModal,
+    private val boatSpaceRow: BoatSpaceRow,
+    private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
 ) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -61,23 +66,19 @@ class BoatSpaceList(
         """.trimIndent()
 
     fun render(
-        boatSpaces: List<BoatSpaceListRow>,
+        boatSpaces: PaginatedResult<BoatSpaceListRow>,
         searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         paymentClasses: List<Price>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
         sections: List<String>,
-        editList: List<String>
+        editList: List<String>,
+        paginationSize: Int = 25,
     ): String {
-        fun getBoatSpacePage(
-            reserverId: UUID?,
-            reserverType: ReserverType?
-        ) = if (reserverId !== null) {
-            "/virkailija/${reserverType?.toPath()}/$reserverId"
-        } else {
-            ""
-        }
+        val paginationStartFrom = boatSpaces.end
+        val paginationEndTo = boatSpaces.end + paginationSize
+
         val sectionFilter =
             expandingSelectionFilter.render(
                 searchParams.sectionFilter,
@@ -86,44 +87,8 @@ class BoatSpaceList(
             )
 
         // language=HTML
-        fun editCheckBox(result: BoatSpaceListRow) =
-            """
-             <label class="checkbox">
-                <input name="spaceId"  ${addTestId(
-                "edit-boat-space-${result.id}"
-            )} type="checkbox" value="${result.id}" x-model='editBoatSpaceIds' />
-            </label>
-            """.trimIndent()
-        // language=HTML
         val reservationRows =
-            boatSpaces.joinToString("\n") { result ->
-
-                """
-                <tr class="boat-space-item"
-                ${addTestId("boat-space-${result.id}")}>
-                    <td>${editCheckBox(result)}</td>
-                    <td>${result.locationName}</td>
-                    <td
-                        ${
-                    addTestId(
-                        "place"
-                    )
-                }>${result.place}
-                    </td>
-                    <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
-                    <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
-                   
-                    <td>${result.widthInMeter}</td>
-                    <td>${result.lengthInMeter}</td>
-                    <td>${result.priceInEuro}</td>
-                    <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
-                    <td> <a href=${getBoatSpacePage(
-                    result.reserverId,
-                    result.reserverType
-                )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>
-                </tr>
-                """.trimIndent()
-            }
+            boatSpaceListRowsPartial.render(boatSpaces)
 
         // language=HTML
         return """
@@ -302,8 +267,40 @@ class BoatSpaceList(
                         </tbody>
                     </table>
                 </div>
-                <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
-            </div>
+            <div id="boat-space-load-more-container" hx-swap-oob="true" class="has-text-centered" >
+                                <button 
+                                    class="button is-primary is-fullwidth"
+                                    hx-get="/virkailija/venepaikat/selaa/rivit"
+                                    hx-trigger="click"
+                                    hx-target="#table-body"
+                                    hx-select="tr"
+                                    hx-swap="beforeend"
+                                    hx-indicator="#loader"
+                                    hx-include="#boat-space-filter-form"
+                                    hx-push-url="false"
+                                    hx-vals='{"paginationStart": $paginationStartFrom, "paginationEnd": $paginationEndTo}'
+                                    x-data="{ 
+                                        paginationStart: $paginationStartFrom,
+                                        paginationEnd: $paginationEndTo,
+                                        paginationSize: $paginationSize,
+                                        paginationTotalRows: ${boatSpaces.totalRows},
+                                        paginationResultsLeft: ${boatSpaces.totalRows - paginationStartFrom},
+                                        hasMore: ${boatSpaces.totalRows - paginationStartFrom > 0}
+                                    }" x-show="hasMore"
+                                    @htmx:after-request="
+                                        paginationStart = paginationEnd;
+                                        paginationEnd = paginationEnd + paginationSize;
+                                        paginationResultsLeft = paginationTotalRows - paginationStart;
+                                        hasMore = paginationResultsLeft > 0;
+                                        ${'$'}el.setAttribute('hx-vals', JSON.stringify({ paginationStart: paginationStart, paginationEnd: paginationEnd }));
+                                    "
+                                >
+                                    ${t("showMore")} (<span x-text="paginationResultsLeft"></span>)
+                                </button>
+                            </div>
+                        <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
+                            
+                        </div>
         </form>
         ${editModal.render(harbors, paymentClasses)}
     </div>

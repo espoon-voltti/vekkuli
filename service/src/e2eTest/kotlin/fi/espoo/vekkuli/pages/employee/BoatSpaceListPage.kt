@@ -37,6 +37,8 @@ class BoatSpaceListPage(
 
     fun editButton(boatSpaceId: Int) = page.getByDataTestId("edit-boat-space-$boatSpaceId")
 
+    fun showMoreButton() = page.getByTestId("boat-space-load-more-container").locator("button")
+
     val editModalButton = page.getByDataTestId("open-edit-modal")
     val editModalPage = BoatSpaceEditModalPage(page)
 }

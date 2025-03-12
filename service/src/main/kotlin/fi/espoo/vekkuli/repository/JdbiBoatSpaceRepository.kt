@@ -210,11 +210,13 @@ class JdbiBoatSpaceRepository(
 
     override fun getBoatSpaces(
         filter: SqlExpr,
-        sortBy: BoatSpaceSortBy?
+        sortBy: BoatSpaceSortBy?,
+        pagination: PaginationExpr?,
     ): List<BoatSpaceListRow> =
         jdbi.withHandleUnchecked { handle ->
-            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
             val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
+            val paginationQuery = pagination?.toSql() ?: ""
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
             val sql =
                 """
                 SELECT 
@@ -229,37 +231,42 @@ class JdbiBoatSpaceRepository(
                     location.address AS location_address,
                     price.price_cents,
                     price.name as price_class,
-                    ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types,
                     r.name as reserver_name,
                     r.id as reserver_id,
                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                     r.type as reserver_type
-                FROM boat_space bs    
-                JOIN location ON bs.location_id = location.id
-                JOIN price ON bs.price_id = price.id
-                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                LEFT JOIN (
-                    SELECT boat_space_id, reserver_id 
-                    FROM boat_space_reservation
-                    WHERE 
-                        (status IN ('Confirmed', 'Invoiced') AND end_date >= :endDateCut)
-                        OR (status = 'Cancelled' AND end_date > :endDateCut)
-                ) bsr ON bsr.boat_space_id = bs.id
-
-                LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                ${buildBoatSpacePickQuery()}
                 $filterQuery
-                GROUP BY bs.id, bs.location_id, bs.price_id, 
-                     location.name, location.address, 
-                     price.price_cents, price.name, 
-                     r.name, r.id, bs.place_number, bs.section
+                    GROUP BY bs.id, location.name, location.address,
+                        price.price_cents, price.name,
+                        r.name, r.id
                 $sortByQuery
+                $paginationQuery
                 """.trimIndent()
+
             val query = handle.createQuery(sql)
             filter.bind(query)
+            pagination?.bind(query)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
             query.mapTo<BoatSpaceListRow>().toList()
         }
+
+    private fun buildBoatSpacePickQuery(): String =
+        (
+            """FROM boat_space bs    
+                    JOIN location ON bs.location_id = location.id
+                    JOIN price ON bs.price_id = price.id
+                    LEFT JOIN (
+                        SELECT boat_space_id, reserver_id, storage_type
+                        FROM boat_space_reservation
+                        WHERE 
+                            (status IN ('Confirmed', 'Invoiced') AND end_date >= :endDateCut)
+                            OR (status = 'Cancelled' AND end_date > :endDateCut)
+                    ) bsr ON bsr.boat_space_id = bs.id
+                    LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                    """
+        )
 
     override fun getSections(): List<String> =
         jdbi.withHandleUnchecked { handle ->
@@ -306,6 +313,25 @@ class JdbiBoatSpaceRepository(
             query.bind("isActive", editBoatSpaceParams.isActive)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.execute()
+        }
+
+    override fun getBoatSpaceCount(filter: SqlExpr,): Int =
+        jdbi.withHandleUnchecked { handle ->
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
+
+            val sql =
+                """
+                SELECT COUNT(DISTINCT bs.id)
+                ${buildBoatSpacePickQuery()}
+                $filterQuery
+                
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+
+            query.mapTo<Int>().first()
         }
 
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =

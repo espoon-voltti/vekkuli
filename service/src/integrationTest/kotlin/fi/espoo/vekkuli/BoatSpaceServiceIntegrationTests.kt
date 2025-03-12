@@ -211,7 +211,17 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(2438, boatSpaces.size, "No boat spaces are fetched")
+        assertEquals(2438, boatSpaces.totalRows, "No boat spaces are fetched")
+    }
+
+    @Test
+    fun `should get paginated boat spaces`() {
+        val params = BoatSpaceListParams().copy(paginationStart = 0, paginationEnd = 10, amenity = listOf(BoatSpaceAmenity.Beam))
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+
+        assertEquals(1859, boatSpaces.totalRows, "Correct number of boat spaces are fetched when pagination is set")
+        assertEquals(10, boatSpaces.items.size, "Correct number of boat spaces are fetched when pagination is set")
+        assertEquals(true, boatSpaces.items.all { it.amenity == BoatSpaceAmenity.Beam }, "Correct filter is applied")
     }
 
     @Test
@@ -228,7 +238,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(17, boatSpaces.size, "Correct number of boat spaces are fetched")
+        assertEquals(17, boatSpaces.totalRows, "Correct number of boat spaces are fetched")
     }
 
     @Test
@@ -282,7 +292,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                         sortBy = BoatSpaceFilterColumn.RESERVER,
                         ascending = true
                     )
-                ).first { it.id == boatSpaceId }
+                ).items
+                .first { it.id == boatSpaceId }
         assertEquals(boatSpace.reserverId, reservation.reserverId, "Correct reserver is fetched")
 
         terminateReservationService.terminateBoatSpaceReservationAsOwner(
@@ -300,7 +311,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                         sortBy = BoatSpaceFilterColumn.RESERVER,
                         ascending = true
                     )
-                ).first { it.id == boatSpaceId }
+                ).items
+                .first { it.id == boatSpaceId }
         assertEquals(boatSpaceAfterTermination.reserverId, null, "Reserver is null after termination")
     }
 

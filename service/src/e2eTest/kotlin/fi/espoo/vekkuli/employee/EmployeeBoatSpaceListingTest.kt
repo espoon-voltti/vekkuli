@@ -127,6 +127,17 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
     }
 
+    @Test
+    fun `should be able to load more boat spaces`() {
+        val listingPage = boatSpaceListPage()
+        assertThat(listingPage.listItems).hasCount(50)
+
+        listingPage.showMoreButton().click()
+        assertThat(listingPage.listItems).hasCount(75)
+        listingPage.showMoreButton().click()
+        assertThat(listingPage.listItems).hasCount(100)
+    }
+
     private fun boatSpaceListPage(): BoatSpaceListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()

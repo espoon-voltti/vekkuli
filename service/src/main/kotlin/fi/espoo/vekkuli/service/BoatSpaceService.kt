@@ -4,9 +4,11 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.repository.filter.SortDirection
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
 import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.PaginationExpr
 import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
@@ -42,7 +44,8 @@ interface BoatSpaceRepository {
 
     fun getBoatSpaces(
         filter: SqlExpr,
-        sortBy: BoatSpaceSortBy? = null
+        sortBy: BoatSpaceSortBy? = null,
+        pagination: PaginationExpr? = null,
     ): List<BoatSpaceListRow>
 
     fun getSections(): List<String>
@@ -51,6 +54,8 @@ interface BoatSpaceRepository {
         boatSpaceIds: List<Int>,
         editBoatSpaceParams: EditBoatSpaceParams
     )
+
+    fun getBoatSpaceCount(filter: SqlExpr): Int
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -59,11 +64,37 @@ fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item)
 class BoatSpaceService(
     private val boatSpaceRepo: BoatSpaceRepository
 ) {
-    fun getBoatSpacesFiltered(params: BoatSpaceListParams): List<BoatSpaceListRow> {
+    fun getBoatSpacesFiltered(
+        params: BoatSpaceListParams,
+        paginationStart: Int? = null,
+        paginationEnd: Int? = null
+    ): PaginatedResult<BoatSpaceListRow> {
+        val pagination = PaginationExpr(paginationStart ?: params.paginationStart, paginationEnd ?: params.paginationEnd)
+        val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
         val sortBy =
             BoatSpaceSortBy(
                 listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending)
             )
+
+        val boatSpaces =
+            boatSpaceRepo.getBoatSpaces(
+                AndExpr(
+                    filters
+                ),
+                sortBy,
+                pagination
+            )
+        val boatSpaceCount =
+            boatSpaceRepo.getBoatSpaceCount(
+                AndExpr(
+                    filters
+                )
+            )
+
+        return PaginatedResult(boatSpaces, boatSpaceCount, pagination.start, pagination.end)
+    }
+
+    private fun buildBoatSpaceFilters(params: BoatSpaceListParams): MutableList<SqlExpr> {
         val filters: MutableList<SqlExpr> = mutableListOf()
 
         if (params.harbor.isNotEmpty()) {
@@ -85,15 +116,17 @@ class BoatSpaceService(
         if (params.boatSpaceState.isNotEmpty() && params.boatSpaceState.size != BoatSpaceState.entries.size) {
             filters.add(IsBoatSpaceStateExpr(params.boatSpaceState))
         }
+        return filters
+    }
 
-        val boatSpaces =
-            boatSpaceRepo.getBoatSpaces(
-                AndExpr(
-                    filters
-                ),
-                sortBy
+    fun getBoatSpaceCount(params: BoatSpaceListParams): Int {
+        val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
+
+        return boatSpaceRepo.getBoatSpaceCount(
+            AndExpr(
+                filters
             )
-        return boatSpaces
+        )
     }
 
     fun getUnreservedBoatSpaceOptions(
