@@ -121,6 +121,7 @@ export default React.memo(function Reservation({
               value={i18n.reservation.validity(
                 reservation.endDate,
                 reservation.validity,
+                reservation.status,
                 reservation.active
               )}
               readonly={true}

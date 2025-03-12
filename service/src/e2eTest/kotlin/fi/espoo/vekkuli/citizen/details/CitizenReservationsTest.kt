@@ -2,10 +2,15 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
+import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDate
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
 
 @ActiveProfiles("test")
 class CitizenReservationsTest : PlaywrightTest() {
@@ -57,5 +62,42 @@ class CitizenReservationsTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Cancelled reservations should show previous date as the end date`() {
+        val endDate = LocalDate.of(2024, 4, 8)
+        val expectedDisplayedEndDate = "07.04.2024 asti"
+
+        // create reservation
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+        PaymentPage(page).payReservation()
+
+        // terminate reservation
+        EmployeeHomePage(page).employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = EmployeeCitizenDetailsPage(page)
+        citizenDetails.terminateReservationAsEmployeeButton.click()
+        citizenDetails.terminateReservationEndDate.fill(formatAsTestDate(endDate))
+        citizenDetails.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
+        citizenDetails.terminateReservationModalConfirm.click()
+        assertThat(citizenDetails.terminateReservationSuccess).isVisible()
+        citizenDetails.hideModalWindow()
+
+        // check reservation details in citizen page
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+
+        val reservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 314")
+        assertThat(reservationSection.validity).hasText(expectedDisplayedEndDate)
     }
 }

@@ -135,7 +135,7 @@ class ExistingReservationResponseMapper(
             boat = formatBoat(boat),
             created = boatSpaceReservation.created,
             startDate = boatSpaceReservation.startDate,
-            endDate = boatSpaceReservation.endDate,
+            endDate = boatSpaceReservation.toBoatSpaceReservation().effectiveEndDate(),
             validity = reservationWithDependencies.validity,
             isActive = isActive,
             paymentDate = boatSpaceReservation.paymentDate,

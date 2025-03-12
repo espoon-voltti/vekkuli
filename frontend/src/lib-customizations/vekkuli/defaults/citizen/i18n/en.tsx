@@ -7,6 +7,7 @@ import { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
+  ReservationStatus,
   ReservationValidity,
   ReserverType
 } from 'citizen-frontend/shared/types'
@@ -380,9 +381,10 @@ const en: Translations = {
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
+      status: ReservationStatus,
       isActive: boolean
     ) => {
-      if (validity === 'Indefinite' && isActive) {
+      if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
         return 'For now, resume annually'
       }
       return `until ${endDate.format()}`
