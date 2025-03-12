@@ -36,7 +36,7 @@ export const positiveNumber = Object.assign(
     transformed(value<string>(), (state) => {
       if (state === '') return ValidationSuccess.of(undefined)
       const n = parseFloat(state)
-      return isNaN(n) || n < 0
+      return isNaN(n) || n <= 0
         ? ValidationError.of('positiveNumber')
         : ValidationSuccess.of(n)
     }),

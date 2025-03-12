@@ -82,7 +82,7 @@ export default React.memo(function Boat({
             bind={width}
             name="width"
             step={0.01}
-            min={0}
+            min={0.01}
             max={9999999}
             required={true}
             precision={2}
@@ -95,7 +95,7 @@ export default React.memo(function Boat({
             bind={length}
             name="length"
             step={0.01}
-            min={0}
+            min={0.01}
             max={9999999}
             required={true}
             precision={2}
@@ -111,7 +111,7 @@ export default React.memo(function Boat({
             bind={depth}
             name="depth"
             step={0.01}
-            min={0}
+            min={0.01}
             max={9999999}
             required={true}
             precision={2}
