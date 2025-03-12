@@ -22,11 +22,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.Month
 import kotlin.test.Test
 
 @ExtendWith(SpringExtension::class)
@@ -42,7 +43,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var boatReservationService: BoatReservationService
 
-    @MockBean
+    @MockitoBean
     lateinit var seasonalService: SeasonalService
 
     private lateinit var reservationInput: ReservationInput
@@ -53,15 +54,12 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
-    @Autowired
-    lateinit var messageService: MessageService
-
     @BeforeEach
     fun resetDiscount() {
         reserverRepository.updateDiscount(citizenIdOlivia, 0)
     }
 
-    @MockBean
+    @MockitoBean
     private lateinit var renewalPolicyService: RenewalPolicyService
 
     @BeforeEach
@@ -108,6 +106,10 @@ class ReservationFormServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should create a reservation for employee if not exist or fetch if already created`() {
+        // mocking here just to get to test the equality, for this test the end date is irrelevant
+        Mockito
+            .`when`(seasonalService.getBoatSpaceReservationEndDateForNew(eq(BoatSpaceType.Slip), eq(ReservationValidity.FixedTerm)))
+            .thenReturn(LocalDate.now())
         val createdReservationId = reservationService.getOrCreateReservationIdForEmployee(userId, spaceId = 3)
         assertNotNull(createdReservationId, "Should create reservation")
 
