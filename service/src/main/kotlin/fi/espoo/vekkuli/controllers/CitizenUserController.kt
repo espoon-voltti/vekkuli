@@ -324,26 +324,21 @@ class CitizenUserController(
         @PathVariable reservationWarningId: UUID,
         @RequestParam content: String
     ): String {
-        try {
-            request.getAuthenticatedUser()?.let {
-                logger.audit(
-                    it,
-                    "CITIZEN_PROFILE_ACK_INVOICE_PAYMENT",
-                    mapOf("targetId" to citizenId.toString(), "objectId" to reservationWarningId.toString())
-                )
-            }
-            val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-            val reserver =
-                reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-            val memo = "Suorituksen kuittaus" + if (content.isNotEmpty()) ": $content" else ""
-            memoService.insertMemo(citizenId, userId, memo)
-            reservationWarningRepository.deleteReservationWarning(reservationWarningId)
-            val history = paymentService.getReserverPaymentHistory(reserver.id)
-            return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
-        } catch (e: Exception) {
-            println("DDEBUG $e")
-            throw e
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CITIZEN_PROFILE_ACK_INVOICE_PAYMENT",
+                mapOf("targetId" to citizenId.toString(), "objectId" to reservationWarningId.toString())
+            )
         }
+        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
+        val reserver =
+            reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
+        val memo = "Suorituksen kuittaus" + if (content.isNotEmpty()) ": $content" else ""
+        memoService.insertMemo(citizenId, userId, memo)
+        reservationWarningRepository.deleteReservationWarning(reservationWarningId)
+        val history = paymentService.getReserverPaymentHistory(reserver.id)
+        return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
     }
 
     @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset")
