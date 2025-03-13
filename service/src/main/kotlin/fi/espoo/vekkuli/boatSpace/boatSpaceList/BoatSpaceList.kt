@@ -90,6 +90,28 @@ class BoatSpaceList(
         val reservationRows =
             boatSpaceListRowsPartial.render(boatSpaces)
 
+        val selectAllToggle =
+            """
+            <label class="checkbox" x-data="{
+                selectAll: false,
+                getCurrentlyVisibleBoatSpaceIds() {
+                    const table = this.${'$'}el.closest('table');
+                    const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
+                    return Array.from(checkboxes).map(e => e.value);
+                }
+            }">
+                <input
+                    id="select-all-toggle"
+                    ${addTestId("select-all-toggle")}
+                    type="checkbox"
+                    x-model="selectAll"
+                    @change="editBoatSpaceIds = selectAll ? getCurrentlyVisibleBoatSpaceIds() : []"
+                    x-effect="selectAll = getCurrentlyVisibleBoatSpaceIds().every(id => editBoatSpaceIds.includes(id));"
+                    hx-on:change="event.stopPropagation()"
+                />
+            </label>
+            """.trimIndent()
+
         // language=HTML
         return """
 <section class="section" >
@@ -116,6 +138,7 @@ class BoatSpaceList(
               hx-target="#table-body"
               hx-select="#table-body"
               hx-trigger="change from:#boat-space-filter-container, change from:#boat-space-table-header" 
+              hx-params="not spaceId"
               hx-swap="outerHTML"
               hx-push-url="true"
               hx-indicator="#loader, .loaded-content"
@@ -187,7 +210,7 @@ class BoatSpaceList(
                     
                         <thead id='boat-space-table-header'>
                             <tr class="table-borderless">
-                                <th></th>
+                                <th>$selectAllToggle</th>
                                 <th class="nowrap">
                                 ${sortButton(
             BoatSpaceFilterColumn.PLACE.name,

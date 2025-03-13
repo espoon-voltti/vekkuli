@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList.components
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 import java.util.*
@@ -77,7 +78,8 @@ class EditModal(
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
                         <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
                             <h2>Paikan tietojen muokkaus</h2>
-                            <p class='mb-m' x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
+                            <p ${addTestId("target-boat-space-count")} class='mb-m'
+                                x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
                             <div class='form-section'>             
                                 <div class="columns ">
                                     <div class="column is-half">
@@ -126,7 +128,7 @@ class EditModal(
                                 </div>
                             </div>
                             <div class="buttons is-centered">
-                                <a class="button is-secondary" id="openModal-modal-cancel" x-on:click="openEditModal = false">
+                                <a class="button is-secondary" id="edit-modal-cancel" x-on:click="openEditModal = false">
                                     ${t("cancel")}
                                 </a>
                                 <button class="button is-primary" 
