@@ -116,16 +116,24 @@ export default React.memo(function Reservation({
               readonly={true}
               precision={2}
             />
-            <TextField
-              label={i18n.citizenPage.reservation.reservationValidity}
-              value={i18n.reservation.validity(
-                reservation.endDate,
-                reservation.validity,
-                reservation.status,
-                reservation.active
-              )}
-              readonly={true}
-            />
+            <div>
+              <TextField
+                label={i18n.citizenPage.reservation.reservationValidity}
+                value={i18n.reservation.validity(
+                  reservation.endDate,
+                  reservation.validity,
+                  reservation.status,
+                  reservation.active
+                )}
+                readonly={true}
+              />
+              {reservation.status == 'Cancelled' &&
+                reservation.terminationDate && (
+                  <p>
+                    {i18n.reservation.terminatedAt(reservation.terminationDate)}
+                  </p>
+                )}
+            </div>
           </Column>
           <Column>
             <TextField

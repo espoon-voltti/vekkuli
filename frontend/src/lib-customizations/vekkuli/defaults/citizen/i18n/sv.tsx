@@ -378,6 +378,9 @@ const sv: Translations = {
       }
       return `Till ${endDate.format()}`
     },
+    terminatedAt: (terminationDate: LocalDate): string => {
+      return `Avslutad ${terminationDate.format()}`
+    },
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,

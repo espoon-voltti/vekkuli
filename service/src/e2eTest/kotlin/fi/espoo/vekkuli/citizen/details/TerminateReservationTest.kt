@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -56,7 +57,6 @@ class TerminateReservationTest : PlaywrightTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
-            val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
             val expectedTerminationDate = timeProvider.getCurrentDate()
 
             // Expired list is not on the page
@@ -78,22 +78,10 @@ class TerminateReservationTest : PlaywrightTest() {
 
             citizenDetailsPage.showExpiredReservationsToggle.click()
 
-            val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
-            assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
-            assertThat(firstExpiredReservationSection.place).hasText("B 001")
-
-            // TODO add termination date, reason and comment to the page
-//            assertThat(
-//                firstExpiredReservationSection.terminationDate
-//            ).containsText(formatAsFullDate(expectedTerminationDate))
-//
-//            assertThat(
-//                firstExpiredReservationSection.terminationReason
-//            ).containsText(expectedTerminationReason)
-//
-//            assertThat(
-//                firstExpiredReservationSection.terminationComment
-//            ).containsText("-")
+            val expiredReservationSection = citizenDetailsPage.getExpiredReservationSection("Haukilahti B 001")
+            assertThat(expiredReservationSection.locationName).hasText("Haukilahti")
+            assertThat(expiredReservationSection.place).hasText("B 001")
+            assertThat(expiredReservationSection.terminationDate).containsText(formatAsFullDate(expectedTerminationDate))
         } catch (e: AssertionError) {
             handleError(e)
         }

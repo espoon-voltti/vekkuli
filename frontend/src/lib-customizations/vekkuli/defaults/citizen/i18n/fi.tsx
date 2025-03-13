@@ -389,6 +389,9 @@ export default {
       }
       return `${endDate.format()} asti`
     },
+    terminatedAt: (terminationDate: LocalDate): string => {
+      return `Irtisanottu ${terminationDate.format()}`
+    },
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,

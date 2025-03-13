@@ -389,6 +389,9 @@ const en: Translations = {
       }
       return `until ${endDate.format()}`
     },
+    terminatedAt: (terminationDate: LocalDate): string => {
+      return `Terminated ${terminationDate.format()}`
+    },
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,

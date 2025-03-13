@@ -245,9 +245,10 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
     trailer: json.trailer ?? undefined,
     allowedReservationOperations: createAllowedOperationsList(json),
     reserverType: json.reserverType,
-    dueDate: json.dueDate
-        ? LocalDate.parseIso(json.dueDate)
-        : undefined,
-    status: json.status
+    dueDate: json.dueDate ? LocalDate.parseIso(json.dueDate) : undefined,
+    status: json.status,
+    terminationDate: json.terminationDate
+      ? LocalDate.parseIso(json.terminationDate)
+      : undefined
   }
 }

@@ -21,6 +21,7 @@ data class ExistingReservationResponse(
     val created: LocalDateTime,
     val startDate: LocalDate,
     val endDate: LocalDate,
+    val terminationDate: LocalDate?,
     val validity: ReservationValidity,
     val isActive: Boolean,
     val totalPrice: String,
@@ -136,6 +137,7 @@ class ExistingReservationResponseMapper(
             created = boatSpaceReservation.created,
             startDate = boatSpaceReservation.startDate,
             endDate = boatSpaceReservation.toBoatSpaceReservation().effectiveEndDate(),
+            terminationDate = getTerminationDate(boatSpaceReservation),
             validity = reservationWithDependencies.validity,
             isActive = isActive,
             paymentDate = boatSpaceReservation.paymentDate,
@@ -241,4 +243,11 @@ class ExistingReservationResponseMapper(
         boatSpaceReservationRepository.getBoatSpaceReservationDetails(reservationId)?.let {
             it.status != ReservationStatus.Cancelled
         } ?: false
+
+    fun getTerminationDate(boatSpaceReservation: BoatSpaceReservationDetails): LocalDate? {
+        if (boatSpaceReservation.status != ReservationStatus.Cancelled) {
+            return null
+        }
+        return boatSpaceReservation.terminationTimestamp?.toLocalDate()
+    }
 }

@@ -162,6 +162,9 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             val weeksAddedToEndTime = 2L
             val endDate = timeProvider.getCurrentDate().plusWeeks(weeksAddedToEndTime)
+            val expectedEndDate = endDate.minusDays(1)
+            val currentTimeBeforeExpiration = endDate.minusDays(2).atTime(12, 0)
+            val currentTimeAfterExpiration = endDate.plusDays(2).atTime(12, 0)
             val expectedTerminationDate = timeProvider.getCurrentDate()
             val terminationComment = "Test comment"
             val terminationReason = ReservationTerminationReasonOptions.RuleViolation
@@ -198,7 +201,11 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.hideModalWindow()
 
             assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
-            // Should not be in expired list yet
+
+            // Should not be in expired list before end date
+            mockTimeProvider(timeProvider, currentTimeBeforeExpiration)
+            page.reload()
+
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
             assertThat(
@@ -210,7 +217,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             ).containsText(terminationComment)
 
             // Wait for the reservation to expire
-            mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime))
+            mockTimeProvider(timeProvider, currentTimeAfterExpiration)
             page.reload()
 
             assertThat(
@@ -232,12 +239,24 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val citizenCitizenDetailsPage = CitizenCitizenDetailsPage(page)
             citizenCitizenDetailsPage.navigateToPage()
 
+            // check citizen details before expiration
+            mockTimeProvider(timeProvider, currentTimeBeforeExpiration)
+            page.reload()
+
+            val activeReservationSection = citizenCitizenDetailsPage.getReservationSection("Haukilahti B 001")
+            assertThat(activeReservationSection.validity).containsText(formatAsFullDate(expectedEndDate))
+            assertThat(activeReservationSection.terminationDate).containsText(formatAsFullDate(expectedTerminationDate))
+
+            // Wait for the reservation to expire
+            mockTimeProvider(timeProvider, currentTimeAfterExpiration)
+            page.reload()
+
             citizenCitizenDetailsPage.showExpiredReservationsToggle.click()
             assertThat(citizenCitizenDetailsPage.expiredReservationList).hasCount(1)
 
             val expiredReservationSection = citizenCitizenDetailsPage.getExpiredReservationSection("Haukilahti B 001")
-            assertThat(expiredReservationSection.locationName).hasText("Haukilahti")
-            assertThat(expiredReservationSection.place).hasText("B 001")
+            assertThat(expiredReservationSection.validity).containsText(formatAsFullDate(expectedEndDate))
+            assertThat(expiredReservationSection.terminationDate).containsText(formatAsFullDate(expectedTerminationDate))
         } catch (e: AssertionError) {
             handleError(e)
         }
