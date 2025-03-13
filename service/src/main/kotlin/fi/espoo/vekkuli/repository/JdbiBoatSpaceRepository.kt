@@ -209,6 +209,37 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
+    override fun getBoatSpace(
+        harborNumber: Int,
+        section: String,
+        placeNumber: Int
+    ): BoatSpace? =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT 
+                     bs.*,
+                     location.name as location_name, 
+                     location.address as location_address,
+                     ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                 FROM boat_space bs
+                 JOIN location ON bs.location_id = location.id
+                 JOIN price ON bs.price_id = price.id
+                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                 WHERE location.id = :harborNumber
+                 AND bs.section = :section
+                 AND bs.place_number = :placeNumber
+                 GROUP BY bs.id, location.name, location.address
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("harborNumber", harborNumber)
+            query.bind("section", section)
+            query.bind("placeNumber", placeNumber)
+
+            query.mapTo<BoatSpace>().firstOrNull()
+        }
+
     override fun getBoatSpaces(
         filter: SqlExpr,
         sortBy: BoatSpaceSortBy?,
@@ -381,7 +412,7 @@ class JdbiBoatSpaceRepository(
             query.bind("type", params.type)
             query.bind("locationId", params.locationId)
             query.bind("priceId", params.priceId)
-            query.bind("section", params.section)
+            query.bind("section", params.section.uppercase())
             query.bind("placeNumber", params.placeNumber)
             query.bind("amenity", params.amenity)
             query.bind("widthCm", params.widthCm)

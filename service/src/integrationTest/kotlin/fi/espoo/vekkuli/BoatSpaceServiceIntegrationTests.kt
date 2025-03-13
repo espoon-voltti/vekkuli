@@ -407,10 +407,10 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val params =
             CreateBoatSpaceParams(
                 1,
-                BoatSpaceType.Slip,
+                BoatSpaceType.Storage,
                 "A",
                 1,
-                BoatSpaceAmenity.Beam,
+                BoatSpaceAmenity.Trailer,
                 100,
                 200,
                 1,

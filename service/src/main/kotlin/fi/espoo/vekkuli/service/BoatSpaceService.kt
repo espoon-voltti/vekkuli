@@ -52,6 +52,12 @@ interface BoatSpaceRepository {
 
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
+    fun getBoatSpace(
+        harborNumber: Int,
+        section: String,
+        placeNumber: Int
+    ): BoatSpace?
+
     fun isBoatSpaceAvailable(boatSpace: Int): Boolean
 
     fun getBoatSpaces(
@@ -180,7 +186,13 @@ class BoatSpaceService(
         boatSpaceRepo.editBoatSpaces(boatSpaceIds, editParams)
     }
 
-    fun createBoatSpace(params: CreateBoatSpaceParams): Int = boatSpaceRepo.createBoatSpace(params)
+    fun createBoatSpace(params: CreateBoatSpaceParams): Int {
+        val boatSpace = boatSpaceRepo.getBoatSpace(params.locationId, params.section, params.placeNumber)
+        if (boatSpace != null) {
+            throw IllegalArgumentException("Boat space already exists")
+        }
+        return boatSpaceRepo.createBoatSpace(params)
+    }
 
     fun deleteBoatSpace(boatSpaceIds: List<Int>) = boatSpaceRepo.deleteBoatSpace(boatSpaceIds)
 }

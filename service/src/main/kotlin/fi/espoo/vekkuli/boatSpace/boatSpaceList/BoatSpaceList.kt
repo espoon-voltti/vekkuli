@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
-import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.CreateBoatSpaceModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
@@ -39,17 +38,29 @@ data class BoatSpaceListEditParams(
     val boatSpaceState: BoatSpaceState?
 )
 
+data class BoatSpaceListAddParams(
+    val section: String,
+    val placeNumber: Int,
+    val harborCreation: Int,
+    val boatSpaceTypeCreation: BoatSpaceType,
+    val boatSpaceAmenityCreation: BoatSpaceAmenity,
+    val widthCreation: BigDecimal,
+    val lengthCreation: BigDecimal,
+    val paymentCreation: Int,
+    val boatSpaceStateCreation: BoatSpaceState
+)
+
 @Service
 class BoatSpaceList(
     private val expandingSelectionFilter: ExpandingSelectionFilter,
     private val filters: ListFilters,
-    private val formComponents: FormComponents,
     private val editModal: EditModal,
-    private val boatSpaceRow: BoatSpaceRow,
+    private val createModal: CreateBoatSpaceModal,
     private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
 ) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
+    // language=HTML
     fun sortButton(
         column: String,
         text: String
@@ -114,8 +125,18 @@ class BoatSpaceList(
 
         // language=HTML
         return """
-<section class="section" >
-   
+<section class="section" x-data="{openCreateModal: false}">
+   <div class="container block heading" >
+        <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
+        <span>                      
+            <a @click="openCreateModal = true">
+                <span class="icon is-small">
+                    ${icons.plus}
+                </span>
+                ${t("boatSpaceList.button.createBoatSpace")}
+            </a>
+        </span>
+    </div>
     <div class="container" x-data="{
         sortColumn: '${searchParams.sortBy}',
         sortDirection: '${searchParams.ascending}',
@@ -326,6 +347,7 @@ class BoatSpaceList(
                         </div>
         </form>
         ${editModal.render(harbors, paymentClasses)}
+        ${createModal.render(harbors, paymentClasses)}
     </div>
 </section>
             """.trimIndent()

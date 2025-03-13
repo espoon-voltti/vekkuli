@@ -52,9 +52,6 @@ class BoatSpaceListController {
     private lateinit var priceService: PriceService
 
     @Autowired
-    private lateinit var paymentService: PaymentService
-
-    @Autowired
     private lateinit var boatSpaceService: BoatSpaceService
 
     @Autowired
@@ -158,5 +155,31 @@ class BoatSpaceListController {
             boatSpaceService.getBoatSpacesFiltered(params)
 
         return ResponseEntity.ok(boatSpaceListRowsPartial.render(boatSpaces))
+    }
+
+    @PostMapping("/selaa/lisaa")
+    @ResponseBody
+    fun boatSpaceAdd(
+        request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceListAddParams
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_BOAT_SPACE_ADD")
+        }
+
+        request.ensureEmployeeId()
+        boatSpaceService.createBoatSpace(
+            CreateBoatSpaceParams(
+                params.harborCreation,
+                params.boatSpaceTypeCreation,
+                params.section,
+                params.placeNumber,
+                params.boatSpaceAmenityCreation,
+                decimalToInt(params.widthCreation),
+                decimalToInt(params.lengthCreation),
+                params.paymentCreation,
+                params.boatSpaceStateCreation == BoatSpaceState.Active
+            )
+        )
     }
 }
