@@ -75,7 +75,7 @@ class EditModal(
                             hx-post="/virkailija/venepaikat/selaa/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
-                        <input id="boatSpaceIds" type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
+                            <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
                             <h2>Paikan tietojen muokkaus</h2>
                             <p ${addTestId("target-boat-space-count")} class='mb-m'
                                 x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
@@ -131,8 +131,8 @@ class EditModal(
                                     ${t("cancel")}
                                 </a>
                                  <a class="button is-danger is-outlined" ${addTestId(
-                "openModal-modal-cancel"
-            )} hx-post="/virkailija/venepaikat/selaa/poista" hx-include="#edit-form" hx-params='boatSpaceIds'>
+                "open-delete-modal"
+            )} x-on:click="openDeleteModal = true">
                                     ${t("boatSpaceList.button.delete")}
                                 </a>
                                 <button class="button is-primary" 

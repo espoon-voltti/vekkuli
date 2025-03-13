@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionFailModalView
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionSuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
@@ -48,6 +50,12 @@ data class BoatSpaceListRow(
 @Controller
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
+    @Autowired
+    private lateinit var deletionFailModalView: DeletionFailModalView
+
+    @Autowired
+    private lateinit var deletionSuccessModalView: DeletionSuccessModalView
+
     @Autowired
     private lateinit var priceService: PriceService
 
@@ -187,13 +195,22 @@ class BoatSpaceListController {
     @ResponseBody
     fun boatSpaceDelete(
         request: HttpServletRequest,
-        @ModelAttribute param: BoatSpaceListDeleteParams,
-    ) {
+        @RequestParam boatSpaceIds: List<Int> = emptyList(),
+    ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_BOAT_SPACE_DELETE")
         }
 
         request.ensureEmployeeId()
-        boatSpaceService.deleteBoatSpaces(param.boatSpaceIds)
+        try {
+            boatSpaceService.deleteBoatSpaces(boatSpaceIds)
+            return ResponseEntity.ok(
+                deletionSuccessModalView.render()
+            )
+        } catch (e: Exception) {
+            return ResponseEntity.ok(
+                deletionFailModalView.render()
+            )
+        }
     }
 }

@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.CreateBoatSpaceModal
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeleteModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
@@ -50,16 +51,13 @@ data class BoatSpaceListAddParams(
     val boatSpaceStateCreation: BoatSpaceState
 )
 
-data class BoatSpaceListDeleteParams(
-    val boatSpaceIds: List<Int> = emptyList(),
-)
-
 @Service
 class BoatSpaceList(
     private val expandingSelectionFilter: ExpandingSelectionFilter,
     private val filters: ListFilters,
     private val editModal: EditModal,
     private val createModal: CreateBoatSpaceModal,
+    private val deleteModal: DeleteModal,
     private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
 ) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
@@ -129,7 +127,7 @@ class BoatSpaceList(
 
         // language=HTML
         return """
-<section class="section" x-data="{openCreateModal: false}">
+<section class="section" x-data="{openCreateModal: false, openDeleteModal: false}">
    <div class="container block heading" >
         <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
         <span>                      
@@ -352,6 +350,7 @@ class BoatSpaceList(
         </form>
         ${editModal.render(harbors, paymentClasses)}
         ${createModal.render(harbors, paymentClasses)}
+        ${deleteModal.render()}
     </div>
 </section>
             """.trimIndent()
