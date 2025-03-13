@@ -410,8 +410,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         fillWinterBoatSpaceForm(formPage)
         if (isFixed) {
             formPage.reservationValidityFixedTermRadioButton.click()
-            // todo: the end date is wrong, should be 31.08.2024
-            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 14.09.2024")
         }
 
         formPage.submitButton.click()
@@ -609,8 +608,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             trailerRegistrationNumberInput.fill("ABC-123")
             if (isFixed) {
                 formPage.reservationValidityFixedTermRadioButton.click()
-                // todo: the end date is wrong, should be 30.04.2024
-                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 30.04.2024")
             }
         }
 
@@ -814,8 +812,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             trailerRegistrationNumberInput.fill("ABC-123")
             if (isFixed) {
                 formPage.reservationValidityFixedTermRadioButton.click()
-                // todo: the end date is wrong, should be 14.09.2024
-                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 14.09.2024")
             }
         }
         val invoicePreviewPage = InvoicePreviewPage(page)

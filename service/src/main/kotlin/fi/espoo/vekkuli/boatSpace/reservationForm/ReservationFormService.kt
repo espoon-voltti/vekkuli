@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
+import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.*
@@ -468,9 +469,16 @@ class ReservationFormService(
             if (existingReservation != null) {
                 existingReservation.id
             } else {
+                val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
                 val today = timeProvider.getCurrentDate()
-                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
-                boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, CreationType.New, today, endOfYear).id
+                // this is just to show the correct end date in the form, employee will make the decision on validity
+                // and the final end date is set once the reservation is confirmed
+                val endDate =
+                    seasonalService.getBoatSpaceReservationEndDateForNew(
+                        boatSpace.type,
+                        ReservationValidity.FixedTerm
+                    )
+                boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, CreationType.New, today, endDate).id
             }
         return reservationId
     }
