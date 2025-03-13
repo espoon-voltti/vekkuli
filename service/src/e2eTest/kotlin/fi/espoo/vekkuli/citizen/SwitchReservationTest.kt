@@ -437,6 +437,8 @@ class SwitchReservationTest : ReserveTest() {
             switchSpaceFormPage.getWinterStorageTypeSection().trailerRegistrationNumberInput.fill(
                 trailerRegistrationNumber
             )
+            switchSpaceFormPage.getWinterStorageTypeSection().trailerWidthInput.fill("1")
+            switchSpaceFormPage.getWinterStorageTypeSection().trailerLengthInput.fill("3")
             val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
@@ -569,6 +571,75 @@ class SwitchReservationTest : ReserveTest() {
         assertThat(searchSpacesPage.header).isVisible()
         assertThat(searchSpacesPage.switchInfoBox).not().isVisible()
         assertThat(searchSpacesPage.switchGoBackButton).not().isVisible()
+    }
+
+    @Test
+    fun `switching a slip space should have the boat type and boat length and width filters pre-filled from existing boat`() {
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+        reservationSection.switchSpace.click()
+
+        val searchSpacesPage = ReserveBoatSpacePage(page)
+        assertThat(searchSpacesPage.header).isVisible()
+        val filterSection = searchSpacesPage.getFilterSection()
+
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        // User has a Ouboardmotor sized 1,2 * 4. Defined in seed
+        assertThat(slipFilterSection.boatTypeSelect).hasValue("OutboardMotor")
+        assertThat(slipFilterSection.widthInput).hasValue("1.2")
+        assertThat(slipFilterSection.lengthInput).hasValue("4")
+    }
+
+    @Test
+    fun `switching a trailer space should have the trailer length and width filters pre-filled from existing trailer`() {
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+        page.navigate(baseUrlWithFinnishLangParam)
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.loginAsOliviaVirtanen()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        ReserveBoatSpacePage(page).reserveTrailerBoatSpace()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val reservationSection = citizenDetails.getReservationSection("Traileripaikka")
+        reservationSection.switchSpace.click()
+
+        val searchSpacesPage = ReserveBoatSpacePage(page)
+        assertThat(searchSpacesPage.header).isVisible()
+        val filterSection = searchSpacesPage.getFilterSection()
+
+        val trailerFilterSection = filterSection.getTrailerFilterSection()
+        assertThat(trailerFilterSection.widthInput).hasValue("1")
+        assertThat(trailerFilterSection.lengthInput).hasValue("3")
+    }
+
+    @Test
+    fun `switching a storage space should have the space length and width filters pre-filled from existing space`() {
+        val reservationPage = ReserveBoatSpacePage(page)
+        val filterSection = reservationPage.getFilterSection()
+        val storageFilterSection = filterSection.getStorageFilterSection()
+        reservationPage.navigateToPage()
+        reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val reservationSection = citizenDetails.getReservationSection("Säilytyspaikka Ämmäsmäessä")
+        reservationSection.switchSpace.click()
+
+        val searchSpacesPage = ReserveBoatSpacePage(page)
+        assertThat(searchSpacesPage.header).isVisible()
+
+        // the reserved space is defined in seed and is sized 2.5 * 4.5 m
+        assertThat(storageFilterSection.widthInput).hasValue("2.5")
+        assertThat(storageFilterSection.lengthInput).hasValue("4.5")
     }
 
     private fun switchSlipBoatSpace(

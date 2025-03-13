@@ -5,6 +5,7 @@ import {
   Boat,
   BoatSpace,
   BoatSpaceType,
+  BoatType,
   Citizen,
   CreationType,
   NewBoat,
@@ -119,6 +120,9 @@ export type BoatSpaceReservationResponse = {
 export type ReservationBeingSwitchedResponse = {
   id: ReservationId
   spaceType: BoatSpaceType
+  width: number
+  length: number
+  boatType: BoatType | null
 }
 
 export type SwitchReservationInformation = ReservationBeingSwitchedResponse

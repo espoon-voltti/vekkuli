@@ -191,7 +191,7 @@ class ReserveBoatSpacePage(
         slipFilterSection.svinöCheckbox.click()
     }
 
-    fun filterForTrailerSpace012() {
+    private fun filterForTrailerSpace012() {
         val filterSection = getFilterSection()
         filterSection.trailerRadio.click()
         val slipFilterSection = filterSection.getTrailerFilterSection()
@@ -200,12 +200,12 @@ class ReserveBoatSpacePage(
     }
 
     // Winter space
-    fun filterForWinterSpaceB013() {
+    private fun filterForWinterSpaceB013() {
         val filterSection = getFilterSection()
         filterSection.winterRadio.click()
-        val slipFilterSection = filterSection.getWinterFilterSection()
-        slipFilterSection.widthInput.fill("1")
-        slipFilterSection.lengthInput.fill("3")
+        val winterFilterSection = filterSection.getWinterFilterSection()
+        winterFilterSection.widthInput.fill("1")
+        winterFilterSection.lengthInput.fill("3")
     }
 
     fun startReservingBoatSpaceB314() {
@@ -249,7 +249,11 @@ class ReserveBoatSpacePage(
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+            getBoatSection().widthInput.fill("1.2")
+            getBoatSection().lengthInput.fill("3.4")
             getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            getWinterStorageTypeSection().trailerWidthInput.fill("1.2")
+            getWinterStorageTypeSection().trailerLengthInput.fill("3.4")
         }
 
         PaymentPage(page).payReservation()
@@ -269,6 +273,8 @@ class ReserveBoatSpacePage(
         form.fillFormAndSubmit {
             getBoatSection().widthInput.fill("2")
             getBoatSection().lengthInput.fill("5")
+            getTrailerStorageTypeSection().trailerWidthInput.fill("1")
+            getTrailerStorageTypeSection().trailerLengthInput.fill("3")
             getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         PaymentPage(page).payReservation()

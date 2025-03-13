@@ -230,6 +230,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val form = BoatSpaceFormPage(page)
             form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("1")
+                getBoatSection().lengthInput.fill("3")
                 assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
                 getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
                 assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
@@ -274,6 +276,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationPage.getSearchResultsSection().firstReserveButton.click()
             val form = BoatSpaceFormPage(page)
             form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("2")
+                getBoatSection().lengthInput.fill("5")
                 assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
                 getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
                 assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
@@ -318,7 +322,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
 
             CitizenHomePage(page).loginAsLeoKorhonen()
-
             val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateToPage()
             reservationPage.startReservingBoatSpace012()
@@ -1232,8 +1235,12 @@ class ReserveBoatSpaceTest : ReserveTest() {
         reserveBoatSpacePage.navigateToPage()
         reserveBoatSpacePage.startReservingBoatSpace012()
         BoatSpaceFormPage(page).fillFormAndSubmit {
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
             getOrganizationSection().reserveForCitizen.click()
             getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-111")
+            getTrailerStorageTypeSection().trailerWidthInput.fill("2")
+            getTrailerStorageTypeSection().trailerLengthInput.fill("5")
         }
         PaymentPage(page).payReservation()
 
@@ -1245,7 +1252,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
         BoatSpaceFormPage(page).fillFormAndSubmit {
             getOrganizationSection().reserveForOrganization.click()
             getOrganizationSection().organization("Espoon pursiseura").click()
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
             getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-222")
+            getTrailerStorageTypeSection().trailerWidthInput.fill("2")
+            getTrailerStorageTypeSection().trailerLengthInput.fill("5")
         }
         PaymentPage(page).payReservation()
 

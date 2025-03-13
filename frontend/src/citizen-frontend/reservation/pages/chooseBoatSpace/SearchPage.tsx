@@ -2,6 +2,7 @@ import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import { GoBackLink } from 'lib-components/links'
 import React, { useContext, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces.js'
 import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
@@ -15,9 +16,10 @@ import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 import StepIndicator from '../../StepIndicator'
 import { InfoBox } from '../../components/InfoBox'
 import { ReservationStateContext } from '../../state'
-import useStoredSearchState from '../useStoredSearchState'
+import useStoredSearchState, {
+  transformFromStateToStoredState
+} from '../useStoredSearchState'
 
-import { useSearchParams } from 'react-router'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
 import ReserveAction from './ReserveAction/ReserveAction'
@@ -25,6 +27,7 @@ import { ReserveActionProvider } from './ReserveAction/state'
 import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
+  buildDefaultValues,
   initialFormState,
   SearchFormBranches,
   searchFreeSpacesForm
@@ -37,7 +40,6 @@ type SearchPageProps = {
 
 export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   const i18n = useTranslation()
-
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
@@ -52,7 +54,11 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
 
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(searchState, switchInfo),
+    () =>
+      initialFormState(
+        buildDefaultValues(searchState, switchInfo),
+        switchInfo?.spaceType
+      ),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {
@@ -92,7 +98,8 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   )
   useEffect(() => {
     setFreeSpacesSearchParams(debouncedFreeSpacesSearchParams)
-  }, [debouncedFreeSpacesSearchParams])
+    if (!switchInfo) setSearchState(transformFromStateToStoredState(bind.state))
+  }, [debouncedFreeSpacesSearchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const searchResult = freeSpaces.isSuccess
     ? {
@@ -105,14 +112,6 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
       }
 
   const onReserveButtonPress = (spaceId: number) => {
-    setSearchState({
-      width: bind.value().width.toString(),
-      length: bind.value().length.toString(),
-      amenities: bind.value().amenities,
-      boatType: bind.value().boatType,
-      harbor: bind.value().harbor,
-      spaceType: bind.state.boatSpaceType.domValue
-    })
     if (userLoggedIn) {
       setSelectedBoatSpace(spaceId)
     } else {

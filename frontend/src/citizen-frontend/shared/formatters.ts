@@ -19,15 +19,23 @@ export function formatDimensions({
 
 export function formatNumber(
   value?: number | string,
-  precision?: number
+  precision?: number,
+  separator = ','
 ): string {
   const useDecimal = precision != undefined && precision > 0
   if (typeof value === 'string') {
     value = useDecimal ? parseFloat(value) : parseInt(value, 10)
   }
   return value !== undefined
-    ? value.toFixed(precision ?? 0).replace('.', ',')
+    ? value.toFixed(precision ?? 0).replace('.', separator)
     : ''
+}
+
+export function formatInputNumberValue(value: number | undefined): string {
+  if (value === undefined || !value) {
+    return ''
+  }
+  return value.toString()
 }
 
 export function formatPrice(value: number): string {
@@ -51,6 +59,6 @@ export function formatMToString(value: number): string {
 }
 
 export function formatCentsToEuros(cents: number): string {
-  const euros: number = Math.round((cents / 100) * 100) / 100;
+  const euros: number = Math.round((cents / 100) * 100) / 100
   return euros.toFixed(2).replace('.', ',')
 }

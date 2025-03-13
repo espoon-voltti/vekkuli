@@ -26,7 +26,11 @@ class OrganizationDetailsTest : PlaywrightTest() {
             val organizationSection = getOrganizationSection()
             organizationSection.reserveForOrganization.click()
             organizationSection.organization("Espoon Pursiseura").click()
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
             getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC789")
+            getTrailerStorageTypeSection().trailerWidthInput.fill("2")
+            getTrailerStorageTypeSection().trailerLengthInput.fill("5")
         }
 
         PaymentPage(page).payReservation()

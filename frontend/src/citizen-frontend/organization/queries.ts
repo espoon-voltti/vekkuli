@@ -6,6 +6,7 @@ import {
 import { terminateReservation } from 'citizen-frontend/api-clients/reservation'
 import { updateTrailer } from 'citizen-frontend/api-clients/trailer'
 import { queryKeys } from 'citizen-frontend/citizen/queries'
+import { queryKeys as chooseBoatSpaceQueryKeys } from 'citizen-frontend/reservation/pages/chooseBoatSpace/queries'
 import { queryKeys as sharedQueryKeys } from 'citizen-frontend/shared/queries'
 import { mutation, query } from 'lib-common/query'
 
@@ -19,7 +20,8 @@ export const updateOrganizationBoatMutation = mutation({
   invalidateQueryKeys: () => [
     queryKeys.organizationActiveReservations(),
     sharedQueryKeys.organizationBoats()
-  ]
+  ],
+  resetQueryKeys: () => [chooseBoatSpaceQueryKeys.allReservationBeingSwitched()]
 })
 
 export const deleteOrganizationBoatMutation = mutation({
@@ -29,7 +31,8 @@ export const deleteOrganizationBoatMutation = mutation({
 
 export const updateOrganizationTrailerMutation = mutation({
   api: updateTrailer,
-  invalidateQueryKeys: () => [queryKeys.citizenOrganizations()]
+  invalidateQueryKeys: () => [queryKeys.citizenOrganizations()],
+  resetQueryKeys: () => [chooseBoatSpaceQueryKeys.allReservationBeingSwitched()]
 })
 
 export const citizenOrganizationContactDetailsQuery = query({

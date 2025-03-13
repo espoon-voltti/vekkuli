@@ -11,7 +11,7 @@ import { mutation, query } from 'lib-common/query'
 
 import { queryKeys as sharedQueryKeys } from '../../queries'
 
-const reservationQueryKeys = createQueryKeys('free-spaces', {
+export const queryKeys = createQueryKeys('free-spaces', {
   allSearchesToFreeSpaces: () => ['searchFreeSpaces'],
   searchFreeSpaces: (params: SearchFreeSpacesParams | undefined) => [
     'searchFreeSpaces',
@@ -21,19 +21,20 @@ const reservationQueryKeys = createQueryKeys('free-spaces', {
   reservationBeingSwitched: (reservationId: number) => [
     'reservationBeingSwitched',
     reservationId
-  ]
+  ],
+  allReservationBeingSwitched: () => ['reservationBeingSwitched']
 })
 
 export const freeSpacesQuery = query({
   api: getFreeSpaces,
-  queryKey: reservationQueryKeys.searchFreeSpaces,
+  queryKey: queryKeys.searchFreeSpaces,
   options: { refetchOnWindowFocus: true }
 })
 
 export const reserveSpaceMutation = mutation({
   api: reserveSpace,
   invalidateQueryKeys: () => [
-    reservationQueryKeys.allSearchesToFreeSpaces(),
+    queryKeys.allSearchesToFreeSpaces(),
     sharedQueryKeys.unfinishedReservation()
   ]
 })
@@ -41,17 +42,17 @@ export const reserveSpaceMutation = mutation({
 export const startSwitchSpaceMutation = mutation({
   api: startToSwitchBoatSpace,
   invalidateQueryKeys: () => [
-    reservationQueryKeys.allSearchesToFreeSpaces(),
+    queryKeys.allSearchesToFreeSpaces(),
     sharedQueryKeys.unfinishedReservation()
   ]
 })
 
 export const canReserveSpaceQuery = query({
   api: canReserveSpace,
-  queryKey: reservationQueryKeys.canReserveSpace
+  queryKey: queryKeys.canReserveSpace
 })
 
 export const reservationBeingSwitchedQuery = query({
   api: getReservationBeingSwitched,
-  queryKey: reservationQueryKeys.reservationBeingSwitched
+  queryKey: queryKeys.reservationBeingSwitched
 })
