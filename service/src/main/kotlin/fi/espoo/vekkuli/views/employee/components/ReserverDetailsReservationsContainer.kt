@@ -403,7 +403,7 @@ class ReserverDetailsReservationsContainer(
                     id="refund-payment-button-$paymentId"
                     data-testid="refund-payment-button"
                    x-on:click="refundModal = true">
-                    <span>${t("citizenDetails.payments.refund")}</span>
+                   <span class="button-like">${t("citizenDetails.payments.refund")}</span>
                 </a>
                 <div class="modal" x-show="refundModal" style="display:none;">
                     <div class="modal-underlay" @click="refundModal = false"></div>
@@ -434,11 +434,14 @@ class ReserverDetailsReservationsContainer(
         fun createAckInvoicePaymentReservationWarningButton(reservationWarningId: UUID): String =
             """
             <div class="column" x-data="{invoicePaymentRWModal: false}">
-                <a class="is-link has-text-danger"
+                <a class="is-link"
                     id="invoice-payment-rw-button-$reservationWarningId"
                     data-testid="invoice-payment-rw-button"
                    x-on:click="invoicePaymentRWModal = true">
-                    <span>${t("citizenDetails.payments.ackRW")}</span>
+                    <div class="centered-row">
+                        <div>${icons.warningExclamation(false)}</div>
+                        <span class="ack-link">${t("citizenDetails.payments.ackRW")}</span>
+                    </div>
                 </a>
                 <div class="modal" x-show="invoicePaymentRWModal" style="display:none;">
                     <div class="modal-underlay" @click="invoicePaymentRWModal = false"></div>
@@ -527,7 +530,6 @@ class ReserverDetailsReservationsContainer(
                         <td></td>
                         <td>${i.paymentDate.format(fullDateFormat)}</td>
                         <td>${formatInt(i.amountPaidCents)}</td>
-                        <td></td>
                         <td>${if (i.reservationWarningId != null) {
                         createAckInvoicePaymentReservationWarningButton(
                             i.reservationWarningId
@@ -536,6 +538,7 @@ class ReserverDetailsReservationsContainer(
                         ""
                     }}
                         </td>
+                        <td></td>
                     </tr>
                     """
                 }}
@@ -560,7 +563,7 @@ class ReserverDetailsReservationsContainer(
                           <th>${t("citizenDetails.payments.paidDate")}</th>
                           <th>${t("citizenDetails.payments.totalCents")}</th>
                           <th>${t("citizenDetails.payments.paymentCreated")}</th>
-                          <th>${t("citizenDetails.payments.actions")}</th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>

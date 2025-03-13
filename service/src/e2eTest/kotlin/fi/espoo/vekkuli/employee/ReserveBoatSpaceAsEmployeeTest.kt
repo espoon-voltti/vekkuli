@@ -174,7 +174,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePaymentService.fetchAndStoreInvoicePayments()
 
             citizenDetailsPage.paymentsNavi.click()
-
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Haukilahti D 013") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Laituri") }
