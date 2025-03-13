@@ -35,7 +35,7 @@ function useStoredSearchState(): [
   (newState: StoredSearchState | null) => void
 ] {
   const [storedValue, setStoredValue] = useLocalStorage(
-    'searchState',
+    'berthSearchState',
     JSON.stringify({}),
     (v): v is string => typeof v === 'string'
   )
