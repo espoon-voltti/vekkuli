@@ -75,7 +75,7 @@ interface BoatSpaceRepository {
 
     fun getBoatSpaceCount(filter: SqlExpr): Int
 
-    fun deleteBoatSpace(boatSpaceIds: List<Int>)
+    fun deleteBoatSpaces(boatSpaceIds: List<Int>)
 
     fun createBoatSpace(params: CreateBoatSpaceParams): Int
 }
@@ -194,5 +194,5 @@ class BoatSpaceService(
         return boatSpaceRepo.createBoatSpace(params)
     }
 
-    fun deleteBoatSpace(boatSpaceIds: List<Int>) = boatSpaceRepo.deleteBoatSpace(boatSpaceIds)
+    fun deleteBoatSpaces(boatSpaceIds: List<Int>) = boatSpaceRepo.deleteBoatSpaces(boatSpaceIds)
 }

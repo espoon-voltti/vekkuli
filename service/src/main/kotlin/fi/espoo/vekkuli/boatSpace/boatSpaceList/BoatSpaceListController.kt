@@ -182,4 +182,18 @@ class BoatSpaceListController {
             )
         )
     }
+
+    @PostMapping("/selaa/poista")
+    @ResponseBody
+    fun boatSpaceDelete(
+        request: HttpServletRequest,
+        @ModelAttribute param: BoatSpaceListDeleteParams,
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_BOAT_SPACE_DELETE")
+        }
+
+        request.ensureEmployeeId()
+        boatSpaceService.deleteBoatSpaces(param.boatSpaceIds)
+    }
 }

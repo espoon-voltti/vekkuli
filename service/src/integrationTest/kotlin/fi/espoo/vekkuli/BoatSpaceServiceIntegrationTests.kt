@@ -393,7 +393,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `boat space can be deleted`() {
         val boatSpaceId = listOf(100, 101)
-        boatSpaceService.deleteBoatSpace(boatSpaceId)
+        boatSpaceService.deleteBoatSpaces(boatSpaceId)
         val boatSpace = boatSpaceRepository.getBoatSpace(boatSpaceId[0])
         assertNull(boatSpace, "First boat space is correctly deleted")
         val boatSpace2 = boatSpaceRepository.getBoatSpace(boatSpaceId[1])

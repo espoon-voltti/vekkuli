@@ -50,6 +50,10 @@ data class BoatSpaceListAddParams(
     val boatSpaceStateCreation: BoatSpaceState
 )
 
+data class BoatSpaceListDeleteParams(
+    val boatSpaceIds: List<Int> = emptyList(),
+)
+
 @Service
 class BoatSpaceList(
     private val expandingSelectionFilter: ExpandingSelectionFilter,

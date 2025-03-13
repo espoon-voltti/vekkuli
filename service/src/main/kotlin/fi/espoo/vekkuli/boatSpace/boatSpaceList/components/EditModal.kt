@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class EditModal(
@@ -72,11 +71,11 @@ class EditModal(
                 <div class="modal-underlay" @click="openEditModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
-                        <form class="is-1"
+                        <form id="edit-form" class="is-1"
                             hx-post="/virkailija/venepaikat/selaa/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
-                        <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
+                        <input id="boatSpaceIds" type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
                             <h2>Paikan tietojen muokkaus</h2>
                             <p ${addTestId("target-boat-space-count")} class='mb-m'
                                 x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
@@ -128,13 +127,17 @@ class EditModal(
                                 </div>
                             </div>
                             <div class="buttons is-centered">
-                                <a class="button is-secondary" id="edit-modal-cancel" x-on:click="openEditModal = false">
+                                <a class="button is-secondary"  ${addTestId("edit-modal-cancel")} x-on:click="openEditModal = false">
                                     ${t("cancel")}
                                 </a>
+                                 <a class="button is-danger is-outlined" ${addTestId(
+                "openModal-modal-cancel"
+            )} hx-post="/virkailija/venepaikat/selaa/poista" hx-include="#edit-form" hx-params='boatSpaceIds'>
+                                    ${t("boatSpaceList.button.delete")}
+                                </a>
                                 <button class="button is-primary" 
-                                type='submit'
-                                   id="edit-modal-confirm" 
-                                  >
+                                    type='submit'
+                                    ${addTestId("edit-modal-confirm")}>
                                     ${t("boatSpaceList.button.edit")}
                                 </button>
                             </div>

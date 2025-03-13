@@ -365,7 +365,7 @@ class JdbiBoatSpaceRepository(
             query.mapTo<Int>().first()
         }
 
-    override fun deleteBoatSpace(boatSpaceIds: List<Int>) {
+    override fun deleteBoatSpaces(boatSpaceIds: List<Int>) {
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
