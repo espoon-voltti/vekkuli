@@ -81,4 +81,36 @@ class InvoicePaymentServiceIntegrationTest : IntegrationTestBase() {
         assertThat(payment.transactionNumber).isEqualTo(1)
         assertThat(payment.invoiceNumber).isEqualTo(invoice.invoiceNumber)
     }
+
+    @Test
+    fun `If invoice payment has already been fetched do not fetch it again`() {
+        val reservation =
+            testUtils.createReservationInInvoiceState(
+                timeProvider,
+                reservationService,
+                boatSpaceInvoiceService,
+                citizenIdOlivia,
+                2,
+                3
+            )
+
+        val invoice = paymentService.getInvoiceForReservation(reservation.id)!!
+
+        MockInvoicePaymentClient.payments.add(
+            Receipt(1, BigDecimal(20.21), "2025-01-01", "VEK_${invoice.invoiceNumber}")
+        )
+
+        sut.fetchAndStoreInvoicePayments()
+        val payments = sut.getInvoicePayments(invoice.invoiceNumber)
+        assertThat(payments.count()).isEqualTo(1)
+        val payment = payments.first()
+        assertThat(payment.amountPaidCents).isEqualTo(2021)
+        assertThat(payment.paymentDate).isEqualTo("2025-01-01")
+        assertThat(payment.transactionNumber).isEqualTo(1)
+        assertThat(payment.invoiceNumber).isEqualTo(invoice.invoiceNumber)
+
+        // Should not create a duplicate
+        sut.fetchAndStoreInvoicePayments()
+        assertThat(sut.getInvoicePayments(invoice.invoiceNumber).count()).isEqualTo(1)
+    }
 }
