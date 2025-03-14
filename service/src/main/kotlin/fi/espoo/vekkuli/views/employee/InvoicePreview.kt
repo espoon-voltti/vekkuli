@@ -95,9 +95,9 @@ class InvoicePreview(
                 "function",
                 model.function,
                 listOf(
-                    Pair("T1270", "Venepaikka T1270",),
-                    Pair("T1271", "Talvisäilytys T1271",),
-                    Pair("T1276", "Varastopaikka T1276",),
+                    Pair("T1270", "Laituri- tai traileripaikka T1270",),
+                    Pair("T1271", "Talvipaikka T1271",),
+                    Pair("T1276", "Säilytyspaikka T1276",),
                 )
             )
         val dueDate =

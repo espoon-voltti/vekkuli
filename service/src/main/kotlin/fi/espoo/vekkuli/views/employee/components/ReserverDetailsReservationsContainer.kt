@@ -298,7 +298,7 @@ class ReserverDetailsReservationsContainer(
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
                             <div class="column is-narrow">
-                                <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
+                                <h4>${boat.name}</h4>
                             </div>
                             <div class="memo-edit-buttons column columns">
                                 ${deleteButton(boat.reservationId != null, boat.id)}
