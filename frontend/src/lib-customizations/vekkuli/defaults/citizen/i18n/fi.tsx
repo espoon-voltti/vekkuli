@@ -7,6 +7,7 @@ import type { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
+  ReservationStatus,
   ReservationValidity,
   ReserverType
 } from 'citizen-frontend/shared/types'
@@ -380,12 +381,16 @@ export default {
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
+      status: ReservationStatus,
       isActive: boolean
     ): string => {
-      if (validity === 'Indefinite' && isActive) {
+      if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
         return 'Toistaiseksi, jatko vuosittain'
       }
       return `${endDate.format()} asti`
+    },
+    terminatedAt: (terminationDate: LocalDate): string => {
+      return `Irtisanottu ${terminationDate.format()}`
     },
     reserverDiscountInfo: (
       type: ReserverType,

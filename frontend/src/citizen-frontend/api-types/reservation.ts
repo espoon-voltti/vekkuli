@@ -71,6 +71,7 @@ export type ExistingBoatSpaceReservation = {
   status: ReservationStatus
   paymentDate?: LocalDate
   dueDate?: LocalDate
+  terminationDate?: LocalDate
 }
 
 export type CanReserveResultStatus =
@@ -147,6 +148,7 @@ export type ExistingBoatSpaceReservationResponse = {
   status: ReservationStatus
   paymentDate?: string | null
   dueDate?: string | null
+  terminationDate?: string | null
 }
 
 export type ReservationInfo = {

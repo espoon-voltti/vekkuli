@@ -18,6 +18,13 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")
         val validity = fields.getField("Varaus voimassa")
+        val terminationDate =
+            fields
+                .getField("Varaus voimassa")
+                .locator("..")
+                .locator("..")
+                .locator("..")
+                .getByText("Irtisanottu", Locator.GetByTextOptions().setExact(false))
         val paymentStatus = fields.getField("Maksun tila")
 
         val renewNotification = root.getByText("Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu")

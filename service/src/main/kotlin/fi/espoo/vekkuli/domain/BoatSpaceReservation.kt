@@ -222,3 +222,5 @@ fun ReservationWithDependencies.toBoatSpaceReservation() =
         paymentDate = null,
         creationType = creationType
     )
+
+fun BoatSpaceReservation.effectiveEndDate() = if (status == ReservationStatus.Cancelled) endDate.minusDays(1) else endDate

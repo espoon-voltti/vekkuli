@@ -92,6 +92,7 @@ export default React.memo(function ReservedSpace({
               value={i18n.reservation.validity(
                 reservationInfoForReservation.endDate,
                 reservationInfoForReservation.validity,
+                'Info',
                 true
               )}
               readonly={true}
