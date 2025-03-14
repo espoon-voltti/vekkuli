@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionFailModalView
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionSuccessModalView
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
@@ -51,10 +51,10 @@ data class BoatSpaceListRow(
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
     @Autowired
-    private lateinit var deletionFailModalView: DeletionFailModalView
+    private lateinit var failModalView: FailModalView
 
     @Autowired
-    private lateinit var deletionSuccessModalView: DeletionSuccessModalView
+    private lateinit var successModalView: SuccessModalView
 
     @Autowired
     private lateinit var priceService: PriceService
@@ -170,28 +170,37 @@ class BoatSpaceListController {
     fun boatSpaceAdd(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceListAddParams
-    ) {
+    ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_BOAT_SPACE_ADD")
         }
 
         request.ensureEmployeeId()
-        boatSpaceService.createBoatSpace(
-            CreateBoatSpaceParams(
-                params.harborCreation,
-                params.boatSpaceTypeCreation,
-                params.sectionCreation,
-                params.placeNumberCreation,
-                params.boatSpaceAmenityCreation,
-                decimalToInt(params.widthCreation),
-                decimalToInt(params.lengthCreation),
-                params.paymentCreation,
-                params.boatSpaceStateCreation == BoatSpaceState.Active
+        try {
+            boatSpaceService.createBoatSpace(
+                CreateBoatSpaceParams(
+                    params.harborCreation,
+                    params.boatSpaceTypeCreation,
+                    params.sectionCreation,
+                    params.placeNumberCreation,
+                    params.boatSpaceAmenityCreation,
+                    decimalToInt(params.widthCreation),
+                    decimalToInt(params.lengthCreation),
+                    params.paymentCreation,
+                    params.boatSpaceStateCreation == BoatSpaceState.Active
+                )
             )
-        )
+            return ResponseEntity.ok(
+                successModalView.creationModal()
+            )
+        } catch (e: Exception) {
+            return ResponseEntity.ok(
+                failModalView.creationModal()
+            )
+        }
     }
 
-    @PostMapping("/selaa/poista")
+    @PostMapping("/poista")
     @ResponseBody
     fun boatSpaceDelete(
         request: HttpServletRequest,
@@ -205,11 +214,11 @@ class BoatSpaceListController {
         try {
             boatSpaceService.deleteBoatSpaces(boatSpaceIds)
             return ResponseEntity.ok(
-                deletionSuccessModalView.render()
+                successModalView.deletionModal()
             )
         } catch (e: Exception) {
             return ResponseEntity.ok(
-                deletionFailModalView.render()
+                failModalView.deletionModal()
             )
         }
     }

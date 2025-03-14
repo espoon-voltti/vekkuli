@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.ConfirmDeleteModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.CreateBoatSpaceModal
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeleteModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
@@ -57,7 +57,7 @@ class BoatSpaceList(
     private val filters: ListFilters,
     private val editModal: EditModal,
     private val createModal: CreateBoatSpaceModal,
-    private val deleteModal: DeleteModal,
+    private val deleteModal: ConfirmDeleteModal,
     private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
 ) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)

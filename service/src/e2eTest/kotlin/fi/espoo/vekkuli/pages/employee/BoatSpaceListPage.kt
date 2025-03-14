@@ -72,6 +72,7 @@ class BoatSpaceEditModalPage(
     val cancelButton = page.getByTestId("edit-modal-cancel")
     val deleteButton = page.getByDataTestId("open-delete-modal")
     val confirmButton = page.getByDataTestId("delete-modal-confirm")
+    val deletionSuccessModal = page.getByDataTestId("deletion-success-modal")
 
     fun fillForm(
         width: String,
@@ -112,6 +113,7 @@ class BoatSpaceCreationModal(
 
     val submitButton = page.getByDataTestId("create-modal-confirm")
     val cancelButton = page.getByTestId("cancel-create-boat-space")
+    val successModal = page.getByDataTestId("creation-success-modal")
 
     fun fillForm(
         width: String,

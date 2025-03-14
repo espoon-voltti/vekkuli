@@ -172,6 +172,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
                 boatSpaceState = BoatSpaceState.Inactive
             )
             createModal.submitButton.click()
+            assertThat(createModal.successModal).isVisible()
 
             listingPage.harborFilter(harborParam).click()
             assertThat(listingPage.getBoatSpaceRowByIndex(0)).containsText("A 111")
@@ -183,6 +184,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
             val editModal = listingPage.editModalPage
             editModal.deleteButton.click()
             editModal.confirmButton.click()
+            assertThat(editModal.deletionSuccessModal).isVisible()
             assertThat(listingPage.getBoatSpaceRowByIndex(0)).not().containsText("A 111")
             assertThat(listingPage.listItems).hasCount(1)
         } catch (e: AssertionError) {

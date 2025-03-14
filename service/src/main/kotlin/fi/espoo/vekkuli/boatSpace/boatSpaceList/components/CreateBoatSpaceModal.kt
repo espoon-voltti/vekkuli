@@ -76,8 +76,8 @@ class CreateBoatSpaceModal(
                     <div class="container">
                         <form id="create-boat-space-form" class="is-1"
                             hx-post="/virkailija/venepaikat/selaa/lisaa"
-                            hx-swap="none" 
-                            hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
+                            hx-swap ="innerHTML"
+                            hx-target="#modal-container"
                             <h2>Uuden venepaikan luonti</h2>
                             <div class='form-section'>             
                                 <div class="columns ">

@@ -1,13 +1,11 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList.components
 
-import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
-class DeleteModal : BaseView() {
+class ConfirmDeleteModal : BaseView() {
     fun render(): String =
         // language=HTML
         """
@@ -26,7 +24,7 @@ class DeleteModal : BaseView() {
                             </a>
                             <a class="button is-danger" 
                                ${addTestId("delete-modal-confirm")}
-                                hx-post="/virkailija/venepaikat/selaa/poista"
+                                hx-post="/virkailija/venepaikat/poista"
                                 hx-include="#boatSpaceIds"
                                 hx-swap ="innerHTML"
                                 hx-target="#modal-container"
