@@ -200,7 +200,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
 
         listingPage.boatStateFilter("Inactive").click()
         page.waitForCondition { listingPage.listItems.count() == 4 }
-
         // click should select all when no rows are selected
         selectAllToggle.click()
         assertThat(selectAllToggle).isChecked()

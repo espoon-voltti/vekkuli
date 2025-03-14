@@ -71,8 +71,8 @@ class EditModal(
                 <div class="modal-underlay" @click="openEditModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
-                        <form id="edit-form" class="is-1"
-                            hx-post="/virkailija/venepaikat/selaa/muokkaa"
+                        <form class="is-1"
+                            hx-post="/virkailija/venepaikat/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
                             <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />

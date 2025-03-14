@@ -402,8 +402,6 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `boat space can be added`() {
-        deleteAllReservations(jdbi)
-        deleteAllBoatSpaces(jdbi)
         val params =
             CreateBoatSpaceParams(
                 1,

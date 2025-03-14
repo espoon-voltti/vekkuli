@@ -36,7 +36,7 @@ class BoatSpaceRow : BaseView() {
                 <tr class="boat-space-item"
                 ${addTestId("boat-space-${result.id}")}>
                     <td>${editCheckBox(result)}</td>
-                    <td class='locationName'>${result.locationName}</td>
+                    <td>${result.locationName}</td>
                     <td 
                         ${
             addTestId(

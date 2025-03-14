@@ -75,9 +75,11 @@ class CreateBoatSpaceModal(
                 <div class="modal-content">
                     <div class="container">
                         <form id="create-boat-space-form" class="is-1"
-                            hx-post="/virkailija/venepaikat/selaa/lisaa"
+                            hx-post="/virkailija/venepaikat/lisaa"
                             hx-swap ="innerHTML"
                             hx-target="#modal-container"
+                            hx-on:htmx:after-settle="document.getElementById('create-boat-space-button').disabled = false; document.getElementById('create-boat-space-button').classList.remove('is-loading')"
+>
                             <h2>Uuden venepaikan luonti</h2>
                             <div class='form-section'>             
                                 <div class="columns ">
@@ -128,7 +130,9 @@ class CreateBoatSpaceModal(
                                 <a class="button is-secondary" x-on:click="openCreateModal = false">
                                     ${t("cancel")}
                                 </a>
-                                <button class="button is-primary" type='submit' ${addTestId("create-modal-confirm")}>
+                                <button id="create-boat-space-button" class="button is-primary" type='submit' ${addTestId(
+                "create-modal-confirm"
+            )}>
                                     ${t("boatSpaceList.button.create")}
                                 </button>
                             </div>

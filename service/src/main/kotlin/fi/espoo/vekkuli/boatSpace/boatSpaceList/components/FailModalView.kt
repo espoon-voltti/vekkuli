@@ -21,7 +21,7 @@ class FailModalView(
                 setText(t("button.ok"))
                 setType(ModalButtonType.Cancel)
                 setStyle(ModalButtonStyle.Danger)
-                setTestId("terminate-reservation-fail-modal-ok")
+                setTestId("delete-modal-ok")
             }.setButtonsCentered(true)
             .build()
     }
@@ -36,7 +36,7 @@ class FailModalView(
                 setText(t("button.ok"))
                 setType(ModalButtonType.Cancel)
                 setStyle(ModalButtonStyle.Danger)
-                setTestId("create-reservation-fail-modal-ok")
+                setTestId("create-modal-ok")
             }.setButtonsCentered(true)
             .build()
     }

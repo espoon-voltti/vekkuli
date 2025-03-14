@@ -120,7 +120,7 @@ class BoatSpaceListController {
         )
     }
 
-    @PostMapping("/selaa/muokkaa")
+    @PostMapping("/muokkaa")
     @ResponseBody
     fun boatSpaceEdit(
         request: HttpServletRequest,
@@ -165,7 +165,7 @@ class BoatSpaceListController {
         return ResponseEntity.ok(boatSpaceListRowsPartial.render(boatSpaces))
     }
 
-    @PostMapping("/selaa/lisaa")
+    @PostMapping("/lisaa")
     @ResponseBody
     fun boatSpaceAdd(
         request: HttpServletRequest,

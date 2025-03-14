@@ -69,7 +69,7 @@ class BoatSpaceEditModalPage(
     fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceState-$state")
 
     val submitButton = page.getByDataTestId("edit-modal-confirm")
-    val cancelButton = page.getByTestId("edit-modal-cancel")
+    val cancelButton = page.getByDataTestId("edit-modal-cancel")
     val deleteButton = page.getByDataTestId("open-delete-modal")
     val confirmButton = page.getByDataTestId("delete-modal-confirm")
     val deletionSuccessModal = page.getByDataTestId("deletion-success-modal")
