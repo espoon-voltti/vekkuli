@@ -5,12 +5,24 @@ import fi.espoo.vekkuli.repository.InvoicePaymentRepository
 import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
+
+@Service
+@Profile("!test")
+class ScheduledInvoicePaymentService(
+    private val invoicePaymentService: InvoicePaymentService
+) {
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun scheduleFetchAndStoreInvoicePayments() {
+        invoicePaymentService.fetchAndStoreInvoicePayments()
+    }
+}
 
 @Service
 class InvoicePaymentService(
@@ -21,16 +33,15 @@ class InvoicePaymentService(
 ) {
     val logger = KotlinLogging.logger {}
 
-    //    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
-    // To test this in staging, setting the scheduler to run once per hour
-    @Scheduled(fixedRate = 1000 * 60 * 60)
-    fun scheduleFetchAndStoreInvoicePayments() {
-        fetchAndStoreInvoicePayments()
-    }
-
     fun fetchAndStoreInvoicePayments() {
-        val invoicePaymentResponse = invoicePaymentClient.getPayments()
-        val invoicePayments = invoicePaymentResponse.receipts.map { createInvoicePayment(it) }
+        val newInvoicePayments = invoicePaymentClient.getPayments().receipts.map { createInvoicePayment(it) }
+        val invoicePayments =
+            newInvoicePayments.filter {
+                invoicePaymentRepository.getInvoicePayments(it.invoiceNumber.toLong()).none { existingInvoicePayment ->
+                    existingInvoicePayment.transactionNumber == it.transactionNumber
+                }
+            }
+
         if (invoicePayments.isNotEmpty()) {
             invoicePaymentRepository.insertInvoicePayments(invoicePayments)
             invoicePayments.forEach { invoicePayment ->
