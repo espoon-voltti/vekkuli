@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class EmployeeBoatSpaceListingTest : PlaywrightTest() {
@@ -138,6 +139,42 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertThat(listingPage.listItems).hasCount(100)
     }
 
+    @Test
+    fun `Employee can toggle selection of all visible boat spaces`() {
+        val listingPage = boatSpaceListPage()
+        val selectAllToggle = listingPage.selectAllToggle
+        val testBoatSpaceId = 31
+
+        listingPage.boatStateFilter("Inactive").click()
+        page.waitForCondition { listingPage.listItems.count() == 4 }
+
+        // click should select all when no rows are selected
+        selectAllToggle.click()
+        assertThat(selectAllToggle).isChecked()
+        assertSelectedBoatSpaceCount(4)
+
+        // click should deselect all when all rows are selected
+        selectAllToggle.click()
+        assertThat(selectAllToggle).not().isChecked()
+        assertSelectedBoatSpaceCount(0)
+
+        // click should select all when only some rows are manually selected
+        listingPage.editButton(testBoatSpaceId).click()
+        selectAllToggle.click()
+        assertThat(selectAllToggle).isChecked()
+        assertSelectedBoatSpaceCount(4)
+
+        // deselecting manually some rows should mark the element as unchecked
+        listingPage.editButton(testBoatSpaceId).click()
+        assertThat(selectAllToggle).not().isChecked()
+        assertSelectedBoatSpaceCount(3)
+
+        // selecting manually all rows should mark the element as checked
+        listingPage.editButton(testBoatSpaceId).click()
+        assertThat(selectAllToggle).isChecked()
+        assertSelectedBoatSpaceCount(4)
+    }
+
     private fun boatSpaceListPage(): BoatSpaceListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
@@ -145,5 +182,19 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         val listingPage = BoatSpaceListPage(page)
         listingPage.navigateTo()
         return listingPage
+    }
+
+    private fun assertSelectedBoatSpaceCount(expectedCount: Int) {
+        val listingPage = BoatSpaceListPage(page)
+
+        val selectedRowCount = listingPage.listItems.locator("input[type=checkbox][name=spaceId]:checked").count()
+        assertEquals(expectedCount, selectedRowCount, "selected row count: $selectedRowCount vs $expectedCount")
+
+        if (expectedCount > 0) {
+            val modalPage = listingPage.editModalPage
+            listingPage.editModalButton.click()
+            assertThat(modalPage.boatSpaceCount).containsText("Muokataan $expectedCount paikkaa")
+            modalPage.cancelButton.click()
+        }
     }
 }

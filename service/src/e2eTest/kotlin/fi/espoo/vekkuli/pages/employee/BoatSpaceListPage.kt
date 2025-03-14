@@ -32,6 +32,7 @@ class BoatSpaceListPage(
     val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
     val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
+    val selectAllToggle = page.getByDataTestId("select-all-toggle")
 
     fun boatSpaceRow(boatSpaceId: Int) = page.getByDataTestId("boat-space-$boatSpaceId")
 
@@ -54,11 +55,12 @@ class BoatSpaceEditModalPage(
     val widthEdit = page.getByTestId("width")
     val lengthEdit = page.getByTestId("length")
     val paymentEdit = page.getByTestId("payment")
+    val boatSpaceCount = getByDataTestId("target-boat-space-count")
 
     fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceState-$state")
 
     val submitButton = page.getByTestId("edit-modal-confirm")
-    val cancelButton = page.getByTestId("cancel-edit-boat-space")
+    val cancelButton = page.getByTestId("edit-modal-cancel")
 
     fun fillForm(
         width: String,
