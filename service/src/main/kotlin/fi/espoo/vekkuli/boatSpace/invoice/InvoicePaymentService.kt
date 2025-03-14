@@ -21,9 +21,7 @@ class InvoicePaymentService(
 ) {
     val logger = KotlinLogging.logger {}
 
-    //    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
-    // To test this in staging, setting the scheduler to run once per hour
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun scheduleFetchAndStoreInvoicePayments() {
         fetchAndStoreInvoicePayments()
     }
