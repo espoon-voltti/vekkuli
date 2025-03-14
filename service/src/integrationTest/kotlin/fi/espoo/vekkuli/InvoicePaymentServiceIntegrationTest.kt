@@ -44,6 +44,7 @@ class InvoicePaymentServiceIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
+        MockInvoicePaymentClient.payments.clear()
         deleteAllReservations(jdbi)
         sut =
             InvoicePaymentService(
