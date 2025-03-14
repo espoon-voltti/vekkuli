@@ -5,12 +5,24 @@ import fi.espoo.vekkuli.repository.InvoicePaymentRepository
 import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
+
+@Service
+@Profile("!test")
+class ScheduledInvoicePaymentService(
+    private val invoicePaymentService: InvoicePaymentService
+) {
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun scheduleFetchAndStoreInvoicePayments() {
+        invoicePaymentService.fetchAndStoreInvoicePayments()
+    }
+}
 
 @Service
 class InvoicePaymentService(
@@ -20,11 +32,6 @@ class InvoicePaymentService(
     private val reservationWarningRepository: ReservationWarningRepository
 ) {
     val logger = KotlinLogging.logger {}
-
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
-    fun scheduleFetchAndStoreInvoicePayments() {
-        fetchAndStoreInvoicePayments()
-    }
 
     fun fetchAndStoreInvoicePayments() {
         val newInvoicePayments = invoicePaymentClient.getPayments().receipts.map { createInvoicePayment(it) }

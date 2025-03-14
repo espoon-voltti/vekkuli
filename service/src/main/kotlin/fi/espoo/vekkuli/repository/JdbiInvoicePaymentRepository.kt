@@ -18,7 +18,6 @@ class JdbiInvoicePaymentRepository(
                     """
                     INSERT INTO invoice_payment (transaction_number, amount_paid_cents, payment_date, invoice_number)
                     VALUES (:transactionNumber, :amountPaidCents, :paymentDate, :invoiceNumber)
-                    ON CONFLICT (transaction_number) DO NOTHING
                     """.trimIndent()
                 )
 
