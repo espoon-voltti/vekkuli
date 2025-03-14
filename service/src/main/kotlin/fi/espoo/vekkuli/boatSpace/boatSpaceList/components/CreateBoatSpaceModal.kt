@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList.components
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 import java.util.*
@@ -27,8 +28,8 @@ class CreateBoatSpaceModal(
                 required = true
             )
 
-        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "section", null, true)
-        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumber", null, true)
+        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionCreation", null, true)
+        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberCreation", null, true)
 
         val boatSpaceTypeInput =
             formComponents.select(
@@ -127,7 +128,7 @@ class CreateBoatSpaceModal(
                                 <a class="button is-secondary" x-on:click="openCreateModal = false">
                                     ${t("cancel")}
                                 </a>
-                                <button class="button is-primary" type='submit'>
+                                <button class="button is-primary" type='submit' ${addTestId("create-modal-confirm")}>
                                     ${t("boatSpaceList.button.create")}
                                 </button>
                             </div>

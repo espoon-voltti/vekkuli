@@ -141,16 +141,6 @@ class BoatSpaceService(
         return filters
     }
 
-    fun getBoatSpaceCount(params: BoatSpaceListParams): Int {
-        val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
-
-        return boatSpaceRepo.getBoatSpaceCount(
-            AndExpr(
-                filters
-            )
-        )
-    }
-
     fun getUnreservedBoatSpaceOptions(
         boatType: BoatType? = null,
         width: BigDecimal? = null,

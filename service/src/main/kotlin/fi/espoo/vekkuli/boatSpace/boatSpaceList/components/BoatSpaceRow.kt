@@ -24,7 +24,7 @@ class BoatSpaceRow : BaseView() {
     fun editCheckBox(result: BoatSpaceListRow) =
         """
              <label class="checkbox">
-                <input name="spaceId"  ${addTestId(
+                <input class="boat-space-checkbox" name="spaceId"  ${addTestId(
             "edit-boat-space-${result.id}"
         )} type="checkbox" value="${result.id}" x-model='editBoatSpaceIds' />
             </label>
@@ -36,14 +36,13 @@ class BoatSpaceRow : BaseView() {
                 <tr class="boat-space-item"
                 ${addTestId("boat-space-${result.id}")}>
                     <td>${editCheckBox(result)}</td>
-                    <td>${result.locationName}</td>
-                    <td
+                    <td class='locationName'>${result.locationName}</td>
+                    <td 
                         ${
             addTestId(
                 "place"
             )
-        }>${result.place}
-                    </td>
+        }>${result.place}</td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                    

@@ -180,8 +180,8 @@ class BoatSpaceListController {
             CreateBoatSpaceParams(
                 params.harborCreation,
                 params.boatSpaceTypeCreation,
-                params.section,
-                params.placeNumber,
+                params.sectionCreation,
+                params.placeNumberCreation,
                 params.boatSpaceAmenityCreation,
                 decimalToInt(params.widthCreation),
                 decimalToInt(params.lengthCreation),

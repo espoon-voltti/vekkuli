@@ -40,8 +40,8 @@ data class BoatSpaceListEditParams(
 )
 
 data class BoatSpaceListAddParams(
-    val section: String,
-    val placeNumber: Int,
+    val sectionCreation: String,
+    val placeNumberCreation: Int,
     val harborCreation: Int,
     val boatSpaceTypeCreation: BoatSpaceType,
     val boatSpaceAmenityCreation: BoatSpaceAmenity,
@@ -131,7 +131,7 @@ class BoatSpaceList(
    <div class="container block heading" >
         <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
         <span>                      
-            <a @click="openCreateModal = true">
+            <a ${addTestId("create-boat-space")} @click="openCreateModal = true">
                 <span class="icon is-small">
                     ${icons.plus}
                 </span>
@@ -172,7 +172,7 @@ class BoatSpaceList(
             <div id='boat-space-filter-container'>
                 <div class="employee-filter-container">                        
                     <div class="filter-group">
-                        <h1 class="label">${t(
+                        <h1 class="label" >${t(
             "boatSpaceReservation.title.harbor"
         )}</h1>
                         <div class="tag-container">
@@ -234,7 +234,7 @@ class BoatSpaceList(
                         <thead id='boat-space-table-header'>
                             <tr class="table-borderless">
                                 <th>$selectAllToggle</th>
-                                <th class="nowrap">
+                                <th class="nowrap" >
                                 ${sortButton(
             BoatSpaceFilterColumn.PLACE.name,
             t("boatSpaceList.title.harbor")

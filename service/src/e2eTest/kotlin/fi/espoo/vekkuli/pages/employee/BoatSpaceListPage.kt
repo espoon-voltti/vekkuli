@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.pages.employee
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.domain.BoatSpaceState
@@ -29,6 +30,7 @@ class BoatSpaceListPage(
     val listItems = page.locator(".boat-space-item")
     val boatSpaceTypeFilter = { type: String -> filterLocator("type-$type") }
     val boatStateFilter = { state: String -> filterLocator("boatSpaceState-$state") }
+    val harborFilter = { harborId: String -> page.getByDataTestId("filter-harbor-$harborId") }
     val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
     val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
@@ -36,12 +38,19 @@ class BoatSpaceListPage(
 
     fun boatSpaceRow(boatSpaceId: Int) = page.getByDataTestId("boat-space-$boatSpaceId")
 
-    fun editButton(boatSpaceId: Int) = page.getByDataTestId("edit-boat-space-$boatSpaceId")
+    fun getBoatSpaceRowByIndex(index: Int) = page.locator(".boat-space-item").nth(index)
+
+    fun checkBox(boatSpaceId: Int) = page.getByDataTestId("edit-boat-space-$boatSpaceId")
+
+    fun checkBox(row: Locator) = row.locator(".boat-space-checkbox")
 
     fun showMoreButton() = page.getByTestId("boat-space-load-more-container").locator("button")
 
     val editModalButton = page.getByDataTestId("open-edit-modal")
     val editModalPage = BoatSpaceEditModalPage(page)
+    val createModal = BoatSpaceCreationModal(page)
+
+    val addBoatSpaceButton = page.getByDataTestId("create-boat-space")
 }
 
 class BoatSpaceEditModalPage(
@@ -59,8 +68,10 @@ class BoatSpaceEditModalPage(
 
     fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceState-$state")
 
-    val submitButton = page.getByTestId("edit-modal-confirm")
+    val submitButton = page.getByDataTestId("edit-modal-confirm")
     val cancelButton = page.getByTestId("edit-modal-cancel")
+    val deleteButton = page.getByDataTestId("open-delete-modal")
+    val confirmButton = page.getByDataTestId("delete-modal-confirm")
 
     fun fillForm(
         width: String,
@@ -82,5 +93,45 @@ class BoatSpaceEditModalPage(
         lengthEdit.fill(length)
         paymentEdit.selectOption(payment)
         boatSpaceStateEdit(boatSpaceState).click()
+    }
+}
+
+class BoatSpaceCreationModal(
+    page: Page
+) : BasePage(page) {
+    val harborCreation = page.getByTestId("harborCreation")
+    val sectionCreation = page.getByTestId("sectionCreation")
+    val placeNumberCreation = page.getByTestId("placeNumberCreation")
+    val boatSpaceTypeCreation = page.getByTestId("boatSpaceTypeCreation")
+    val boatSpaceAmenityCreation = page.getByTestId("boatSpaceAmenityCreation")
+    val widthCreation = page.getByTestId("widthCreation")
+    val lengthCreation = page.getByTestId("lengthCreation")
+    val paymentCreation = page.getByTestId("paymentCreation")
+
+    fun boatSpaceStateCreation(state: BoatSpaceState) = page.getByTestId("boatSpaceStateCreation-${state.name}")
+
+    val submitButton = page.getByDataTestId("create-modal-confirm")
+    val cancelButton = page.getByTestId("cancel-create-boat-space")
+
+    fun fillForm(
+        width: String,
+        length: String,
+        harbor: String = "1",
+        section: String = "A",
+        placeNumber: String = "1",
+        boatSpaceType: String = "Storage",
+        boatSpaceAmenity: String = "None",
+        payment: String = "2",
+        boatSpaceState: BoatSpaceState = BoatSpaceState.Active
+    ) {
+        harborCreation.selectOption(harbor)
+        sectionCreation.fill(section)
+        placeNumberCreation.fill(placeNumber)
+        boatSpaceTypeCreation.selectOption(boatSpaceType)
+        boatSpaceAmenityCreation.selectOption(boatSpaceAmenity)
+        widthCreation.fill(width)
+        lengthCreation.fill(length)
+        paymentCreation.selectOption(payment)
+        boatSpaceStateCreation(boatSpaceState).click()
     }
 }
