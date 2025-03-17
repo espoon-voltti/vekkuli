@@ -276,6 +276,29 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
+    fun `Employee can reserve a boat space on behalf of a citizen and change the reservation type afterwards`() {
+        // Create a fixed paid reservation
+        reserveWinterSpace(true, true)
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
+        val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
+        assertThat(reservationListPage.header).isVisible()
+        page.getByText("Doe John").click()
+
+        citizenDetailsPage.updateReservationValidity.click()
+        citizenDetailsPage.reservationValidityIndefiniteRadioButton.click()
+        citizenDetailsPage.reservationValidityModalConfirm.click()
+
+        assertThat(citizenDetailsPage.reservationValidity.getByText("Valid until further notice (Until 14.09.2024)")).isVisible()
+
+        citizenDetailsPage.memoNavi.click()
+        assertThat(page.getByText("Varauksen Haukilahti Talvi B 021 tyyppi vaihdettu: Jatkuva, loppupäivä (14.09.2024)")).isVisible()
+    }
+
+    @Test
     fun `When employee cancels the reservation from invoice page, the reservation is deleted`() {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()

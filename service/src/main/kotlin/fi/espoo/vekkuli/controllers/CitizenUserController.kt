@@ -2,6 +2,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
+import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
@@ -11,12 +13,16 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.JdbiReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
+import fi.espoo.vekkuli.utils.fullDateFormat
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.utils.reservationStatusToText
+import fi.espoo.vekkuli.utils.reservationToText
+import fi.espoo.vekkuli.utils.reservationValidityToText
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
@@ -57,7 +63,9 @@ class CitizenUserController(
     private val editCitizen: EditCitizen,
     private val paymentService: PaymentService,
     private val sentMessageModalView: SentMessageModalView,
-    private val reservationWarningRepository: ReservationWarningRepository
+    private val reservationWarningRepository: ReservationWarningRepository,
+    private val seasonalService: SeasonalService,
+    private val boatSpaceReservationRepository: BoatSpaceReservationRepository
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -952,6 +960,40 @@ class CitizenUserController(
 
         memoService.insertMemo(reserverId, user.id, memoContent)
 
+        return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
+    }
+
+    @PostMapping("/virkailija/venepaikat/varaukset/tyyppi")
+    fun updateReservationValidity(
+        @RequestParam reservationId: Int,
+        @RequestParam reservationValidity: ReservationValidity,
+        @RequestParam reserverId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<String> {
+        val user = request.getAuthenticatedEmployee()
+        logger.audit(
+            user,
+            "CITIZEN_PROFILE_UPDATE_RESERVATION_VALIDITY",
+            mapOf(
+                "targetId" to reservationId.toString(),
+                "reservationValidity" to reservationValidity.toString(),
+                "reserverId" to reserverId.toString()
+            )
+        )
+
+        val reservation = reservationService.getReservationWithDependencies(reservationId) ?: throw NotFound("Reservation missing")
+        val endDate = seasonalService.getBoatSpaceReservationEndDateForNew(reservation.type, reservationValidity)
+
+        boatSpaceReservationRepository.updateReservationValidity(reservationId, reservationValidity, endDate)
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+
+        val memoContent = "Varauksen ${reservationToText(reservation)} tyyppi vaihdettu: ${reservationValidityToText(
+            reservationValidity
+        )}, loppupäivä (${endDate.format(fullDateFormat)})"
+
+        memoService.insertMemo(reserverId, user.id, memoContent)
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }
 

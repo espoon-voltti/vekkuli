@@ -72,10 +72,26 @@ class ReservationCardInformation : BaseView() {
         val paymentEditLink =
             """
             <div>
-                <a class="is-link is-icon-link payment-status-edit-link"
+                <a class="is-link is-icon-link edit-link"
                     id="update-payment-status-link"
                     data-testid="update-payment-status-link"
                     hx-get="/reservation/modal/update-payment-status/${reservation.id}/$reserverId"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML">
+                    <span class="icon">
+                        ${icons.edit}
+                    </span>
+                </a>
+            </div>
+            """.trimIndent()
+
+        val typeEditLink =
+            """
+            <div>
+                <a class="is-link is-icon-link edit-link"
+                    id="update-reservation-validity-link"
+                    data-testid="update-reservation-validity-link"
+                    hx-get="/reservation/modal/update-type/${reservation.id}/$reserverId"
                     hx-target="#modal-container"
                     hx-swap="innerHTML">
                     <span class="icon">
@@ -113,7 +129,10 @@ class ReservationCardInformation : BaseView() {
                          <p>${formatDecimal(reservation.boatSpaceLengthInM)}</p>
                      </div>
                      <div class="field" ${addTestId("reservation-validity")}>
-                         <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
+                         <div class="edit-label">
+                             <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
+                             $typeEditLink
+                         </div>
                          <p>${renderReservationValidity(reservation)}</p>
                      </div>
                  </div>
@@ -136,7 +155,7 @@ class ReservationCardInformation : BaseView() {
                          $amenityWrapper
                      </div>
                      <div class="field">
-                         <div class="payment-status-label">
+                         <div class="edit-label">
                            <label class="label">${t("citizenDetails.reservationStatus.paymentStatus")}</label>
                            $paymentEditLink
                          </div>
