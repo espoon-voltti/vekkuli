@@ -225,6 +225,22 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertSelectedBoatSpaceCount(4)
     }
 
+    @Test
+    fun `should remove boat spaces from selection if they are no longer visible due to the filter`() {
+        val listingPage = boatSpaceListPage()
+        val activeBoatSpaceId = 1
+        val inactiveBoatSpaceId = 31
+
+        listingPage.checkBox(activeBoatSpaceId).click()
+
+        listingPage.boatStateFilter("Inactive").click()
+        page.waitForCondition { listingPage.listItems.count() == 4 }
+
+        listingPage.checkBox(inactiveBoatSpaceId).click()
+
+        assertSelectedBoatSpaceCount(1)
+    }
+
     private fun boatSpaceListPage(): BoatSpaceListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()

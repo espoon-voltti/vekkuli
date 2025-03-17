@@ -106,10 +106,8 @@ class BoatSpaceList(
             <label class="checkbox" x-data="{
                 selectAll: false,
                 getCurrentlyVisibleBoatSpaceIds() {
-                    const table = this.${'$'}el.closest('table');
-                    const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
-                    return Array.from(checkboxes).map(e => e.value);
-                }
+                    return this.getBoatSpacesIdsFromTable(this.${'$'}el.closest('table'));
+                },
             }">
                 <input
                     id="select-all-toggle"
@@ -152,6 +150,17 @@ class BoatSpaceList(
             document.getElementById('sortColumn').value = this.sortColumn;
             document.getElementById('sortDirection').value = this.sortDirection;
             document.getElementById('boat-space-table-header').dispatchEvent(new Event('change'));
+        },
+        pruneFilteredBoatSpacesFromSelection() {
+            const visibleBoatIds = this.getCurrentlyVisibleBoatSpaceIds();
+            this.editBoatSpaceIds = this.editBoatSpaceIds.filter(id => visibleBoatIds.includes(id));
+        },
+        getCurrentlyVisibleBoatSpaceIds() {
+            return this.getBoatSpacesIdsFromTable(this.${'$'}el.querySelector('table'));
+        },
+        getBoatSpacesIdsFromTable(table) {
+            const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
+            return Array.from(checkboxes).map(e => e.value);
         }
     }">
         <form id="boat-space-filter-form"
@@ -163,6 +172,7 @@ class BoatSpaceList(
               hx-swap="outerHTML"
               hx-push-url="true"
               hx-indicator="#loader, .loaded-content"
+              @htmx:after-request="pruneFilteredBoatSpacesFromSelection()"
         >
              <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
              <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
