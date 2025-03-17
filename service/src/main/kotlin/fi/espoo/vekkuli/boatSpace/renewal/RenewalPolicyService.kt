@@ -49,7 +49,8 @@ class RenewalPolicyService(
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
                 ?: throw IllegalArgumentException("Reservation not found")
         val boatSpaceIsActive =
-            boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)?.isActive ?: throw IllegalArgumentException("Boat space not found")
+            boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)?.isActive
+                ?: throw IllegalArgumentException("Boat space not found")
 
         // Can renew only if boat space is active
         if (!boatSpaceIsActive) {

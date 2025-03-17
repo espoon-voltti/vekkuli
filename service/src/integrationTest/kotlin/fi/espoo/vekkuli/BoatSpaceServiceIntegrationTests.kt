@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.CreateBoatSpaceParams
 import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -427,5 +428,46 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(params.widthCm, boatSpace.widthCm, "Boat space width is correct")
         assertEquals(params.lengthCm, boatSpace.lengthCm, "Boat space length is correct")
         assertEquals(params.isActive, boatSpace.isActive, "Boat space is active")
+    }
+
+    @Test
+    fun `boat space has to have unique location, section and place number combination`() {
+        val params =
+            CreateBoatSpaceParams(
+                1,
+                BoatSpaceType.Storage,
+                "A",
+                1,
+                BoatSpaceAmenity.Trailer,
+                100,
+                200,
+                1,
+                true
+            )
+        val boatSpaceId =
+            boatSpaceService.createBoatSpace(
+                params
+            )
+
+        val boatSpace = boatSpaceRepository.getBoatSpace(boatSpaceId)
+        assertNotNull(boatSpace, "Boat space is created")
+
+        val params2 =
+            CreateBoatSpaceParams(
+                1,
+                BoatSpaceType.Storage,
+                "A",
+                1,
+                BoatSpaceAmenity.Trailer,
+                100,
+                200,
+                1,
+                true
+            )
+        assertThrows(UnableToExecuteStatementException::class.java) {
+            boatSpaceService.createBoatSpace(
+                params2
+            )
+        }
     }
 }

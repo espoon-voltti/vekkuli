@@ -209,35 +209,21 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
-    override fun getBoatSpace(
-        harborNumber: Int,
-        section: String,
-        placeNumber: Int
-    ): BoatSpace? =
+    override fun getBoatSpace(boatSpaceIds: List<Int>): Boolean? =
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
-                SELECT 
-                     bs.*,
-                     location.name as location_name, 
-                     location.address as location_address,
-                     ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
-                 FROM boat_space bs
-                 JOIN location ON bs.location_id = location.id
-                 JOIN price ON bs.price_id = price.id
-                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                 WHERE location.id = :harborNumber
-                 AND bs.section = :section
-                 AND bs.place_number = :placeNumber
-                 GROUP BY bs.id, location.name, location.address
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM boat_space_reservation
+                    WHERE boat_space_id IN (<boatSpaceIds>)
+                )
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
-            query.bind("harborNumber", harborNumber)
-            query.bind("section", section)
-            query.bind("placeNumber", placeNumber)
+            query.bindList("boatSpaceIds", boatSpaceIds)
 
-            query.mapTo<BoatSpace>().firstOrNull()
+            query.mapTo<Boolean>().firstOrNull()
         }
 
     override fun getBoatSpaces(

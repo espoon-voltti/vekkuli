@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
@@ -194,6 +195,7 @@ class BoatSpaceListController {
                 successModalView.creationModal()
             )
         } catch (e: Exception) {
+            logger.error { "Boat space creation failed: ${e.message}" }
             return ResponseEntity.ok(
                 failModalView.creationModal()
             )
@@ -216,7 +218,13 @@ class BoatSpaceListController {
             return ResponseEntity.ok(
                 successModalView.deletionModal()
             )
+        } catch (e: IllegalArgumentException) {
+            logger.error { "Boat space deletion failed. Boat space has reservations. Message: ${e.message}" }
+            return ResponseEntity.ok(
+                failModalView.deletionModal(DeletionError.BOAT_SPACE_HAS_RESERVATIONS)
+            )
         } catch (e: Exception) {
+            logger.error { "Boat space deletion failed: ${e.message}" }
             return ResponseEntity.ok(
                 failModalView.deletionModal()
             )

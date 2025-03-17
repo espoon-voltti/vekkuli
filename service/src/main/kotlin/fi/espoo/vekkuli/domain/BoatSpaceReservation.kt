@@ -35,6 +35,7 @@ data class BoatSpace(
     val locationName: String?,
     val locationAddress: String?,
     val isActive: Boolean,
+    val hasAnyReservations: Boolean,
 )
 
 data class BoatSpaceReservation(
