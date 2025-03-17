@@ -368,10 +368,10 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             boatSpaceReservationRepository.getHarbors().first()
         val editBoatSpaceParams =
             EditBoatSpaceParams(
-                2,
+                7,
                 BoatSpaceType.Slip,
                 "C",
-                5,
+                50,
                 BoatSpaceAmenity.Beam,
                 100,
                 200,
