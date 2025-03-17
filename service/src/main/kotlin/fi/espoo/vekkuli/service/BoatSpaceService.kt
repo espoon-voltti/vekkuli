@@ -52,7 +52,7 @@ interface BoatSpaceRepository {
 
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
-    fun boatSpaceHasReservations(boatSpaceIds: List<Int>): Boolean?
+    fun checkIfAnyBoatSpacesHaveReservations(boatSpaceIds: List<Int>): Boolean?
 
     fun isBoatSpaceAvailable(boatSpace: Int): Boolean
 
@@ -175,7 +175,7 @@ class BoatSpaceService(
     fun createBoatSpace(params: CreateBoatSpaceParams): Int = boatSpaceRepo.createBoatSpace(params)
 
     fun deleteBoatSpaces(boatSpaceIds: List<Int>) {
-        val hasReservations = boatSpaceRepo.boatSpaceHasReservations(boatSpaceIds)
+        val hasReservations = boatSpaceRepo.checkIfAnyBoatSpacesHaveReservations(boatSpaceIds)
         if (hasReservations == true) {
             throw IllegalArgumentException("Some of the boat spaces have reservations")
         }

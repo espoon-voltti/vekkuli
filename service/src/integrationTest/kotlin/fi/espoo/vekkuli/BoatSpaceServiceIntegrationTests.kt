@@ -470,4 +470,31 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             )
         }
     }
+
+    @Test
+    fun `boat spaces can not be deleted if any already has reservations`() {
+        val params =
+            CreateBoatSpaceParams(
+                1,
+                BoatSpaceType.Storage,
+                "A",
+                1,
+                BoatSpaceAmenity.Trailer,
+                100,
+                200,
+                1,
+                true
+            )
+        val boatSpaceId =
+            boatSpaceService.createBoatSpace(
+                params
+            )
+        val boatSpaceIds = listOf(1, boatSpaceId)
+        val message =
+            assertThrows(IllegalArgumentException::class.java) {
+                boatSpaceService.deleteBoatSpaces(boatSpaceIds)
+            }.message
+
+        assertEquals("Some of the boat spaces have reservations", message, "Boat space deletion throws correct exception")
+    }
 }

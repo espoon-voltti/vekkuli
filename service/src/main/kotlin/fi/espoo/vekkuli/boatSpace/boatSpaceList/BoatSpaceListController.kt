@@ -209,7 +209,13 @@ class BoatSpaceListController {
         @RequestParam boatSpaceIds: List<Int> = emptyList(),
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "EMPLOYEE_BOAT_SPACE_DELETE")
+            logger.audit(
+                it,
+                "EMPLOYEE_BOAT_SPACE_DELETE",
+                mapOf(
+                    "targetIds" to boatSpaceIds.toString()
+                )
+            )
         }
 
         request.ensureEmployeeId()

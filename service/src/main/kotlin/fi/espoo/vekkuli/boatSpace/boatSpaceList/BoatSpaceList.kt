@@ -60,8 +60,6 @@ class BoatSpaceList(
     private val deleteModal: ConfirmDeleteModal,
     private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
 ) : BaseView() {
-    fun t(key: String): String = messageUtil.getMessage(key)
-
     // language=HTML
     fun sortButton(
         column: String,
