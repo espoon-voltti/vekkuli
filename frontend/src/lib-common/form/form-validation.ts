@@ -13,7 +13,7 @@ export const TIME_REGEXP = /^(?:[0-1][0-9]|2[0-3]):[0-5][0-9]$/
 
 export const PHONE_REGEXP = /^[0-9 \-+()]{6,20}$/
 
-export const EMAIL_REGEXP = /^\S+@\S+$/
+export const EMAIL_REGEXP = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
 export type ErrorKey =
   | 'required'
