@@ -98,7 +98,7 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   )
   useEffect(() => {
     setFreeSpacesSearchParams(debouncedFreeSpacesSearchParams)
-    if (!switchInfo) setSearchState(transformFromStateToStoredState(bind.state))
+    setSearchState(transformFromStateToStoredState(bind.state))
   }, [debouncedFreeSpacesSearchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const searchResult = freeSpaces.isSuccess
