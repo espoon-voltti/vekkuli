@@ -110,7 +110,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
             assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
             listingPage.editModalButton.click()
             val editModal = listingPage.editModalPage
-            page.pause()
             editModal.fillForm(
                 "1.5",
                 "3.5",
@@ -158,7 +157,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
             listingPage.addBoatSpaceButton.click()
             val createModal = listingPage.createModal
             val harborParam = "8"
-            page.pause()
 
             createModal.fillForm(
                 "1.5",
