@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.TextAreaOptions
+import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.Modal
@@ -32,8 +33,9 @@ class SendMessageView(
 
     fun renderSendMessageModal(
         reservationCount: Int,
-        recipientCount: Int
+        recipients: List<Recipient>
     ): String {
+        val emails = recipients.joinToString("\n") { it.email }
         val modalBuilder = modal.createModalBuilder()
         val formId = "send-mass-email"
         val messageTitleField =
@@ -51,7 +53,7 @@ class SendMessageView(
                     id = "message-content",
                     name = "messageContent",
                     required = true,
-                    rows = 16,
+                    rows = 14,
                     resizable = true,
                     value = ""
                 )
@@ -73,10 +75,27 @@ class SendMessageView(
             //language=HTML
             .setContent(
                 """
+                    <script>
+                        function toggleEmailList(element) {
+                            let emailList = document.getElementById("recipient-emails");
+                            emailList.innerText = "Vastaanottajat:\n " +element.getAttribute("data-emails");
+                            
+                            if (emailList.style.display === "block") {
+                                emailList.style.display = "none";
+                                element.innerText = "Näytä vastaanottajat";
+                                return;
+                            }
+                            emailList.style.display = "block";
+                            element.innerText = "Piilota vastaanottajat";
+                        }
+                       
+                    </script>
                 <div class='columns is-multiline'>
                     <div class="column is-full" ${addTestId("send-mass-email-modal-subtitle")}>
-                    ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipientCount.toString()))}
+                            ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipients.size.toString()))}
                     </div>
+                    <div class="column is-full recipients"><a data-emails="$emails" onclick="toggleEmailList(this)">Näytä vastaanottajat</a></div>
+                    <div id="recipient-emails"></div>
                     <div class="column is-full">
                         $messageTitleField                        
                         $messageContentField

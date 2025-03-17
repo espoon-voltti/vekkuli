@@ -1135,6 +1135,29 @@ ul {
   font-size: 13px;
 }
 
+#send-mass-email {
+  .recipients {
+    cursor: help;
+    font-size: 13px;
+  }
+  #recipient-emails {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    white-space: nowrap;
+    z-index: 1000;
+    display: none;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    overflow: scroll;
+    max-height: 400px;
+  }
+}
+
 #sent-message-form {
   .close-modal {
     display: flex;
@@ -1154,7 +1177,6 @@ ul {
   .message-content {
     white-space: pre-line;
   }
-
 }
 
 #status-ball {

@@ -54,7 +54,7 @@ class MessageSendingController(
             reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
         val recipients = getDistinctRecipients(reservations)
         return ResponseEntity.ok(
-            sendMessageView.renderSendMessageModal(reservations.totalRows, recipients.size)
+            sendMessageView.renderSendMessageModal(reservations.totalRows, recipients.sortedBy { it.email })
         )
     }
 
