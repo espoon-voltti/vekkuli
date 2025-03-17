@@ -879,6 +879,26 @@ label.filter-button:has(input:checked) .icon {
   .right-gap {
     margin-right: $spacing-small;
   }
+
+  .button-like {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: white;
+    color: $bulma-primary;
+    border: 2px solid $bulma-primary;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .ack-link {
+    white-space: nowrap;
+    color: $warning;
+  }
 }
 
 .htmx-indicator{
