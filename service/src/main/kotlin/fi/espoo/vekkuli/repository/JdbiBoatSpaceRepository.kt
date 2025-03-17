@@ -209,7 +209,7 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
-    override fun getBoatSpace(boatSpaceIds: List<Int>): Boolean? =
+    override fun boatSpaceHasReservations(boatSpaceIds: List<Int>): Boolean? =
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
