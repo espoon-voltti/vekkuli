@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.domain.BoatSpaceState
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.shared.CitizenIds
@@ -98,45 +99,95 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
 
     @Test
     fun `should be able to edit boat space`() {
-        val listingPage = boatSpaceListPage()
-        listingPage.editButton(1).click()
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Storage")
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("RearBuoy")
-        assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
-        listingPage.editModalButton.click()
-        val editModal = listingPage.editModalPage
-        editModal.fillForm(
-            "1.5",
-            "3.5",
-            harbor = "3",
-            section = "C",
-            placeNumber = "1",
-            boatSpaceType = "Storage",
-            boatSpaceAmenity = "RearBuoy",
-            payment = "1"
-        )
-        editModal.submitButton.click()
-        listingPage.boatSpaceTypeFilter("Storage").click()
-        assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("Laajalahti")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("Rear buoy")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
+        try {
+            val listingPage = boatSpaceListPage()
+            listingPage.checkBox(1).click()
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("Storage")
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("RearBuoy")
+            assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
+            listingPage.editModalButton.click()
+            val editModal = listingPage.editModalPage
+            editModal.fillForm(
+                "1.5",
+                "3.5",
+                harbor = "3",
+                section = "C",
+                placeNumber = "1",
+                boatSpaceType = "Storage",
+                boatSpaceAmenity = "RearBuoy",
+                payment = "1"
+            )
+            editModal.submitButton.click()
+            listingPage.boatSpaceTypeFilter("Storage").click()
+            assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
+            assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
+            assertThat(listingPage.boatSpaceRow(1)).containsText("Laajalahti")
+            assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
+            assertThat(listingPage.boatSpaceRow(1)).containsText("Rear buoy")
+            assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
     }
 
     @Test
     fun `should be able to load more boat spaces`() {
-        val listingPage = boatSpaceListPage()
-        assertThat(listingPage.listItems).hasCount(50)
+        try {
+            val listingPage = boatSpaceListPage()
+            assertThat(listingPage.listItems).hasCount(50)
 
-        listingPage.showMoreButton().click()
-        assertThat(listingPage.listItems).hasCount(75)
-        listingPage.showMoreButton().click()
-        assertThat(listingPage.listItems).hasCount(100)
+            listingPage.showMoreButton().click()
+            assertThat(listingPage.listItems).hasCount(75)
+            listingPage.showMoreButton().click()
+            assertThat(listingPage.listItems).hasCount(100)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `should be able to add and delete a boat space`() {
+        try {
+            val listingPage = boatSpaceListPage()
+
+            // Add a new boat space
+            listingPage.addBoatSpaceButton.click()
+            val createModal = listingPage.createModal
+            val harborParam = "8"
+
+            createModal.fillForm(
+                "1.5",
+                "3.5",
+                harbor = harborParam,
+                section = "A",
+                placeNumber = "111",
+                boatSpaceType = "Storage",
+                boatSpaceAmenity = "RearBuoy",
+                payment = "2",
+                boatSpaceState = BoatSpaceState.Inactive
+            )
+            createModal.submitButton.click()
+            assertThat(createModal.successModal).isVisible()
+
+            listingPage.harborFilter(harborParam).click()
+            assertThat(listingPage.getBoatSpaceRowByIndex(0)).containsText("A 111")
+            assertThat(listingPage.listItems).hasCount(2)
+            listingPage.checkBox(listingPage.getBoatSpaceRowByIndex(0)).click()
+            listingPage.editModalButton.click()
+            // Remove the boat space
+
+            val editModal = listingPage.editModalPage
+            editModal.deleteButton.click()
+            editModal.confirmButton.click()
+            assertThat(editModal.deletionSuccessModal).isVisible()
+            assertThat(listingPage.getBoatSpaceRowByIndex(0)).not().containsText("A 111")
+            assertThat(listingPage.listItems).hasCount(1)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
     }
 
     @Test
@@ -147,7 +198,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
 
         listingPage.boatStateFilter("Inactive").click()
         page.waitForCondition { listingPage.listItems.count() == 4 }
-
         // click should select all when no rows are selected
         selectAllToggle.click()
         assertThat(selectAllToggle).isChecked()
@@ -159,18 +209,18 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertSelectedBoatSpaceCount(0)
 
         // click should select all when only some rows are manually selected
-        listingPage.editButton(testBoatSpaceId).click()
+        listingPage.checkBox(testBoatSpaceId).click()
         selectAllToggle.click()
         assertThat(selectAllToggle).isChecked()
         assertSelectedBoatSpaceCount(4)
 
         // deselecting manually some rows should mark the element as unchecked
-        listingPage.editButton(testBoatSpaceId).click()
+        listingPage.checkBox(testBoatSpaceId).click()
         assertThat(selectAllToggle).not().isChecked()
         assertSelectedBoatSpaceCount(3)
 
         // selecting manually all rows should mark the element as checked
-        listingPage.editButton(testBoatSpaceId).click()
+        listingPage.checkBox(testBoatSpaceId).click()
         assertThat(selectAllToggle).isChecked()
         assertSelectedBoatSpaceCount(4)
     }

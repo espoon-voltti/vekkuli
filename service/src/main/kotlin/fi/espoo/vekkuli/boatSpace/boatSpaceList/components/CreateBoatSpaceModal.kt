@@ -6,9 +6,10 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-class EditModal(
+class CreateBoatSpaceModal(
     private val formComponents: FormComponents,
 ) : BaseView() {
     fun render(
@@ -20,80 +21,79 @@ class EditModal(
         val harborDropdown =
             formComponents.select(
                 "boatSpaceList.label.harbor",
-                "harbor",
+                "harborCreation",
                 "",
-                listOf(Pair("", "Ei valittu")) + harborOptions,
-                placeholder = ""
+                harborOptions,
+                placeholder = "",
+                required = true
             )
 
-        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "section", null)
-        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumber", null)
+        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionCreation", null, true)
+        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberCreation", null, true)
 
         val boatSpaceTypeInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceType",
-                "boatSpaceType",
+                "boatSpaceTypeCreation",
                 "",
-                listOf(Pair("", "Ei valittu")) +
-                    BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
-                placeholder = ""
+                BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
+                placeholder = "",
+                required = true
             )
         val boatSpaceAmenityInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceAmenity",
-                "boatSpaceAmenity",
+                "boatSpaceAmenityCreation",
                 "",
-                listOf(Pair("", "Ei valittu")) + BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
+                BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
+                required = true
             )
-        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "width", null)
-        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "length", null)
+        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "widthCreation", null, true)
+        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "lengthCreation", null, true)
 
         val paymentInput =
             formComponents.select(
                 "boatSpaceList.label.paymentClass",
-                "payment",
+                "paymentCreation",
                 "",
-                listOf(Pair("", "Ei valittu")) + paymentClasses.map { Pair(it.id.toString(), it.name) },
+                paymentClasses.map { Pair(it.id.toString(), it.name) },
+                required = true
             )
         val isActiveInput =
             formComponents.radioButtons(
                 "boatSpaceList.label.state",
-                "boatSpaceState",
-                defaultValue = "",
+                "boatSpaceStateCreation",
+                defaultValue = BoatSpaceState.Active.name,
                 options =
-                    listOf(RadioOption("", "Ei valittu")) +
-                        BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
+                    BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
             )
         // language=HTML
         return (
             """
-            <div class="modal" x-show="openEditModal" style="display:none;">
-                <div class="modal-underlay" @click="openEditModal = false"></div>
+            <div class="modal" x-show="openCreateModal" style="display:none;">
+                <div class="modal-underlay" @click="openCreateModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
-                        <form class="is-1"
-                            hx-post="/virkailija/venepaikat/muokkaa"
-                            hx-swap="none" 
-                            hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
-                            <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
-                            <h2>Paikan tietojen muokkaus</h2>
-                            <p ${addTestId("target-boat-space-count")} class='mb-m'
-                                x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
+                        <form id="create-boat-space-form" class="is-1"
+                            hx-post="/virkailija/venepaikat/lisaa"
+                            hx-swap ="innerHTML"
+                            hx-target="#modal-container"
+                            hx-on:htmx:after-settle="document.getElementById('create-boat-space-button').disabled = false; document.getElementById('create-boat-space-button').classList.remove('is-loading')"
+>
+                            <h2>Uuden venepaikan luonti</h2>
                             <div class='form-section'>             
                                 <div class="columns ">
                                     <div class="column is-half">
                                         $harborDropdown
                                     </div>
-                                    <template x-if='editBoatSpaceIds.length === 1'>
-                                        <div class='columns'>
-                                            <div class="column">
-                                                $sectionInput
-                                            </div>
-                                            <div class="column">
-                                                $placeNumberInput
-                                            </div>
+                                    <div class='columns'>
+                                        <div class="column">
+                                            $sectionInput
                                         </div>
-                                    </template>
+                                        <div class="column">
+                                            $placeNumberInput
+                                        </div>
+                                    </div>
                                 </div>
                             
                                 <div class="columns">
@@ -127,22 +127,20 @@ class EditModal(
                                 </div>
                             </div>
                             <div class="buttons is-centered">
-                                <a class="button is-secondary"  ${addTestId("edit-modal-cancel")} x-on:click="openEditModal = false">
+                                <a class="button is-secondary" x-on:click="openCreateModal = false">
                                     ${t("cancel")}
                                 </a>
-                                 <a class="button is-danger is-outlined" ${addTestId(
-                "open-delete-modal"
-            )} x-on:click="openDeleteModal = true">
-                                    ${t("boatSpaceList.button.delete")}
-                                </a>
-                                <button class="button is-primary" 
-                                    type='submit'
-                                    ${addTestId("edit-modal-confirm")}>
-                                    ${t("boatSpaceList.button.edit")}
+                                <button id="create-boat-space-button" class="button is-primary" type='submit' ${addTestId(
+                "create-modal-confirm"
+            )}>
+                                    ${t("boatSpaceList.button.create")}
                                 </button>
                             </div>
-                        </div>
-                    </form>
+                            <script>
+                                validation.init({forms: ['create-boat-space-form']})
+                            </script>
+                        </form> 
+                    </div>
                 </div>
             </div>
             """.trimIndent()

@@ -15,7 +15,6 @@ data class BoatSpaceResponse(
     val amenity: BoatSpaceAmenity,
     val width: BigDecimal,
     val length: BigDecimal,
-    val description: String,
     val locationName: String?,
 )
 
@@ -45,6 +44,5 @@ class BoatSpaceResponseMapper(
             width = intToDecimal(boatSpace.widthCm),
             length = intToDecimal(boatSpace.lengthCm),
             locationName = boatSpace.locationName,
-            description = boatSpace.description,
         )
 }

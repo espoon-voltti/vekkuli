@@ -72,6 +72,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @BeforeEach
     override fun resetDatabase() {
+        createAndSeedDatabase(jdbi)
         deleteAllReservations(jdbi)
     }
 

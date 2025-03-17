@@ -35,10 +35,24 @@ data class EditBoatSpaceParams(
     val isActive: Boolean?
 )
 
+data class CreateBoatSpaceParams(
+    val locationId: Int,
+    val type: BoatSpaceType,
+    val section: String,
+    val placeNumber: Int,
+    val amenity: BoatSpaceAmenity,
+    val widthCm: Int,
+    val lengthCm: Int,
+    val priceId: Int,
+    val isActive: Boolean,
+)
+
 interface BoatSpaceRepository {
     fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int>
 
     fun getBoatSpace(boatSpace: Int): BoatSpace?
+
+    fun checkIfAnyBoatSpacesHaveReservations(boatSpaceIds: List<Int>): Boolean?
 
     fun isBoatSpaceAvailable(boatSpace: Int): Boolean
 
@@ -56,6 +70,10 @@ interface BoatSpaceRepository {
     )
 
     fun getBoatSpaceCount(filter: SqlExpr): Int
+
+    fun deleteBoatSpaces(boatSpaceIds: List<Int>)
+
+    fun createBoatSpace(params: CreateBoatSpaceParams): Int
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -119,16 +137,6 @@ class BoatSpaceService(
         return filters
     }
 
-    fun getBoatSpaceCount(params: BoatSpaceListParams): Int {
-        val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
-
-        return boatSpaceRepo.getBoatSpaceCount(
-            AndExpr(
-                filters
-            )
-        )
-    }
-
     fun getUnreservedBoatSpaceOptions(
         boatType: BoatType? = null,
         width: BigDecimal? = null,
@@ -162,5 +170,15 @@ class BoatSpaceService(
             editParams = editParams.copy(section = null, placeNumber = null)
         }
         boatSpaceRepo.editBoatSpaces(boatSpaceIds, editParams)
+    }
+
+    fun createBoatSpace(params: CreateBoatSpaceParams): Int = boatSpaceRepo.createBoatSpace(params)
+
+    fun deleteBoatSpaces(boatSpaceIds: List<Int>) {
+        val hasReservations = boatSpaceRepo.checkIfAnyBoatSpacesHaveReservations(boatSpaceIds)
+        if (hasReservations == true) {
+            throw IllegalArgumentException("Some of the boat spaces have reservations")
+        }
+        boatSpaceRepo.deleteBoatSpaces(boatSpaceIds)
     }
 }

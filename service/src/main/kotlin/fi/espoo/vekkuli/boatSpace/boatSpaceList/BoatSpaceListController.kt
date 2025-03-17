@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
@@ -28,7 +31,6 @@ data class BoatSpaceListRow(
     val amenity: BoatSpaceAmenity,
     private val widthCm: Int,
     private val lengthCm: Int,
-    val description: String,
     val locationName: String?,
     val locationAddress: String?,
     private val priceCents: Int,
@@ -50,10 +52,13 @@ data class BoatSpaceListRow(
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
     @Autowired
-    private lateinit var priceService: PriceService
+    private lateinit var failModalView: FailModalView
 
     @Autowired
-    private lateinit var paymentService: PaymentService
+    private lateinit var successModalView: SuccessModalView
+
+    @Autowired
+    private lateinit var priceService: PriceService
 
     @Autowired
     private lateinit var boatSpaceService: BoatSpaceService
@@ -116,7 +121,7 @@ class BoatSpaceListController {
         )
     }
 
-    @PostMapping("/selaa/muokkaa")
+    @PostMapping("/muokkaa")
     @ResponseBody
     fun boatSpaceEdit(
         request: HttpServletRequest,
@@ -159,5 +164,76 @@ class BoatSpaceListController {
             boatSpaceService.getBoatSpacesFiltered(params)
 
         return ResponseEntity.ok(boatSpaceListRowsPartial.render(boatSpaces))
+    }
+
+    @PostMapping("/lisaa")
+    @ResponseBody
+    fun boatSpaceAdd(
+        request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceListAddParams
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_BOAT_SPACE_ADD")
+        }
+
+        request.ensureEmployeeId()
+        try {
+            boatSpaceService.createBoatSpace(
+                CreateBoatSpaceParams(
+                    params.harborCreation,
+                    params.boatSpaceTypeCreation,
+                    params.sectionCreation,
+                    params.placeNumberCreation,
+                    params.boatSpaceAmenityCreation,
+                    decimalToInt(params.widthCreation),
+                    decimalToInt(params.lengthCreation),
+                    params.paymentCreation,
+                    params.boatSpaceStateCreation == BoatSpaceState.Active
+                )
+            )
+            return ResponseEntity.ok(
+                successModalView.creationModal()
+            )
+        } catch (e: Exception) {
+            logger.error { "Boat space creation failed: ${e.message}" }
+            return ResponseEntity.ok(
+                failModalView.creationModal()
+            )
+        }
+    }
+
+    @PostMapping("/poista")
+    @ResponseBody
+    fun boatSpaceDelete(
+        request: HttpServletRequest,
+        @RequestParam boatSpaceIds: List<Int> = emptyList(),
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "EMPLOYEE_BOAT_SPACE_DELETE",
+                mapOf(
+                    "targetIds" to boatSpaceIds.toString()
+                )
+            )
+        }
+
+        request.ensureEmployeeId()
+        try {
+            boatSpaceService.deleteBoatSpaces(boatSpaceIds)
+            return ResponseEntity.ok(
+                successModalView.deletionModal()
+            )
+        } catch (e: IllegalArgumentException) {
+            logger.error { "Boat space deletion failed. Boat space has reservations. Message: ${e.message}" }
+            return ResponseEntity.ok(
+                failModalView.deletionModal(DeletionError.BOAT_SPACE_HAS_RESERVATIONS)
+            )
+        } catch (e: Exception) {
+            logger.error { "Boat space deletion failed: ${e.message}" }
+            return ResponseEntity.ok(
+                failModalView.deletionModal()
+            )
+        }
     }
 }

@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceRepository
+import fi.espoo.vekkuli.service.CreateBoatSpaceParams
 import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Jdbi
@@ -208,6 +209,23 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
+    override fun checkIfAnyBoatSpacesHaveReservations(boatSpaceIds: List<Int>): Boolean? =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM boat_space_reservation
+                    WHERE boat_space_id IN (<boatSpaceIds>)
+                )
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bindList("boatSpaceIds", boatSpaceIds)
+
+            query.mapTo<Boolean>().firstOrNull()
+        }
+
     override fun getBoatSpaces(
         filter: SqlExpr,
         sortBy: BoatSpaceSortBy?,
@@ -225,7 +243,6 @@ class JdbiBoatSpaceRepository(
                     bs.amenity,
                     bs.width_cm,
                     bs.length_cm,
-                    bs.description,
                     bs.is_active,
                     location.name AS location_name, 
                     location.address AS location_address,
@@ -332,6 +349,66 @@ class JdbiBoatSpaceRepository(
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
             query.mapTo<Int>().first()
+        }
+
+    override fun deleteBoatSpaces(boatSpaceIds: List<Int>) {
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                DELETE FROM boat_space
+                WHERE id IN (<boatSpaceIds>)
+                """.trimIndent()
+            val query = handle.createUpdate(sql)
+            query.bindList("boatSpaceIds", boatSpaceIds)
+            query.execute()
+        }
+    }
+
+    override fun createBoatSpace(params: CreateBoatSpaceParams): Int =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                INSERT INTO boat_space (
+                    type,
+                    location_id,
+                    price_id,
+                    section,
+                    place_number,
+                    amenity,
+                    width_cm,
+                    length_cm,
+                    created,
+                    updated,
+                    is_active
+                ) VALUES (
+                    :type,
+                    :locationId,
+                    :priceId,
+                    :section,
+                    :placeNumber,
+                    :amenity,
+                    :widthCm,
+                    :lengthCm,
+                    :currentTime,
+                    :currentTime,
+                    :isActive
+                )
+                """.trimIndent()
+            val query = handle.createUpdate(sql)
+            query.bind("type", params.type)
+            query.bind("locationId", params.locationId)
+            query.bind("priceId", params.priceId)
+            query.bind("section", params.section.uppercase())
+            query.bind("placeNumber", params.placeNumber)
+            query.bind("amenity", params.amenity)
+            query.bind("widthCm", params.widthCm)
+            query.bind("lengthCm", params.lengthCm)
+            query.bind("isActive", params.isActive)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query
+                .executeAndReturnGeneratedKeys()
+                .mapTo(Int::class.java) // Assuming the ID is of type Long
+                .one()
         }
 
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =

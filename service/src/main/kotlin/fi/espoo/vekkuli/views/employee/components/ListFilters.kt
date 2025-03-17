@@ -18,7 +18,7 @@ class ListFilters : BaseView() {
                 """
                 <label class="filter-button" ${
                     addTestId(
-                        "filter-harbor-$harbor.name"
+                        "filter-harbor-${harbor.id}"
                     )
                 }>
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (hasHarbor(

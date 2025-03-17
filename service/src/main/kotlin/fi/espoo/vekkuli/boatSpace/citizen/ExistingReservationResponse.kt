@@ -58,7 +58,6 @@ data class ExistingReservationResponse(
         val amenity: BoatSpaceAmenity,
         val width: BigDecimal,
         val length: BigDecimal,
-        val description: String,
         val excludedBoatTypes: List<BoatType>? = null,
         val locationName: String?,
     )
@@ -129,7 +128,6 @@ class ExistingReservationResponseMapper(
                     length =
                         fi.espoo.vekkuli.utils
                             .intToDecimal(boatSpace.lengthCm),
-                    description = boatSpace.description,
                     excludedBoatTypes = boatSpace.excludedBoatTypes,
                     locationName = boatSpace.locationName
                 ),
