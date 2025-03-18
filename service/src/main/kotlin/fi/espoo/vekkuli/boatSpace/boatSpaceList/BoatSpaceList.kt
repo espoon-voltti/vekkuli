@@ -274,6 +274,12 @@ class BoatSpaceList(
                                 <th class="nowrap">
                                 ${sortButton(
             BoatSpaceFilterColumn.PRICE.name,
+            t("boatSpaceList.title.priceClass")
+        )}
+                                </th>   
+                                <th class="nowrap">
+                                ${sortButton(
+            BoatSpaceFilterColumn.PRICE.name,
             t("boatSpaceList.title.price")
         )}
                                 </th>
@@ -295,6 +301,7 @@ class BoatSpaceList(
                                 <th></th>
                                 <th></th>
                                 <th>$sectionFilter</th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
