@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import java.util.*
 
 @Controller
-class UpdateReservationTypeModal {
+class UpdateReservationValidityModal {
     @Autowired
     private lateinit var reservationValidityUpdateModal: ReservationValidityUpdateModal
 
@@ -31,7 +31,7 @@ class UpdateReservationTypeModal {
 
     @GetMapping("/reservation/modal/update-type/{reservationId}/{reserverId}")
     @ResponseBody
-    fun updatePaymentStatusModal(
+    fun updateReservationValidityModal(
         @PathVariable reservationId: Int,
         @PathVariable reserverId: UUID,
         request: HttpServletRequest,
