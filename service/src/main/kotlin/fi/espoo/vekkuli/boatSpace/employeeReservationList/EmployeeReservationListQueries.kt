@@ -120,9 +120,10 @@ fun getFilteredAndPaginatedBoatSpaceReservationIds(
             JOIN location ON location_id = location.id
             JOIN municipality m ON r.municipality_code = m.code
             LEFT JOIN LATERAL (
-                SELECT rw.key 
+                SELECT rw.key, rw.created 
                 FROM reservation_warning rw 
-                WHERE rw.reservation_id = bsr.id 
+                WHERE rw.reservation_id = bsr.id
+                ORDER BY rw.created DESC
                 LIMIT 1
             ) rw ON TRUE
             """.trimIndent()
