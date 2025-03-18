@@ -1127,7 +1127,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
         mockTimeProvider(timeProvider, reservationTimerExpired)
 
         // start reservation as Olivia
-        browser.newContext().use { oliviaContext ->
+        val oliviaBrowser = browser.newContext()
+        oliviaBrowser.use { oliviaContext ->
             val oliviaPage = oliviaContext.newPage()
             CitizenHomePage(oliviaPage).loginAsOliviaVirtanen()
 
@@ -1139,6 +1140,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             oliviaReserveModal.reserveANewSpace.click()
             assertThat(BoatSpaceFormPage(oliviaPage).header).isVisible()
         }
+        oliviaBrowser.close()
 
         // pay reservation as mikko
         mikkoPaymentPage.payReservation()

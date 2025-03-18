@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.utils
 
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.CreationType
@@ -9,6 +10,8 @@ import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.ReservationWithDependencies
 
 fun reservationStatusToText(reservationStatus: ReservationStatus): String =
     when (reservationStatus) {
@@ -101,3 +104,16 @@ fun reservationCreationTypeToText(creationType: CreationType?): String =
         CreationType.Switch -> "Vaihto"
         else -> ""
     }
+
+fun reservationValidityToText(validity: ReservationValidity?): String =
+    when (validity) {
+        ReservationValidity.FixedTerm -> "Määräaikainen"
+        ReservationValidity.Indefinite -> "Jatkuva"
+        else -> ""
+    }
+
+fun reservationToText(reservation: ReservationWithDependencies): String =
+    "${reservation.locationName} ${boatSpaceTypeToText(reservation.type)} ${reservation.place}"
+
+fun reservationToText(reservation: BoatSpaceReservationDetails): String =
+    "${reservation.locationName} ${boatSpaceTypeToText(reservation.type)} ${reservation.place}"

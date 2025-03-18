@@ -12,6 +12,9 @@ class CitizenDetailsPage(
     val citizenDetailsSection = page.getByTestId("reserver-details")
 
     val reservationValidity = getByDataTestId("reservation-validity")
+    val updateReservationValidity = getByDataTestId("update-reservation-validity-link")
+    val reservationValidityIndefiniteRadioButton = page.getByTestId("reservationValidity-Indefinite")
+    val reservationValidityModalConfirm = page.getByTestId("reservation-validity-modal-confirm")
 
     val paymentStatus = getByDataTestId("payment-status")
 

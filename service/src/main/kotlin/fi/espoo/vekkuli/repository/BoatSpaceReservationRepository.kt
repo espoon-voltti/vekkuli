@@ -110,4 +110,10 @@ interface BoatSpaceReservationRepository {
     fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails>
 
     fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation
+
+    fun updateReservationValidity(
+        reservationId: Int,
+        newValidity: ReservationValidity,
+        endDate: LocalDate
+    )
 }

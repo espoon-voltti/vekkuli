@@ -1078,6 +1078,26 @@ class JdbiBoatSpaceReservationRepository(
             handle.createQuery("SELECT * FROM location").mapTo<Location>().toList()
         }
 
+    override fun updateReservationValidity(
+        reservationId: Int,
+        newValidity: ReservationValidity,
+        endDate: LocalDate
+    ) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    UPDATE boat_space_reservation
+                    SET validity = :validity, end_date = :endDate
+                    WHERE id = :id
+                    """.trimIndent()
+                ).bind("id", reservationId)
+                .bind("validity", newValidity)
+                .bind("endDate", endDate)
+                .execute()
+        }
+    }
+
     private fun buildSqlSelectPartForBoatSpaceReservationDetails() =
         """
         SELECT bsr.id,
