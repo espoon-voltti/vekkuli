@@ -396,10 +396,21 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             "paikka",
             "paikan leveys",
             "paikan pituus",
+            "veneen leveys",
+            "veneen pituus",
             "paikan varuste",
-            "tyyppi",
+            "paikan tyyppi",
             "varaaja",
             "kotikunta",
+            "veneen rekisterinumero",
+            "hinta",
+            "maksuluokka",
+            "tyyppi",
+            "irtisanomisaika",
+            "irtisanomissyy",
+            "alkupvm",
+            "loppupvm",
+            "maksupäivä",
             "irtisanomisaika",
             "Irtisanomisen syy"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
@@ -419,6 +430,10 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
@@ -427,6 +442,24 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.endDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_RECORD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
