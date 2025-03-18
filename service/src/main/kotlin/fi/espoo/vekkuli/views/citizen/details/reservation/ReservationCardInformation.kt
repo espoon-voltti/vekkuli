@@ -89,7 +89,6 @@ class ReservationCardInformation : BaseView() {
             """
             <div>
                 <a class="is-link is-icon-link edit-link"
-                    id="update-reservation-validity-link"
                     data-testid="update-reservation-validity-link"
                     hx-get="/reservation/modal/update-type/${reservation.id}/$reserverId"
                     hx-target="#modal-container"
