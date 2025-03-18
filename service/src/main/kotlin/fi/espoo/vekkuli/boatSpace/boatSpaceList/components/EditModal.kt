@@ -67,11 +67,14 @@ class EditModal(
         // language=HTML
         return (
             """
-            <div class="modal" x-show="openEditModal" style="display:none;">
-                <div class="modal-underlay" @click="openEditModal = false"></div>
-                <div class="modal-content">
+            <div class="modal" x-show="openEditModal" style="display:none;" x-data="{closeModal() {
+                    document.getElementById('edit-form').reset(); openEditModal = false;
+                }}">
+                <div class="modal-underlay" @click="closeModal()"></div>
+                <div class="modal-content" >
                     <div class="container">
-                        <form id="edit-form" class="is-1"
+                        <form 
+                            id="edit-form" class="is-1"
                             hx-post="/virkailija/venepaikat/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
@@ -127,7 +130,9 @@ class EditModal(
                                 </div>
                             </div>
                             <div class="buttons is-centered">
-                                <a class="button is-secondary"  ${addTestId("edit-modal-cancel")} x-on:click="openEditModal = false">
+                                <a class="button is-secondary"  ${addTestId(
+                "edit-modal-cancel"
+            )} x-on:click="closeModal()">
                                     ${t("cancel")}
                                 </a>
                                  <a class="button is-danger is-outlined" ${addTestId(
