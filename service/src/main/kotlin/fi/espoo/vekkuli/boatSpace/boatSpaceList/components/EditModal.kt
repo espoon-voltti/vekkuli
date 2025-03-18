@@ -71,7 +71,7 @@ class EditModal(
                 <div class="modal-underlay" @click="openEditModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
-                        <form class="is-1"
+                        <form id="edit-form" class="is-1"
                             hx-post="/virkailija/venepaikat/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
@@ -143,7 +143,10 @@ class EditModal(
                             </div>
                         </div>
                     </form>
-                </div>
+                <script>
+                            validation.init({forms: ['edit-form']})
+                        </script>
+                    </div>
             </div>
             """.trimIndent()
         )
