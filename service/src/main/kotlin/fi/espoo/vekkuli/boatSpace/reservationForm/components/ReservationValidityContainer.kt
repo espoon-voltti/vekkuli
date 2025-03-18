@@ -9,9 +9,12 @@ import org.springframework.stereotype.Component
 // language=HTML
 @Component
 class ReservationValidityContainer(
-    private val formComponents: FormComponents,
+    private val formComponents: FormComponents
 ) : BaseView() {
-    fun render(reservationValidity: ReservationValidity? = ReservationValidity.Indefinite): String {
+    fun render(
+        reservationValidity: ReservationValidity? = ReservationValidity.Indefinite,
+        fixedTermSubLabel: String? = null
+    ): String {
         val radioButtons =
             formComponents.radioButtons(
                 "boatApplication.title.reservationValidity",
@@ -19,7 +22,11 @@ class ReservationValidityContainer(
                 reservationValidity?.name,
                 listOf(
                     RadioOption(ReservationValidity.Indefinite.name, t("boatApplication.title.reservationValidity.indefinite")),
-                    RadioOption(ReservationValidity.FixedTerm.name, t("boatApplication.title.reservationValidity.fixedTerm"))
+                    RadioOption(
+                        ReservationValidity.FixedTerm.name,
+                        t("boatApplication.title.reservationValidity.fixedTerm"),
+                        fixedTermSubLabel
+                    )
                 ),
                 mapOf("x-model" to "reservationValidity"),
                 isColumnLayout = false

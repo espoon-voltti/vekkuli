@@ -2,12 +2,14 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.ReservationValidityContainer
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.utils.fullDateFormat
 import fi.espoo.vekkuli.utils.reservationToText
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.util.UUID
 
 @Component
@@ -20,10 +22,17 @@ class ReservationValidityUpdateModal : BaseView() {
 
     fun render(
         reserverId: UUID,
-        @SanitizeInput reservation: BoatSpaceReservationDetails
+        @SanitizeInput reservation: BoatSpaceReservationDetails,
+        fixedTermEndDate: LocalDate,
     ): String {
         val formId = "reservation-validity-update-form"
-        val reservationValiditySelectorInput = reservationValidityContainer.render(reservation.validity)
+        val reservationValiditySelectorInput =
+            reservationValidityContainer.render(
+                reservation.validity,
+                "(voimassa ${fixedTermEndDate.format(
+                    fullDateFormat
+                )} asti)"
+            )
 
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
