@@ -158,6 +158,21 @@ class CitizenDetailsPage(
             firstBoatSpaceReservationCard
         )
 
+    val boatInFirstBoatSpaceReservationCard =
+        getByDataTestId(
+            "reservation-list-card-boat",
+            firstBoatSpaceReservationCard
+        )
+
+    val editBoatInFirstBoatSpaceReservationCard =
+        getByDataTestId(
+            "open-change-reservation-boat-modal",
+            firstBoatSpaceReservationCard
+        )
+
+    val changeBoatSelect = page.getByTestId("change-reservation-boat-select")
+    val changeBoatConfirm = getByDataTestId("change-reservation-boat-confirm")
+
     val terminateReservationButton = getByDataTestId("open-terminate-reservation-modal")
     val terminateReservationModalConfirm = getByDataTestId("terminate-reservation-modal-confirm")
     val terminateReservationModalCancel = getByDataTestId("terminate-reservation-modal-cancel")

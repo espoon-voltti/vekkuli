@@ -469,6 +469,30 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun `employee can change the boat in a citizen reservation`() {
+        try {
+            val employeeHomePage = EmployeeHomePage(page)
+            val existingBoat = "Leon vene"
+            val newBoat = "Leon toinen liian iso vene"
+            employeeHomePage.employeeLogin()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToUserPage(CitizenIds.leo)
+
+            val boat = citizenDetails.boatInFirstBoatSpaceReservationCard
+            assertThat(boat).containsText(existingBoat)
+
+            citizenDetails.editBoatInFirstBoatSpaceReservationCard.click()
+            citizenDetails.changeBoatSelect.selectOption(newBoat)
+            citizenDetails.changeBoatConfirm.click()
+
+            assertThat(boat).containsText(newBoat)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     private fun reservationListPage(): ReservationListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()

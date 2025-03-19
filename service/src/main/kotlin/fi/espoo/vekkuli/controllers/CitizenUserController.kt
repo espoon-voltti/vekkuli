@@ -924,6 +924,35 @@ class CitizenUserController(
         )
     )!!
 
+    @PostMapping("/virkailija/venepaikat/varaukset/vaihda-vene")
+    fun changeReservationBoat(
+        @RequestParam reservationId: Int,
+        @RequestParam boatId: Int,
+        request: HttpServletRequest
+    ): ResponseEntity<String> {
+        val user = request.getAuthenticatedEmployee()
+        logger.audit(
+            user,
+            "CITIZEN_PROFILE_CHANGE_RESERVATION_BOAT",
+            mapOf(
+                "targetId" to reservationId.toString(),
+                "boatId" to boatId.toString(),
+            )
+        )
+        try {
+            reservationService.changeReservationBoat(
+                reservationId,
+                boatId,
+            )
+            return ResponseEntity.ok(
+                "ok"
+            )
+        } catch (e: Exception) {
+            logger.error { "Reservation boat change failed. Message: ${e.message}" }
+            return ResponseEntity.badRequest().body("failed")
+        }
+    }
+
     @PostMapping("/virkailija/venepaikat/varaukset/status")
     fun updateReservationStatus(
         @RequestParam reservationId: Int,
