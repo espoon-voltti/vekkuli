@@ -23,6 +23,8 @@ enum class ReservationWarningType {
     BoatLength,
     BoatFutureOwner,
     BoatCoOwner,
+    BoatOwnershipChange,
+    BoatRegistrationCodeChange,
     BoatWeight,
     BoatType,
     TrailerWidth,
