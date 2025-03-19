@@ -329,6 +329,80 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    fun `should add warning when citizen edits boat registration code`() {
+        try {
+            CitizenHomePage(page).loginAsLeoKorhonen()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
+
+            val boat = citizenDetails.getBoatSection("Leon vene")
+            boat.editButton.click()
+            boat.registrationNumberInput.fill("A66778")
+            boat.saveButton.click()
+
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            assertThat(listingPage.warningIcon).isVisible()
+
+            listingPage.boatSpace1.click()
+
+            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+            employeeCitizenDetails.acknowledgeWarningButton(1).click()
+            assertThat(employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput).isVisible()
+            employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput.click()
+            val infoText = "Test info"
+            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+
+            employeeCitizenDetails.memoNavi.click()
+            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `should add warning when citizen edits boat ownership`() {
+        try {
+            CitizenHomePage(page).loginAsLeoKorhonen()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
+
+            val boat = citizenDetails.getBoatSection("Leon vene")
+            boat.editButton.click()
+            boat.ownershipSelect.selectOption("CoOwner")
+            boat.saveButton.click()
+
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            assertThat(listingPage.warningIcon).isVisible()
+
+            listingPage.boatSpace1.click()
+
+            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+            employeeCitizenDetails.acknowledgeWarningButton(1).click()
+            assertThat(employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput).isVisible()
+            employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput.click()
+            val infoText = "Test info"
+            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+
+            employeeCitizenDetails.memoNavi.click()
+            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `citizen can see switch button on slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
