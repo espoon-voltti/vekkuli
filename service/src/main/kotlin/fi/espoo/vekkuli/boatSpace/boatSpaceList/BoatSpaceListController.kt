@@ -94,11 +94,11 @@ class BoatSpaceListController {
         val harbors = reservationService.getHarbors()
         val boatSpaceTypes = BoatSpaceType.entries.toList()
 
-        val initialPageSize = 50
-        val loadMorePageSize = 25
+        val initialPageSize = 100
+        val loadMorePageSize = 100
 
         val boatSpaces =
-            boatSpaceService.getBoatSpacesFiltered(params, 0, initialPageSize)
+            boatSpaceService.getBoatSpacesFiltered(params, params.paginationStart, initialPageSize)
 
         val sections = boatSpaceService.getSections()
         val priceClasses = priceService.getPriceClasses()

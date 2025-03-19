@@ -136,13 +136,15 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     @Test
     fun `should be able to load more boat spaces`() {
         try {
+            val startingCount = 100
+            val itemsShownOnClick = 100
             val listingPage = boatSpaceListPage()
-            assertThat(listingPage.listItems).hasCount(50)
+            assertThat(listingPage.listItems).hasCount(startingCount)
 
             listingPage.showMoreButton().click()
-            assertThat(listingPage.listItems).hasCount(75)
+            assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick)
             listingPage.showMoreButton().click()
-            assertThat(listingPage.listItems).hasCount(100)
+            assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick + itemsShownOnClick)
         } catch (e: AssertionError) {
             handleError(e)
         }
