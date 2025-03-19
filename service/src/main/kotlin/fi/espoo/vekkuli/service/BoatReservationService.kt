@@ -275,6 +275,15 @@ class BoatReservationService(
             warnings.add(ReservationWarningType.BoatCoOwner.name)
         }
 
+        if (previousBoatInfo != null) {
+            if (previousBoatInfo.ownership != boat.ownership) {
+                warnings.add(ReservationWarningType.BoatOwnershipChange.name)
+            }
+            if (previousBoatInfo.registrationCode != boat.registrationCode) {
+                warnings.add(ReservationWarningType.BoatRegistrationCodeChange.name)
+            }
+        }
+
         if (boat.weightKg > BOAT_WEIGHT_THRESHOLD_KG) {
             warnings.add(ReservationWarningType.BoatWeight.name)
         }
