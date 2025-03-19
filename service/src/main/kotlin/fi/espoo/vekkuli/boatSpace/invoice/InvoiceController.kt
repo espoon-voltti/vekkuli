@@ -90,6 +90,7 @@ class InvoiceController(
         try {
             handleInvoiceSending(reservation, input)
         } catch (e: Exception) {
+            logger.error(e) { "Failed to send invoice" }
             val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }

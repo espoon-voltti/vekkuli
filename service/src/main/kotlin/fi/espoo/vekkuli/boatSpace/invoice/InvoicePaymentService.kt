@@ -76,6 +76,7 @@ class InvoicePaymentService(
                 invoiceNumber = invoiceNumber
             )
         } catch (e: Exception) {
+            logger.error { "Error creating invoice payment" }
             throw Exception("Error creating invoice payment", e)
         }
     }

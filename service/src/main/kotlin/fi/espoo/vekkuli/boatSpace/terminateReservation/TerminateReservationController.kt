@@ -45,6 +45,7 @@ class TerminateReservationController(
                 terminationSuccessModalView.render()
             )
         } catch (e: Exception) {
+            logger.error { e.message }
             return ResponseEntity.ok(
                 terminationFailModalView.render()
             )
@@ -88,6 +89,7 @@ class TerminateReservationController(
                 terminationSuccessModalView.render()
             )
         } catch (e: Exception) {
+            logger.error { e.message }
             return ResponseEntity.ok(
                 terminationFailModalView.render()
             )
