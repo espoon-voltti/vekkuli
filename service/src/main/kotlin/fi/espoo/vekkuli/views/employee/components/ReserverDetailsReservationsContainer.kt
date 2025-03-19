@@ -261,7 +261,9 @@ class ReserverDetailsReservationsContainer(
                         boatInfo(
                             "boat-registrationNumber-text-${boat.id}",
                             boat.registrationNumber,
-                            "boatSpaceReservation.title.registrationNumber"
+                            "boatSpaceReservation.title.registrationNumber",
+                            showWarnings &&
+                                (boat.hasWarning(ReservationWarningType.BoatRegistrationCodeChange.name))
                         )
                     val length =
                         boatInfo(
@@ -278,7 +280,8 @@ class ReserverDetailsReservationsContainer(
                             showWarnings &&
                                 (
                                     boat.hasWarning(ReservationWarningType.BoatFutureOwner.name) ||
-                                        boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                                        boat.hasWarning(ReservationWarningType.BoatCoOwner.name) ||
+                                        boat.hasWarning(ReservationWarningType.BoatOwnershipChange.name)
                                 )
                         )
                     val otherIdentifier =
