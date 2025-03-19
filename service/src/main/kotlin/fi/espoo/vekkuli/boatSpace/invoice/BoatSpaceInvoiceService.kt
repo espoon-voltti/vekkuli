@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.repository.OrganizationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -29,13 +30,15 @@ class BoatSpaceInvoiceService(
     private val reserverService: ReserverService,
     private val reserverRepository: ReserverRepository,
     private val organizationRepository: OrganizationRepository,
-    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>,
+    private val memoService: MemoService
 ) {
     @Transactional
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
         reserverId: UUID,
         reservationId: Int,
+        employeeId: UUID,
         markAsPaidAndSkipSending: Boolean = false
     ): Invoice? {
         val invoice = paymentService.getInvoiceForReservation(reservationId)
@@ -66,6 +69,11 @@ class BoatSpaceInvoiceService(
                 )
             )
         }
+        memoService.insertMemo(
+            reserverId,
+            employeeId,
+            if (markAsPaidAndSkipSending) "Merkitty maksetuksi" else "Lasku luotu"
+        )
         return createdInvoice
     }
 

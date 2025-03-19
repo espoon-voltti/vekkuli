@@ -81,6 +81,8 @@ class InvoiceController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "SEND_INVOICE", mapOf("targetId" to reservationId.toString()))
         }
+        val employeeId = request.ensureEmployeeId()
+
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
 
@@ -88,7 +90,7 @@ class InvoiceController(
             throw IllegalArgumentException("Reservation not found")
         }
         try {
-            handleInvoiceSending(reservation, input)
+            handleInvoiceSending(reservation, input, employeeId)
         } catch (e: Exception) {
             logger.error(e) { "Failed to send invoice" }
             val content = invoicePreview.invoiceErrorPage()
@@ -113,7 +115,8 @@ class InvoiceController(
 
     private fun handleInvoiceSending(
         reservation: ReservationWithDependencies,
-        input: InvoiceInput
+        input: InvoiceInput,
+        employeeId: UUID
     ) {
         if (reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
@@ -136,6 +139,7 @@ class InvoiceController(
                 invoiceData,
                 reservation.reserverId,
                 reservation.id,
+                employeeId,
                 markAsPaidAndSkipSending = input.markAsPaid
             )
 

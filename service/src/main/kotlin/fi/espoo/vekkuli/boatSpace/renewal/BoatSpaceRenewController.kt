@@ -104,7 +104,8 @@ class BoatSpaceRenewController(
                 renewedReservation.id,
                 renewedReservation.reserverId,
                 renewedReservation.originalReservationId,
-                input
+                input,
+                employeeId
             )
             return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {
