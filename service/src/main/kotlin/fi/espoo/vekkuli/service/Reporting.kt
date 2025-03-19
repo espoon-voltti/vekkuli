@@ -388,7 +388,7 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     return csvContent.toString()
 }
 
-fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     val csvHeader =
         listOf(
             "satama",
@@ -399,15 +399,20 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "veneen leveys",
             "veneen pituus",
             "paikan varuste",
-            "tyyppi",
+            "paikan tyyppi",
             "varaaja",
             "kotikunta",
             "veneen rekisterinumero",
             "hinta",
             "maksuluokka",
+            "tyyppi",
+            "irtisanomisaika",
+            "irtisanomissyy",
+            "alkupvm",
+            "loppupvm",
             "maksupäivä",
-            "varauksen alkupäivämäärä",
-            "tyyppi"
+            "irtisanomisaika",
+            "Irtisanomisen syy"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -443,56 +448,18 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode))
             .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.startDate)))
             .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(sanitizeCsvCellData(localDateToText(report.endDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
             .append(CSV_RECORD_SEPARATOR)
-    }
-
-    return csvContent.toString()
-}
-
-fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
-    val csvHeader =
-        listOf(
-            "satama",
-            "laituri",
-            "paikka",
-            "paikan leveys",
-            "paikan pituus",
-            "paikan varuste",
-            "tyyppi",
-            "varaaja",
-            "kotikunta",
-            "irtisanomisaika",
-            "Irtisanomisen syy"
-        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
-
-    val csvContent = StringBuilder()
-    csvContent.append(csvHeader)
-
-    for (report in reportRows) {
-        csvContent
-            .append(sanitizeCsvCellData(report.harbor))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.pier))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.name))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.municipality))
-            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
