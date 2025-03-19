@@ -135,7 +135,7 @@ class BoatSpaceService(
             filters.add(IsBoatSpaceStateExpr(params.boatSpaceState))
         }
 
-        if (params.showOnlyFree) {
+        if (params.showOnlyFreeSpaces) {
             filters.add(ShowOnlyFreeSpacesExpr())
         }
         return filters

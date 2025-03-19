@@ -79,7 +79,7 @@ class ListFilters : BaseView() {
             """
                 <label class="filter-button" ${
                 addTestId(
-                    "filter-type-$amenity"
+                    "filter-amenity-$amenity"
                 )
             }>
                     <input type="checkbox" name="amenity" value="$amenity" class="is-hidden" ${

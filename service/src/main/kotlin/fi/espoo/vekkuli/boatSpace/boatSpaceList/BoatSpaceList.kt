@@ -23,7 +23,7 @@ data class BoatSpaceListParams(
     val boatSpaceState: List<BoatSpaceState> = emptyList(),
     val sectionFilter: List<String> = emptyList(),
     val edit: List<String> = emptyList(),
-    val showOnlyFree: Boolean = false,
+    val showOnlyFreeSpaces: Boolean = false,
     val paginationStart: Int = 0,
     val paginationEnd: Int = 50
 )
@@ -233,7 +233,7 @@ class BoatSpaceList(
                     </div>
                 </div>
                 <div class="employee-filter-container">
-                ${formComponents.checkBox(t("boatSpaceList.title.showOnlyFreeSpaces"), "showOnlyFree", false, "showOnlyFree")}
+                ${formComponents.checkBox(t("boatSpaceList.title.showOnlyFreeSpaces"), "showOnlyFreeSpaces", false)}
                 </div>
                 <div class="employee-filter-container">
                     <button ${addTestId(

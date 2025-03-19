@@ -137,23 +137,41 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     @Test
     fun `should be able to filter boat spaces`() {
         val listingPage = boatSpaceListPage()
-        page.waitForCondition { listingPage.listItems.count() == 5 }
+
+        page.waitForCondition { listingPage.listItems.count() == 50 }
+
+        // Filter by boat space state
+        listingPage.boatStateFilter("Inactive").click()
+        assertThat(listingPage.listItems).hasCount(4)
+        listingPage.boatStateFilter("Active").click()
 
         // Filter by boat space type
-        listingPage.boatSpaceTypeFilter("Winter").click()
-        page.waitForCondition { listingPage.listItems.count() == 1 }
+        listingPage.boatSpaceTypeFilter("Storage").click()
+        assertThat(listingPage.listItems).hasCount(21)
 
         // Reset and filter by amenity
-        page.waitForCondition { listingPage.listItems.count() == 5 }
-        listingPage.expandingSelectionFilter("amenity").click()
         listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
-        page.waitForCondition { listingPage.listItems.count() == 1 }
-        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
+        assertThat(listingPage.listItems).hasCount(10)
 
-        // Reset and filter by boat space state
+        // Filter by section
+        listingPage.expandingSelectionFilter.click()
+        listingPage.expandingSelectionFilterValue("C").click()
+        assertThat(listingPage.listItems).hasCount(2)
 
-        listingPage.boatStateFilter("Inactive").click()
-        page.waitForCondition { listingPage.listItems.count() == 4 }
+        // Filter by harbor
+        listingPage.harborFilter("2").click()
+        assertThat(listingPage.listItems).hasCount(1)
+    }
+
+    @Test
+    fun `should show only free spaces`() {
+        val listingPage = boatSpaceListPage()
+        page.waitForCondition { listingPage.listItems.count() == 50 }
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        assertThat(listingPage.listItems).hasCount(29)
+
+        listingPage.showOnlyFreeSpaces.click()
+        assertThat(listingPage.listItems).hasCount(28)
     }
 
     @Test
