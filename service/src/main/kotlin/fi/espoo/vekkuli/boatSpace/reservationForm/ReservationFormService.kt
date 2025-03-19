@@ -605,9 +605,9 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceRelatedToReservation(input.reservationId)
                 ?: throw IllegalArgumentException("Boat space not found")
 
-        val boat = createOrUpdateBoat(reserverId, input)
+        val (boat, previousBoatInfo) = createOrUpdateBoat(reserverId, input)
 
-        addReservationWarnings(input.reservationId, boatSpace, boat)
+        addReservationWarnings(input.reservationId, boatSpace, boat, previousBoatInfo)
         val hasStorageType =
             boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer || boatSpace.type == BoatSpaceType.Storage
         if (hasStorageType) {
@@ -671,44 +671,51 @@ class ReservationFormService(
     private fun createOrUpdateBoat(
         reserverId: UUID,
         input: ReserveBoatSpaceInput
-    ): Boat =
+    ): Pair<Boat, Boat?> {
         if (input.boatId == 0 || input.boatId == null) {
-            boatRepository.insertBoat(
-                reserverId,
-                input.boatRegistrationNumber ?: "",
-                input.boatName!!,
-                decimalToInt(input.width),
-                decimalToInt(input.length),
-                decimalToInt(input.depth),
-                input.weight!!,
-                input.boatType,
-                input.otherIdentification ?: "",
-                input.extraInformation ?: "",
-                input.ownerShip!!
-            )
-        } else {
-            boatRepository.updateBoat(
-                Boat(
-                    id = input.boatId,
-                    reserverId = reserverId,
-                    registrationCode = input.boatRegistrationNumber ?: "",
-                    name = input.boatName!!,
-                    widthCm = decimalToInt(input.width),
-                    lengthCm = decimalToInt(input.length),
-                    depthCm = decimalToInt(input.depth),
-                    weightKg = input.weight!!,
-                    type = input.boatType,
-                    otherIdentification = input.otherIdentification ?: "",
-                    extraInformation = input.extraInformation ?: "",
-                    ownership = input.ownerShip!!
+            val newBoat =
+                boatRepository.insertBoat(
+                    reserverId,
+                    input.boatRegistrationNumber ?: "",
+                    input.boatName!!,
+                    decimalToInt(input.width),
+                    decimalToInt(input.length),
+                    decimalToInt(input.depth),
+                    input.weight!!,
+                    input.boatType,
+                    input.otherIdentification ?: "",
+                    input.extraInformation ?: "",
+                    input.ownerShip!!
                 )
-            )
+            return Pair(newBoat, null)
+        } else {
+            val previousBoatInfo = boatRepository.getBoat(input.boatId)
+            val updatedBoat =
+                boatRepository.updateBoat(
+                    Boat(
+                        id = input.boatId,
+                        reserverId = reserverId,
+                        registrationCode = input.boatRegistrationNumber ?: "",
+                        name = input.boatName!!,
+                        widthCm = decimalToInt(input.width),
+                        lengthCm = decimalToInt(input.length),
+                        depthCm = decimalToInt(input.depth),
+                        weightKg = input.weight!!,
+                        type = input.boatType,
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownership = input.ownerShip!!
+                    )
+                )
+            return Pair(updatedBoat, previousBoatInfo)
         }
+    }
 
     private fun addReservationWarnings(
         reservationId: Int,
         boatSpace: BoatSpace,
-        boat: Boat
+        boat: Boat,
+        previousBoatInfo: Boat?
     ) {
         boatReservationService.addReservationWarnings(
             reservationId,
@@ -722,6 +729,8 @@ class ReservationFormService(
             boat.weightKg,
             boat.type,
             boatSpace.excludedBoatTypes ?: listOf(),
+            boat,
+            previousBoatInfo,
         )
     }
 

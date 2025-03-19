@@ -181,7 +181,10 @@ class BoatReservationService(
         return paymentService.insertPayment(params, reservationId)
     }
 
-    fun addBoatWarningsToReservations(boat: Boat) {
+    fun addBoatWarningsToReservations(
+        boat: Boat,
+        previousBoatInfo: Boat?
+    ) {
         getReservationsForBoat(boat.id)
             .forEach { reservation ->
                 val boatSpace =
@@ -200,6 +203,8 @@ class BoatReservationService(
                     boat.weightKg,
                     boat.type,
                     boatSpace.excludedBoatTypes ?: listOf(),
+                    boat,
+                    previousBoatInfo
                 )
             }
     }
@@ -251,13 +256,15 @@ class BoatReservationService(
         boatWeightKg: Int,
         boatType: BoatType,
         excludedBoatTypes: List<BoatType>,
+        boat: Boat,
+        previousBoatInfo: Boat?,
     ) {
         val warnings = mutableListOf<String>()
 
         if (!isWidthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
                 amenity,
-                Dimensions(boatWidthCm, boatLengthCm)
+                Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
             warnings.add(ReservationWarningType.BoatWidth.name)
@@ -266,25 +273,25 @@ class BoatReservationService(
         if (!isLengthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
                 amenity,
-                Dimensions(boatWidthCm, boatLengthCm)
+                Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
             warnings.add(ReservationWarningType.BoatLength.name)
         }
 
-        if (boatOwnership == OwnershipStatus.FutureOwner) {
+        if (boat.ownership == OwnershipStatus.FutureOwner) {
             warnings.add(ReservationWarningType.BoatFutureOwner.name)
         }
 
-        if (boatOwnership == OwnershipStatus.CoOwner) {
+        if (boat.ownership == OwnershipStatus.CoOwner) {
             warnings.add(ReservationWarningType.BoatCoOwner.name)
         }
 
-        if (boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
+        if (boat.weightKg > BOAT_WEIGHT_THRESHOLD_KG) {
             warnings.add(ReservationWarningType.BoatWeight.name)
         }
 
-        if (excludedBoatTypes.contains(boatType)) {
+        if (excludedBoatTypes.contains(boat.type)) {
             warnings.add(ReservationWarningType.BoatType.name)
         }
 
