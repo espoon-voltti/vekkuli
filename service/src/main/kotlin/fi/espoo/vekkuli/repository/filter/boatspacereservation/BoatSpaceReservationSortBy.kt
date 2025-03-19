@@ -32,6 +32,7 @@ class BoatSpaceReservationSortBy(
                 BoatSpaceReservationFilterColumn.HOME_TOWN to listOf("municipality_name"),
                 BoatSpaceReservationFilterColumn.BOAT to listOf("boat_registration_code"),
                 BoatSpaceReservationFilterColumn.AMENITY to listOf("amenity", "storage_type"),
+                BoatSpaceReservationFilterColumn.WARNING_CREATED to listOf("rw.created"),
             )
     }
 }

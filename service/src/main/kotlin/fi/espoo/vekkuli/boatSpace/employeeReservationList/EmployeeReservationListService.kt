@@ -1,10 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList
 
-import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
-import fi.espoo.vekkuli.domain.BoatSpaceReservationItem
-import fi.espoo.vekkuli.domain.PaymentFilter
-import fi.espoo.vekkuli.domain.ReservationExpiration
-import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.AmenityExpr
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
@@ -104,9 +100,20 @@ class EmployeeReservationListService(
         }
 
         val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
+        val warningsSort =
+            if (params.warningFilter == true) {
+                listOf(
+                    BoatSpaceReservationFilterColumn.WARNING_CREATED to SortDirection.Descending
+                )
+            } else {
+                emptyList()
+            }
         val sortBy =
             BoatSpaceReservationSortBy(
-                listOf(params.sortBy to direction)
+                warningsSort +
+                    listOf(
+                        params.sortBy to direction
+                    )
             )
 
         return getPaginatedBoatSpaceReservationItemsWithWarnings(

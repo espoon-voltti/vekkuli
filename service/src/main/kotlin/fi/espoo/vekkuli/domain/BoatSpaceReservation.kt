@@ -166,6 +166,7 @@ enum class BoatSpaceReservationFilterColumn {
     EMAIL,
     PHONE,
     AMENITY,
+    WARNING_CREATED,
 }
 
 enum class PaymentFilter {
