@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceState
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
@@ -131,6 +132,28 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `should be able to filter boat spaces`() {
+        val listingPage = boatSpaceListPage()
+        page.waitForCondition { listingPage.listItems.count() == 5 }
+
+        // Filter by boat space type
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        page.waitForCondition { listingPage.listItems.count() == 1 }
+
+        // Reset and filter by amenity
+        page.waitForCondition { listingPage.listItems.count() == 5 }
+        listingPage.expandingSelectionFilter("amenity").click()
+        listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
+        page.waitForCondition { listingPage.listItems.count() == 1 }
+        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
+
+        // Reset and filter by boat space state
+
+        listingPage.boatStateFilter("Inactive").click()
+        page.waitForCondition { listingPage.listItems.count() == 4 }
     }
 
     @Test

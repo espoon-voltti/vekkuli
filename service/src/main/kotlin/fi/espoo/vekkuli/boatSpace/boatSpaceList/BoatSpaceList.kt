@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.ConfirmDeleteModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.CreateBoatSpaceModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
@@ -22,6 +23,7 @@ data class BoatSpaceListParams(
     val boatSpaceState: List<BoatSpaceState> = emptyList(),
     val sectionFilter: List<String> = emptyList(),
     val edit: List<String> = emptyList(),
+    val showOnlyFree: Boolean = false,
     val paginationStart: Int = 0,
     val paginationEnd: Int = 50
 )
@@ -58,7 +60,8 @@ class BoatSpaceList(
     private val editModal: EditModal,
     private val createModal: CreateBoatSpaceModal,
     private val deleteModal: ConfirmDeleteModal,
-    private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial
+    private val boatSpaceListRowsPartial: BoatSpaceListRowsPartial,
+    private val formComponents: FormComponents
 ) : BaseView() {
     // language=HTML
     fun sortButton(
@@ -230,11 +233,16 @@ class BoatSpaceList(
                     </div>
                 </div>
                 <div class="employee-filter-container">
+                ${formComponents.checkBox(t("boatSpaceList.title.showOnlyFreeSpaces"), "showOnlyFree", false, "showOnlyFree")}
+                </div>
+                <div class="employee-filter-container">
                     <button ${addTestId(
             "open-edit-modal"
         )} :disabled='editBoatSpaceIds.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                 </div>
+                
             </div>
+            
             <div class='reservation-list form-section block'>
                 <div class='table-container'>
                     <table class="table is-hoverable">
