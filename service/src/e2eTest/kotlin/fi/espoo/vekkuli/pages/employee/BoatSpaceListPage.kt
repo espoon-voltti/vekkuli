@@ -31,10 +31,11 @@ class BoatSpaceListPage(
     val boatSpaceTypeFilter = { type: String -> filterLocator("type-$type") }
     val boatStateFilter = { state: String -> filterLocator("boatSpaceState-$state") }
     val harborFilter = { harborId: String -> page.getByDataTestId("filter-harbor-$harborId") }
-    val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
-    val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
+    val expandingSelectionFilter = filterLocator("selection-selectedSections")
+    val expandingSelectionFilterValue = { value: String -> filterLocator("selection-selectedSections").locator("input[value='$value']") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
     val selectAllToggle = page.getByDataTestId("select-all-toggle")
+    val showOnlyFreeSpaces = page.getByTestId("showOnlyFreeSpaces")
 
     fun boatSpaceRow(boatSpaceId: Int) = page.getByDataTestId("boat-space-$boatSpaceId")
 

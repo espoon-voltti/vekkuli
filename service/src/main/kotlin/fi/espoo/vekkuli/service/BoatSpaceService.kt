@@ -134,6 +134,10 @@ class BoatSpaceService(
         if (params.boatSpaceState.isNotEmpty() && params.boatSpaceState.size != BoatSpaceState.entries.size) {
             filters.add(IsBoatSpaceStateExpr(params.boatSpaceState))
         }
+
+        if (params.showOnlyFreeSpaces) {
+            filters.add(ShowOnlyFreeSpacesExpr())
+        }
         return filters
     }
 

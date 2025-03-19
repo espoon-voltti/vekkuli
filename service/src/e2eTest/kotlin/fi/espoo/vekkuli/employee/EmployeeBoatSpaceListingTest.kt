@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceState
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
@@ -131,6 +132,46 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `should be able to filter boat spaces`() {
+        val listingPage = boatSpaceListPage()
+
+        page.waitForCondition { listingPage.listItems.count() == 50 }
+
+        // Filter by boat space state
+        listingPage.boatStateFilter("Inactive").click()
+        assertThat(listingPage.listItems).hasCount(4)
+        listingPage.boatStateFilter("Active").click()
+
+        // Filter by boat space type
+        listingPage.boatSpaceTypeFilter("Storage").click()
+        assertThat(listingPage.listItems).hasCount(21)
+
+        // Reset and filter by amenity
+        listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
+        assertThat(listingPage.listItems).hasCount(10)
+
+        // Filter by section
+        listingPage.expandingSelectionFilter.click()
+        listingPage.expandingSelectionFilterValue("C").click()
+        assertThat(listingPage.listItems).hasCount(2)
+
+        // Filter by harbor
+        listingPage.harborFilter("2").click()
+        assertThat(listingPage.listItems).hasCount(1)
+    }
+
+    @Test
+    fun `should show only free spaces`() {
+        val listingPage = boatSpaceListPage()
+        page.waitForCondition { listingPage.listItems.count() == 50 }
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        assertThat(listingPage.listItems).hasCount(29)
+
+        listingPage.showOnlyFreeSpaces.click()
+        assertThat(listingPage.listItems).hasCount(28)
     }
 
     @Test
