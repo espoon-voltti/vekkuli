@@ -614,16 +614,15 @@ class ReservationFormService(
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
 
-        val reservation =
-            boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
-                input.reservationId,
-                boat.id,
-                reserverId,
-                reservationStatus,
-                reservationValidity,
-                startDate,
-                endDate
-            )
+        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
+            input.reservationId,
+            boat.id,
+            reserverId,
+            reservationStatus,
+            reservationValidity,
+            startDate,
+            endDate
+        )
     }
 
     private fun updateReservationWithStorageTypeRelatedInformation(
