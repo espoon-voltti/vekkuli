@@ -193,15 +193,9 @@ class BoatReservationService(
 
                 addReservationWarnings(
                     reservation.id,
-                    boat.id,
                     reservation.boatSpaceWidthCm,
                     reservation.boatSpaceLengthCm,
                     reservation.amenity,
-                    boat.widthCm,
-                    boat.lengthCm,
-                    boat.ownership,
-                    boat.weightKg,
-                    boat.type,
                     boatSpace.excludedBoatTypes ?: listOf(),
                     boat,
                     previousBoatInfo
@@ -246,15 +240,9 @@ class BoatReservationService(
 
     fun addReservationWarnings(
         reservationId: Int,
-        boatId: Int,
         boatSpaceWidthCm: Int,
         boatSpaceLengthCm: Int,
         amenity: BoatSpaceAmenity,
-        boatWidthCm: Int,
-        boatLengthCm: Int,
-        boatOwnership: OwnershipStatus?,
-        boatWeightKg: Int,
-        boatType: BoatType,
         excludedBoatTypes: List<BoatType>,
         boat: Boat,
         previousBoatInfo: Boat?,
@@ -296,7 +284,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), reservationId, boatId, null, null, keys = warnings)
+            reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), reservationId, boat.id, null, null, keys = warnings)
         }
     }
 

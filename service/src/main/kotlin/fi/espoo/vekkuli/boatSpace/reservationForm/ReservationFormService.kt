@@ -719,15 +719,9 @@ class ReservationFormService(
     ) {
         boatReservationService.addReservationWarnings(
             reservationId,
-            boat.id,
             boatSpace.widthCm,
             boatSpace.lengthCm,
             boatSpace.amenity,
-            boat.widthCm,
-            boat.lengthCm,
-            boat.ownership,
-            boat.weightKg,
-            boat.type,
             boatSpace.excludedBoatTypes ?: listOf(),
             boat,
             previousBoatInfo,
