@@ -144,14 +144,14 @@ class TrailerCard(
                 "trailer-width",
                 formatInt(trailer.widthCm),
                 "shared.label.widthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
                 formatInt(trailer.lengthCm),
                 "shared.label.lengthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength)
             )
 
         val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""

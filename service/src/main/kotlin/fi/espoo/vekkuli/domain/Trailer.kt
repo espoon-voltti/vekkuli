@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import java.util.*
 
 data class Trailer(
@@ -8,9 +9,9 @@ data class Trailer(
     val reserverId: UUID,
     val widthCm: Int,
     val lengthCm: Int,
-    val warnings: Set<String> = emptySet(),
+    val warnings: Set<ReservationWarningType> = emptySet(),
 ) {
-    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+    fun hasWarning(warning: ReservationWarningType): Boolean = warnings.contains(warning)
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

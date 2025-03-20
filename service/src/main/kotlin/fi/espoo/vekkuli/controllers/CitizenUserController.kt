@@ -5,11 +5,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.audit
-import fi.espoo.vekkuli.config.ensureEmployeeId
-import fi.espoo.vekkuli.config.getAuthenticatedEmployee
-import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -561,10 +557,10 @@ class CitizenUserController(
         val otherIdentifier: String,
         val extraInformation: String,
         val ownership: OwnershipStatus,
-        val warnings: Set<String> = emptySet(),
+        val warnings: Set<ReservationWarningType> = emptySet(),
         val reservationId: Int? = null,
     ) {
-        fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+        fun hasWarning(warning: ReservationWarningType): Boolean = warnings.contains(warning)
 
         fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
     }
@@ -1029,7 +1025,7 @@ class CitizenUserController(
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
         @RequestParam("boatId") boatId: Int,
-        @RequestParam("key") key: List<String>,
+        @RequestParam("key") key: List<ReservationWarningType>,
         @RequestParam("infoText") infoText: String,
         @RequestParam("reserverId") reserverId: UUID,
         request: HttpServletRequest,
@@ -1075,7 +1071,7 @@ class CitizenUserController(
     fun ackTrailerWarning(
         @RequestParam("reserverId") reserverId: UUID,
         @RequestParam("trailerId") trailerId: Int,
-        @RequestParam("key") key: List<String>,
+        @RequestParam("key") key: List<ReservationWarningType>,
         @RequestParam("infoText") infoText: String,
         request: HttpServletRequest,
     ): ResponseEntity<String> {

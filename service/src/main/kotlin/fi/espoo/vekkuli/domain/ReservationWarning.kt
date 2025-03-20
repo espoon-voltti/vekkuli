@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import java.util.UUID
 
 data class ReservationWarning(
@@ -8,6 +9,6 @@ data class ReservationWarning(
     val boatId: Int?,
     val trailerId: Int?,
     val invoiceNumber: Int?,
-    val key: String,
+    val key: ReservationWarningType,
     val infoText: String?,
 )

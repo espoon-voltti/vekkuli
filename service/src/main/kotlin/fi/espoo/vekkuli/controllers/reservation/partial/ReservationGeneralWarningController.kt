@@ -31,7 +31,7 @@ class ReservationGeneralWarningController {
     @Autowired
     lateinit var warningsRepository: ReservationWarningRepository
 
-    private val generalWarningsKey = ReservationWarningType.GeneralReservationWarning.name
+    private val generalWarningsKey = ReservationWarningType.GeneralReservationWarning
 
     @GetMapping("/general-warning/{reserverId}/{reservationId}")
     @ResponseBody

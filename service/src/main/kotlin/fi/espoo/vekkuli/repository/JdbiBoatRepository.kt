@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
@@ -37,7 +38,7 @@ class JdbiBoatRepository(
                         """.trimIndent()
                     )
                 warningQuery.bind("boatId", it.id)
-                val warnings = warningQuery.mapTo<String>().list()
+                val warnings = warningQuery.mapTo<ReservationWarningType>().list()
                 it.copy(
                     warnings = warnings.toSet()
                 )

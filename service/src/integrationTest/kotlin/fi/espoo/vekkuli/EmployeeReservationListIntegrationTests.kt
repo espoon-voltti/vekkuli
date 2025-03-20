@@ -74,7 +74,7 @@ class EmployeeReservationListIntegrationTests : IntegrationTestBase() {
             infoText = null,
             keys =
                 listOf(
-                    ReservationWarningType.BoatType.name
+                    ReservationWarningType.BoatType
                 )
         )
 
@@ -87,7 +87,7 @@ class EmployeeReservationListIntegrationTests : IntegrationTestBase() {
             infoText = null,
             keys =
                 listOf(
-                    ReservationWarningType.BoatType.name
+                    ReservationWarningType.BoatType
                 )
         )
 

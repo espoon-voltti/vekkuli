@@ -53,7 +53,7 @@ class InvoicePaymentService(
                         null,
                         invoicePayment.invoiceNumber,
                         null,
-                        listOf(ReservationWarningType.InvoicePayment.name)
+                        listOf(ReservationWarningType.InvoicePayment)
                     )
                 } ?: logger.error { "No invoice found for invoice payment: $invoicePayment" }
             }

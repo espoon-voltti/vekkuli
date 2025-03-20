@@ -79,24 +79,24 @@ interface ReservationWarningRepository {
         trailerId: Int?,
         invoiceNumber: Int?,
         infoText: String? = null,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
     ): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
-    fun getWarningsForReserver(reservationId: UUID): List<ReservationWarning>
+    fun getWarningsForReserver(reserverId: UUID): List<ReservationWarning>
 
     fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
     ): Unit
 
     fun deleteReservationWarning(id: UUID)
 
     fun deleteReservationWarningsForReservation(
         reservationId: Int,
-        key: String? = null
+        key: ReservationWarningType? = null
     )
 }
 
@@ -212,14 +212,14 @@ class BoatReservationService(
         val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 
         reservations.forEach {
-            val warnings = mutableListOf<String>()
+            val warnings = mutableListOf<ReservationWarningType>()
 
             if (trailerWidthCm > it.boatSpaceWidthCm) {
-                warnings.add(ReservationWarningType.TrailerWidth.name)
+                warnings.add(ReservationWarningType.TrailerWidth)
             }
 
             if (trailerLengthCm > it.boatSpaceLengthCm) {
-                warnings.add(ReservationWarningType.TrailerLength.name)
+                warnings.add(ReservationWarningType.TrailerLength)
             }
 
             if (warnings.isNotEmpty()) {
@@ -247,7 +247,7 @@ class BoatReservationService(
         boat: Boat,
         previousBoatInfo: Boat?,
     ) {
-        val warnings = mutableListOf<String>()
+        val warnings = mutableListOf<ReservationWarningType>()
 
         if (!isWidthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
@@ -255,7 +255,7 @@ class BoatReservationService(
                 Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatWidth.name)
+            warnings.add(ReservationWarningType.BoatWidth)
         }
 
         if (!isLengthOk(
@@ -264,32 +264,32 @@ class BoatReservationService(
                 Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatLength.name)
+            warnings.add(ReservationWarningType.BoatLength)
         }
 
         if (boat.ownership == OwnershipStatus.FutureOwner) {
-            warnings.add(ReservationWarningType.BoatFutureOwner.name)
+            warnings.add(ReservationWarningType.BoatFutureOwner)
         }
 
         if (boat.ownership == OwnershipStatus.CoOwner) {
-            warnings.add(ReservationWarningType.BoatCoOwner.name)
+            warnings.add(ReservationWarningType.BoatCoOwner)
         }
 
         if (previousBoatInfo != null) {
             if (previousBoatInfo.ownership != boat.ownership) {
-                warnings.add(ReservationWarningType.BoatOwnershipChange.name)
+                warnings.add(ReservationWarningType.BoatOwnershipChange)
             }
             if (previousBoatInfo.registrationCode != boat.registrationCode) {
-                warnings.add(ReservationWarningType.BoatRegistrationCodeChange.name)
+                warnings.add(ReservationWarningType.BoatRegistrationCodeChange)
             }
         }
 
         if (boat.weightKg > BOAT_WEIGHT_THRESHOLD_KG) {
-            warnings.add(ReservationWarningType.BoatWeight.name)
+            warnings.add(ReservationWarningType.BoatWeight)
         }
 
         if (excludedBoatTypes.contains(boat.type)) {
-            warnings.add(ReservationWarningType.BoatType.name)
+            warnings.add(ReservationWarningType.BoatType)
         }
 
         if (warnings.isNotEmpty()) {
@@ -409,7 +409,7 @@ class BoatReservationService(
         reservationId: Int,
         userId: UUID,
         boatOrTrailerId: Int,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String,
     ) {
         if (keys.isEmpty()) return
@@ -431,7 +431,7 @@ class BoatReservationService(
     fun acknowledgeWarningForBoat(
         boatId: Int,
         userId: UUID,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String
     ) {
         if (keys.isEmpty()) return
@@ -449,7 +449,7 @@ class BoatReservationService(
     fun acknowledgeWarningForTrailer(
         trailerId: Int,
         userId: UUID,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String
     ) {
         if (keys.isEmpty()) return

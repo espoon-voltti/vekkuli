@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import org.jdbi.v3.core.Jdbi
@@ -19,7 +20,7 @@ class JdbiReservationWarningRepository(
         trailerId: Int?,
         invoiceNumber: Int?,
         infoText: String?,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             val batch =
@@ -78,7 +79,7 @@ class JdbiReservationWarningRepository(
     override fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             handle
@@ -110,7 +111,7 @@ class JdbiReservationWarningRepository(
 
     override fun deleteReservationWarningsForReservation(
         reservationId: Int,
-        key: String?
+        key: ReservationWarningType?
     ) {
         jdbi.withHandleUnchecked { handle ->
             val query =

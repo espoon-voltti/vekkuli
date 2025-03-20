@@ -35,7 +35,7 @@ class ReserverDetailsTabs : BaseView() {
         val hasPaymentWarnings =
             warningRepository.getWarningsForReserver(reserver.id).any {
                 it.key ==
-                    ReservationWarningType.InvoicePayment.name
+                    ReservationWarningType.InvoicePayment
             }
         val paymentWarningClass = "warning-attention${if (hasPaymentWarnings) " on" else ""}"
 
