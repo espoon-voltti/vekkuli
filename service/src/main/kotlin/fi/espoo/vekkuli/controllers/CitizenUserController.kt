@@ -586,6 +586,38 @@ class CitizenUserController(
         return errors
     }
 
+    data class BoatAddForm(
+        val name: String,
+        val type: BoatType,
+        val width: BigDecimal?,
+        val length: BigDecimal?,
+        val depth: BigDecimal?,
+        val weight: Int?,
+        val registrationNumber: String,
+        val otherIdentifier: String,
+        val extraInformation: String,
+        val ownership: OwnershipStatus,
+        val warnings: Set<String> = emptySet(),
+        val reservationId: Int? = null,
+    )
+
+    fun validateBoatAddInput(input: BoatAddForm): MutableMap<String, String> {
+        val errors = mutableMapOf<String, String>()
+        if (input.width == null) {
+            errors["width"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.length == null) {
+            errors["length"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.depth == null) {
+            errors["depth"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.weight == null) {
+            errors["weight"] = messageUtil.getMessage("validation.required")
+        }
+        return errors
+    }
+
     @PatchMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}")
     @ResponseBody
     fun updateBoatForEmployee(
@@ -649,6 +681,48 @@ class CitizenUserController(
             ReserverType.Citizen,
             errors,
         )
+    }
+
+    @PostMapping("/virkailija/kayttaja/{reserverId}/vene/uusi")
+    @ResponseBody
+    fun addBoatForReserver(
+        @PathVariable reserverId: UUID,
+        request: HttpServletRequest,
+        input: BoatAddForm,
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_ADD_NEW_BOAT", mapOf("targetId" to reserverId.toString()))
+        }
+
+        try {
+
+
+        val errors = validateBoatAddInput(input)
+
+        if (errors.isNotEmpty()) {
+            throw IllegalArgumentException("Invalid input")
+        }
+
+
+        boatService.insertBoat(
+            reserverId,
+            input.registrationNumber,
+            input.name,
+            decimalToInt(input.width!!),
+            decimalToInt(input.length!!),
+            decimalToInt(input.depth!!),
+            input.weight!!,
+            input.type,
+            input.otherIdentifier,
+            input.extraInformation,
+            input.ownership,
+        )
+
+        return "success"
+        } catch (e: Exception) {
+            logger.error { "Adding new boat failed: ${e.message}" }
+            return "error"
+        }
     }
 
     @PatchMapping("/kuntalainen/vene/{boatId}")

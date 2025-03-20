@@ -375,9 +375,21 @@ class ReserverDetailsReservationsContainer(
                           ${addTestId("expired-reservation-list-loader")}
                           class='mt-1'>  
                        </div>
-                       
-                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
-
+                       <div class="columns is-vcentered mb-m">
+                           <div class="column is-narrow">
+                              <h3 class="mb-none">${t("boatSpaceReservation.title.boats")} </h3>
+                           </div>
+                           <div class="column">
+                                <a class="is-link is-icon-link" 
+                                    hx-get="/virkailija/venepaikat/varaukset/uusi-vene/$reserverId"
+                                    hx-target="#modal-container"
+                                    hx-swap="innerHTML"
+                                    ${addTestId("add-new-boat")}>
+                                    <span class="icon mr-s">${icons.plus}</span>
+                                    <span>${t("boatSpaceReservation.addBoat.button")}</span> 
+                                </a>
+                            </div>  
+                       </div>
                        <div class="reservation-list form-section no-bottom-border">
                            ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
                        </div>
