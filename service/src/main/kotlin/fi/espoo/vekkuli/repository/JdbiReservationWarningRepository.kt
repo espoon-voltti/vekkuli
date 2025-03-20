@@ -13,15 +13,7 @@ import java.util.UUID
 class JdbiReservationWarningRepository(
     private val jdbi: Jdbi
 ) : ReservationWarningRepository {
-    override fun addReservationWarnings(
-        id: UUID,
-        reservationId: Int,
-        boatId: Int?,
-        trailerId: Int?,
-        invoiceNumber: Int?,
-        infoText: String?,
-        keys: List<ReservationWarningType>,
-    ): Unit =
+    override fun addReservationWarnings(warnings: List<ReservationWarning>,): Unit =
         jdbi.withHandleUnchecked { handle ->
             val batch =
                 handle.prepareBatch(
@@ -30,15 +22,15 @@ class JdbiReservationWarningRepository(
                     VALUES (:id, :reservationId, :boatId, :trailerId, :invoiceNumber, :infoText, :key)
                     """.trimIndent()
                 )
-            for (key in keys) {
+            for (warning in warnings) {
                 batch
-                    .bind("id", id)
-                    .bind("reservationId", reservationId)
-                    .bind("boatId", boatId)
-                    .bind("trailerId", trailerId)
-                    .bind("invoiceNumber", invoiceNumber)
-                    .bind("infoText", infoText)
-                    .bind("key", key)
+                    .bind("id", warning.id)
+                    .bind("reservationId", warning.reservationId)
+                    .bind("boatId", warning.boatId)
+                    .bind("trailerId", warning.trailerId)
+                    .bind("invoiceNumber", warning.invoiceNumber)
+                    .bind("infoText", warning.infoText)
+                    .bind("key", warning.key)
                     .add()
             }
             batch.execute()

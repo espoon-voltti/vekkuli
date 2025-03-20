@@ -72,15 +72,7 @@ sealed class PaymentProcessResult {
 }
 
 interface ReservationWarningRepository {
-    fun addReservationWarnings(
-        id: UUID,
-        reservationId: Int,
-        boatId: Int?,
-        trailerId: Int?,
-        invoiceNumber: Int?,
-        infoText: String? = null,
-        keys: List<ReservationWarningType>,
-    ): Unit
+    fun addReservationWarnings(warnings: List<ReservationWarning>,): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
@@ -222,8 +214,21 @@ class BoatReservationService(
                 warnings.add(ReservationWarningType.TrailerLength)
             }
 
+            val reservationWarnings =
+                warnings.map { warning ->
+                    ReservationWarning(
+                        UUID.randomUUID(),
+                        it.id,
+                        null,
+                        trailerId,
+                        null,
+                        warning,
+                        null
+                    )
+                }
+
             if (warnings.isNotEmpty()) {
-                reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), it.id, null, trailerId, null, keys = warnings)
+                reservationWarningRepo.addReservationWarnings(reservationWarnings)
             }
         }
     }
@@ -292,8 +297,23 @@ class BoatReservationService(
             warnings.add(ReservationWarningType.BoatType)
         }
 
+        val reservationWarnings =
+            warnings.map { warning ->
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservationId,
+                    boat.id,
+                    null,
+                    null,
+                    warning,
+                    null
+                )
+            }
+
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), reservationId, boat.id, null, null, keys = warnings)
+            reservationWarningRepo.addReservationWarnings(
+                reservationWarnings,
+            )
         }
     }
 

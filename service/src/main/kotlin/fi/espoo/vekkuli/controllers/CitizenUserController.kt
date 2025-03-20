@@ -1025,7 +1025,7 @@ class CitizenUserController(
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
         @RequestParam("boatId") boatId: Int,
-        @RequestParam("key") key: List<ReservationWarningType>,
+        @RequestParam("key") keys: List<ReservationWarningType>,
         @RequestParam("infoText") infoText: String,
         @RequestParam("reserverId") reserverId: UUID,
         request: HttpServletRequest,
@@ -1037,13 +1037,13 @@ class CitizenUserController(
                 mapOf(
                     "targetId" to reserverId.toString(),
                     "boatId" to boatId.toString(),
-                    "key" to key.toString(),
+                    "key" to keys.toString(),
                     "reserverId" to reserverId.toString()
                 )
             )
         }
         val userId = request.ensureEmployeeId()
-        reservationService.acknowledgeWarningForBoat(boatId, userId, key, infoText)
+        reservationService.acknowledgeWarningForBoat(boatId, userId, keys, infoText)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
