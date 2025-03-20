@@ -1067,3 +1067,8 @@ ul {
   flex-direction: column;
   gap: 16px;
 }
+
+.search-results-table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}

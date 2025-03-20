@@ -31,26 +31,28 @@ export const ResultGroup = React.memo(function ResultGroup({
         <div className="block mb-s">{place.address}</div>
         <BridgeHeightWarningBox placeId={place.id} />
       </div>
-      <table className="table search-results-table is-striped is-hoverable is-fullwidth">
-        <thead>
-          <tr>
-            <th>{i18n.reservation.searchPage.size}</th>
-            <th>{i18n.reservation.searchPage.amenityLabel}</th>
-            <th>{i18n.reservation.searchPage.price}</th>
-            <th>{i18n.reservation.searchPage.place}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {limitedSpaces.map((space) => (
-            <ResultRow
-              onReserveSpace={onReserveSpace}
-              space={space}
-              placeName={place.name}
-              key={`result-row-${space.id}`}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className="search-results-table-container">
+        <table className="table search-results-table is-striped is-hoverable is-narrow">
+          <thead>
+            <tr>
+              <th>{i18n.reservation.searchPage.size}</th>
+              <th>{i18n.reservation.searchPage.amenityLabel}</th>
+              <th>{i18n.reservation.searchPage.price}</th>
+              <th>{i18n.reservation.searchPage.place}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {limitedSpaces.map((space) => (
+              <ResultRow
+                onReserveSpace={onReserveSpace}
+                space={space}
+                placeName={place.name}
+                key={`result-row-${space.id}`}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
       <ShowMore
         minResultCount={minResultsCount}
         resultCount={spacesCount}
