@@ -92,6 +92,13 @@ class JdbiBoatRepository(
             query.mapTo<Boat>().findOne().orElse(null)
         }
 
+    private fun hyphenToEmpty(value: String?) =
+        when {
+            value != null && value.trim() == "-"
+            -> ""
+            else -> value
+        }
+
     override fun updateBoat(boat: Boat): Boat =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -113,15 +120,15 @@ class JdbiBoatRepository(
                     """.trimIndent()
                 )
             query.bind("id", boat.id)
-            query.bind("registrationCode", boat.registrationCode)
-            query.bind("name", boat.name)
+            query.bind("registrationCode", hyphenToEmpty(boat.registrationCode))
+            query.bind("name", hyphenToEmpty(boat.name))
             query.bind("widthCm", boat.widthCm)
             query.bind("lengthCm", boat.lengthCm)
             query.bind("depthCm", boat.depthCm)
             query.bind("weightKg", boat.weightKg)
             query.bind("type", boat.type)
-            query.bind("otherIdentification", boat.otherIdentification)
-            query.bind("extraInformation", boat.extraInformation)
+            query.bind("otherIdentification", hyphenToEmpty(boat.otherIdentification))
+            query.bind("extraInformation", hyphenToEmpty(boat.extraInformation))
             query.bind("ownership", boat.ownership)
             query.mapTo<Boat>().one()
         }
@@ -149,15 +156,15 @@ class JdbiBoatRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("registrationCode", registrationCode)
-            query.bind("name", name)
+            query.bind("registrationCode", hyphenToEmpty(registrationCode))
+            query.bind("name", hyphenToEmpty(name))
             query.bind("widthCm", widthCm)
             query.bind("lengthCm", lengthCm)
             query.bind("depthCm", depthCm)
             query.bind("weightKg", weightKg)
             query.bind("type", type)
-            query.bind("otherIdentification", otherIdentification)
-            query.bind("extraInformation", extraInformation)
+            query.bind("otherIdentification", hyphenToEmpty(otherIdentification))
+            query.bind("extraInformation", hyphenToEmpty(extraInformation))
             query.bind("ownership", ownership)
             query.mapTo<Boat>().one()
         }
