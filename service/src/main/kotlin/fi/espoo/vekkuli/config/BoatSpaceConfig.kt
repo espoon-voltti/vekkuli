@@ -222,7 +222,13 @@ object BoatSpaceConfig {
         ReservationValidity.Indefinite -> getNextDate(currentDate, 1, 31)
     }
 
-    fun getWinterEndDate(now: LocalDate) = getNextDate(now, 9, 14)
+    fun getWinterEndDate(
+        now: LocalDate,
+        validity: ReservationValidity
+    ) = when (validity) {
+        ReservationValidity.FixedTerm -> getNextDate(now, 6, 10)
+        ReservationValidity.Indefinite -> getNextDate(now, 9, 14)
+    }
 
     fun getStorageEndDate(now: LocalDate) = getNextDate(now, 9, 14)
 

@@ -81,7 +81,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
-            assertEquals(getWinterEndDate(timeProvider.getCurrentDate()), result.data.endDate)
+            assertEquals(getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewWinterSpace failed")
@@ -174,7 +174,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
-            assertEquals(getWinterEndDate(timeProvider.getCurrentDate()), result.data.endDate)
+            assertEquals(getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewWinterSpace failed")
