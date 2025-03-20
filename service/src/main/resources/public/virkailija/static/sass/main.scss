@@ -1218,3 +1218,11 @@ a {
     color: $grey;
   }
 }
+
+.link {
+  color: var(--bulma-link-text);
+  cursor: pointer;
+  text-decoration: none;
+  transition-duration: var(--bulma-duration);
+  transition-property: background-color, border-color, color;
+}

@@ -37,7 +37,7 @@ class ReservationListRow : BaseView() {
                 <td>${t("employee.boatSpaceReservations.types.${reservation.type}")}</td>
                 <td>${t("boatSpaces.amenityOption.${reservation.getBoatSpaceAmenity()}")}</td>
                 <td ${addTestId("reserver-name")}>
-                    <a href=$reserverUrl>${htmlEscape(reservation.name)}</a>
+                    <span class='link'>${htmlEscape(reservation.name)}</span>
                 </td>
                 <td>${htmlEscape(reservation.phone)}</td>
                 <td>${htmlEscape(reservation.email)}</td>

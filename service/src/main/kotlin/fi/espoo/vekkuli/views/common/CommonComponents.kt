@@ -27,17 +27,25 @@ class CommonComponents(
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
-    // language=HTML
-    fun goBackButton(backUrl: String) =
+    fun goBackButton(backUrl: String?) =
+        // language=HTML
         """
+                       
                         <button data-testid="go-back" class="icon-text">
                             <span class="icon">
                                 <div>${icons.chevronLeft}</div>
                             </span>
-                            <a href=$backUrl>
+                              
+                            <a onclick="if(window.history.length > 1) {
+                                    window.history.back();
+                                } else {
+                                    window.location.href = '${backUrl ?: "/virkailija/venepaikat/varaukset"}'; // Redirect if no history
+                                }">
                                 <span>${t("boatSpaces.goBack")}</span>
                             </a>
+                            
                         </button>
+                      
                        """
 
     // language=HTML
