@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.utils.formatInt
 import java.time.LocalDateTime
 import java.util.*

@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.config.ReservationWarningType
 import java.util.*
 
 data class Trailer(

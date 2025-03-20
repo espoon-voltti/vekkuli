@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals

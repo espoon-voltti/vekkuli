@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.views.employee.components
 
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*

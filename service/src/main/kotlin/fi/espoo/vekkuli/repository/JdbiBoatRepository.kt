@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus

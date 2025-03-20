@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.controllers.reservation.partial
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.AuthenticatedUser
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.ReservationWarning

@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo

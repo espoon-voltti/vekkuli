@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.repository.InvoicePaymentRepository
 import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.service.ReservationWarningRepository

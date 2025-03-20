@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.views.employee.components
 
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.ReservationWarningRepository
