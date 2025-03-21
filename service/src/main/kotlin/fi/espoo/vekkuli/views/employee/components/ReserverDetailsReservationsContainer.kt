@@ -9,6 +9,9 @@ import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.modal.Modal
+import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
+import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +23,7 @@ import kotlin.collections.isNotEmpty
 class ReserverDetailsReservationsContainer(
     private val reservationListBuilder: ReservationList,
     private val warningBox: WarningBox,
+    private val modal: Modal
 ) : BaseView() {
     @Autowired
     lateinit var reserverDetailsTabs: ReserverDetailsTabs
@@ -359,6 +363,20 @@ class ReserverDetailsReservationsContainer(
                 ""
             }
 
+        val openAddNewBoatModal =
+            modal
+                .createOpenModalBuilder()
+                .setType(OpenModalButtonType.Link)
+                .setText(
+                    """
+                    <span class="icon mr-s">${icons.plus}</span>
+                    <span>${t("boatSpaceReservation.addBoat.button")}</span>
+                    """.trimIndent()
+                ).setPath("/virkailija/venepaikat/varaukset/uusi-vene/$reserverId")
+                .setStyle(ModalButtonStyle.EditIcon)
+                .setTestId("open-add-new-boat-modal")
+                .build()
+
         // language=HTML
         return """
                    <div id="tab-content" class="container block" x-data="{ 
@@ -380,14 +398,7 @@ class ReserverDetailsReservationsContainer(
                               <h3 class="mb-none">${t("boatSpaceReservation.title.boats")} </h3>
                            </div>
                            <div class="column">
-                                <a class="is-link is-icon-link" 
-                                    hx-get="/virkailija/venepaikat/varaukset/uusi-vene/$reserverId"
-                                    hx-target="#modal-container"
-                                    hx-swap="innerHTML"
-                                    ${addTestId("add-new-boat")}>
-                                    <span class="icon mr-s">${icons.plus}</span>
-                                    <span>${t("boatSpaceReservation.addBoat.button")}</span> 
-                                </a>
+                                 $openAddNewBoatModal
                             </div>  
                        </div>
                        <div class="reservation-list form-section no-bottom-border">

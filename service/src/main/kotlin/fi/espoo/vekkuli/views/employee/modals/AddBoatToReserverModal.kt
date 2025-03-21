@@ -12,9 +12,7 @@ class AddBoatToReserverModal(
     private val modal: Modal,
     private val formComponents: FormComponents
 ) : BaseView() {
-    fun render(
-        reserver: ReserverWithDetails,
-    ): String {
+    fun render(reserver: ReserverWithDetails,): String {
         val formId = "add-boat-for-reserver-form"
         val modalBuilder = modal.createModalBuilder()
 
@@ -32,7 +30,8 @@ class AddBoatToReserverModal(
                 )
             }
             // language=HTML
-            .setContent(buildFormContent(formId)).addButton {
+            .setContent(buildFormContent(formId))
+            .addButton {
                 setText(t("cancel"))
                 setType(ModalButtonType.Cancel)
                 setTestId("reservation-add-boat-cancel")
@@ -40,18 +39,18 @@ class AddBoatToReserverModal(
                 setStyle(ModalButtonStyle.Danger)
                 setType(ModalButtonType.Submit)
                 setText(t("boatSpaceReservation.addBoat.confirm"))
-                setTestId("reservation-add-boat-confirm")
+                setTestId("add-new-boat-form-confirm")
             }.build()
     }
 
-    private fun buildFormContent(formId: String): String{
+    private fun buildFormContent(formId: String): String {
         val boatTypes = BoatType.entries.map { it.name }
         val ownershipOptionValues = listOf("Owner", "User", "CoOwner", "FutureOwner")
 
         val nameInput =
             formComponents.textInput(
                 labelKey = "boatSpaceReservation.title.boatName",
-                id = "add-boat-name",
+                id = "add-new-boat-form-name",
                 name = "name",
                 value = "",
                 required = true,
@@ -60,7 +59,8 @@ class AddBoatToReserverModal(
         val weightInput =
             formComponents.numberInput(
                 labelKey = "boatApplication.boatWeightInKg",
-                id = "weight",
+                id = "add-new-boat-form-weight",
+                name = "weight",
                 value = null,
                 required = true,
             )
@@ -68,7 +68,8 @@ class AddBoatToReserverModal(
         val boatTypeSelect =
             formComponents.select(
                 labelKey = "boatApplication.boatType",
-                id = "type",
+                id = "add-new-boat-form-type",
+                name = "type",
                 selectedValue = boatTypes.first(),
                 options = boatTypes.map { it to t("boatApplication.boatTypeOption.$it") },
                 required = true,
@@ -77,7 +78,8 @@ class AddBoatToReserverModal(
         val depthInput =
             formComponents.decimalInput(
                 labelKey = "boatApplication.boatDepthInMeters",
-                id = "depth",
+                id = "add-new-boat-form-depth",
+                name = "depth",
                 value = null,
                 required = true,
                 min = 0.1
@@ -85,8 +87,9 @@ class AddBoatToReserverModal(
 
         val widthInput =
             formComponents.decimalInput(
-                labelKey =  "shared.label.widthInMeters",
-                id = "width",
+                labelKey = "shared.label.widthInMeters",
+                id = "add-new-boat-form-width",
+                name = "width",
                 value = null,
                 required = true,
                 min = 0.1
@@ -95,7 +98,7 @@ class AddBoatToReserverModal(
         val registrationNumberInput =
             formComponents.textInput(
                 labelKey = "boatSpaceReservation.title.registrationNumber",
-                id = "add-boat-registration-number",
+                id = "add-new-boat-form-registration-number",
                 name = "registrationNumber",
                 value = "",
             )
@@ -103,7 +106,8 @@ class AddBoatToReserverModal(
         val lengthInput =
             formComponents.decimalInput(
                 labelKey = "shared.label.lengthInMeters",
-                id = "length",
+                id = "add-new-boat-form-length",
+                name = "length",
                 value = null,
                 required = true,
                 min = 0.1
@@ -111,8 +115,9 @@ class AddBoatToReserverModal(
 
         val ownershipSelect =
             formComponents.select(
-               labelKey =  "boatSpaceReservation.title.ownershipStatus",
-                id = "ownership",
+                labelKey = "boatSpaceReservation.title.ownershipStatus",
+                name = "ownership",
+                id = "add-new-boat-form-ownership",
                 selectedValue = ownershipOptionValues.first(),
                 options = ownershipOptionValues.map { it to formComponents.t("boatApplication.EMPLOYEE.ownershipOption.$it") },
                 required = true,
@@ -122,7 +127,7 @@ class AddBoatToReserverModal(
             formComponents.textInput(
                 labelKey = "boatSpaceReservation.title.otherIdentifier",
                 name = "otherIdentifier",
-                id = "add-boat-other-identifier",
+                id = "add-new-boat-form-other-identifier",
                 value = ""
             )
 
@@ -130,55 +135,55 @@ class AddBoatToReserverModal(
             formComponents.textInput(
                 labelKey = "boatSpaceReservation.title.additionalInfo",
                 name = "extraInformation",
-                id = "add-boat-extra-information",
+                id = "add-new-boat-form-extra-information",
                 value = "",
             )
 
         // language=HTML
         return """
-            <div class='columns mb-xl'>
-                <div class='column'>
-                    $nameInput
-                </div>
-            </div>
-            <div class='columns mb-xl'>
-                <div class='column is-half'>
-                    $boatTypeSelect
-                </div>
-                <div class='column is-half'>
-                   $ownershipSelect
-                </div>
-            </div>
-            <div class="columns mb-xl">
-                <div class="column is-one-quarter">
-                    $widthInput
-                </div>
-                <div class="column is-one-quarter">
-                  $lengthInput
-                </div>
-                 <div class="column is-one-quarter">
-                    $depthInput
-                </div>
-                <div class="column is-one-quarter">
-                    $weightInput
-                </div>
+             <div class='columns mb-xl'>
+                 <div class='column'>
+                     $nameInput
+                 </div>
+             </div>
+             <div class='columns mb-xl'>
+                 <div class='column is-half'>
+                     $boatTypeSelect
+                 </div>
+                 <div class='column is-half'>
+                    $ownershipSelect
+                 </div>
              </div>
              <div class="columns mb-xl">
-                <div class='column is-half' >
-                   $registrationNumberInput
-                </div>
-                <div class='column is-half'>
-                    $otherIdentifierInput
-                </div>
-            </div>
-            <div class='columns mb-xl'>
-                <div class='column'>
-                   $extraInformationInput
-                </div>
-            </div>
-           <script>
-                validation.init({forms: ['${formId}']});
-            </script>
-        """.trimIndent()
+                 <div class="column is-one-quarter">
+                     $widthInput
+                 </div>
+                 <div class="column is-one-quarter">
+                   $lengthInput
+                 </div>
+                  <div class="column is-one-quarter">
+                     $depthInput
+                 </div>
+                 <div class="column is-one-quarter">
+                     $weightInput
+                 </div>
+              </div>
+              <div class="columns mb-xl">
+                 <div class='column is-half' >
+                    $registrationNumberInput
+                 </div>
+                 <div class='column is-half'>
+                     $otherIdentifierInput
+                 </div>
+             </div>
+             <div class='columns mb-xl'>
+                 <div class='column'>
+                    $extraInformationInput
+                 </div>
+             </div>
+            <script>
+                 validation.init({forms: ['$formId']});
+             </script>
+            """.trimIndent()
     }
 }

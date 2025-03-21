@@ -64,10 +64,12 @@ class FormComponents {
         required: Boolean? = false,
         compact: Boolean = false,
         attributes: String = "",
+        name: String = id
     ): String =
         textInput(
             labelKey = labelKey,
             id = id,
+            name = name,
             value = value?.toString(),
             required = required,
             compact = compact,
@@ -94,11 +96,13 @@ class FormComponents {
         attributes: String = "",
         step: Double? = 0.01,
         compact: Boolean = false,
-        min: Double? = 0.0
+        min: Double? = 0.0,
+        name: String = id
     ): String =
         textInput(
             labelKey = labelKey,
             id = id,
+            name = name,
             value = value?.toString(),
             required = required,
             compact = compact,
