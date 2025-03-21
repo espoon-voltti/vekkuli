@@ -4,16 +4,18 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
-import org.springframework.beans.factory.annotation.Autowired
+import fi.espoo.vekkuli.views.components.modal.Modal
+import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
+import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Component
-class ReservationCardInformation : BaseView() {
-    @Autowired
-    lateinit var trailerCard: TrailerCard
-
+class ReservationCardInformation(
+    private val trailerCard: TrailerCard,
+    private val modal: Modal
+) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
         userType: UserType,
@@ -100,6 +102,16 @@ class ReservationCardInformation : BaseView() {
             </div>
             """.trimIndent()
 
+        val boatChangeLink =
+            modal
+                .createOpenModalBuilder()
+                .setType(OpenModalButtonType.Link)
+                .setText("""<span class="icon">${icons.edit}</span>""")
+                .setPath("/virkailija/venepaikat/varaukset/vaihda-vene/${reservation.id}")
+                .setStyle(ModalButtonStyle.EditIcon)
+                .setTestId("open-change-reservation-boat-modal")
+                .build()
+
         // language=HTML
         return """
             <div class="columns">
@@ -145,8 +157,11 @@ class ReservationCardInformation : BaseView() {
                          <p>${reservation.priceInEuro}</p>
                      </div>
                      <div class="field">
+                     <div class="edit-label">
                          <label class="label">${t("boatSpaceReservation.title.boatPresent")}</label>
-                         <p>${reservation.boat?.name ?: ""}</p>
+                         <div>$boatChangeLink</div>
+                     </div>
+                         <p ${addTestId("reservation-list-card-boat")}>${reservation.boat?.name ?: ""}</p>
                      </div>
                  </div>
                  <div class="column">

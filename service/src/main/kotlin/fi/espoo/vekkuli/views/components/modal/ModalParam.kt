@@ -3,7 +3,12 @@ package fi.espoo.vekkuli.views.components.modal
 enum class ModalButtonType {
     Button,
     Cancel,
-    Submit
+    Submit,
+}
+
+enum class OpenModalButtonType {
+    Button,
+    Link
 }
 
 data class ModalButtonParam(

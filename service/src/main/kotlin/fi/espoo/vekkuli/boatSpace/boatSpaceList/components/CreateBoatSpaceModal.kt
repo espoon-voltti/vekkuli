@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class CreateBoatSpaceModal(

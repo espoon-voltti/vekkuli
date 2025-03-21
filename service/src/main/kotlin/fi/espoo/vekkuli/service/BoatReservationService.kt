@@ -807,4 +807,9 @@ class BoatReservationService(
 
         memoService.insertSystemMemo(userId, infoText)
     }
+
+    fun changeReservationBoat(
+        reservationId: Int,
+        boatId: Int
+    ): Boolean = boatSpaceReservationRepo.changeReservationBoat(reservationId, boatId)
 }

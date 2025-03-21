@@ -136,7 +136,8 @@ class FormComponents {
         required: Boolean? = false,
         attributes: String = "",
         isFullWidth: Boolean = false,
-        placeholder: String? = ""
+        placeholder: String? = "",
+        name: String = id
     ): String {
         //language=HTML
         var opts =
@@ -155,7 +156,7 @@ class FormComponents {
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <div class="select${if (isFullWidth == true) " is-fullwidth" else ""}">
-                        <select id="$id" name="$id" $attributes >
+                        <select id="$id" name="$name" $attributes >
                             $opts
                         </select>
                     </div>

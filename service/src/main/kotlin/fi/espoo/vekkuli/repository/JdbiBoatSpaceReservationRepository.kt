@@ -881,6 +881,26 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
+    override fun changeReservationBoat(
+        reservationId: Int,
+        boatId: Int
+    ): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createUpdate(
+                    """
+                    UPDATE boat_space_reservation
+                    SET updated = :updatedTime, boat_id = :boatId
+                    WHERE id = :id
+                    """.trimIndent()
+                )
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
+            query.bind("id", reservationId)
+            query
+                .bind("boatId", boatId)
+                .execute() > 0
+        }
+
     override fun updateTrailerInBoatSpaceReservation(
         reservationId: Int,
         trailerId: Int

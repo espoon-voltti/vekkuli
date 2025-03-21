@@ -7,35 +7,20 @@ import org.springframework.stereotype.Service
 class Modal {
     fun createModalBuilder(): ModalBuilder = ModalBuilder()
 
-    fun openModalButton(
-        text: String,
-        path: String,
-        style: ModalButtonStyle
-    ): String {
-        // language=HTML
-        return """
-            <button
-                class="${style.cssClass}"
-                hx-get="$path"
-                hx-target="#modal-container"
-                hx-swap="innerHTML">
-                $text
-            </button>
-            """.trimIndent()
-    }
-
     fun createOpenModalBuilder(): OpenModalButtonBuilder = OpenModalButtonBuilder()
 
     class OpenModalButtonBuilder {
         var text: String = ""
         var path: String = ""
-        var type: ModalButtonType = ModalButtonType.Button
+        var type: OpenModalButtonType = OpenModalButtonType.Button
         var style: ModalButtonStyle = ModalButtonStyle.Default
         val attributes: MutableMap<String, String> = mutableMapOf()
 
         fun setText(text: String) = apply { this.text = text }
 
         fun setPath(path: String) = apply { this.path = path }
+
+        fun setType(type: OpenModalButtonType) = apply { this.type = type }
 
         fun setStyle(style: ModalButtonStyle) = apply { this.style = style }
 
@@ -56,6 +41,17 @@ class Modal {
                 attributes.entries.joinToString(" ") { (key, value) ->
                     "$key=\"$value\""
                 }
+            return when (type) {
+                OpenModalButtonType.Button -> buildButton()
+                OpenModalButtonType.Link -> buildLink()
+            }
+        }
+
+        fun buildButton(): String {
+            val additionalAttributes =
+                attributes.entries.joinToString(" ") { (key, value) ->
+                    "$key=\"$value\""
+                }
             // language=HTML
             return """
                 <button
@@ -66,6 +62,25 @@ class Modal {
                     $additionalAttributes>
                     $text
                 </button>
+                """.trimIndent()
+        }
+
+        fun buildLink(): String {
+            val additionalAttributes =
+                attributes.entries.joinToString(" ") { (key, value) ->
+                    "$key=\"$value\""
+                }
+
+            // language=HTML
+            return """
+                <a
+                    class="${style.cssClass}"
+                    hx-get="$path"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    $additionalAttributes>
+                    $text
+                </a>
                 """.trimIndent()
         }
     }

@@ -6,5 +6,6 @@ enum class ModalButtonStyle(
     Default("button"),
     Primary("button is-primary"),
     Danger("button is-danger"),
-    DangerOutline("button is-danger is-outlined")
+    DangerOutline("button is-danger is-outlined"),
+    EditIcon("is-link is-icon-link edit-link")
 }
