@@ -129,7 +129,7 @@ class BoatSpaceList(
         return """
 <section class="section" x-data="{openCreateModal: false, openDeleteModal: false}">
    <div class="container block heading" >
-        <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
+        <h2 id="reservations-header">${t("boatSpaces.title")}</h2>
         <span>                      
             <a ${addTestId("create-boat-space")} @click="openCreateModal = true">
                 <span class="icon is-small">
