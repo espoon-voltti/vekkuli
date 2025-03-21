@@ -58,6 +58,8 @@ class ModalBuilder {
     fun setCloseModalOnPost(closeModalOnPost: Boolean) = apply { this.closeModalOnPost = closeModalOnPost }
 
     fun build(): String {
+        val reloadPageOnClose = if (reloadPageOnClose) ";window.location.reload()" else ""
+        val closeModalOnPostEventTrigger = if (closeModalOnPost) """x-on:htmx:after-on-load="$modalStateId = false $reloadPageOnClose"""" else ""
         // language=HTML
         return """
             <div 
@@ -65,11 +67,10 @@ class ModalBuilder {
                 class="modal" 
                 x-data="{ $modalStateId: true }" 
                 x-show="$modalStateId" 
-                ${if (closeModalOnPost) "x-on:htmx:after-on-load=\"$modalStateId = false\"" else ""}
+                $closeModalOnPostEventTrigger
                 x-effect="
                     if (!$modalStateId) {
                         ${'$'}el.remove()
-                        ${if (reloadPageOnClose) "window.location.reload()" else ""}
                     }
                 "
                 ${addTestId("modal-window")}

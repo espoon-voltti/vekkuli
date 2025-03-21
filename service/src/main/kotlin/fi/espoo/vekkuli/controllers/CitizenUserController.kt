@@ -588,7 +588,7 @@ class CitizenUserController(
 
     data class BoatAddForm(
         val name: String,
-        val type: BoatType,
+        val type: BoatType?,
         val width: BigDecimal?,
         val length: BigDecimal?,
         val depth: BigDecimal?,
@@ -596,9 +596,7 @@ class CitizenUserController(
         val registrationNumber: String,
         val otherIdentifier: String,
         val extraInformation: String,
-        val ownership: OwnershipStatus,
-        val warnings: Set<String> = emptySet(),
-        val reservationId: Int? = null,
+        val ownership: OwnershipStatus?,
     )
 
     fun validateBoatAddInput(input: BoatAddForm): MutableMap<String, String> {
@@ -615,6 +613,13 @@ class CitizenUserController(
         if (input.weight == null) {
             errors["weight"] = messageUtil.getMessage("validation.required")
         }
+        if (input.ownership == null) {
+            errors["ownership"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.type == null) {
+            errors["type"] = messageUtil.getMessage("validation.required")
+        }
+
         return errors
     }
 
@@ -684,44 +689,41 @@ class CitizenUserController(
     }
 
     @PostMapping("/virkailija/kayttaja/{reserverId}/vene/uusi")
-    @ResponseBody
     fun addBoatForReserver(
         @PathVariable reserverId: UUID,
         request: HttpServletRequest,
         input: BoatAddForm,
-    ): String {
+    ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "CITIZEN_PROFILE_ADD_NEW_BOAT", mapOf("targetId" to reserverId.toString()))
         }
 
         try {
+            val errors = validateBoatAddInput(input)
 
+            if (errors.isNotEmpty()) {
+                throw IllegalArgumentException("Invalid input")
+            }
 
-        val errors = validateBoatAddInput(input)
+            // values are validated above, so we can safely unwrap them
+            boatService.insertBoat(
+                reserverId,
+                input.registrationNumber,
+                input.name,
+                decimalToInt(input.width!!),
+                decimalToInt(input.length!!),
+                decimalToInt(input.depth!!),
+                input.weight!!,
+                input.type!!,
+                input.otherIdentifier,
+                input.extraInformation,
+                input.ownership!!,
+            )
 
-        if (errors.isNotEmpty()) {
-            throw IllegalArgumentException("Invalid input")
-        }
-
-
-        boatService.insertBoat(
-            reserverId,
-            input.registrationNumber,
-            input.name,
-            decimalToInt(input.width!!),
-            decimalToInt(input.length!!),
-            decimalToInt(input.depth!!),
-            input.weight!!,
-            input.type,
-            input.otherIdentifier,
-            input.extraInformation,
-            input.ownership,
-        )
-
-        return "success"
+            return ResponseEntity.ok("ok")
         } catch (e: Exception) {
             logger.error { "Adding new boat failed: ${e.message}" }
-            return "error"
+            return ResponseEntity.badRequest().body("failed")
         }
     }
 

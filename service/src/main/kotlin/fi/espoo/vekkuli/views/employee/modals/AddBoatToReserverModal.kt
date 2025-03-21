@@ -69,7 +69,7 @@ class AddBoatToReserverModal(
             formComponents.select(
                 labelKey = "boatApplication.boatType",
                 id = "type",
-                selectedValue = null,
+                selectedValue = boatTypes.first(),
                 options = boatTypes.map { it to t("boatApplication.boatTypeOption.$it") },
                 required = true,
             )
@@ -113,7 +113,7 @@ class AddBoatToReserverModal(
             formComponents.select(
                labelKey =  "boatSpaceReservation.title.ownershipStatus",
                 id = "ownership",
-                selectedValue = null,
+                selectedValue = ownershipOptionValues.first(),
                 options = ownershipOptionValues.map { it to formComponents.t("boatApplication.EMPLOYEE.ownershipOption.$it") },
                 required = true,
             )
