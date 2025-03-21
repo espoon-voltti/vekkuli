@@ -10,8 +10,10 @@ import fi.espoo.vekkuli.service.getFreeBoatSpaceReport
 import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReport
 import fi.espoo.vekkuli.service.getTerminatedBoatSpaceReport
+import fi.espoo.vekkuli.service.getWarningsBoatSpaceReport
 import fi.espoo.vekkuli.service.stickerReportToCsv
 import fi.espoo.vekkuli.service.terminatedBoatSpaceReportToCsv
+import fi.espoo.vekkuli.service.warningsBoatSpaceReportToCsv
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -120,6 +122,22 @@ class ReportingController(
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-irtisanotut-paikat-raportti-$todayFormatted.csv\"")
             .body(utf8BOM + terminatedBoatSpaceReportToCsv(getTerminatedBoatSpaceReport(jdbi, reportDate)))
+    }
+
+    @GetMapping("/boat-space-report/warnings", produces = ["text/csv"])
+    @ResponseBody
+    fun warningsBoatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_WARNINGS_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-varoitukset-raportti-$todayFormatted.csv\"")
+            .body(utf8BOM + warningsBoatSpaceReportToCsv(getWarningsBoatSpaceReport(jdbi, reportDate)))
     }
 
     @GetMapping

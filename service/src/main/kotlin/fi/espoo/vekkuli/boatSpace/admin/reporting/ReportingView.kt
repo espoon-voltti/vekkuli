@@ -200,6 +200,30 @@ class ReportingView(
                         </div>
                     </form>
                 </div>
+                
+                <div class="container">
+                    <form id="form"
+                          method="get"
+                          action="/virkailija/admin/reporting/boat-space-report/warnings"
+                          class="block"
+                    >
+                        <h2>${t("reporting.warningsReport")}</h2>
+                        
+                        <p class="reports-info">${t("reporting.warningsReportInfo")}</p>
+                                                
+                        <div class='columns'>
+                            <div class='column'>
+                                <button id="submit-button"
+                                    class="button is-primary"
+                                    type="submit"
+                                    data-testid="warnings-report-button"
+                                >
+                                    ${t("reporting.submit")}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </section>
             """.trimIndent()
     }
