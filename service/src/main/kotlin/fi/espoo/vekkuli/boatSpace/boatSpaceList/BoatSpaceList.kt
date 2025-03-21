@@ -241,7 +241,7 @@ class BoatSpaceList(
             "open-edit-modal"
         )} :disabled='editBoatSpaceIds.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                 </div>
-                
+                <div class="employee-filter-container" id="totalrows" hx-swap-oob="true">Paikkoja: ${boatSpaces.totalRows}</div>
             </div>
             
             <div class='reservation-list form-section block'>
