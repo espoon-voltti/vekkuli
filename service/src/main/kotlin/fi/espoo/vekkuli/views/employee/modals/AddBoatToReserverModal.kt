@@ -18,8 +18,7 @@ class AddBoatToReserverModal(
 
         return modalBuilder
             .setTitle(t("boatSpaceReservation.addBoat.title"))
-            .setCloseModalOnPost(true)
-            .setReloadPageOnClose(true)
+            .setReloadPageAfterPost(true)
             .setForm {
                 setId(formId)
                 setTestId(formId)

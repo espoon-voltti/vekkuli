@@ -8,7 +8,7 @@ class ModalBuilder {
     private var title: String? = null
     private var content: String? = null
     private var reloadPageOnClose: Boolean = false
-    private var reloadPageOnPost: Boolean = false
+    private var reloadPageAfterPost: Boolean = false
     private var closeModalOnPost: Boolean = false
     private var centerButtons: Boolean = false
     private var isWide: Boolean = false
@@ -53,7 +53,7 @@ class ModalBuilder {
 
     fun setButtonsCentered(isCentered: Boolean) = apply { this.centerButtons = isCentered }
 
-    fun setReloadPageOnPost(reloadPageOnPost: Boolean) = apply { this.reloadPageOnPost = reloadPageOnPost }
+    fun setReloadPageAfterPost(reloadPageOnPost: Boolean) = apply { this.reloadPageAfterPost = reloadPageOnPost }
 
     fun setCloseModalOnPost(closeModalOnPost: Boolean) = apply { this.closeModalOnPost = closeModalOnPost }
 
@@ -65,9 +65,16 @@ class ModalBuilder {
                 ""
             }
 
-        val closeModalOnPostEventTrigger =
+        val closeModalAfterPostEventTrigger =
             if (closeModalOnPost) {
-                """x-on:htmx:after-on-load="$modalStateId = false $reloadPageOnClose""""
+                """x-on:htmx:after-on-load="$modalStateId = false"""
+            } else {
+                ""
+            }
+
+        val reloadPageAfterPostEventTrigger =
+            if (reloadPageAfterPost) {
+                """x-on:htmx:after-on-load="window.location.reload()""""
             } else {
                 ""
             }
@@ -79,10 +86,12 @@ class ModalBuilder {
                 class="modal" 
                 x-data="{ $modalStateId: true }" 
                 x-show="$modalStateId" 
-                $closeModalOnPostEventTrigger
+                $closeModalAfterPostEventTrigger
+                $reloadPageAfterPostEventTrigger
                 x-effect="
                     if (!$modalStateId) {
                         ${'$'}el.remove()
+                        $reloadPageOnClose
                     }
                 "
                 ${addTestId("modal-window")}

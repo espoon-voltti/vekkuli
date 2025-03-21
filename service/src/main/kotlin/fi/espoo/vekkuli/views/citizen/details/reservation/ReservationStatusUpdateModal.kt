@@ -50,8 +50,7 @@ class ReservationStatusUpdateModal : BaseView() {
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
             .setTitle(t("citizenDetails.updateReservationStatus"))
-            .setCloseModalOnPost(true)
-            .setReloadPageOnClose(true)
+            .setReloadPageAfterPost(true)
             // language=HTML
             .setContent(
                 """
