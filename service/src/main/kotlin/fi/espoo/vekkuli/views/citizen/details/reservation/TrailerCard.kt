@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal

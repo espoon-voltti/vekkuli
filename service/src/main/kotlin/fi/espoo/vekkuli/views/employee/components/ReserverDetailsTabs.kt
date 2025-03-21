@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli.views.employee.components
 
-import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
