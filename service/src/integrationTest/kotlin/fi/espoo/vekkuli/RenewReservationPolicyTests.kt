@@ -186,7 +186,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
 
         // Start at the start of reservation period
         testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
-        val endDate = getWinterEndDate(timeProvider.getCurrentDate())
+        val endDate = getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
 
         val reservation =
             testUtils.createReservationInConfirmedState(
@@ -236,7 +236,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should not be able to renew expiring indefinite winter reservation as non-Espoo citizen within renewal time limits`() {
         val reserverId = nonEspooCitizenWithoutReservationsId
-        val contractEndDate = getWinterEndDate(timeProvider.getCurrentDate())
+        val contractEndDate = getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
         val boatSpaceType = BoatSpaceType.Winter
 
         // Start at the start of reservation period
@@ -427,7 +427,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should not be able to renew expiring indefinite trailer reservation as non-Espoo citizen within renewal time limits`() {
         val reserverId = nonEspooCitizenWithoutReservationsId
-        val contractEndDate = getWinterEndDate(timeProvider.getCurrentDate())
+        val contractEndDate = getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
         val boatSpaceType = BoatSpaceType.Trailer
 
         // Start at the start of reservation period

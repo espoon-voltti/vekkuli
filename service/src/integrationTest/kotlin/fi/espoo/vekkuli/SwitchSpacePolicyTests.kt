@@ -220,7 +220,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         // Start at the start of reservation period
         testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
 
-        val endDate = getWinterEndDate(timeProvider.getCurrentDate())
+        val endDate = getWinterEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
 
         val reservation =
             testUtils.createReservationInConfirmedState(

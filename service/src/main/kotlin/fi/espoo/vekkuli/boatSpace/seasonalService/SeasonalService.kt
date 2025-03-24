@@ -239,7 +239,7 @@ class SeasonalService(
         val nowNextYear = timeProvider.getCurrentDate().plusYears(1)
         return when (boatSpaceType) {
             BoatSpaceType.Slip -> getSlipEndDate(nowNextYear, reservationValidity)
-            BoatSpaceType.Winter -> getWinterEndDate(nowNextYear)
+            BoatSpaceType.Winter -> getWinterEndDate(nowNextYear, reservationValidity)
             BoatSpaceType.Storage -> getStorageEndDate(nowNextYear)
             BoatSpaceType.Trailer -> getTrailerEndDate(nowNextYear, reservationValidity)
         }
@@ -253,7 +253,7 @@ class SeasonalService(
 
         return when (boatSpaceType) {
             BoatSpaceType.Slip -> getSlipEndDate(now, reservationValidity)
-            BoatSpaceType.Winter -> getWinterEndDate(now)
+            BoatSpaceType.Winter -> getWinterEndDate(now, reservationValidity)
             BoatSpaceType.Storage -> getStorageEndDate(now)
             BoatSpaceType.Trailer -> getTrailerEndDate(now, reservationValidity)
         }
@@ -297,7 +297,7 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val endDate = getWinterEndDate(now)
+        val endDate = getWinterEndDate(now, ReservationValidity.Indefinite)
 
         return ReservationResult.Success(
             ReservationResultSuccess(

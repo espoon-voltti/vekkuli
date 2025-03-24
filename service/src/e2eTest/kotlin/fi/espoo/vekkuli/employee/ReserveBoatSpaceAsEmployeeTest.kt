@@ -382,9 +382,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 10.06.2024")
 
-            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "14.09.2024")
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "10.06.2024")
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -401,9 +401,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 10.06.2024")
 
-            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "14.09.2024")
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "10.06.2024")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -432,7 +432,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         fillWinterBoatSpaceForm(formPage)
         if (isFixed) {
             formPage.reservationValidityFixedTermRadioButton.click()
-            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 14.09.2024")
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 10.06.2024")
         }
 
         formPage.submitButton.click()
