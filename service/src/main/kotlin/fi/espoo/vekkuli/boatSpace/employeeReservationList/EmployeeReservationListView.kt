@@ -59,11 +59,12 @@ class EmployeeReservationListView(
                         }
                     }"
                     > 
+                    
                     <form id="reservation-filter-form"
                           hx-get="/virkailija/venepaikat/varaukset"
                           hx-target="#table-body"
                           hx-select="#table-body, #modal"
-                          hx-trigger="change, keyup delay:500ms"
+                          hx-trigger="change delay:1ms, keyup delay:500ms"
                           hx-swap="outerHTML"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
