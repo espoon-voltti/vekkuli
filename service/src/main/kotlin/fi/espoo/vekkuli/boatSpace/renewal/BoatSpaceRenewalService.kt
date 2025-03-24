@@ -78,7 +78,8 @@ class BoatSpaceRenewalService(
         renewedReservationId: Int,
         reserverId: UUID?,
         originalReservationId: Int?,
-        input: InvoiceInput
+        input: InvoiceInput,
+        employeeId: UUID
     ) {
         if (reserverId == null || originalReservationId == null) {
             throw IllegalArgumentException("Reservation not found")
@@ -99,7 +100,7 @@ class BoatSpaceRenewalService(
 
         boatReservationService.markReservationEnded(originalReservationId)
 
-        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
+        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId, employeeId)
             ?: throw InternalError("Failed to send invoice")
         boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(renewedReservationId)
     }

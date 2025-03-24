@@ -69,6 +69,7 @@ class ReservationFormController(
             val page = reservationService.getBoatSpaceFormForCitizen(citizenId, reservationId, formInput, request.requestURI)
             return ResponseEntity.ok(page)
         } catch (e: BadRequest) {
+            logger.error { "Unable to get boat space reservation form for citizen" }
             val headers = org.springframework.http.HttpHeaders()
             headers.location = URI(getServiceUrl("/kuntalainen/venepaikat"))
             return ResponseEntity(headers, HttpStatus.FOUND)
@@ -99,6 +100,7 @@ class ReservationFormController(
             return badRequest("Unauthorized")
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
+            logger.error { e.message }
             val errorPage = reservationFormView.errorPage(e.message ?: "Unspecified error", 2)
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }

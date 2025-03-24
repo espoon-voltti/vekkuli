@@ -22,6 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ActiveProfiles("test")
 class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Autowired
+    private lateinit var memoService: MemoService
+
+    @Autowired
     lateinit var boatSpaceInvoiceService: BoatSpaceInvoiceService
 
     @Autowired
@@ -53,7 +56,8 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             boatSpaceInvoiceService.createAndSendInvoice(
                 invoiceData!!,
                 this.citizenIdLeo,
-                madeReservation.id
+                madeReservation.id,
+                userId
             )
 
         verify(asyncJobRunner).plan(any())
@@ -78,12 +82,13 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 madeReservation.id,
                 this.citizenIdLeo
             )
-        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id)
+        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id, userId)
         assertNotNull(invoice, "Invoice is created")
         verify(asyncJobRunner).plan(any())
         assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
+        assertEquals("Lasku luotu", memoService.getMemos(this.citizenIdLeo)[0].content)
     }
 
     @Test
@@ -99,12 +104,20 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 madeReservation.id,
                 this.citizenIdLeo
             )
-        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id, true)
+        val invoice =
+            boatSpaceInvoiceService.createAndSendInvoice(
+                invoiceBatchParameters!!,
+                this.citizenIdLeo,
+                madeReservation.id,
+                userId,
+                true
+            )
 
         assertNotNull(invoice, "Invoice is created")
         assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertEquals(reservation?.status, ReservationStatus.Confirmed, "Reservation is paid")
         assertEquals(reservation?.paymentDate, timeProvider.getCurrentDate(), "Reservation has been paid")
+        assertEquals("Merkitty maksetuksi", memoService.getMemos(this.citizenIdLeo)[0].content)
     }
 }

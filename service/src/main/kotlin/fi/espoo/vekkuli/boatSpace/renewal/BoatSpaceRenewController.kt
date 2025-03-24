@@ -83,6 +83,7 @@ class BoatSpaceRenewController(
         } catch (e: Conflict) {
             return redirectUrl("/virkailija/venepaikat/varaukset")
         } catch (e: Exception) {
+            logger.error { "Unable to renew reservation" }
             return badRequest("Unable to renew reservation")
         }
     }
@@ -103,7 +104,8 @@ class BoatSpaceRenewController(
                 renewedReservation.id,
                 renewedReservation.reserverId,
                 renewedReservation.originalReservationId,
-                input
+                input,
+                employeeId
             )
             return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {
