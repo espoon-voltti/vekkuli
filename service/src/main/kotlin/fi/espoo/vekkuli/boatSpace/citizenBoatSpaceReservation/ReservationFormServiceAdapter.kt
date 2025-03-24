@@ -6,11 +6,14 @@ import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.BoatSpaceReservation
 import fi.espoo.vekkuli.domain.toBoatSpaceReservation
 import fi.espoo.vekkuli.service.BoatReservationService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
 import java.util.*
+
+val logger = KotlinLogging.logger {}
 
 @Service
 class ReservationFormServiceAdapter(
@@ -86,6 +89,7 @@ fun ReservationInformation.toReservationInput(reservationId: Int): ReservationIn
     val violations = validator.validate(result)
 
     if (violations.isNotEmpty()) {
+        logger.error { "Validation failed for ReservationInput: $this" }
         throw ConstraintViolationException(violations)
     }
 
