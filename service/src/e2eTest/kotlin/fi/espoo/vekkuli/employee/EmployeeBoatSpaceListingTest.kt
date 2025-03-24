@@ -138,7 +138,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     fun `should be able to filter boat spaces`() {
         val listingPage = boatSpaceListPage()
 
-        page.waitForCondition { listingPage.listItems.count() == 50 }
+        page.waitForCondition { listingPage.listItems.count() == 100 }
 
         // Filter by boat space state
         listingPage.boatStateFilter("Inactive").click()
@@ -166,7 +166,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     @Test
     fun `should show only free spaces`() {
         val listingPage = boatSpaceListPage()
-        page.waitForCondition { listingPage.listItems.count() == 50 }
+        page.waitForCondition { listingPage.listItems.count() == 100 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         assertThat(listingPage.listItems).hasCount(29)
 

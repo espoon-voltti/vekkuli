@@ -55,7 +55,7 @@ class EmployeeReservationListView(
                             }
                             document.getElementById('sortColumn').value = this.sortColumn;
                             document.getElementById('sortDirection').value = this.sortDirection;
-                            document.getElementById('reservation-filter-form').dispatchEvent(new Event('change'));
+                            document.getElementById('reservation-table-header').dispatchEvent(new Event('change'));
                         }
                     }"
                     > 
@@ -64,14 +64,16 @@ class EmployeeReservationListView(
                           hx-get="/virkailija/venepaikat/varaukset"
                           hx-target="#table-body"
                           hx-select="#table-body, #modal"
-                          hx-trigger="change delay:1ms, keyup delay:500ms"
+                          hx-trigger="change from:#reservation-filter-container, change from:#reservation-table-header delay:1ms, keyup delay:500ms" 
                           hx-swap="outerHTML"
+                          hx-history="false"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
                     >
                         <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
                         <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
-
+                   
+                    <div id='reservation-filter-container'>
                         <div class="employee-filter-container">                        
                             <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
@@ -114,13 +116,14 @@ class EmployeeReservationListView(
                             </div>
                             <div>${exceptionsFilter.render(params.exceptionsFilter == true)}</div>
                         </div>
+                        </div>  
                         <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">
                             ${sendMessageView.renderLink(reservations.totalRows)}
                         </div>
                         <div class="reservation-list form-section block">
                             <div class='table-container'>
                                 <table class="table is-hoverable">
-                                    <thead>
+                                    <thead id='reservation-table-header'>
                                         <tr class="table-borderless">
                                             <th></th>
                                             <th class="nowrap">
