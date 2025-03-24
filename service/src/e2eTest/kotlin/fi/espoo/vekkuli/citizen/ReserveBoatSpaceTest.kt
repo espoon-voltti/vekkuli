@@ -1122,7 +1122,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         BoatSpaceFormPage(mikkoPage).fillFormAndSubmit()
 
         val mikkoPaymentPage = PaymentPage(mikkoPage)
-        assertThat(mikkoPaymentPage.header).isVisible()
+        mikkoPaymentPage.assertOnPaymentPage()
 
         mockTimeProvider(timeProvider, reservationTimerExpired)
 
