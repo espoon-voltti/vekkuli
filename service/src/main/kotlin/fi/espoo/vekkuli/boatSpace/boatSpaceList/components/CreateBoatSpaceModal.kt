@@ -27,7 +27,7 @@ class CreateBoatSpaceModal(
                 required = true
             )
 
-        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionCreation", null, true)
+        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionCreation", null)
         val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberCreation", null, true)
 
         val boatSpaceTypeInput =
