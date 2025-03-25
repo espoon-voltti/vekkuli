@@ -1,8 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -27,19 +25,20 @@ class JdbiBoatRepository(
                 )
             query.bind("reserverId", reserverId)
             val boats = query.mapTo<Boat>().list()
-            boats.map {
+            boats.map { boat ->
                 val warningQuery =
                     handle.createQuery(
                         """
-                        SELECT key
+                        SELECT *
                         FROM reservation_warning
                         WHERE boat_id = :boatId
+                        ORDER BY created DESC
                         """.trimIndent()
                     )
-                warningQuery.bind("boatId", it.id)
-                val warnings = warningQuery.mapTo<String>().list()
-                it.copy(
-                    warnings = warnings.toSet()
+                warningQuery.bind("boatId", boat.id)
+                val warnings = warningQuery.mapTo<ReservationWarning>().list()
+                boat.copy(
+                    warnings = warnings.distinctBy { it.key }.toSet()
                 )
             }
         }
@@ -91,6 +90,13 @@ class JdbiBoatRepository(
             query.mapTo<Boat>().findOne().orElse(null)
         }
 
+    private fun hyphenToEmpty(value: String?) =
+        when {
+            value != null && value.trim() == "-"
+            -> ""
+            else -> value
+        }
+
     override fun updateBoat(boat: Boat): Boat =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -112,15 +118,15 @@ class JdbiBoatRepository(
                     """.trimIndent()
                 )
             query.bind("id", boat.id)
-            query.bind("registrationCode", boat.registrationCode)
-            query.bind("name", boat.name)
+            query.bind("registrationCode", hyphenToEmpty(boat.registrationCode))
+            query.bind("name", hyphenToEmpty(boat.name))
             query.bind("widthCm", boat.widthCm)
             query.bind("lengthCm", boat.lengthCm)
             query.bind("depthCm", boat.depthCm)
             query.bind("weightKg", boat.weightKg)
             query.bind("type", boat.type)
-            query.bind("otherIdentification", boat.otherIdentification)
-            query.bind("extraInformation", boat.extraInformation)
+            query.bind("otherIdentification", hyphenToEmpty(boat.otherIdentification))
+            query.bind("extraInformation", hyphenToEmpty(boat.extraInformation))
             query.bind("ownership", boat.ownership)
             query.mapTo<Boat>().one()
         }
@@ -148,15 +154,15 @@ class JdbiBoatRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("registrationCode", registrationCode)
-            query.bind("name", name)
+            query.bind("registrationCode", hyphenToEmpty(registrationCode))
+            query.bind("name", hyphenToEmpty(name))
             query.bind("widthCm", widthCm)
             query.bind("lengthCm", lengthCm)
             query.bind("depthCm", depthCm)
             query.bind("weightKg", weightKg)
             query.bind("type", type)
-            query.bind("otherIdentification", otherIdentification)
-            query.bind("extraInformation", extraInformation)
+            query.bind("otherIdentification", hyphenToEmpty(otherIdentification))
+            query.bind("extraInformation", hyphenToEmpty(extraInformation))
             query.bind("ownership", ownership)
             query.mapTo<Boat>().one()
         }

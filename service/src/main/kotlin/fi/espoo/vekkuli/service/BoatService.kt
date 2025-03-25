@@ -20,8 +20,9 @@ class BoatService(
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 
     fun updateBoatAsCitizen(boat: Boat): Boat {
+        val previousBoatInfo = getBoat(boat.id)
         val result = boatRepository.updateBoat(boat)
-        boatReservationService.addBoatWarningsToReservations(result)
+        boatReservationService.addBoatWarningsToReservations(result, previousBoatInfo)
         return result
     }
 

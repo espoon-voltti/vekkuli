@@ -2,10 +2,10 @@ package fi.espoo.vekkuli.controllers.reservation.partial
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.AuthenticatedUser
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationGeneralWarningView
@@ -31,7 +31,7 @@ class ReservationGeneralWarningController {
     @Autowired
     lateinit var warningsRepository: ReservationWarningRepository
 
-    private val generalWarningsKey = ReservationWarningType.GeneralReservationWarning.name
+    private val generalWarningsKey = ReservationWarningType.GeneralReservationWarning
 
     @GetMapping("/general-warning/{reserverId}/{reservationId}")
     @ResponseBody
@@ -70,13 +70,17 @@ class ReservationGeneralWarningController {
         logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_SET_GENERAL_WARNING")
 
         warningsRepository.addReservationWarnings(
-            UUID.randomUUID(),
-            reservationId,
-            null,
-            null,
-            null,
-            infoText.trim(),
-            listOf(generalWarningsKey)
+            listOf(
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservationId,
+                    null,
+                    null,
+                    null,
+                    generalWarningsKey,
+                    infoText.trim(),
+                )
+            )
         )
 
         return ResponseEntity.ok(
@@ -108,13 +112,17 @@ class ReservationGeneralWarningController {
 
         warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
         warningsRepository.addReservationWarnings(
-            UUID.randomUUID(),
-            reservationId,
-            null,
-            null,
-            null,
-            infoText.trim(),
-            listOf(generalWarningsKey)
+            listOf(
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservationId,
+                    null,
+                    null,
+                    null,
+                    generalWarningsKey,
+                    infoText.trim(),
+                )
+            )
         )
 
         return ResponseEntity.ok(
@@ -142,7 +150,8 @@ class ReservationGeneralWarningController {
         @PathVariable reservationId: Int,
         @RequestParam("infoText") infoText: String,
     ): ResponseEntity<String> {
-        val authenticatedUser = logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_ACKNOWLEDGE_GENERAL_WARNING")
+        val authenticatedUser =
+            logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_ACKNOWLEDGE_GENERAL_WARNING")
         val userId = authenticatedUser?.id
 
         warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
