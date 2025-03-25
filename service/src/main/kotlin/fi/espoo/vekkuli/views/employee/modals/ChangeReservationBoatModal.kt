@@ -29,8 +29,7 @@ class ChangeReservationBoatModal(
             )
         return modalBuilder
             .setTitle(t("boatSpaceReservation.changeBoat.title", listOf("""${reservation.locationName} ${reservation.place}""")))
-            .setCloseModalOnPost(true)
-            .setReloadPageOnClose(true)
+            .setReloadPageAfterPost(true)
             .setForm {
                 setId(formId)
                 setTestId(formId)

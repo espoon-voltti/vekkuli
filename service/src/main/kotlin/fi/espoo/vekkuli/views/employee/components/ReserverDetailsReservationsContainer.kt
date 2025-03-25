@@ -9,6 +9,9 @@ import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.modal.Modal
+import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
+import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +23,7 @@ import kotlin.collections.isNotEmpty
 class ReserverDetailsReservationsContainer(
     private val reservationListBuilder: ReservationList,
     private val warningBox: WarningBox,
+    private val modal: Modal
 ) : BaseView() {
     @Autowired
     lateinit var reserverDetailsTabs: ReserverDetailsTabs
@@ -359,6 +363,20 @@ class ReserverDetailsReservationsContainer(
                 ""
             }
 
+        val openAddNewBoatModal =
+            modal
+                .createOpenModalBuilder()
+                .setType(OpenModalButtonType.Link)
+                .setText(
+                    """
+                    <span class="icon mr-s">${icons.plus}</span>
+                    <span>${t("boatSpaceReservation.addBoat.button")}</span>
+                    """.trimIndent()
+                ).setPath("/virkailija/venepaikat/varaukset/uusi-vene/$reserverId")
+                .setStyle(ModalButtonStyle.EditIcon)
+                .setTestId("open-add-new-boat-modal")
+                .build()
+
         // language=HTML
         return """
                    <div id="tab-content" class="container block" x-data="{ 
@@ -375,9 +393,14 @@ class ReserverDetailsReservationsContainer(
                           ${addTestId("expired-reservation-list-loader")}
                           class='mt-1'>  
                        </div>
-                       
-                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
-
+                       <div class="columns is-vcentered mb-m">
+                           <div class="column is-narrow">
+                              <h3 class="mb-none">${t("boatSpaceReservation.title.boats")} </h3>
+                           </div>
+                           <div class="column">
+                                 $openAddNewBoatModal
+                            </div>  
+                       </div>
                        <div class="reservation-list form-section no-bottom-border">
                            ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
                        </div>

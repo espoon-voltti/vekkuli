@@ -37,8 +37,7 @@ class ReservationValidityUpdateModal : BaseView() {
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
             .setTitle(t("citizenDetails.updateReservationValidity"))
-            .setCloseModalOnPost(true)
-            .setReloadPageOnClose(true)
+            .setReloadPageAfterPost(true)
             // language=HTML
             .setContent(
                 """

@@ -493,6 +493,61 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun `employee can add a new boat to a reserver`() {
+        try {
+            val employeeHomePage = EmployeeHomePage(page)
+            val newBoatName = "Leon uusiovene III"
+            val newBoatWeight = "1000"
+            val newBoatType = "Sailboat"
+            val newBoatDepth = "1.5"
+            val newBoatWidth = "3.0"
+            val newBoatLength = "6.0"
+            val newBoatRegNum = "ABC-123"
+            val newBoatOwnership = "Owner"
+            val newBoatOtherId = "ID12345"
+            val newBoatExtraInfo = "Extra info"
+
+            // I'm quite not sure where this comes from. Probably seed state?
+            val newBoatId = 8
+
+            employeeHomePage.employeeLogin()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToUserPage(CitizenIds.leo)
+
+            citizenDetails.openAddNewBoatModal.click()
+
+            citizenDetails.addNewBoatModalNameInput.fill(newBoatName)
+            citizenDetails.addNewBoatModalWeightInput.fill(newBoatWeight)
+            citizenDetails.addNewBoatModalTypeSelect.selectOption(newBoatType)
+            citizenDetails.addNewBoatModalDepthInput.fill(newBoatDepth)
+            citizenDetails.addNewBoatModalWidthInput.fill(newBoatWidth)
+            citizenDetails.addNewBoatModalLengthInput.fill(newBoatLength)
+            citizenDetails.addNewBoatModalRegNumInput.fill(newBoatRegNum)
+            citizenDetails.addNewBoatModalOwnershipSelect.selectOption(newBoatOwnership)
+            citizenDetails.addNewBoatModalOtherIdInput.fill(newBoatOtherId)
+            citizenDetails.addNewBoatModalExtraInfoInput.fill(newBoatExtraInfo)
+
+            citizenDetails.addNewBoatModalConfirm.click()
+
+            citizenDetails.showAllBoatsButton.click()
+
+            assertThat(citizenDetails.nameText(newBoatId)).hasText(newBoatName)
+            assertThat(citizenDetails.weightText(newBoatId)).hasText(newBoatWeight)
+            assertThat(citizenDetails.typeText(newBoatId)).hasText(newBoatType)
+            assertThat(citizenDetails.depthText(newBoatId)).containsText(newBoatDepth.replace(".", ","))
+            assertThat(citizenDetails.widthText(newBoatId)).containsText(newBoatWidth.replace(".", ","))
+            assertThat(citizenDetails.lengthText(newBoatId)).containsText(newBoatLength.replace(".", ","))
+            assertThat(citizenDetails.registrationNumberText(newBoatId)).hasText(newBoatRegNum)
+            assertThat(citizenDetails.ownershipText(newBoatId)).hasText(newBoatOwnership)
+            assertThat(citizenDetails.otherIdentifierText(newBoatId)).hasText(newBoatOtherId)
+            assertThat(citizenDetails.extraInformationText(newBoatId)).hasText(newBoatExtraInfo)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     private fun reservationListPage(): ReservationListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
