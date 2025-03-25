@@ -194,10 +194,7 @@ class JdbiBoatSpaceReservationRepository(
                 """.trimIndent()
             )
         query.bind("trailerId", trailerId)
-        val trailer = query.mapTo<Trailer>().findOne().orElse(null)
-        if (trailer == null) {
-            return null
-        }
+        val trailer = query.mapTo<Trailer>().findOne().orElse(null) ?: return null
         val warnings = getWarningsForReservation(reservationId, null, trailerId).map { it.key }.toSet()
         return trailer.copy(warnings = warnings)
     }
