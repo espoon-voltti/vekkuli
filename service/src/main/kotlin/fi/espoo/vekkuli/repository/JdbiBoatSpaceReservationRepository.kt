@@ -108,19 +108,18 @@ class JdbiBoatSpaceReservationRepository(
     fun getExcludedBoatTypes(
         handle: Handle,
         locationId: Int
-    ): List<BoatType> =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT excluded_boat_type
-                    FROM harbor_restriction
-                    WHERE location_id = :locationId
-                    """.trimIndent()
-                )
-            query.bind("locationId", locationId)
-            query.mapTo<BoatType>().list()
-        }
+    ): List<BoatType> {
+        val query =
+            handle.createQuery(
+                """
+                SELECT excluded_boat_type
+                FROM harbor_restriction
+                WHERE location_id = :locationId
+                """.trimIndent()
+            )
+        query.bind("locationId", locationId)
+        return query.mapTo<BoatType>().list()
+    }
 
     fun getWarningsForReservation(
         reservationId: Int,
