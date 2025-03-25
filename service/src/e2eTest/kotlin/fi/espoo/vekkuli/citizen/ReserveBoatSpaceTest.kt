@@ -1140,7 +1140,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             oliviaReserveModal.reserveANewSpace.click()
             assertThat(BoatSpaceFormPage(oliviaPage).header).isVisible()
         }
-        oliviaBrowser.close()
 
         // pay reservation as mikko
         mikkoPaymentPage.payReservation()
