@@ -115,7 +115,7 @@ request), run:
 
 **NOTE:** The tool has no concept for "no license" -> all files must indicate
 their license explicitly (or using bulk licensing). And if files cannot be
-licensed, they shouldn't be included in this repository at all.
+licensed, they shouldn't be included in this repository at all. 
 
 ### Automatically add licensing headers
 

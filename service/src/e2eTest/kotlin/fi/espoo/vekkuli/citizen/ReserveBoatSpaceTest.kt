@@ -1122,7 +1122,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         BoatSpaceFormPage(mikkoPage).fillFormAndSubmit()
 
         val mikkoPaymentPage = PaymentPage(mikkoPage)
-        assertThat(mikkoPaymentPage.header).isVisible()
+        mikkoPaymentPage.assertOnPaymentPage()
 
         mockTimeProvider(timeProvider, reservationTimerExpired)
 
@@ -1140,7 +1140,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             oliviaReserveModal.reserveANewSpace.click()
             assertThat(BoatSpaceFormPage(oliviaPage).header).isVisible()
         }
-        oliviaBrowser.close()
 
         // pay reservation as mikko
         mikkoPaymentPage.payReservation()

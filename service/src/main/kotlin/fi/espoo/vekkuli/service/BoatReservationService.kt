@@ -72,31 +72,23 @@ sealed class PaymentProcessResult {
 }
 
 interface ReservationWarningRepository {
-    fun addReservationWarnings(
-        id: UUID,
-        reservationId: Int,
-        boatId: Int?,
-        trailerId: Int?,
-        invoiceNumber: Int?,
-        infoText: String? = null,
-        keys: List<String>,
-    ): Unit
+    fun addReservationWarnings(warnings: List<ReservationWarning>): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
-    fun getWarningsForReserver(reservationId: UUID): List<ReservationWarning>
+    fun getWarningsForReserver(reserverId: UUID): List<ReservationWarning>
 
     fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
     ): Unit
 
     fun deleteReservationWarning(id: UUID)
 
     fun deleteReservationWarningsForReservation(
         reservationId: Int,
-        key: String? = null
+        key: ReservationWarningType? = null
     )
 }
 
@@ -181,7 +173,10 @@ class BoatReservationService(
         return paymentService.insertPayment(params, reservationId)
     }
 
-    fun addBoatWarningsToReservations(boat: Boat) {
+    fun addBoatWarningsToReservations(
+        boat: Boat,
+        previousBoatInfo: Boat?
+    ) {
         getReservationsForBoat(boat.id)
             .forEach { reservation ->
                 val boatSpace =
@@ -190,17 +185,12 @@ class BoatReservationService(
 
                 addReservationWarnings(
                     reservation.id,
-                    boat.id,
                     reservation.boatSpaceWidthCm,
                     reservation.boatSpaceLengthCm,
                     reservation.amenity,
-                    boat.widthCm,
-                    boat.lengthCm,
-                    boat.ownership,
-                    boat.weightKg,
-                    boat.type,
                     boatSpace.excludedBoatTypes ?: listOf(),
-                    boat.registrationCode
+                    boat,
+                    previousBoatInfo
                 )
             }
     }
@@ -214,18 +204,31 @@ class BoatReservationService(
         val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 
         reservations.forEach {
-            val warnings = mutableListOf<String>()
+            val warnings = mutableListOf<ReservationWarningType>()
 
             if (trailerWidthCm > it.boatSpaceWidthCm) {
-                warnings.add(ReservationWarningType.TrailerWidth.name)
+                warnings.add(ReservationWarningType.TrailerWidth)
             }
 
             if (trailerLengthCm > it.boatSpaceLengthCm) {
-                warnings.add(ReservationWarningType.TrailerLength.name)
+                warnings.add(ReservationWarningType.TrailerLength)
             }
 
+            val reservationWarnings =
+                warnings.map { warning ->
+                    ReservationWarning(
+                        UUID.randomUUID(),
+                        it.id,
+                        null,
+                        trailerId,
+                        null,
+                        key = warning,
+                        infoText = null
+                    )
+                }
+
             if (warnings.isNotEmpty()) {
-                reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), it.id, null, trailerId, null, keys = warnings)
+                reservationWarningRepo.addReservationWarnings(reservationWarnings)
             }
         }
     }
@@ -242,60 +245,97 @@ class BoatReservationService(
 
     fun addReservationWarnings(
         reservationId: Int,
-        boatId: Int,
         boatSpaceWidthCm: Int,
         boatSpaceLengthCm: Int,
         amenity: BoatSpaceAmenity,
-        boatWidthCm: Int,
-        boatLengthCm: Int,
-        boatOwnership: OwnershipStatus?,
-        boatWeightKg: Int,
-        boatType: BoatType,
         excludedBoatTypes: List<BoatType>,
-        registrationCode: String?
+        boat: Boat,
+        previousBoatInfo: Boat?,
     ) {
-        val warnings = mutableListOf<String>()
+        val warnings = mutableListOf<Pair<ReservationWarningType, String?>>()
 
         if (!isWidthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
                 amenity,
-                Dimensions(boatWidthCm, boatLengthCm)
+                Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatWidth.name)
+            warnings.add(Pair(ReservationWarningType.BoatWidth, null))
         }
 
         if (!isLengthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
                 amenity,
-                Dimensions(boatWidthCm, boatLengthCm)
+                Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatLength.name)
+            warnings.add(Pair(ReservationWarningType.BoatLength, null))
         }
 
-        if (boatOwnership == OwnershipStatus.FutureOwner) {
-            warnings.add(ReservationWarningType.BoatFutureOwner.name)
+        if (boat.ownership == OwnershipStatus.FutureOwner) {
+            warnings.add(Pair(ReservationWarningType.BoatFutureOwner, null))
         }
 
-        if (boatOwnership == OwnershipStatus.CoOwner) {
-            warnings.add(ReservationWarningType.BoatCoOwner.name)
+        if (boat.ownership == OwnershipStatus.CoOwner) {
+            warnings.add(Pair(ReservationWarningType.BoatCoOwner, null))
         }
 
-        if (boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
-            warnings.add(ReservationWarningType.BoatWeight.name)
+        if (previousBoatInfo != null) {
+            if (previousBoatInfo.ownership != boat.ownership) {
+                val previousOwnership =
+                    messageUtil.getMessage("boatApplication.EMPLOYEE.ownershipOption.${previousBoatInfo.ownership}")
+                warnings.add(
+                    Pair(
+                        ReservationWarningType.BoatOwnershipChange,
+                        messageUtil.getMessage(
+                            "reservationWarning.BoatOwnershipChange.previous",
+                            listOf(previousOwnership)
+                        )
+                    )
+                )
+            }
+            if (previousBoatInfo.registrationCode != boat.registrationCode) {
+                warnings.add(
+                    Pair(
+                        ReservationWarningType.BoatRegistrationCodeChange,
+                        messageUtil.getMessage(
+                            "reservationWarning.BoatRegistrationCodeChange.previous",
+                            listOf(previousBoatInfo.registrationCode ?: "-")
+                        )
+                    )
+                )
+            }
         }
 
-        if (excludedBoatTypes.contains(boatType)) {
-            warnings.add(ReservationWarningType.BoatType.name)
+        if (boat.weightKg > BOAT_WEIGHT_THRESHOLD_KG) {
+            warnings.add(Pair(ReservationWarningType.BoatWeight, null))
         }
 
-        if (registrationCode != null && !boatSpaceReservationRepo.hasUniqueRegistrationNumber(registrationCode)) {
-            warnings.add(ReservationWarningType.RegistrationCodeNotUnique.name)
+        if (excludedBoatTypes.contains(boat.type)) {
+            warnings.add(Pair(ReservationWarningType.BoatType, null))
         }
+
+        if (boat.registrationCode != null && !boatSpaceReservationRepo.hasUniqueRegistrationNumber(boat.registrationCode)) {
+            warnings.add(Pair(ReservationWarningType.RegistrationCodeNotUnique, null))
+        }
+
+        val reservationWarnings =
+            warnings.map { warning ->
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservationId,
+                    boat.id,
+                    null,
+                    null,
+                    key = warning.first,
+                    infoText = warning.second
+                )
+            }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(UUID.randomUUID(), reservationId, boatId, null, null, keys = warnings)
+            reservationWarningRepo.addReservationWarnings(
+                reservationWarnings,
+            )
         }
     }
 
@@ -411,7 +451,7 @@ class BoatReservationService(
         reservationId: Int,
         userId: UUID,
         boatOrTrailerId: Int,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String,
     ) {
         if (keys.isEmpty()) return
@@ -433,7 +473,7 @@ class BoatReservationService(
     fun acknowledgeWarningForBoat(
         boatId: Int,
         userId: UUID,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String
     ) {
         if (keys.isEmpty()) return
@@ -451,7 +491,7 @@ class BoatReservationService(
     fun acknowledgeWarningForTrailer(
         trailerId: Int,
         userId: UUID,
-        keys: List<String>,
+        keys: List<ReservationWarningType>,
         infoText: String
     ) {
         if (keys.isEmpty()) return

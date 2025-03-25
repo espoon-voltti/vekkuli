@@ -18,20 +18,6 @@ data class Dimensions(
     val length: Int?
 )
 
-enum class ReservationWarningType {
-    BoatWidth,
-    BoatLength,
-    BoatFutureOwner,
-    BoatCoOwner,
-    BoatWeight,
-    BoatType,
-    TrailerWidth,
-    TrailerLength,
-    GeneralReservationWarning,
-    InvoicePayment,
-    RegistrationCodeNotUnique,
-}
-
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 40 * 60
     const val MAX_CITIZEN_BOATS = 42

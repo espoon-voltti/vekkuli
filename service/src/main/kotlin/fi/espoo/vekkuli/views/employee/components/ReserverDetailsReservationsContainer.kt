@@ -1,14 +1,17 @@
 package fi.espoo.vekkuli.views.employee.components
 
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.getReference
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.modal.Modal
+import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
+import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +23,7 @@ import kotlin.collections.isNotEmpty
 class ReserverDetailsReservationsContainer(
     private val reservationListBuilder: ReservationList,
     private val warningBox: WarningBox,
+    private val modal: Modal
 ) : BaseView() {
     @Autowired
     lateinit var reserverDetailsTabs: ReserverDetailsTabs
@@ -59,8 +63,8 @@ class ReserverDetailsReservationsContainer(
                     boat.warnings.joinToString("\n") { warning ->
                         """
                         <label class="checkbox pb-s">
-                            <input type="checkbox" name="key" value="$warning">
-                            <span>${t("reservationWarning.$warning")}</span>
+                            <input type="checkbox" name="key" value="${warning.key}">
+                            <span>${t("reservationWarning.${warning.key}", listOf(warning.infoText ?: ""))}</span>
                         </label>
                         """.trimIndent()
                     }
@@ -235,7 +239,7 @@ class ReserverDetailsReservationsContainer(
                             "boat-weight-text-${boat.id}",
                             boat.weight.toString(),
                             "boatSpaceReservation.title.weight",
-                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWeight.name)
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWeight)
                         )
                     val boatType =
                         boatInfo(
@@ -255,20 +259,22 @@ class ReserverDetailsReservationsContainer(
                             "boat-width-text-${boat.id}",
                             formatDecimal(boat.width),
                             "shared.label.widthInMeters",
-                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth.name)
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth)
                         )
                     val registrationNumber =
                         boatInfo(
                             "boat-registrationNumber-text-${boat.id}",
                             boat.registrationNumber,
-                            "boatSpaceReservation.title.registrationNumber"
+                            "boatSpaceReservation.title.registrationNumber",
+                            showWarnings &&
+                                (boat.hasWarning(ReservationWarningType.BoatRegistrationCodeChange))
                         )
                     val length =
                         boatInfo(
                             "boat-length-text-${boat.id}",
                             formatDecimal(boat.length),
                             "shared.label.lengthInMeters",
-                            showWarnings && boat.hasWarning(ReservationWarningType.BoatLength.name)
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatLength)
                         )
                     val ownershipStatus =
                         boatInfo(
@@ -277,8 +283,9 @@ class ReserverDetailsReservationsContainer(
                             "boatSpaceReservation.title.ownershipStatus",
                             showWarnings &&
                                 (
-                                    boat.hasWarning(ReservationWarningType.BoatFutureOwner.name) ||
-                                        boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                                    boat.hasWarning(ReservationWarningType.BoatFutureOwner) ||
+                                        boat.hasWarning(ReservationWarningType.BoatCoOwner) ||
+                                        boat.hasWarning(ReservationWarningType.BoatOwnershipChange)
                                 )
                         )
                     val otherIdentifier =
@@ -359,6 +366,20 @@ class ReserverDetailsReservationsContainer(
                 ""
             }
 
+        val openAddNewBoatModal =
+            modal
+                .createOpenModalBuilder()
+                .setType(OpenModalButtonType.Link)
+                .setText(
+                    """
+                    <span class="icon mr-s">${icons.plus}</span>
+                    <span>${t("boatSpaceReservation.addBoat.button")}</span>
+                    """.trimIndent()
+                ).setPath("/virkailija/venepaikat/varaukset/uusi-vene/$reserverId")
+                .setStyle(ModalButtonStyle.EditIcon)
+                .setTestId("open-add-new-boat-modal")
+                .build()
+
         // language=HTML
         return """
                    <div id="tab-content" class="container block" x-data="{ 
@@ -375,9 +396,14 @@ class ReserverDetailsReservationsContainer(
                           ${addTestId("expired-reservation-list-loader")}
                           class='mt-1'>  
                        </div>
-                       
-                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
-
+                       <div class="columns is-vcentered mb-m">
+                           <div class="column is-narrow">
+                              <h3 class="mb-none">${t("boatSpaceReservation.title.boats")} </h3>
+                           </div>
+                           <div class="column">
+                                 $openAddNewBoatModal
+                            </div>  
+                       </div>
                        <div class="reservation-list form-section no-bottom-border">
                            ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
                        </div>

@@ -597,9 +597,14 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 ).items
                 .first()
 
-        assertEquals(3, reservation.warnings.count(), "Warnings should be present")
+        assertEquals(4, reservation.warnings.count(), "Warnings should be present")
         assertEquals(
-            listOf("BoatFutureOwner", "BoatLength", "BoatWidth"),
+            listOf(
+                ReservationWarningType.BoatFutureOwner.name,
+                ReservationWarningType.BoatLength.name,
+                ReservationWarningType.BoatWidth.name,
+                ReservationWarningType.RegistrationCodeNotUnique.name
+            ),
             reservation.warnings.sorted(),
             "Correct warnings should be present"
         )

@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -55,40 +55,41 @@ class EmployeeReservationListIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        val reservation3 =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    this.citizenIdLeo,
-                    3,
-                    4
-                )
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                3,
+                4
             )
-
-        reservationWarningRepository.addReservationWarnings(
-            UUID.randomUUID(),
-            reservation1.id,
-            1,
-            trailerId = null,
-            invoiceNumber = null,
-            infoText = null,
-            keys =
-                listOf(
-                    ReservationWarningType.BoatType.name
-                )
         )
 
         reservationWarningRepository.addReservationWarnings(
-            UUID.randomUUID(),
-            reservation2.id,
-            1,
-            trailerId = null,
-            invoiceNumber = null,
-            infoText = null,
-            keys =
-                listOf(
-                    ReservationWarningType.BoatType.name
+            listOf(
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservation1.id,
+                    1,
+                    trailerId = null,
+                    invoiceNumber = null,
+                    key = ReservationWarningType.BoatType,
+                    infoText = null,
                 )
+            )
+        )
+
+        reservationWarningRepository.addReservationWarnings(
+            listOf(
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservation2.id,
+                    1,
+                    trailerId = null,
+                    invoiceNumber = null,
+                    key = ReservationWarningType.BoatType,
+                    infoText = null,
+                )
+            )
         )
 
         val reservationsWithWarnings =
@@ -101,7 +102,15 @@ class EmployeeReservationListIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(2, reservationsWithWarnings.totalRows, "reservations are filtered correctly")
-        assertEquals(reservation2.id, reservationsWithWarnings.items.first().id, "reservation with most recent warning is returned first")
-        assertEquals(reservation1.id, reservationsWithWarnings.items[1].id, "reservation with older warning is returned second")
+        assertEquals(
+            reservation2.id,
+            reservationsWithWarnings.items.first().id,
+            "reservation with most recent warning is returned first"
+        )
+        assertEquals(
+            reservation1.id,
+            reservationsWithWarnings.items[1].id,
+            "reservation with older warning is returned second"
+        )
     }
 }

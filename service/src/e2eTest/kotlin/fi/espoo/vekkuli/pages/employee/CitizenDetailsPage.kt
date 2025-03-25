@@ -173,6 +173,20 @@ class CitizenDetailsPage(
     val changeBoatSelect = page.getByTestId("change-reservation-boat-select")
     val changeBoatConfirm = getByDataTestId("change-reservation-boat-confirm")
 
+    val openAddNewBoatModal = getByDataTestId("open-add-new-boat-modal")
+    val addNewBoatModalConfirm = getByDataTestId("add-new-boat-form-confirm")
+
+    val addNewBoatModalNameInput = page.getByTestId("add-new-boat-form-name")
+    val addNewBoatModalWeightInput = page.getByTestId("add-new-boat-form-weight")
+    val addNewBoatModalTypeSelect = page.getByTestId("add-new-boat-form-type")
+    val addNewBoatModalDepthInput = page.getByTestId("add-new-boat-form-depth")
+    val addNewBoatModalWidthInput = page.getByTestId("add-new-boat-form-width")
+    val addNewBoatModalRegNumInput = page.getByTestId("add-new-boat-form-registration-number")
+    val addNewBoatModalLengthInput = page.getByTestId("add-new-boat-form-length")
+    val addNewBoatModalOwnershipSelect = page.getByTestId("add-new-boat-form-ownership")
+    val addNewBoatModalOtherIdInput = page.getByTestId("add-new-boat-form-other-identifier")
+    val addNewBoatModalExtraInfoInput = page.getByTestId("add-new-boat-form-extra-information")
+
     val terminateReservationButton = getByDataTestId("open-terminate-reservation-modal")
     val terminateReservationModalConfirm = getByDataTestId("terminate-reservation-modal-confirm")
     val terminateReservationModalCancel = getByDataTestId("terminate-reservation-modal-cancel")
@@ -224,6 +238,8 @@ class CitizenDetailsPage(
     val terminationDateInFirstExpiredReservationListItem =
         getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
     val boatWarningModalWeightInput = page.locator("input[value='BoatWeight']")
+    val boatWarningModalBoatRegistrationCodeChangeInput = page.locator("input[value='BoatRegistrationCodeChange']")
+    val boatWarningModalBoatOwnershipChangeInput = page.locator("input[value='BoatOwnershipChange']")
     val trailerWarningModalLengthInput = page.locator("input[value='TrailerLength']")
     val trailerWarningModalWidthInput = page.locator("input[value='TrailerWidth']")
     val boatWarningModalInfoInput = getByDataTestId("warning-info-input")

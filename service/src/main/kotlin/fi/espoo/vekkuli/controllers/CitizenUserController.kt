@@ -5,11 +5,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.audit
-import fi.espoo.vekkuli.config.ensureEmployeeId
-import fi.espoo.vekkuli.config.getAuthenticatedEmployee
-import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -561,10 +557,10 @@ class CitizenUserController(
         val otherIdentifier: String,
         val extraInformation: String,
         val ownership: OwnershipStatus,
-        val warnings: Set<String> = emptySet(),
+        val warnings: Set<ReservationWarning> = emptySet(),
         val reservationId: Int? = null,
     ) {
-        fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+        fun hasWarning(warning: ReservationWarningType): Boolean = warnings.find { it.key == warning } != null
 
         fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
     }
@@ -583,6 +579,43 @@ class CitizenUserController(
         if (input.weight == null) {
             errors["weight"] = messageUtil.getMessage("validation.required")
         }
+        return errors
+    }
+
+    data class BoatAddForm(
+        val name: String,
+        val type: BoatType?,
+        val width: BigDecimal?,
+        val length: BigDecimal?,
+        val depth: BigDecimal?,
+        val weight: Int?,
+        val registrationNumber: String,
+        val otherIdentifier: String,
+        val extraInformation: String,
+        val ownership: OwnershipStatus?,
+    )
+
+    fun validateBoatAddInput(input: BoatAddForm): MutableMap<String, String> {
+        val errors = mutableMapOf<String, String>()
+        if (input.width == null) {
+            errors["width"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.length == null) {
+            errors["length"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.depth == null) {
+            errors["depth"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.weight == null) {
+            errors["weight"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.ownership == null) {
+            errors["ownership"] = messageUtil.getMessage("validation.required")
+        }
+        if (input.type == null) {
+            errors["type"] = messageUtil.getMessage("validation.required")
+        }
+
         return errors
     }
 
@@ -649,6 +682,45 @@ class CitizenUserController(
             ReserverType.Citizen,
             errors,
         )
+    }
+
+    @PostMapping("/virkailija/kayttaja/{reserverId}/vene/uusi")
+    fun addBoatForReserver(
+        @PathVariable reserverId: UUID,
+        request: HttpServletRequest,
+        input: BoatAddForm,
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_ADD_NEW_BOAT", mapOf("targetId" to reserverId.toString()))
+        }
+
+        try {
+            val errors = validateBoatAddInput(input)
+
+            if (errors.isNotEmpty()) {
+                throw IllegalArgumentException("Invalid input")
+            }
+
+            // values are validated above, so we can safely unwrap them
+            boatService.insertBoat(
+                reserverId,
+                input.registrationNumber,
+                input.name,
+                decimalToInt(input.width!!),
+                decimalToInt(input.length!!),
+                decimalToInt(input.depth!!),
+                input.weight!!,
+                input.type!!,
+                input.otherIdentifier,
+                input.extraInformation,
+                input.ownership!!,
+            )
+
+            return ResponseEntity.ok("ok")
+        } catch (e: Exception) {
+            logger.error { "Adding new boat failed: ${e.message}" }
+            return ResponseEntity.badRequest().body("failed")
+        }
     }
 
     @PatchMapping("/kuntalainen/vene/{boatId}")
@@ -1029,7 +1101,7 @@ class CitizenUserController(
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
         @RequestParam("boatId") boatId: Int,
-        @RequestParam("key") key: List<String>,
+        @RequestParam("key") keys: List<ReservationWarningType>,
         @RequestParam("infoText") infoText: String,
         @RequestParam("reserverId") reserverId: UUID,
         request: HttpServletRequest,
@@ -1041,13 +1113,13 @@ class CitizenUserController(
                 mapOf(
                     "targetId" to reserverId.toString(),
                     "boatId" to boatId.toString(),
-                    "key" to key.toString(),
+                    "key" to keys.toString(),
                     "reserverId" to reserverId.toString()
                 )
             )
         }
         val userId = request.ensureEmployeeId()
-        reservationService.acknowledgeWarningForBoat(boatId, userId, key, infoText)
+        reservationService.acknowledgeWarningForBoat(boatId, userId, keys, infoText)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
@@ -1075,7 +1147,7 @@ class CitizenUserController(
     fun ackTrailerWarning(
         @RequestParam("reserverId") reserverId: UUID,
         @RequestParam("trailerId") trailerId: Int,
-        @RequestParam("key") key: List<String>,
+        @RequestParam("key") key: List<ReservationWarningType>,
         @RequestParam("infoText") infoText: String,
         request: HttpServletRequest,
     ): ResponseEntity<String> {

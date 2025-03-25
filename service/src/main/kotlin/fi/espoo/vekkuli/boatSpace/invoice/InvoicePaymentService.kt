@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
-import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.repository.InvoicePaymentRepository
 import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.service.ReservationWarningRepository
@@ -47,13 +48,17 @@ class InvoicePaymentService(
             invoicePayments.forEach { invoicePayment ->
                 paymentRepository.getInvoiceWithInvoiceNumber(invoicePayment.invoiceNumber)?.let { invoice ->
                     reservationWarningRepository.addReservationWarnings(
-                        UUID.randomUUID(),
-                        invoice.reservationId,
-                        null,
-                        null,
-                        invoicePayment.invoiceNumber,
-                        null,
-                        listOf(ReservationWarningType.InvoicePayment.name)
+                        listOf(
+                            ReservationWarning(
+                                UUID.randomUUID(),
+                                invoice.reservationId,
+                                null,
+                                null,
+                                invoicePayment.invoiceNumber,
+                                ReservationWarningType.InvoicePayment,
+                                null
+                            )
+                        )
                     )
                 } ?: logger.error { "No invoice found for invoice payment: $invoicePayment" }
             }

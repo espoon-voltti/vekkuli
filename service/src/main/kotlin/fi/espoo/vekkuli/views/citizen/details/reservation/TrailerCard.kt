@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
@@ -144,14 +144,14 @@ class TrailerCard(
                 "trailer-width",
                 formatInt(trailer.widthCm),
                 "shared.label.widthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
                 formatInt(trailer.lengthCm),
                 "shared.label.lengthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength)
             )
 
         val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""

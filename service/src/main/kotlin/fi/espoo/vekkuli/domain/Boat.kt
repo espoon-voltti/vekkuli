@@ -20,7 +20,7 @@ data class Boat(
     val ownership: OwnershipStatus,
     val deletedAt: LocalDateTime? = null,
     val displayName: String? = null,
-    val warnings: Set<String> = emptySet(),
+    val warnings: Set<ReservationWarning> = emptySet(),
 ) {
     fun updateBoatDisplayName(messageUtil: MessageUtil): Boat =
         this.copy(
@@ -35,8 +35,4 @@ data class Boat(
                     }
                 }
         )
-
-    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
-
-    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

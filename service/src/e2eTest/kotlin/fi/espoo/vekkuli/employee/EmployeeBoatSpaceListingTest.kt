@@ -269,6 +269,18 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `select all toggle should be unchecked when filters return empty list of boat spaces`() {
+        val listingPage = boatSpaceListPage()
+        val selectAllToggle = listingPage.selectAllToggle
+
+        listingPage.boatStateFilter("Inactive").click()
+        listingPage.boatSpaceTypeFilter("Storage").click()
+        page.waitForCondition { listingPage.listItems.count() == 0 }
+
+        assertThat(selectAllToggle).not().isChecked()
+    }
+
+    @Test
     fun `should remove boat spaces from selection if they are no longer visible due to the filter`() {
         val listingPage = boatSpaceListPage()
         val activeBoatSpaceId = 1

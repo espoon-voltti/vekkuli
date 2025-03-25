@@ -650,7 +650,7 @@ class ReservationServiceTests : IntegrationTestBase() {
 
         assertEquals(1, warnings.size)
         val warning = warnings.first()
-        assertEquals("RegistrationNumberNotUnique", warning.key)
+        assertEquals(ReservationWarningType.RegistrationCodeNotUnique, warning.key)
     }
 
     private fun insertBoat(
