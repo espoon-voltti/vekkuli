@@ -170,12 +170,7 @@ class JdbiBoatSpaceReservationRepository(
                 """.trimIndent()
             )
         query.bind("boatId", boatId)
-        val boat = query.mapTo<Boat>().findOne().orElse(null)
-        if (boat == null) {
-            return null
-        }
-        val warnings = getWarningsForReservation(reservationId, boatId, null).map { it.key }.toSet()
-        return boat.copy(warnings = warnings)
+        return query.mapTo<Boat>().findOne().orElse(null) ?: return null
     }
 
     fun loadTrailerForReserver(
@@ -361,18 +356,8 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatId", boatId)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
-            // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
             reservations.map {
-                val warningQuery =
-                    handle.createQuery(
-                        """
-                        SELECT key
-                        FROM reservation_warning
-                        WHERE reservation_id = :reservationId
-                        """.trimIndent()
-                    )
-                warningQuery.bind("reservationId", it.id)
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
@@ -431,18 +416,8 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("boatId", boatId)
 
-            // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
             reservations.map {
-                val warningQuery =
-                    handle.createQuery(
-                        """
-                        SELECT key
-                        FROM reservation_warning
-                        WHERE reservation_id = :reservationId
-                        """.trimIndent()
-                    )
-                warningQuery.bind("reservationId", it.id)
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
@@ -501,18 +476,8 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("trailerId", trailerId)
 
-            // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
             reservations.map {
-                val warningQuery =
-                    handle.createQuery(
-                        """
-                        SELECT key
-                        FROM reservation_warning
-                        WHERE reservation_id = :reservationId
-                        """.trimIndent()
-                    )
-                warningQuery.bind("reservationId", it.id)
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
@@ -688,7 +653,6 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("reserverId", reserverId)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
-            // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
             reservations.map {
                 BoatSpaceReservationDetails(
