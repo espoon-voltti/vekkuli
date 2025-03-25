@@ -27,6 +27,9 @@ class PaymentPage(
 
     fun assertOnPaymentPage() {
         assertThat(getByDataTestId("payment-page")).isVisible()
+        assertThat(header).isVisible()
+        assertThat(nordeaSuccessButton).isVisible()
+        assertThat(getReservationTimerSection().root).isVisible()
     }
 
     fun payReservation() {
