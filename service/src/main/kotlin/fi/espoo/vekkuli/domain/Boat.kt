@@ -35,8 +35,4 @@ data class Boat(
                     }
                 }
         )
-
-    fun hasWarning(warning: ReservationWarningType): Boolean = warnings.contains(warning)
-
-    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }
