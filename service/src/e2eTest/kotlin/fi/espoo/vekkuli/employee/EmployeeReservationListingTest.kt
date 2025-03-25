@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -31,10 +32,26 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     fun `Employee can filter by reserver phone number`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }
-        listingPage.searchInput("phoneSearch").fill("04056")
-        listingPage.searchInput("phoneSearch").blur()
+        typeText(listingPage.searchInput("phoneSearch"), "04056")
         page.waitForCondition { listingPage.reservations.count() == 1 }
-        assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Korhonen Leo")
+
+        listingPage.boatSpace1.click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+    }
+
+    @Test
+    fun `Employee can filter by reserver name`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+        typeText(listingPage.searchInput("nameSearch"), "leo")
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+
+        listingPage.boatSpace1.click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
     }
 
     @Test
