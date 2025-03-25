@@ -1,20 +1,26 @@
+import { Column, Columns } from 'lib-components/dom'
 import React from 'react'
 import { Link } from 'react-router'
 
 import Logo from 'lib-customizations/vekkuli/assets/VenepaikkavarausLogo.svg'
 
+import { OpenInNew } from '../../lib-icons'
 import { useTranslation } from '../localization'
 
 import LanguageSelection from './LanguageSelection'
 import Menu from './Menu'
-import {OpenInNew} from "../../lib-icons"
 
 export default React.memo(function Navigation() {
   const i18n = useTranslation()
 
   const InstructionsLink = () => (
     <div className="is-primary-color ">
-      <Link to={"https://admin.espoo.fi/sites/default/files/2025-03/Venepaikan%20varaaminen%20ja%20vaihtaminen.pdf"} className="link open-in-new-tab" aria-label={i18n.header.openInANewWindow} target="_blank">
+      <Link
+        to="https://admin.espoo.fi/sites/default/files/2025-03/Venepaikan%20varaaminen%20ja%20vaihtaminen.pdf"
+        className="link open-in-new-tab"
+        aria-label={i18n.header.openInANewWindow}
+        target="_blank"
+      >
         <span>{i18n.header.instructionsLink}</span>
         <OpenInNew />
       </Link>
@@ -30,11 +36,17 @@ export default React.memo(function Navigation() {
           </Link>
           <h1 className="is-primary-color">{i18n.common.title}</h1>
         </div>
-        <div className="columns">
-          <InstructionsLink />
-          <LanguageSelection />
-          <Menu />
-        </div>
+        <Columns>
+          <Column>
+            <InstructionsLink />
+          </Column>
+          <Column>
+            <LanguageSelection />
+          </Column>
+          <Column>
+            <Menu />
+          </Column>
+        </Columns>
       </div>
 
       <div className="nav-row">
