@@ -225,13 +225,7 @@ abstract class IntegrationTestBase {
 
     fun insertDevReservationWarning(reservationWarning: ReservationWarning) {
         reservationWarningRepository.addReservationWarnings(
-            id = reservationWarning.id,
-            reservationId = reservationWarning.reservationId,
-            boatId = reservationWarning.boatId,
-            trailerId = reservationWarning.trailerId,
-            invoiceNumber = reservationWarning.invoiceNumber,
-            infoText = reservationWarning.infoText,
-            keys = listOf(reservationWarning.key)
+            listOf(reservationWarning)
         )
     }
 }

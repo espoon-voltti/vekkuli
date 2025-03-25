@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -9,6 +8,7 @@ import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.*
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -293,7 +293,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 boatId = boatId,
                 trailerId = null,
                 invoiceNumber = null,
-                key = ReservationWarningType.BoatWidth.name,
+                key = ReservationWarningType.BoatWidth,
                 infoText = "Boat width is too big"
             )
         )
@@ -305,7 +305,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 boatId = null,
                 trailerId = null,
                 invoiceNumber = null,
-                key = ReservationWarningType.GeneralReservationWarning.name,
+                key = ReservationWarningType.GeneralReservationWarning,
                 infoText = "Boat allowed to be in the harbor for the winter"
             )
         )

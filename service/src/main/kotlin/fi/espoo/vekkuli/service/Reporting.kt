@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -11,6 +10,7 @@ import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.utils.amenityToText
 import fi.espoo.vekkuli.utils.boatSpaceTypeToText
 import fi.espoo.vekkuli.utils.boatTypeToText
@@ -249,7 +249,7 @@ fun getWarningsBoatSpaceReport(
                         boat_id, 
                         trailer_id,
                         invoice_number,
-                        'key' AS key,
+                        key,
                         info_text
                     FROM reservation_warning
                     """.trimIndent()
@@ -608,7 +608,7 @@ fun warningsToText(warnings: List<ReservationWarning>): String = warnings.joinTo
 
 fun warningToText(warning: ReservationWarning): String =
     "${reservationWarningTypeToText(
-        ReservationWarningType.valueOf(warning.key)
+        warning.key
     )}${if (!warning.infoText.isNullOrEmpty()) ": ${warning.infoText}" else ""}"
 
 fun reservationWarningTypeToText(reservationWarningType: ReservationWarningType): String =
@@ -623,6 +623,8 @@ fun reservationWarningTypeToText(reservationWarningType: ReservationWarningType)
         ReservationWarningType.BoatWidth -> "Veneen leveys"
         ReservationWarningType.BoatWeight -> "Veneen paino"
         ReservationWarningType.BoatFutureOwner -> "Tuleva omistaja"
+        ReservationWarningType.BoatOwnershipChange -> "Tuleva omistaja"
+        ReservationWarningType.BoatRegistrationCodeChange -> "Rekisterinumeron muutos"
     }
 
 fun getReference(p: PaymentHistory): String? =
