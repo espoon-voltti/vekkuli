@@ -1118,6 +1118,20 @@ class JdbiBoatSpaceReservationRepository(
         }
     }
 
+    override fun hasUniqueRegistrationNumber(registrationCode: String): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT COUNT(*)
+                    FROM boat
+                    WHERE registration_code = :registrationCode
+                    """.trimIndent()
+                )
+            query.bind("registrationCode", registrationCode)
+            query.mapTo<Int>().one() == 1
+        }
+
     private fun buildSqlSelectPartForBoatSpaceReservationDetails() =
         """
         SELECT bsr.id,

@@ -28,7 +28,8 @@ enum class ReservationWarningType {
     TrailerWidth,
     TrailerLength,
     GeneralReservationWarning,
-    InvoicePayment
+    InvoicePayment,
+    RegistrationCodeNotUnique,
 }
 
 object BoatSpaceConfig {

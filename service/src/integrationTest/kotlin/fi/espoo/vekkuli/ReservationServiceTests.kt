@@ -67,6 +67,9 @@ class ReservationServiceTests : IntegrationTestBase() {
     @MockitoBean
     private lateinit var messageService: MessageService
 
+    @Autowired
+    private lateinit var warningsRepository: ReservationWarningRepository
+
     @BeforeEach
     override fun resetDatabase() {
         PaytrailMock.reset()
@@ -613,14 +616,52 @@ class ReservationServiceTests : IntegrationTestBase() {
         assertEquals("Can't add new boat for reserver", exception.message)
     }
 
+    @Test
+    fun `Should add a warning if the boat has registration that is not unique`() {
+        val registrationCode = "A12345"
+        insertBoat(citizenIdLeo, registrationCode = registrationCode)
+
+        loginAs(citizenIdMarko)
+        allowReservation(eq(citizenIdMarko))
+        val boatSpaceId = insertBoatSpace()
+        val information =
+            createReservationInformation(
+                boat =
+                    ReservationInformation.Boat(
+                        id = null,
+                        name = "new boat",
+                        type = BoatType.OutboardMotor,
+                        width = BigDecimal(1),
+                        length = BigDecimal(1),
+                        depth = BigDecimal(1),
+                        weight = 1000,
+                        registrationNumber = registrationCode,
+                        otherIdentification = "",
+                        extraInformation = "",
+                        ownership = OwnershipStatus.Owner,
+                    )
+            )
+
+        val (reservationId) = reservationService.startReservation(boatSpaceId)
+
+        reservationService.fillReservationInformation(reservationId, information)
+
+        val warnings = warningsRepository.getWarningsForReservation(reservationId)
+
+        assertEquals(1, warnings.size)
+        val warning = warnings.first()
+        assertEquals("RegistrationNumberNotUnique", warning.key)
+    }
+
     private fun insertBoat(
         citizenId: UUID,
-        name: String = "TestBoat"
+        name: String = "TestBoat",
+        registrationCode: String = "registrationCode"
     ): Int =
         boatService
             .insertBoat(
                 citizenId,
-                "registrationCode",
+                registrationCode,
                 name,
                 150,
                 150,

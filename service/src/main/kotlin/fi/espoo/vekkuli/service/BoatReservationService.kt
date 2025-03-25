@@ -200,6 +200,7 @@ class BoatReservationService(
                     boat.weightKg,
                     boat.type,
                     boatSpace.excludedBoatTypes ?: listOf(),
+                    boat.registrationCode
                 )
             }
     }
@@ -251,6 +252,7 @@ class BoatReservationService(
         boatWeightKg: Int,
         boatType: BoatType,
         excludedBoatTypes: List<BoatType>,
+        registrationCode: String?
     ) {
         val warnings = mutableListOf<String>()
 
@@ -286,6 +288,10 @@ class BoatReservationService(
 
         if (excludedBoatTypes.contains(boatType)) {
             warnings.add(ReservationWarningType.BoatType.name)
+        }
+
+        if (registrationCode != null && !boatSpaceReservationRepo.hasUniqueRegistrationNumber(registrationCode)) {
+            warnings.add(ReservationWarningType.RegistrationCodeNotUnique.name)
         }
 
         if (warnings.isNotEmpty()) {

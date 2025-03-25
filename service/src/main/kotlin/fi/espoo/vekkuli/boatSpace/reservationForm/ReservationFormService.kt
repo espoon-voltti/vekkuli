@@ -723,6 +723,7 @@ class ReservationFormService(
             boat.weightKg,
             boat.type,
             boatSpace.excludedBoatTypes ?: listOf(),
+            boat.registrationCode
         )
     }
 
