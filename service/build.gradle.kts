@@ -34,8 +34,8 @@ val downloadOnly: Configuration by configurations.creating {
 }
 
 node {
-    version.set("20.11.0") // Latest LTS version
-    npmVersion.set("10.1.0")
+    version.set("22.14.0") // Latest LTS version
+    npmVersion.set("10.9.2")
     download.set(true)
     workDir = file("${project.projectDir}/.gradle/nodejs") // Set the node work directory
     npmWorkDir = file("${project.projectDir}/.gradle/npm") // Set the npm work directory
