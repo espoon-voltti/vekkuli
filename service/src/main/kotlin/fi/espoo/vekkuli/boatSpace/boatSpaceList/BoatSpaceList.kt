@@ -119,7 +119,7 @@ class BoatSpaceList(
                     type="checkbox"
                     x-model="selectAll"
                     @change="editBoatSpaceIds = selectAll ? getCurrentlyVisibleBoatSpaceIds() : []"
-                    x-effect="selectAll = getCurrentlyVisibleBoatSpaceIds() > 0 && getCurrentlyVisibleBoatSpaceIds().every(id => editBoatSpaceIds.includes(id));"
+                    x-effect="selectAll = getCurrentlyVisibleBoatSpaceIds().every(id => editBoatSpaceIds.includes(id));"
                     hx-on:change="event.stopPropagation()"
                 />
             </label>
