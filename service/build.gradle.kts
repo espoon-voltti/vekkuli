@@ -42,7 +42,7 @@ node {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_23
 }
 
 repositories {
@@ -68,7 +68,6 @@ val integrationTestImplementation: Configuration by configurations.getting {
 }
 
 configurations["e2eTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
-
 idea {
     module {
         testSources = testSources + sourceSets["e2eTest"].kotlin.sourceDirectories
@@ -146,7 +145,7 @@ dependencies {
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         freeCompilerArgs.add("-Xjsr305=strict")
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget.set(JvmTarget.JVM_23)
     }
 }
 
