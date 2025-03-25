@@ -261,8 +261,7 @@ fun getWarningsBoatSpaceReport(
         return emptyList()
     }
 
-    val reservationsWithWarningsIds: List<Int> = reservationWarnings.toSet().map { it.reservationId }
-
+    val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
     val reservationsWithWarnings =
         getBoatSpaceReport(jdbi, reportDate, reservationsWithWarningsIds)
             .map { row ->
@@ -321,11 +320,10 @@ fun getBoatSpaceReport(
                         (bsr.start_date is NULL OR
                         (:reportDate::date >= bsr.start_date
                         AND :reportDate::date <= bsr.end_date))
-                        ${if (!ids.isNullOrEmpty()) "AND bsr.id = ANY(:ids::int[])" else ""}
+                        ${if (!ids.isNullOrEmpty()) "AND bsr.id in (<ids>)" else ""}
                     ORDER BY harbor, pier, place
                     """.trimIndent()
                 ).bind("reportDate", reportDate)
-
         if (!ids.isNullOrEmpty()) {
             query.bindList("ids", ids)
         }
