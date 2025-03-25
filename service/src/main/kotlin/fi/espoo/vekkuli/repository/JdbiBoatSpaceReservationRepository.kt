@@ -121,9 +121,8 @@ class JdbiBoatSpaceReservationRepository(
         return query.mapTo<BoatType>().list()
     }
 
-    fun getWarningsForReservation(
+    fun getWarningsForTrailerInReservation(
         reservationId: Int,
-        boatId: Int?,
         trailerId: Int?
     ): List<ReservationWarning> =
         jdbi.withHandleUnchecked { handle ->
@@ -134,15 +133,11 @@ class JdbiBoatSpaceReservationRepository(
                         SELECT *
                         FROM reservation_warning
                         WHERE reservation_id = :reservationId
-                          ${if (boatId != null) "AND boat_id = :boatId" else ""}
                           ${if (trailerId != null) "AND trailer_id = :trailerId" else ""}
                           ORDER BY reservation_id, created DESC
                         """.trimIndent()
                     ).bind("reservationId", reservationId)
 
-            if (boatId != null) {
-                query.bind("boatId", boatId)
-            }
             if (trailerId != null) {
                 query.bind("trailerId", trailerId)
             }
@@ -190,7 +185,7 @@ class JdbiBoatSpaceReservationRepository(
             )
         query.bind("trailerId", trailerId)
         val trailer = query.mapTo<Trailer>().findOne().orElse(null) ?: return null
-        val warnings = getWarningsForReservation(reservationId, null, trailerId).map { it.key }.toSet()
+        val warnings = getWarningsForTrailerInReservation(reservationId, trailerId).map { it.key }.toSet()
         return trailer.copy(warnings = warnings)
     }
 
