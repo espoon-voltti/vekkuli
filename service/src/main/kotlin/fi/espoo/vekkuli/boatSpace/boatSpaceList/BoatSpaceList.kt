@@ -107,19 +107,19 @@ class BoatSpaceList(
 
         val selectAllToggle =
             """
-            <label class="checkbox" x-data="{
-                selectAll: false,
-                getCurrentlyVisibleBoatSpaceIds() {
-                    return this.getBoatSpacesIdsFromTable(this.${'$'}el.closest('table'));
-                },
-            }">
+            <label class="checkbox" x-data="{ selectAll: false }">
                 <input
                     id="select-all-toggle"
                     ${addTestId("select-all-toggle")}
                     type="checkbox"
                     x-model="selectAll"
                     @change="editBoatSpaceIds = selectAll ? getCurrentlyVisibleBoatSpaceIds() : []"
-                    x-effect="selectAll = getCurrentlyVisibleBoatSpaceIds().every(id => editBoatSpaceIds.includes(id));"
+                    x-effect="
+                        editBoatSpaceIds; // access property to ensures Alpine tracks this reactive property
+                                          // even when table is empty
+                        selectAll = getCurrentlyVisibleBoatSpaceIds().length > 0 &&  
+                            getCurrentlyVisibleBoatSpaceIds().every(id => editBoatSpaceIds.includes(id));
+                    "
                     hx-on:change="event.stopPropagation()"
                 />
             </label>
@@ -160,9 +160,7 @@ class BoatSpaceList(
             this.editBoatSpaceIds = this.editBoatSpaceIds.filter(id => visibleBoatIds.includes(id));
         },
         getCurrentlyVisibleBoatSpaceIds() {
-            return this.getBoatSpacesIdsFromTable(this.${'$'}el.querySelector('table'));
-        },
-        getBoatSpacesIdsFromTable(table) {
+            const table = this.${'$'}refs.tableBody;
             const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
             return Array.from(checkboxes).map(e => e.value);
         }
@@ -176,7 +174,7 @@ class BoatSpaceList(
               hx-swap="outerHTML"
               hx-push-url="true"
               hx-indicator="#loader, .loaded-content"
-              @htmx:after-request="pruneFilteredBoatSpacesFromSelection()"
+              @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
         >
              <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
              <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
@@ -332,7 +330,7 @@ class BoatSpaceList(
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="table-body" class="loaded-content">
+                        <tbody id="table-body" class="loaded-content" x-ref="tableBody">
                         $reservationRows
                         </tbody>
                     </table>
