@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.*
+import com.microsoft.playwright.options.LoadState
 import fi.espoo.vekkuli.employee.waitForHtmxSettle
 import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.PaytrailMock
@@ -67,6 +68,8 @@ abstract class PlaywrightTest {
 
     @AfterEach
     fun closeContext() {
+        page.waitForLoadState(LoadState.NETWORKIDLE)
+        page.close()
         context.close()
     }
 
