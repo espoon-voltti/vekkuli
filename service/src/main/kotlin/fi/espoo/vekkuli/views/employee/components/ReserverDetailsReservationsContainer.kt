@@ -59,8 +59,8 @@ class ReserverDetailsReservationsContainer(
                     boat.warnings.joinToString("\n") { warning ->
                         """
                         <label class="checkbox pb-s">
-                            <input type="checkbox" name="key" value="$warning">
-                            <span>${t("reservationWarning.$warning")}</span>
+                            <input type="checkbox" name="key" value="${warning.key}">
+                            <span>${t("reservationWarning.${warning.key}", listOf(warning.infoText ?: ""))}</span>
                         </label>
                         """.trimIndent()
                     }

@@ -137,6 +137,7 @@ class JdbiBoatSpaceReservationRepository(
                         WHERE reservation_id = :reservationId
                           ${if (boatId != null) "AND boat_id = :boatId" else ""}
                           ${if (trailerId != null) "AND trailer_id = :trailerId" else ""}
+                          ORDER BY reservation_id, created DESC
                         """.trimIndent()
                     ).bind("reservationId", reservationId)
 

@@ -557,10 +557,10 @@ class CitizenUserController(
         val otherIdentifier: String,
         val extraInformation: String,
         val ownership: OwnershipStatus,
-        val warnings: Set<ReservationWarningType> = emptySet(),
+        val warnings: Set<ReservationWarning> = emptySet(),
         val reservationId: Int? = null,
     ) {
-        fun hasWarning(warning: ReservationWarningType): Boolean = warnings.contains(warning)
+        fun hasWarning(warning: ReservationWarningType): Boolean = warnings.find { it.key == warning } != null
 
         fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
     }

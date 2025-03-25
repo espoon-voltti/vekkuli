@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.domain.ReservationWarningType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -28,19 +25,20 @@ class JdbiBoatRepository(
                 )
             query.bind("reserverId", reserverId)
             val boats = query.mapTo<Boat>().list()
-            boats.map {
+            boats.map { boat ->
                 val warningQuery =
                     handle.createQuery(
                         """
-                        SELECT key
+                        SELECT *
                         FROM reservation_warning
                         WHERE boat_id = :boatId
+                        ORDER BY created DESC
                         """.trimIndent()
                     )
-                warningQuery.bind("boatId", it.id)
-                val warnings = warningQuery.mapTo<ReservationWarningType>().list()
-                it.copy(
-                    warnings = warnings.toSet()
+                warningQuery.bind("boatId", boat.id)
+                val warnings = warningQuery.mapTo<ReservationWarning>().list()
+                boat.copy(
+                    warnings = warnings.distinctBy { it.key }.toSet()
                 )
             }
         }

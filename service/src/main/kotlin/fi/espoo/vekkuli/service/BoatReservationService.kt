@@ -72,7 +72,7 @@ sealed class PaymentProcessResult {
 }
 
 interface ReservationWarningRepository {
-    fun addReservationWarnings(warnings: List<ReservationWarning>,): Unit
+    fun addReservationWarnings(warnings: List<ReservationWarning>): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
@@ -222,8 +222,8 @@ class BoatReservationService(
                         null,
                         trailerId,
                         null,
-                        warning,
-                        null
+                        key = warning,
+                        infoText = null
                     )
                 }
 
@@ -252,7 +252,7 @@ class BoatReservationService(
         boat: Boat,
         previousBoatInfo: Boat?,
     ) {
-        val warnings = mutableListOf<ReservationWarningType>()
+        val warnings = mutableListOf<Pair<ReservationWarningType, String?>>()
 
         if (!isWidthOk(
                 Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
@@ -260,7 +260,7 @@ class BoatReservationService(
                 Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatWidth)
+            warnings.add(Pair(ReservationWarningType.BoatWidth, null))
         }
 
         if (!isLengthOk(
@@ -269,32 +269,50 @@ class BoatReservationService(
                 Dimensions(boat.widthCm, boat.lengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatLength)
+            warnings.add(Pair(ReservationWarningType.BoatLength, null))
         }
 
         if (boat.ownership == OwnershipStatus.FutureOwner) {
-            warnings.add(ReservationWarningType.BoatFutureOwner)
+            warnings.add(Pair(ReservationWarningType.BoatFutureOwner, null))
         }
 
         if (boat.ownership == OwnershipStatus.CoOwner) {
-            warnings.add(ReservationWarningType.BoatCoOwner)
+            warnings.add(Pair(ReservationWarningType.BoatCoOwner, null))
         }
 
         if (previousBoatInfo != null) {
             if (previousBoatInfo.ownership != boat.ownership) {
-                warnings.add(ReservationWarningType.BoatOwnershipChange)
+                val previousOwnership =
+                    messageUtil.getMessage("boatApplication.EMPLOYEE.ownershipOption.${previousBoatInfo.ownership}")
+                warnings.add(
+                    Pair(
+                        ReservationWarningType.BoatOwnershipChange,
+                        messageUtil.getMessage(
+                            "reservationWarning.BoatOwnershipChange.previous",
+                            listOf(previousOwnership)
+                        )
+                    )
+                )
             }
             if (previousBoatInfo.registrationCode != boat.registrationCode) {
-                warnings.add(ReservationWarningType.BoatRegistrationCodeChange)
+                warnings.add(
+                    Pair(
+                        ReservationWarningType.BoatRegistrationCodeChange,
+                        messageUtil.getMessage(
+                            "reservationWarning.BoatRegistrationCodeChange.previous",
+                            listOf(previousBoatInfo.registrationCode ?: "-")
+                        )
+                    )
+                )
             }
         }
 
         if (boat.weightKg > BOAT_WEIGHT_THRESHOLD_KG) {
-            warnings.add(ReservationWarningType.BoatWeight)
+            warnings.add(Pair(ReservationWarningType.BoatWeight, null))
         }
 
         if (excludedBoatTypes.contains(boat.type)) {
-            warnings.add(ReservationWarningType.BoatType)
+            warnings.add(Pair(ReservationWarningType.BoatType, null))
         }
 
         val reservationWarnings =
@@ -305,8 +323,8 @@ class BoatReservationService(
                     boat.id,
                     null,
                     null,
-                    warning,
-                    null
+                    key = warning.first,
+                    infoText = warning.second
                 )
             }
 
