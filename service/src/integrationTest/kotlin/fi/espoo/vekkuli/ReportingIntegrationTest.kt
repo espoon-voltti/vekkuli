@@ -7,6 +7,8 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.domain.ReservationWarning
+import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.*
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
+import java.util.UUID
 import kotlin.test.assertEquals
 
 @ExtendWith(SpringExtension::class)
@@ -283,6 +286,30 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
+        insertDevReservationWarning(
+            ReservationWarning(
+                id = UUID.randomUUID(),
+                reservationId = terminatedId,
+                boatId = boatId,
+                trailerId = null,
+                invoiceNumber = null,
+                key = ReservationWarningType.BoatWidth,
+                infoText = "Boat width is too big"
+            )
+        )
+
+        insertDevReservationWarning(
+            ReservationWarning(
+                id = UUID.randomUUID(),
+                reservationId = terminatedId,
+                boatId = null,
+                trailerId = null,
+                invoiceNumber = null,
+                key = ReservationWarningType.GeneralReservationWarning,
+                infoText = "Boat allowed to be in the harbor for the winter"
+            )
+        )
+
         val freeRows = getFreeBoatSpaceReport(jdbi, today.atStartOfDay())
         assertTrue(freeRows.any { it.harbor == "Haukilahti" && it.place == "A 001" })
         assertTrue(freeRows.none { it.harbor == "Haukilahti" && it.place == "A 002" })
@@ -296,5 +323,10 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals("A 003", terminatedRows[0].place)
         assertEquals("RuleViolation", terminatedRows[0].terminationReason.toString())
         assertEquals(today.plusMonths(1).atStartOfDay(), terminatedRows[0].terminationTimestamp)
+
+        val reservationWarnings = getWarningsBoatSpaceReport(jdbi, today.atStartOfDay())
+        assertEquals(1, reservationWarnings.size)
+        assertEquals(2, reservationWarnings[0].warnings.size)
+        assertEquals(terminatedId, reservationWarnings[0].boatSpaceReportRow.reservationId)
     }
 }

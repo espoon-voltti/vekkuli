@@ -12,9 +12,11 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.domain.StorageType
 import fi.espoo.vekkuli.repository.JdbiPaymentRepository
 import fi.espoo.vekkuli.service.PaytrailMock
+import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
@@ -38,6 +40,9 @@ import java.util.*
 abstract class IntegrationTestBase {
     @Autowired
     private lateinit var jdbiPaymentRepository: JdbiPaymentRepository
+
+    @Autowired
+    private lateinit var reservationWarningRepository: ReservationWarningRepository
 
     @Autowired
     protected lateinit var jdbi: Jdbi
@@ -128,7 +133,7 @@ abstract class IntegrationTestBase {
         val otherIdentification: String?,
         val extraInformation: String?,
         val ownership: OwnershipStatus,
-        val deletedAt: java.time.LocalDateTime? = null
+        val deletedAt: LocalDateTime? = null
     )
 
     fun insertDevBoat(boat: DevBoat) {
@@ -217,4 +222,10 @@ abstract class IntegrationTestBase {
             ),
             payment.reservationId
         )
+
+    fun insertDevReservationWarning(reservationWarning: ReservationWarning) {
+        reservationWarningRepository.addReservationWarnings(
+            listOf(reservationWarning)
+        )
+    }
 }
