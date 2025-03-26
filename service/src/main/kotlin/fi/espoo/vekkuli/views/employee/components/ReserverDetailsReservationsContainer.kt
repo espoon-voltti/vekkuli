@@ -267,7 +267,10 @@ class ReserverDetailsReservationsContainer(
                             boat.registrationNumber,
                             "boatSpaceReservation.title.registrationNumber",
                             showWarnings &&
-                                (boat.hasWarning(ReservationWarningType.BoatRegistrationCodeChange))
+                                (
+                                    boat.hasWarning(ReservationWarningType.BoatRegistrationCodeChange) ||
+                                        boat.hasWarning(ReservationWarningType.RegistrationCodeNotUnique)
+                                )
                         )
                     val length =
                         boatInfo(
