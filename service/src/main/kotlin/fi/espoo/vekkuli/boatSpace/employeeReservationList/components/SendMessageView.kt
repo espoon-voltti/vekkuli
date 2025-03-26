@@ -114,7 +114,7 @@ class SendMessageView(
             }.build()
     }
 
-    fun renderMessageSentFeedback(): String {
+    fun renderMessageSentFeedback(recipientCount: Int): String {
         val modalBuilder = modal.createModalBuilder()
         val stateId = modalBuilder.getModalStateId()
         val closeModalInMs = 3000
@@ -131,7 +131,10 @@ class SendMessageView(
                         ${icons.success}
                     </div>
                     <div class="column is-full is-center">
-                        <h2 class="has-text-centered mb-none">${t("employee.messages.modal.success")}</h2>
+                        <h2 class="has-text-centered mb-none">${t(
+                    "employee.messages.modal.success",
+                    listOf(recipientCount.toString())
+                )}</h2>
                     </div>
                 </div> 
                 """.trimIndent()

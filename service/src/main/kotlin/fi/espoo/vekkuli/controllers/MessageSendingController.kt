@@ -70,6 +70,9 @@ class MessageSendingController(
             logger.audit(
                 it,
                 "SEND_MASS_EMAILS",
+                mapOf(
+                    "params" to params.toString()
+                )
             )
         }
         try {
@@ -79,6 +82,8 @@ class MessageSendingController(
                 reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
             val recipients = getDistinctRecipients(reservations)
 
+            logger.info { "Sending message to ${recipients.size} recipients" }
+
             messageService.sendEmails(
                 userId = user.id,
                 senderAddress = emailEnv.senderAddress,
@@ -87,7 +92,7 @@ class MessageSendingController(
                 body = messageContent
             )
             return ResponseEntity.ok(
-                sendMessageView.renderMessageSentFeedback()
+                sendMessageView.renderMessageSentFeedback(recipients.size)
             )
         } catch (e: Exception) {
             logger.error(e) { "error sending message" }
