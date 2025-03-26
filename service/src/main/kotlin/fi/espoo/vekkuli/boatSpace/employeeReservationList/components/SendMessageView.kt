@@ -58,6 +58,13 @@ class SendMessageView(
                     value = ""
                 )
             )
+        val sendButtonStyle =
+            if (recipients.size > 49) {
+                ModalButtonStyle.Danger
+            } else {
+                ModalButtonStyle.Primary
+            }
+
         return modalBuilder
             .setTitle(t("employee.messages.modal.title"))
             .setForm {
@@ -107,9 +114,9 @@ class SendMessageView(
                 setType(ModalButtonType.Cancel)
                 setTestId("send-mass-email-modal-cancel")
             }.addButton {
-                setStyle(ModalButtonStyle.Primary)
+                setStyle(sendButtonStyle)
                 setType(ModalButtonType.Submit)
-                setText(t("employee.messages.modal.send.title"))
+                setText(t("employee.messages.modal.send.title", listOf(recipients.size.toString())))
                 setTestId("send-mass-email-modal-confirm")
             }.build()
     }
@@ -131,10 +138,12 @@ class SendMessageView(
                         ${icons.success}
                     </div>
                     <div class="column is-full is-center">
-                        <h2 class="has-text-centered mb-none">${t(
-                    "employee.messages.modal.success",
-                    listOf(recipientCount.toString())
-                )}</h2>
+                        <h2 class="has-text-centered mb-none">${
+                    t(
+                        "employee.messages.modal.success",
+                        listOf(recipientCount.toString())
+                    )
+                }</h2>
                     </div>
                 </div> 
                 """.trimIndent()
