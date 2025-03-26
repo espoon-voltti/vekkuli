@@ -48,8 +48,6 @@ class Utils {
             return "$baseUrl$path"
         }
 
-        fun redirectUrlThymeleaf(path: String): String = "redirect:${getServiceUrl(path)}"
-
         fun redirectUrl(url: String): ResponseEntity<String> =
             ResponseEntity
                 .status(HttpStatus.FOUND)
