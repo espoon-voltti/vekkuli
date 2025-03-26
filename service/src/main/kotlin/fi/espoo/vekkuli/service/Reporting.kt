@@ -625,6 +625,7 @@ fun reservationWarningTypeToText(reservationWarningType: ReservationWarningType)
         ReservationWarningType.BoatFutureOwner -> "Tuleva omistaja"
         ReservationWarningType.BoatOwnershipChange -> "Tuleva omistaja"
         ReservationWarningType.BoatRegistrationCodeChange -> "Rekisterinumeron muutos"
+        ReservationWarningType.RegistrationCodeNotUnique -> "Rekisteritunnus on jo käytössä"
     }
 
 fun getReference(p: PaymentHistory): String? =
