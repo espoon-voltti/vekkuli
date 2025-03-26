@@ -119,6 +119,6 @@ class MessageSendingController(
                 contactDetails.addAll(orgRecipients)
                 contactDetails
             }
-        return recipients.flatten().distinctBy { it.id }
+        return recipients.flatten().distinctBy { it.id }.filter { it.email.isNotEmpty() }
     }
 }
