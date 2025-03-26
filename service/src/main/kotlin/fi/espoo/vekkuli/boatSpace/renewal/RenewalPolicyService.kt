@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.RENEW_PERIOD_BEFORE_RESERVATION_EXPIRY
 import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
@@ -25,8 +26,10 @@ class RenewalPolicyService(
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
                 ?: throw IllegalArgumentException("Reservation not found")
 
-        // Can renew only active reservations
-        if (!validateReservationIsActive(reservation, timeProvider.getCurrentDateTime())) {
+        // Can renew only active reservations that do not have pending invoices
+        if (!validateReservationIsActive(reservation, timeProvider.getCurrentDateTime()) ||
+            reservation.status == ReservationStatus.Invoiced
+        ) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
