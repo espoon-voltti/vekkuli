@@ -43,7 +43,7 @@ class EmployeeCardButtons(
               id="renew-place-button-${reservation.id}"
               hx-get="$renewUrl"
               hx-target="body"
-              hx-push-url="true">
+              hx-replace-url="$renewUrl">
                 ${t("boatSpaceReservation.${UserType.EMPLOYEE}.button.renewPlace")}
             </button>
             """.trimIndent()
