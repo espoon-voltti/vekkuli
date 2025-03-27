@@ -285,7 +285,6 @@ class BoatSpaceSearch(
         boat: BoatFilter,
         spaceCount: Int,
         isAuthenticated: Boolean,
-        isEmployee: Boolean = false
     ): String {
         val rowsBuilder = StringBuilder()
         // language=HTML
@@ -337,7 +336,7 @@ class BoatSpaceSearch(
                 )
 
                 if (isAuthenticated) {
-                    val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/venepaikka/varaa/${result.id}"
+                    val url = "/virkailija/venepaikka/varaa/${result.id}"
                     rowsBuilder.append(
                         """
                         <form action="$url" method="get">

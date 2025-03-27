@@ -9,7 +9,6 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.controllers.*
-import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
@@ -132,12 +131,11 @@ class ReservationFormController(
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/kuntalainen/hae")
+    @GetMapping("/virkailija/venepaikka/varaus/{reservationId}/kuntalainen/hae")
     @ResponseBody
     fun searchCitizens(
         request: HttpServletRequest,
         @RequestParam nameParameter: String,
-        @PathVariable usertype: String,
         @PathVariable reservationId: Int
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -148,11 +146,10 @@ class ReservationFormController(
         }
     }
 
-    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen")
+    @GetMapping("/virkailija/venepaikka/varaus/kuntalainen")
     @ResponseBody
     fun searchCitizen(
         @RequestParam citizenIdOption: UUID,
-        @PathVariable usertype: String,
         request: HttpServletRequest
     ): String {
         val citizen = reserverService.getCitizen(citizenIdOption)

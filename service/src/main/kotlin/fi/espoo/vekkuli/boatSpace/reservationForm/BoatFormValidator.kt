@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.BusinessIdInput
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -34,10 +33,9 @@ class BoatFormValidator(
     private val businessIdInput: BusinessIdInput
 ) {
     // TODO: move this to somewhere else
-    @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
+    @GetMapping("/virkailija/venepaikka/varaus/{reservationId}/vahvistus")
     @ResponseBody
     fun confirmBoatSpaceReservation(
-        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         model: Model,
         request: HttpServletRequest,
