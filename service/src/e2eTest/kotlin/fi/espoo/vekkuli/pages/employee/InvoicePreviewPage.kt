@@ -16,4 +16,5 @@ class InvoicePreviewPage(
     val priceWithTax = page.getByTestId("priceWithTax")
     val description = page.getByTestId("description")
     val contactPerson = page.getByTestId("contactPerson")
+    val reservationValidity = page.getByTestId("reservationValidity")
 }
