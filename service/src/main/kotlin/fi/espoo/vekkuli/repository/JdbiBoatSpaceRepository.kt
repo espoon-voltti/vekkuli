@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceStats
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
@@ -275,7 +276,7 @@ class JdbiBoatSpaceRepository(
                     JOIN location ON bs.location_id = location.id
                     JOIN price ON bs.price_id = price.id
                     LEFT JOIN (
-                        SELECT boat_space_id, reserver_id, storage_type
+                        SELECT id, boat_space_id, reserver_id, storage_type
                         FROM boat_space_reservation
                         WHERE 
                             (status IN ('Confirmed', 'Invoiced') AND end_date >= :endDateCut)
@@ -332,13 +333,13 @@ class JdbiBoatSpaceRepository(
             query.execute()
         }
 
-    override fun getBoatSpaceCount(filter: SqlExpr,): Int =
+    override fun getBoatSpaceCount(filter: SqlExpr,): BoatSpaceStats =
         jdbi.withHandleUnchecked { handle ->
             val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
 
             val sql =
                 """
-                SELECT COUNT(DISTINCT bs.id)
+                SELECT COUNT(DISTINCT bs.id) as spaces, COUNT(DISTINCT bsr.id) as reservations
                 ${buildBoatSpacePickQuery()}
                 $filterQuery
                 
@@ -348,7 +349,7 @@ class JdbiBoatSpaceRepository(
             filter.bind(query)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
-            query.mapTo<Int>().first()
+            query.mapTo<BoatSpaceStats>().first()
         }
 
     override fun deleteBoatSpaces(boatSpaceIds: List<Int>) {

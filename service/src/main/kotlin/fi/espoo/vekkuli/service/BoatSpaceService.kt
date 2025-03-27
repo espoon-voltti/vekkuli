@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
-import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.*
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.repository.filter.SortDirection
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
 import fi.espoo.vekkuli.utils.AndExpr
@@ -69,7 +66,7 @@ interface BoatSpaceRepository {
         editBoatSpaceParams: EditBoatSpaceParams
     )
 
-    fun getBoatSpaceCount(filter: SqlExpr): Int
+    fun getBoatSpaceCount(filter: SqlExpr): BoatSpaceStats
 
     fun deleteBoatSpaces(boatSpaceIds: List<Int>)
 
@@ -86,7 +83,7 @@ class BoatSpaceService(
         params: BoatSpaceListParams,
         paginationStart: Int? = null,
         paginationEnd: Int? = null
-    ): PaginatedResult<BoatSpaceListRow> {
+    ): PaginatedBoatSpaceResult<BoatSpaceListRow> {
         val pagination = PaginationExpr(paginationStart ?: params.paginationStart, paginationEnd ?: params.paginationEnd)
         val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
         val sortBy =
@@ -102,14 +99,14 @@ class BoatSpaceService(
                 sortBy,
                 pagination
             )
-        val boatSpaceCount =
+        val boatSpaceStats =
             boatSpaceRepo.getBoatSpaceCount(
                 AndExpr(
                     filters
                 )
             )
 
-        return PaginatedResult(boatSpaces, boatSpaceCount, pagination.start, pagination.end)
+        return PaginatedBoatSpaceResult(boatSpaces, boatSpaceStats.spaces, pagination.start, pagination.end, boatSpaceStats.reservations)
     }
 
     private fun buildBoatSpaceFilters(params: BoatSpaceListParams): MutableList<SqlExpr> {
