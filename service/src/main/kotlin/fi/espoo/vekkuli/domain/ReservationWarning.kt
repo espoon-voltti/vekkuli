@@ -14,7 +14,8 @@ enum class ReservationWarningType {
     TrailerWidth,
     TrailerLength,
     GeneralReservationWarning,
-    InvoicePayment
+    InvoicePayment,
+    RegistrationCodeNotUnique
 }
 
 data class ReservationWarning(

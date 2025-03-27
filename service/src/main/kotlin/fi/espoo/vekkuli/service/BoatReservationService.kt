@@ -315,6 +315,10 @@ class BoatReservationService(
             warnings.add(Pair(ReservationWarningType.BoatType, null))
         }
 
+        if (boat.registrationCode != null && !boatSpaceReservationRepo.hasUniqueRegistrationNumber(boat.registrationCode)) {
+            warnings.add(Pair(ReservationWarningType.RegistrationCodeNotUnique, null))
+        }
+
         val reservationWarnings =
             warnings.map { warning ->
                 ReservationWarning(
