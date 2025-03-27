@@ -30,7 +30,7 @@ class ExpiredReservationList(
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
                     ${cardHeading.render(reservation, false)}
-                    ${cardInfo.render(reservation, userType, reserverId)}
+                    ${cardInfo.render(reservation, reserverId)}
                     ${reservationTerminationReason.render(reservation)}
                 </div>
                 """.trimIndent()

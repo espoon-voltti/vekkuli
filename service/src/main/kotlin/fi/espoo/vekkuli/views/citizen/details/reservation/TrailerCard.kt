@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.formatInt
@@ -128,10 +127,8 @@ class TrailerCard(
 
     fun render(
         trailer: Trailer,
-        userType: UserType,
         reserverId: UUID,
     ): String {
-        val isEmployee = userType == UserType.EMPLOYEE
         val trailerRegNum =
             trailerValue(
                 "trailer-registration-code",
@@ -144,18 +141,18 @@ class TrailerCard(
                 "trailer-width",
                 formatInt(trailer.widthCm),
                 "shared.label.widthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth)
+                trailer.hasWarning(ReservationWarningType.TrailerWidth)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
                 formatInt(trailer.lengthCm),
                 "shared.label.lengthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength)
+                trailer.hasWarning(ReservationWarningType.TrailerLength)
             )
 
-        val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
-        val warningDialog = if (isEmployee)showWarningsDialog(trailer, reserverId) else ""
+        val warningText = showTrailerWarnings(trailer.hasAnyWarnings())
+        val warningDialog = showWarningsDialog(trailer, reserverId)
         // language=HTML
         return """
             <div id="trailer-${trailer.id}" class="pb-s" x-data="{ modalOpen: false }">
@@ -164,7 +161,7 @@ class TrailerCard(
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
                     $warningText
-                    ${editTrailerButton(trailer.id, userType, reserverId)}
+                    ${editTrailerButton(trailer.id, reserverId)}
                 </div>
                 <div class="columns pb-s">
                    <div class="column is-one-quarter">
@@ -184,7 +181,6 @@ class TrailerCard(
 
     fun renderEdit(
         trailer: Trailer,
-        userType: UserType,
         reserverId: UUID
     ): String {
         val regNum =
@@ -225,7 +221,7 @@ class TrailerCard(
                     </div>
 
                 </div>
-                <form hx-target="#trailer-${trailer.id}" hx-patch="${getSaveUrl(trailer.id, userType, reserverId)}">
+                <form hx-target="#trailer-${trailer.id}" hx-patch="${getSaveUrl(trailer.id, reserverId)}">
                     <div class="columns" class="pb-s">
                        <div class="column is-one-quarter">
                            <div class="field">
@@ -251,26 +247,23 @@ class TrailerCard(
 
     private fun getEditUrl(
         trailerId: Int,
-        userType: UserType,
         reserverId: UUID
-    ) = "/${userType.path}/$reserverId/traileri/$trailerId/muokkaa"
+    ) = "/virkailija/$reserverId/traileri/$trailerId/muokkaa"
 
     private fun getSaveUrl(
         trailerId: Int,
-        userType: UserType,
         reserverId: UUID
-    ) = "/${userType.path}/$reserverId/traileri/$trailerId/tallenna"
+    ) = "/virkailija/$reserverId/traileri/$trailerId/tallenna"
 
     private fun editTrailerButton(
         trailerId: Int,
-        userType: UserType,
         reserverId: UUID
     ): String {
         // language=HTML
         return """
             <div class="column is-narrow ml-auto">
                 <a class="is-icon-link is-link"
-                   hx-get="${getEditUrl(trailerId, userType, reserverId)}"
+                   hx-get="${getEditUrl(trailerId, reserverId)}"
                    hx-target="#trailer-$trailerId"
                    hx-swap="outerHTML">
                     <span class="icon">

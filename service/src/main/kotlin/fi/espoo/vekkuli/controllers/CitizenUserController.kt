@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
-import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -89,32 +88,6 @@ class CitizenUserController(
                 boats,
                 organizations,
                 UserType.EMPLOYEE,
-                ReserverType.Citizen,
-            )
-        )
-    }
-
-    @GetMapping("/kuntalainen/omat-tiedot")
-    @ResponseBody
-    fun ownProfile(request: HttpServletRequest): String {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE")
-        }
-        val citizen = getAuthenticatedCitizen(request)
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizen.id)
-        val boats = boatService.getBoatsForReserver(citizen.id).map { toBoatUpdateForm(it, boatSpaceReservations) }
-        val organizations = organizationService.getCitizenOrganizations(citizen.id)
-
-        return citizenLayout.render(
-            true,
-            citizen.fullName,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                boats,
-                organizations,
-                UserType.CITIZEN,
                 ReserverType.Citizen,
             )
         )
@@ -435,36 +408,9 @@ class CitizenUserController(
         )
     }
 
-    @GetMapping("/kuntalainen/vene/{boatId}/muokkaa")
-    @ResponseBody
-    fun boatEditPage(
-        request: HttpServletRequest,
-        @PathVariable boatId: Int,
-        model: Model
-    ): String {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM", mapOf("targetId" to boatId.toString()))
-        }
-        val citizen = getAuthenticatedCitizen(request)
-        val citizenId = citizen.id
-        val boats = boatService.getBoatsForReserver(citizenId)
-        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
-        return editBoat.editBoatForm(
-            toBoatUpdateForm(boat),
-            mutableMapOf(),
-            citizenId,
-            BoatType.entries.map {
-                it.toString()
-            },
-            listOf("Owner", "User", "CoOwner", "FutureOwner"),
-            UserType.CITIZEN
-        )
-    }
-
-    @GetMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/muokkaa")
+    @GetMapping("/virkailija/{citizenId}/traileri/{trailerId}/muokkaa")
     @ResponseBody
     fun trailerEditPage(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @PathVariable trailerId: Int,
         request: HttpServletRequest
@@ -479,18 +425,16 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
         val trailer = reservationService.getTrailer(trailerId)
         if (trailer == null) {
             throw IllegalArgumentException("Trailer not found")
         }
-        return trailerCard.renderEdit(trailer, userType, citizenId)
+        return trailerCard.renderEdit(trailer, citizenId)
     }
 
-    @PatchMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/tallenna")
+    @PatchMapping("/virkailija/{citizenId}/traileri/{trailerId}/tallenna")
     @ResponseBody
     fun trailerSavePage(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @PathVariable trailerId: Int,
         @RequestParam trailerRegistrationCode: String,
@@ -508,7 +452,6 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
             reservationService.updateTrailer(
@@ -518,7 +461,7 @@ class CitizenUserController(
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer, userType, citizenId)
+        return trailerCard.render(trailer, citizenId)
     }
 
     fun toBoatUpdateForm(

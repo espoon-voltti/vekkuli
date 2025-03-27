@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
@@ -14,14 +13,13 @@ class ReservationCardWarningBox(
 ) : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
-        userType: UserType
     ): String {
         // language=HTML
         if (!reservation.canRenew) {
             return ""
         }
         return warningBox.render(
-            t("reservationWarning.$userType.renewInfo", listOf(formatAsFullDate(reservation.endDate)))
+            t("reservationWarning.EMPLOYEE.renewInfo", listOf(formatAsFullDate(reservation.endDate)))
         )
     }
 }
