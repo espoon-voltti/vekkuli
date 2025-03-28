@@ -17,9 +17,10 @@ class MessageUtil(
     private val logger = KotlinLogging.logger {}
 
     final val localeFI = Locale("fi", "FI")
-    final val localeSV = Locale("sv", "FI")
-    final val localeEN = Locale.ENGLISH
-    final val locales = listOf(localeFI, localeSV, localeEN)
+
+    // final val localeSV = Locale("sv", "FI")
+    // final val localeEN = Locale.ENGLISH
+    final val locales = listOf(localeFI) // , localeSV, localeEN)
 
     fun getMessage(
         code: String,
@@ -27,9 +28,9 @@ class MessageUtil(
         locale: Locale = LocaleContextHolder.getLocale()
     ): String {
         try {
-            return messageSource.getMessage(code, args.toTypedArray(), locale)
+            return messageSource.getMessage(code, args.toTypedArray(), localeFI)
         } catch (e: Exception) {
-            logger.error("Missing message for code: $code for locale $locale")
+            logger.error { "Missing message for code: $code for locale $locale: $e" }
             return code
         }
     }
