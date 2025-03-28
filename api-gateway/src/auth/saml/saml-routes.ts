@@ -13,14 +13,18 @@ import { toMiddleware, toRequestHandler } from '../../utils/express.js'
 import { fromCallback } from '../../utils/promise-utils.js'
 import { login, logout } from '../index.js'
 import { Sessions } from '../session.js'
-import { createLogoutToken, parseRelayState } from './common.js'
+import {
+  createLogoutToken,
+  injectLoginErrorToUrl,
+  parseRelayState
+} from './common.js'
 import { parseDescriptionFromSamlError } from './error-utils.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
 type Role = 'employee' | 'citizen'
 
-function getRedirectUrl(type: Role, req: express.Request): string {
+export function getRedirectUrl(type: Role, req: express.Request): string {
   return (
     parseRelayState(req) ??
     (type === 'employee' ? employeeRootUrl : citizenRootUrl)
@@ -60,12 +64,12 @@ function createLoginHandler({
           if (err.message === 'InResponseTo is not valid' && req.user) {
             // When user uses browse back functionality after login we get invalid InResponseTo
             // This will ignore the error
-            const redirectUrl = getRedirectUrl(type, req)
+            const redirectUrl = injectLoginErrorToUrl(getRedirectUrl(type, req))
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
           if (isUserInitiatedLoginFailure(err)) {
-            const redirectUrl = getRedirectUrl(type, req)
+            const redirectUrl = injectLoginErrorToUrl(getRedirectUrl(type, req))
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
