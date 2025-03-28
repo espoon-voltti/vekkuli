@@ -163,7 +163,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
 
         const user = await authenticate(strategyName, req, res)
         if (!user) {
-          res.redirect(injectLoginErrorToUrl(citizenRootUrl))
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('citizen', req)))
         } else {
           await login(req, user)
           res.redirect(getRedirectUrl('citizen', req))
