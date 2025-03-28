@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.CreateBoatSpaceModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.EditModal
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
@@ -80,7 +79,7 @@ class BoatSpaceList(
         """.trimIndent()
 
     fun render(
-        boatSpaces: PaginatedResult<BoatSpaceListRow>,
+        boatSpaces: PaginatedBoatSpaceResult<BoatSpaceListRow>,
         searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         paymentClasses: List<Price>,
@@ -239,7 +238,10 @@ class BoatSpaceList(
             "open-edit-modal"
         )} :disabled='editBoatSpaceIds.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                 </div>
-                <div class="employee-filter-container" id="totalrows" hx-swap-oob="true">Paikkoja: ${boatSpaces.totalRows}</div>
+                <div class="employee-filter-container" id="totalrows" hx-swap-oob="true">${t(
+            "boatSpaceList.spaceCount",
+            listOf(boatSpaces.totalRows.toString(), boatSpaces.reservedSpaces.toString())
+        )}</div>
             </div>
             
             <div class='reservation-list form-section block'>

@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList.partials
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.PaginatedBoatSpaceResult
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
-import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 class BoatSpaceListRowsPartial(
     private val boatSpaceListRow: BoatSpaceRow,
 ) : BaseView() {
-    fun render(boatSpaceRow: PaginatedResult<BoatSpaceListRow>): String =
+    fun render(boatSpaceRow: PaginatedBoatSpaceResult<BoatSpaceListRow>): String =
         buildString {
             for (result in boatSpaceRow.items) {
                 append(boatSpaceListRow.render(result))
