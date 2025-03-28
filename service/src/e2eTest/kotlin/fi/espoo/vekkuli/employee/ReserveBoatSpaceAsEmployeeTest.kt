@@ -241,7 +241,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalCancel.click()
+
+            page.waitForCondition { invoicePreviewPage.reservationValidity.textContent().contains("Valid until further notice") }
+
             assertThat(invoicePreviewPage.header).isVisible()
+
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 

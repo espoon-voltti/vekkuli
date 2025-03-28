@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.invoice.InvoiceData
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.utils.addTestId
@@ -26,7 +27,9 @@ data class SendInvoiceModel(
     val contactPerson: String,
     val orgId: String,
     val function: String,
-    val discountPercentage: Int
+    val discountPercentage: Int,
+    val reservationValidity: ReservationValidity,
+    val endDate: LocalDate
 ) {
     val hasDiscount: Boolean
         get() = discountPercentage > 0
@@ -69,7 +72,9 @@ class InvoicePreview(
                 description = invoiceData.description,
                 contactPerson = invoiceData.orgRepresentative ?: "",
                 orgId = invoiceData.orgId ?: "",
-                discountPercentage = reservation.discountPercentage ?: 0
+                discountPercentage = reservation.discountPercentage ?: 0,
+                reservationValidity = reservation.validity,
+                endDate = reservation.endDate
             )
         return model
     }
@@ -159,6 +164,16 @@ class InvoicePreview(
                 invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
             }
 
+        val validityText =
+            formComponents.field(
+                "boatSpaceReservation.label.reservationValidity",
+                "reservationValidity",
+                t(
+                    "boatSpaceReservation.validity.${model.reservationValidity}",
+                    listOf(formatAsFullDate(model.endDate))
+                )
+            )
+
         // language=HTML
         return """
             <section class="section" x-data="{ confirmModalOpen: false, markAsPaidInputValue: false }">
@@ -189,7 +204,9 @@ class InvoicePreview(
                         <div class="column">
                             $dueDate
                         </div>
-                        
+                        <div class="column">
+                            $validityText
+                        </div>
                         <div class="column">
                             $priceWithTax
                             $discountInfo
