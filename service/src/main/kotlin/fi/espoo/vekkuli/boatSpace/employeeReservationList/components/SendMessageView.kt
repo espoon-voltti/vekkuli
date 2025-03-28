@@ -140,7 +140,7 @@ class SendMessageView(
                        
                     </script>
                 <div class='columns is-multiline'>
-                    <div class="column is-full" ${addTestId("send-mass-email-modal-subtitle")}>
+                    <div class="column is-full" ${addTestId("$formId-modal-subtitle")}>
                             ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipients.size.toString()))}
                     </div>
                     <div class="column is-full recipients"><a data-emails="$emails" onclick="toggleEmailList(this)">Näytä vastaanottajat</a></div>
