@@ -118,7 +118,7 @@ class EmployeeReservationListView(
                         </div>
                         </div>  
                         <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">
-                            ${sendMessageView.renderLink(reservations.totalRows)}
+                            ${sendMessageView.renderSendMassMessageLink(reservations.totalRows)}
                         </div>
                         <div class="reservation-list form-section block">
                             <div class='table-container'>

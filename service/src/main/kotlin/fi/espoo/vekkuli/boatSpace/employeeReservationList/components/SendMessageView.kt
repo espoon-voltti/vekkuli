@@ -9,15 +9,19 @@ import fi.espoo.vekkuli.views.components.modal.Modal
 import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
 import fi.espoo.vekkuli.views.components.modal.ModalButtonType
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class SendMessageView(
     private var modal: Modal,
     private var formComponents: FormComponents
 ) : BaseView() {
-    fun renderLink(totalRows: Int): String {
+    fun renderSendMassMessageLink(totalRows: Int): String {
         //language=HTML
         return """            
+            <span class="icon is-small">
+                    ${icons.letter}
+            </span>
             <a                     
                 class="${if (totalRows == 0) "disabled" else ""} is-link has-text-weight-semibold"
                 hx-target="#modal-container"
@@ -31,13 +35,58 @@ class SendMessageView(
             """.trimIndent()
     }
 
-    fun renderSendMessageModal(
+    fun renderSendMessageToReserverLink(reserverId: UUID): String {
+        //language=HTML
+        return """            
+            <span class="icon is-small">
+                    ${icons.letter}
+            </span>            
+            <a                     
+                class="is-link has-text-weight-semibold"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
+                hx-push-url="false"
+                hx-get="/virkailija/viestit/reserver/$reserverId/modal"
+                ${addTestId("send-email-link")}>${t("citizenDetails.messages.sendMessage")}
+            </a>
+            """.trimIndent()
+    }
+
+    fun renderSendMassMessageModal(
         reservationCount: Int,
         recipients: List<Recipient>
+    ): String = renderSendMessageModal(reservationCount, recipients)
+
+    fun renderSendMessageToReserverModal(
+        reservationCount: Int,
+        recipients: List<Recipient>,
+        reserverId: UUID
+    ): String = renderSendMessageModal(reservationCount, recipients, reserverId)
+
+    private fun renderSendMessageModal(
+        reservationCount: Int,
+        recipients: List<Recipient>,
+        reserverId: UUID? = null
     ): String {
         val emails = recipients.joinToString("\n") { it.email }
         val modalBuilder = modal.createModalBuilder()
-        val formId = "send-mass-email"
+        val formId = if (reserverId != null) "send-email" else "send-mass-email"
+        val formAttributes =
+            mutableMapOf(
+                "hx-swap" to "innerHTML",
+                "hx-target" to "#modal-container",
+            )
+        if (reserverId != null) {
+            formAttributes["hx-post"] = "/virkailija/viestit/reserver/$reserverId/laheta"
+        } else {
+            formAttributes.putAll(
+                mapOf(
+                    "hx-post" to "/virkailija/viestit/massa/laheta",
+                    "hx-include" to "#reservation-filter-form"
+                )
+            )
+        }
         val messageTitleField =
             formComponents.textInput(
                 labelKey = "boatSpaceTermination.fields.messageTitle",
@@ -70,14 +119,7 @@ class SendMessageView(
             .setForm {
                 setId(formId)
                 setTestId(formId)
-                setAttributes(
-                    mapOf(
-                        "hx-post" to "/virkailija/viestit/massa/laheta",
-                        "hx-swap" to "innerHTML",
-                        "hx-target" to "#modal-container",
-                        "hx-include" to "#reservation-filter-form"
-                    )
-                )
+                setAttributes(formAttributes)
             }
             //language=HTML
             .setContent(
@@ -112,12 +154,12 @@ class SendMessageView(
             ).addButton {
                 setText(t("cancel"))
                 setType(ModalButtonType.Cancel)
-                setTestId("send-mass-email-modal-cancel")
+                setTestId("$formId-modal-cancel")
             }.addButton {
                 setStyle(sendButtonStyle)
                 setType(ModalButtonType.Submit)
                 setText(t("employee.messages.modal.send.title", listOf(recipients.size.toString())))
-                setTestId("send-mass-email-modal-confirm")
+                setTestId("$formId-modal-confirm")
             }.build()
     }
 

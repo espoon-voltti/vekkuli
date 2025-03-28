@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.employee.components
 
+import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
@@ -10,7 +11,9 @@ import java.time.LocalDateTime
 import kotlin.collections.isNotEmpty
 
 @Component
-class ReserverDetailsMessagesContainer : BaseView() {
+class ReserverDetailsMessagesContainer(
+    private val sendMessageView: SendMessageView
+) : BaseView() {
     @Autowired
     lateinit var reserverDetailsTabs: ReserverDetailsTabs
 
@@ -62,6 +65,9 @@ class ReserverDetailsMessagesContainer : BaseView() {
         return """
             <div id="tab-content" class="container block">
               ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Messages)}
+              <div id="send-message-to-reserver">
+                ${sendMessageView.renderSendMessageToReserverLink(reserver.id)}
+              </div>
               $messagesHtml
             </div>
             """.trimIndent()

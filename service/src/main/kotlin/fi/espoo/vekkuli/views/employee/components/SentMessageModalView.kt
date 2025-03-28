@@ -36,7 +36,9 @@ class SentMessageModalView : BaseView() {
                                     <label class="label">Lähetetty</label>                            
                                 </div>
                                 <div class="column">
-                                    <span>${message.sentAt?.format(fullDateTimeFormat)}</span>                            
+                                    <span>${message.sentAt?.format(
+                    fullDateTimeFormat
+                ) ?: "Ei vielä lähetetty"}</span>                            
                                 </div>
                             </div>
                             <div class="columns"">
