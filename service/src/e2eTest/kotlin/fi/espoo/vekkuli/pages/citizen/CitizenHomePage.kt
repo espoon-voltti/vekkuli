@@ -53,7 +53,15 @@ class CitizenHomePage(
         page.navigate(baseUrl)
         getByDataTestId("loginButton").click()
         getByDataTestId(ssn).click()
+        submitLogin()
+    }
+
+    fun submitLogin() {
         page.getByText("Kirjaudu").click()
+    }
+
+    fun cancelLogin() {
+        page.getByText("Peruuta").click()
     }
 
     val languageSelector = page.locator("#language-selection")
