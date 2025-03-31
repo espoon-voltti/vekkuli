@@ -136,5 +136,9 @@ export function createDevAdRouter(sessions: Sessions): Router {
     })
   )
 
+  router.use('/*splat', (_req, res) => {
+    res.redirect(employeeRootUrl)
+  })
+
   return router
 }

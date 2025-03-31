@@ -25,10 +25,11 @@ const urlencodedParser = urlencoded({ extended: false })
 type Role = 'employee' | 'citizen'
 
 export function getRedirectUrl(type: Role, req: express.Request): string {
-  return (
-    parseRelayState(req) ??
-    (type === 'employee' ? employeeRootUrl : citizenRootUrl)
-  )
+  return parseRelayState(req) ?? getRootUrl(type)
+}
+
+export function getRootUrl(type: Role): string {
+  return type === 'employee' ? employeeRootUrl : citizenRootUrl
 }
 
 export interface SamlEndpointConfig {
@@ -197,6 +198,10 @@ export default function createSamlRouter(
     (req, res) => res.redirect(getRedirectUrl(endpointConfig.type, req))
   )
   router.use('/logout', logoutErrorHandler)
+
+  router.use('/*splat', (_req, res) => {
+    res.redirect(getRootUrl(endpointConfig.type))
+  })
 
   return router
 }

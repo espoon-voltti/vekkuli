@@ -192,5 +192,9 @@ export function createDevSfiRouter(sessions: Sessions): Router {
     })
   )
 
+  router.use('/*splat', (_req, res) => {
+    res.redirect(citizenRootUrl)
+  })
+
   return router
 }

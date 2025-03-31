@@ -10,7 +10,7 @@ import createSamlRouter from './auth/saml/saml-routes.js'
 import { sessionSupport } from './auth/session.js'
 import { createSuomiFiStrategy } from './auth/suomifi-saml.js'
 import { RedisClient } from './clients/redis-client.js'
-import { Config } from './config.js'
+import { citizenRootUrl, Config } from './config.js'
 import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
 
@@ -86,6 +86,10 @@ export function createAuthRouter(
       })
     )
   }
+
+  router.use('/*splat', (_req, res) => {
+    res.redirect(citizenRootUrl)
+  })
 
   router.use(errorHandler)
 
