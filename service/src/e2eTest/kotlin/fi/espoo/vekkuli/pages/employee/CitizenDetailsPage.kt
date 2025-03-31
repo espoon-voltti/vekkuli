@@ -273,4 +273,6 @@ class CitizenDetailsPage(
     val generalWarningSaveBtn: Locator = getByDataTestId("warning-info-save-button")
     val generalWarningUpdateBtn: Locator = getByDataTestId("warning-info-update-button")
     val generalWarningAcknowledgeBtn: Locator = getByDataTestId("warning-info-acknowledge-button")
+
+    val backButton = getByDataTestId("go-back")
 }
