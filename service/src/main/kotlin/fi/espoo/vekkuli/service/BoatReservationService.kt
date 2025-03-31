@@ -111,6 +111,7 @@ class BoatReservationService(
     private val reserverRepository: ReserverRepository,
     private val reserverService: ReserverService,
     private val messageService: MessageService,
+    private val boatRepository: BoatRepository
 ) {
     fun handlePaytrailPaymentResult(
         params: Map<String, String>,
@@ -315,8 +316,18 @@ class BoatReservationService(
             warnings.add(Pair(ReservationWarningType.BoatType, null))
         }
 
-        if (boat.registrationCode != null && !boatSpaceReservationRepo.hasUniqueRegistrationNumber(boat.registrationCode)) {
-            warnings.add(Pair(ReservationWarningType.RegistrationCodeNotUnique, null))
+        if (boat.registrationCode != null) {
+            val boatsWithSameRegistrationCode: List<Pair<Boat, ReserverWithDetails?>> =
+                getBoatAndReserverWithRegistrationCode(boat.registrationCode)
+                    .filter { it.first.id != boat.id }
+            if (boatsWithSameRegistrationCode.isNotEmpty()) {
+                warnings.add(
+                    Pair(
+                        ReservationWarningType.RegistrationCodeNotUnique,
+                        boatsWithSameRegistrationCode.joinToString(", ") { "${it.second?.email}/${it.first.name}" }
+                    )
+                )
+            }
         }
 
         val reservationWarnings =
@@ -858,4 +869,10 @@ class BoatReservationService(
         reservationId: Int,
         boatId: Int
     ): Boolean = boatSpaceReservationRepo.changeReservationBoat(reservationId, boatId)
+
+    fun getBoatAndReserverWithRegistrationCode(registrationCode: String): List<Pair<Boat, ReserverWithDetails?>> =
+        boatRepository.getBoatsByRegistrationCode(registrationCode).map { boat ->
+            val reserver = reserverRepository.getReserverById(boat.reserverId)
+            Pair(boat, reserver)
+        }
 }

@@ -31,4 +31,6 @@ interface BoatRepository {
     ): Boat
 
     fun deleteBoat(boatId: Int): Boolean
+
+    fun getBoatsByRegistrationCode(registrationCode: String): List<Boat>
 }

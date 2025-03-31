@@ -121,6 +121,4 @@ interface BoatSpaceReservationRepository {
         newValidity: ReservationValidity,
         endDate: LocalDate
     )
-
-    fun hasUniqueRegistrationNumber(registrationCode: String): Boolean
 }

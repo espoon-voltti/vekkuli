@@ -189,4 +189,18 @@ class JdbiBoatRepository(
             query.bind("timestamp", timeProvider.getCurrentDateTime())
             query.execute() == 1
         }
+
+    override fun getBoatsByRegistrationCode(registrationCode: String): List<Boat> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT * FROM boat
+                    WHERE registration_code = :registrationCode
+                    AND deleted_at IS NULL
+                    """.trimIndent()
+                )
+            query.bind("registrationCode", registrationCode)
+            query.mapTo<Boat>().list()
+        }
 }
