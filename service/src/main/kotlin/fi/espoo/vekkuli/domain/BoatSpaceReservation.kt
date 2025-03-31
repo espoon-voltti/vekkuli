@@ -196,6 +196,7 @@ data class BoatSpaceReservationFilter(
     val payment: List<PaymentFilter> = listOf<PaymentFilter>(PaymentFilter.CONFIRMED, PaymentFilter.INVOICED, PaymentFilter.CANCELLED),
     val nameSearch: String? = null,
     val phoneSearch: String? = null,
+    val emailSearch: String? = null,
     val warningFilter: Boolean? = null,
     val exceptionsFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),

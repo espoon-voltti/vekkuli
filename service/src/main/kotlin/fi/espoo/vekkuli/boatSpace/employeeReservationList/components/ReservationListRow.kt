@@ -40,7 +40,7 @@ class ReservationListRow : BaseView() {
                     <span class='link'>${htmlEscape(reservation.name)}</span>
                 </td>
                 <td>${htmlEscape(reservation.phone)}</td>
-                <td>${htmlEscape(reservation.email)}</td>
+                <td ${addTestId("reserver-email")}>${htmlEscape(reservation.email)}</td>
                 <td>${reservation.municipalityName}</td>
                 <td>$statusText</td>
                 <td ${addTestId("reservation-start-date")}>$startDateText</td>

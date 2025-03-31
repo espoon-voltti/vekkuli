@@ -42,6 +42,19 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee can filter by reserver email address`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+        typeText(listingPage.searchInput("emailSearch"), "leo")
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+        assertThat(listingPage.reserverRowEmail).hasText("leo@noreplytest.fi")
+        listingPage.boatSpace1.click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+    }
+
+    @Test
     fun `Employee can filter by reserver name`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }
