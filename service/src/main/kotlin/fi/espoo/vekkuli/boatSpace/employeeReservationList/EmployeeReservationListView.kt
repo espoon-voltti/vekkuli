@@ -170,7 +170,7 @@ class EmployeeReservationListView(
                                             <th>${amenityFilter.render(params.amenity, amenities)}</th>
                                             <th>${textSearchFilter.render("nameSearch", htmlEscape(params.nameSearch ?: ""))}</th>
                                             <th>${textSearchFilter.render("phoneSearch", htmlEscape(params.phoneSearch ?: ""))}</th>
-                                            <th></th>
+                                            <th>${textSearchFilter.render("emailSearch", htmlEscape(params.emailSearch ?: ""))}</th>
                                             <th></th>
                                             <th></th>
                                             <th></th>

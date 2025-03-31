@@ -2,19 +2,7 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.AmenityExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceTypeExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.EndDateNotPassedExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.EndDatePassedExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.HasReserverExceptionsExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.HasWarningExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.NameSearchExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.PhoneSearchExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.ReservationValidityExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.SectionExpr
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.StatusExpr
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.PaginationExpr
 import fi.espoo.vekkuli.utils.SqlExpr
@@ -77,6 +65,10 @@ class EmployeeReservationListService(
 
         if (!params.phoneSearch.isNullOrBlank()) {
             filters.add(PhoneSearchExpr(params.phoneSearch))
+        }
+
+        if (!params.emailSearch.isNullOrBlank()) {
+            filters.add(EmailSearchExpr(params.emailSearch))
         }
 
         if (params.harbor.isNotEmpty()) {
