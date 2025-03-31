@@ -15,6 +15,7 @@ import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.placeTypeToText
+import fi.espoo.vekkuli.utils.reservationToText
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
@@ -69,10 +70,15 @@ class BoatSpaceInvoiceService(
                 )
             )
         }
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw IllegalStateException("Reservation not found for id: $reservationId")
+
+        val memoText = reservationToText(reservation) + if (markAsPaidAndSkipSending) " merkitty maksetuksi" else " luotu lasku"
         memoService.insertMemo(
             reserverId,
             employeeId,
-            if (markAsPaidAndSkipSending) "Merkitty maksetuksi" else "Lasku luotu"
+            memoText
         )
         return createdInvoice
     }

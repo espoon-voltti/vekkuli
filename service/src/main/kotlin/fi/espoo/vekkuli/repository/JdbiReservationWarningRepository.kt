@@ -13,6 +13,27 @@ import java.util.UUID
 class JdbiReservationWarningRepository(
     private val jdbi: Jdbi
 ) : ReservationWarningRepository {
+    override fun getReservationWarning(warningId: UUID): ReservationWarning? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                        SELECT
+                            id,
+                            reservation_id,
+                            boat_id,
+                            trailer_id,
+                            invoice_number,
+                            key,
+                            info_text
+                        FROM reservation_warning
+                        WHERE id = :warningId
+                        """
+                ).bind("warningId", warningId)
+                .mapTo<ReservationWarning>()
+                .firstOrNull()
+        }
+
     override fun addReservationWarnings(warnings: List<ReservationWarning>,): Unit =
         jdbi.withHandleUnchecked { handle ->
             val batch =

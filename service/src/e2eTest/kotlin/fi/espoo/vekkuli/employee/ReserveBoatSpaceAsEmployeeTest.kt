@@ -184,7 +184,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
             page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("100000") }
             page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("418,00") }
-
             citizenDetailsPage.refundPaymentButton.click()
             citizenDetailsPage.refundPaymentModalConfirm.click()
 
