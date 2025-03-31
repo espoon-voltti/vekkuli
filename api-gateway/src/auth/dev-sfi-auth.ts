@@ -15,7 +15,8 @@ import {
   toRequestHandler
 } from '../utils/express.js'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
-import { parseRelayState } from './saml/common.js'
+import { injectLoginErrorToUrl } from './saml/common.js'
+import { getRedirectUrl } from './saml/saml-routes.js'
 import { Sessions } from './session.js'
 
 class DevStrategy extends Strategy {
@@ -125,7 +126,8 @@ const loginFormHandler: AsyncRequestHandler = async (req, res) => {
             <form action="${formUri}" method="post">
                 ${userOptions.join('\n')}
                 <div style="margin-top: 20px">
-                  <button type="submit">Kirjaudu</button>
+                  <button type="submit" name="action" value="submit">Kirjaudu</button>
+                  <button type="submit" name="action" value="cancel">Peruuta</button>
                 </div>
             </form>
           </body>
@@ -154,17 +156,21 @@ export function createDevSfiRouter(sessions: Sessions): Router {
     urlencoded({ extended: false }), // needed to parse the POSTed form
     toRequestHandler(async (req, res) => {
       try {
+        if (req.body.action === 'cancel') {
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('citizen', req)))
+          return
+        }
+
         const user = await authenticate(strategyName, req, res)
         if (!user) {
-          res.redirect(`${citizenRootUrl}?loginError=true`)
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('citizen', req)))
         } else {
           await login(req, user)
-          const redirectUrl = parseRelayState(req) ?? citizenRootUrl
-          res.redirect(redirectUrl)
+          res.redirect(getRedirectUrl('citizen', req))
         }
       } catch (err) {
         if (!res.headersSent) {
-          res.redirect(`${citizenRootUrl}?loginError=true`)
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('citizen', req)))
         }
         throw err
       }

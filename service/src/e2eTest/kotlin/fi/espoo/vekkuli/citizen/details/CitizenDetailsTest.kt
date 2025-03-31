@@ -19,6 +19,21 @@ import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDeta
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
     @Test
+    fun `cancelled login should show error instead of causing redirect loop`() {
+        val homePage = CitizenHomePage(page)
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+        homePage.cancelLogin()
+
+        val loginError = citizenDetails.getLoginError()
+        assertThat(loginError.root).isVisible()
+
+        loginError.loginButton.click()
+        homePage.submitLogin()
+        assertThat(citizenDetails.header).isVisible()
+    }
+
+    @Test
     fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()

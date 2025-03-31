@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
 import fi.espoo.vekkuli.pages.citizen.components.IHaveErrorModal
+import fi.espoo.vekkuli.pages.citizen.components.IHaveLoginError
 import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationList
 
 class CitizenDetailsPage(
@@ -14,6 +15,7 @@ class CitizenDetailsPage(
 ) : BasePage(page),
     IHaveBoatList<CitizenDetailsPage>,
     IHaveErrorModal<CitizenDetailsPage>,
+    IHaveLoginError<CitizenDetailsPage>,
     IHaveReservationList<CitizenDetailsPage> {
     class CitizenSection(
         root: Locator
@@ -40,7 +42,7 @@ class CitizenDetailsPage(
     }
 
     fun navigateToPage() {
-        page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
+        page.navigate("$baseUrl/kuntalainen/omat-tiedot")
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen-information"))

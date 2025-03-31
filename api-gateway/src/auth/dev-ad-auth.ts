@@ -11,6 +11,8 @@ import {
   toRequestHandler
 } from '../utils/express.js'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
+import { injectLoginErrorToUrl } from './saml/common.js'
+import { getRedirectUrl } from './saml/saml-routes.js'
 import { Sessions } from './session.js'
 
 class DevStrategy extends Strategy {
@@ -68,7 +70,8 @@ const loginFormHandler: AsyncRequestHandler = async (req, res) => {
             <form action="${formUri}" method="post">
                 ${userOptions.join('\n')}
                 <div style="margin-top: 20px">
-                  <button type="submit">Kirjaudu</button>
+                  <button type="submit" name="action" value="submit">Kirjaudu</button>
+                  <button type="submit" name="action" value="cancel">Peruuta</button>
                 </div>
             </form>
           </body>
@@ -97,16 +100,21 @@ export function createDevAdRouter(sessions: Sessions): Router {
     urlencoded({ extended: false }), // needed to parse the POSTed form
     toRequestHandler(async (req, res) => {
       try {
+        if (req.body.action === 'cancel') {
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('employee', req)))
+          return
+        }
+
         const user = await authenticate(strategyName, req, res)
         if (!user) {
-          res.redirect(`${employeeRootUrl}?loginError=true`)
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('employee', req)))
         } else {
           await login(req, user)
-          res.redirect(employeeRootUrl) //parseRelayState(req) ?? employeeRootUrl)
+          res.redirect(getRedirectUrl('employee', req))
         }
       } catch (err) {
         if (!res.headersSent) {
-          res.redirect(`${employeeRootUrl}?loginError=true`)
+          res.redirect(injectLoginErrorToUrl(getRedirectUrl('employee', req)))
         }
         throw err
       }

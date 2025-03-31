@@ -177,3 +177,13 @@ export function parseRelayState(req: express.Request): string | undefined {
 
   return undefined
 }
+
+export function injectLoginErrorToUrl(url: string): string {
+  const isAbsoluteUrl = url.startsWith('http')
+  const dummyBase = 'http://dummy'
+  const target = isAbsoluteUrl ? new URL(url) : new URL(url, dummyBase)
+  target.searchParams.set('loginError', 'true')
+  return isAbsoluteUrl
+    ? target.href
+    : `${target.pathname}${target.search}${target.hash}`
+}
