@@ -41,4 +41,11 @@ interface ReserverRepository {
         reserverId: UUID,
         discountPercentage: Int
     ): ReserverWithDetails?
+
+    fun updateExceptions(
+        reserverId: UUID,
+        rulesApplied: Boolean,
+        exceptionNotes: String?,
+        discountPercentage: Int
+    ): ReserverWithDetails?
 }

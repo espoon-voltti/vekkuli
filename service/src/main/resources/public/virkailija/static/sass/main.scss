@@ -279,6 +279,9 @@ input[type="radio"]:checked {
   height: 24px;
   accent-color: $bulma-primary;
   border-radius: 4px;
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 .checkbox span {
@@ -1119,7 +1122,6 @@ ul {
     align-items: flex-start;
     justify-content: normal;
     gap: 16px;
-    margin-bottom: $spacing-xl;
 
     span {
       max-width: 600px;

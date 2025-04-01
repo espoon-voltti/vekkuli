@@ -65,7 +65,8 @@ class ReservationAvailabilityTests : IntegrationTestBase() {
                 nationalId = "123456-789A",
                 firstName = "Mikko",
                 lastName = "Testinen",
-                dataProtection = false
+                dataProtection = false,
+                exceptionNotes = "Test notes"
             )
 
         // Let's not tes

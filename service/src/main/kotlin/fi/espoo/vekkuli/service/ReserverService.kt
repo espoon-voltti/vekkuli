@@ -71,5 +71,10 @@ class ReserverService(
 
     fun getReserverById(reserverId: UUID) = reserverRepository.getReserverById(reserverId)
 
-    fun toggleEspooRulesApplied(reserverId: UUID): ReserverWithDetails? = reserverRepository.toggleEspooRulesApplied(reserverId)
+    fun updateExceptions(
+        reserverId: UUID,
+        rulesApplied: Boolean?,
+        discountPercentage: Int,
+        exceptionNotes: String?
+    ): ReserverWithDetails? = reserverRepository.updateExceptions(reserverId, rulesApplied ?: false, exceptionNotes, discountPercentage)
 }
