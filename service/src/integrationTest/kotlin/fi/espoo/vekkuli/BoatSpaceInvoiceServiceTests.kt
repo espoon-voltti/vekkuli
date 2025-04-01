@@ -88,7 +88,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
         assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
-        assertEquals("Lasku luotu", memoService.getMemos(this.citizenIdLeo)[0].content)
+        assertEquals("Lasku luotu: Haukilahti Laituri B 001", memoService.getMemos(this.citizenIdLeo)[0].content)
     }
 
     @Test
@@ -118,6 +118,6 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertEquals(reservation?.status, ReservationStatus.Confirmed, "Reservation is paid")
         assertEquals(reservation?.paymentDate, timeProvider.getCurrentDate(), "Reservation has been paid")
-        assertEquals("Merkitty maksetuksi", memoService.getMemos(this.citizenIdLeo)[0].content)
+        assertEquals("Merkitty maksetuksi: Haukilahti Laituri B 001", memoService.getMemos(this.citizenIdLeo)[0].content)
     }
 }

@@ -74,7 +74,7 @@ class BoatSpaceInvoiceService(
             boatReservationService.getBoatSpaceReservation(reservationId)
                 ?: throw IllegalStateException("Reservation not found for id: $reservationId")
 
-        val memoText = reservationToText(reservation) + if (markAsPaidAndSkipSending) " merkitty maksetuksi" else " luotu lasku"
+        val memoText = (if (markAsPaidAndSkipSending) "Merkitty maksetuksi: " else "Lasku luotu: ") + reservationToText(reservation)
         memoService.insertMemo(
             reserverId,
             employeeId,
