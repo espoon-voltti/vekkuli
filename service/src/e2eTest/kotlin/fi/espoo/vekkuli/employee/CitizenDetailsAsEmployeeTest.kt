@@ -8,12 +8,14 @@ import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
@@ -139,6 +141,42 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Email is sent to reserver`() {
+        val listingPage = reservationListPage()
+        listingPage.boatSpace1.click()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.messagesNavi.click()
+        assertThat(citizenDetails.sendMessageLink).isVisible()
+        citizenDetails.sendMessageLink.click()
+        assertThat(citizenDetails.sendReserverMessageForm).isVisible()
+        assertThat(citizenDetails.sendReserverMessageModalSubtitle).containsText(
+            "Varauksia 1 kpl, viestin vastaanottajia 1 kpl."
+        )
+        val emailSubject = "Email message title"
+        val emailBody = "Email message content"
+        citizenDetails.sendReserverMessageTitleInput.fill(emailSubject)
+        citizenDetails.sendReserverMessageTitleInput.blur()
+        citizenDetails.sendReserverMessageContentInput.fill(emailBody)
+        citizenDetails.sendReserverMessageContentInput.blur()
+
+        citizenDetails.sendReserverMessageModalSubmit.click()
+        assertThat(citizenDetails.sendReserverMessageModalSuccess).isVisible()
+
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        val email = SendEmailServiceMock.emails[0]
+        assertEquals(email.subject, emailSubject)
+        assertEquals(email.body, emailBody)
+
+        citizenDetails.messagesNavi.click()
+        assertThat(citizenDetails.messages.first()).containsText(emailSubject)
+        citizenDetails.messages.first().click()
+        assertThat(
+            citizenDetails.messageContent
+        ).hasText(emailBody)
     }
 
     @Test

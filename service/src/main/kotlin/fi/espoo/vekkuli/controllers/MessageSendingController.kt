@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationLis
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.PaginatedReservationsResult
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
+import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -13,11 +14,13 @@ import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.OrganizationService
+import fi.espoo.vekkuli.service.ReserverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @Controller
 @RequestMapping("/virkailija/viestit")
@@ -25,6 +28,7 @@ class MessageSendingController(
     private val sendMessageView: SendMessageView,
     private val messageService: MessageService,
     private var reservationListService: EmployeeReservationListService,
+    private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
     private val emailEnv: EmailEnv,
 ) {
@@ -35,18 +39,18 @@ class MessageSendingController(
 
     @GetMapping("/massa/modal")
     @ResponseBody
-    fun sendMessageModal(
+    fun sendMassMessageModal(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceReservationFilter
     ): ResponseEntity<String> {
-        val authenticatedUser = request.getAuthenticatedUser()
-        authenticatedUser?.let {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+        authenticatedUser.let {
             logger.audit(
                 it,
                 "OPEN_SEND_MASS_EMAILS_MODAL",
             )
         }
-        if (authenticatedUser?.isEmployee() != true) {
+        if (!authenticatedUser.isEmployee()) {
             throw Unauthorized()
         }
 
@@ -54,19 +58,21 @@ class MessageSendingController(
             reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
         val recipients = getDistinctRecipients(reservations)
         return ResponseEntity.ok(
-            sendMessageView.renderSendMessageModal(reservations.totalRows, recipients.sortedBy { it.email })
+            sendMessageView.renderSendMassMessageModal(reservations.totalRows, recipients.sortedBy { it.email })
         )
     }
 
     @PostMapping("/massa/laheta")
     @ResponseBody
-    fun sendMassEmails(
+    fun sendMassEmailMessage(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceReservationFilter,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
     ): ResponseEntity<String> {
-        request.getAuthenticatedUser()?.let {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+
+        authenticatedUser.let {
             logger.audit(
                 it,
                 "SEND_MASS_EMAILS",
@@ -75,27 +81,80 @@ class MessageSendingController(
                 )
             )
         }
-        try {
-            val user = request.getAuthenticatedUser() ?: throw Unauthorized()
 
+        if (!authenticatedUser.isEmployee()) {
+            throw Unauthorized()
+        }
+
+        try {
             val reservations =
                 reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
             val recipients = getDistinctRecipients(reservations)
 
-            logger.info { "Sending message to ${recipients.size} recipients" }
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
 
-            messageService.sendEmails(
-                userId = user.id,
-                senderAddress = emailEnv.senderAddress,
-                recipients = recipients,
-                subject = messageTitle,
-                body = messageContent
-            )
-            return ResponseEntity.ok(
-                sendMessageView.renderMessageSentFeedback(recipients.size)
-            )
+            return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
         } catch (e: Exception) {
-            logger.error(e) { "error sending message" }
+            logger.error(e) { "error sending mass message" }
+            return ResponseEntity.ok(sendMessageView.renderSendingFailed())
+        }
+    }
+
+    @GetMapping("/reserver/{reserverId}/modal")
+    @ResponseBody
+    fun sendMessageToReserverModal(
+        request: HttpServletRequest,
+        @PathVariable reserverId: UUID
+    ): ResponseEntity<String> {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+        authenticatedUser.let {
+            logger.audit(
+                it,
+                "OPEN_SEND_EMAIL_TO_RESERVER_MODAL",
+                mapOf("reserverId" to reserverId.toString())
+            )
+        }
+
+        if (!authenticatedUser.isEmployee()) {
+            throw Unauthorized()
+        }
+        val recipients = getRecipientsByReserverId(reserverId)
+        return ResponseEntity.ok(
+            sendMessageView.renderSendMessageToReserverModal(recipients.size, recipients.sortedBy { it.email }, reserverId)
+        )
+    }
+
+    @PostMapping("/reserver/{reserverId}/laheta")
+    @ResponseBody
+    fun sendEmailToReserver(
+        request: HttpServletRequest,
+        @PathVariable reserverId: UUID,
+        @RequestParam("messageTitle") messageTitle: String,
+        @RequestParam("messageContent") messageContent: String,
+    ): ResponseEntity<String> {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+
+        authenticatedUser.let {
+            logger.audit(
+                it,
+                "SEND_EMAIL_TO_RESERVER",
+                mapOf(
+                    "reserverId" to reserverId.toString()
+                )
+            )
+        }
+
+        if (!authenticatedUser.isEmployee()) {
+            throw Unauthorized()
+        }
+        try {
+            val recipients = getRecipientsByReserverId(reserverId)
+
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
+
+            return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
+        } catch (e: Exception) {
+            logger.error(e) { "error sending message to reserver $reserverId" }
             return ResponseEntity.ok(
                 sendMessageView.renderSendingFailed()
             )
@@ -108,17 +167,44 @@ class MessageSendingController(
                 val contactDetails = mutableListOf<Recipient>()
                 contactDetails.add(Recipient(reservation.reserverId, reservation.email))
 
-                val orgRecipients =
-                    if (reservation.reserverType == ReserverType.Organization) {
-                        organizationService
-                            .getOrganizationMembers(reservation.reserverId)
-                            .map { Recipient(it.id, it.email) }
-                    } else {
-                        emptyList()
-                    }
-                contactDetails.addAll(orgRecipients)
+                if (reservation.reserverType == ReserverType.Organization) {
+                    contactDetails.addAll(getOrganizationRecipients(reservation.reserverId))
+                }
                 contactDetails
             }
         return recipients.flatten().distinctBy { it.id }.filter { it.email.isNotEmpty() }
+    }
+
+    private fun getRecipientsByReserverId(reserverId: UUID): List<Recipient> {
+        val reserver =
+            reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found with id $reserverId")
+        val contactDetails = mutableListOf(Recipient(reserverId, reserver.email))
+
+        if (reserver.type == ReserverType.Organization) {
+            contactDetails.addAll(getOrganizationRecipients(reserverId))
+        }
+        return contactDetails.distinctBy { it.id }.filter { it.email.isNotEmpty() }
+    }
+
+    private fun getOrganizationRecipients(reserverId: UUID): List<Recipient> =
+        organizationService
+            .getOrganizationMembers(reserverId)
+            .map { Recipient(it.id, it.email) }
+
+    private fun sendMessage(
+        recipients: List<Recipient>,
+        user: AuthenticatedUser,
+        messageTitle: String,
+        messageContent: String
+    ) {
+        logger.info { "Sending message to ${recipients.size} recipients" }
+
+        messageService.sendEmails(
+            userId = user.id,
+            senderAddress = emailEnv.senderAddress,
+            recipients = recipients,
+            subject = messageTitle,
+            body = messageContent
+        )
     }
 }

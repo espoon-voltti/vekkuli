@@ -124,8 +124,15 @@ class CitizenDetailsPage(
     val newMemoSaveBtn: Locator = page.getByTestId("new-memo-save-button")
 
     val messagesNavi: Locator = getByDataTestId("messages-tab-navi")
+    val sendMessageLink: Locator = getByDataTestId("send-email-link")
     val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
     val messageContent: Locator = getByDataTestId("message-content")
+    val sendReserverMessageForm = getByDataTestId("send-email")
+    val sendReserverMessageModalSubtitle = getByDataTestId("send-email-modal-subtitle")
+    val sendReserverMessageTitleInput = getByDataTestId("message-title")
+    val sendReserverMessageContentInput = getByDataTestId("message-content")
+    val sendReserverMessageModalSubmit = getByDataTestId("send-email-modal-confirm")
+    val sendReserverMessageModalSuccess = getByDataTestId("message-sent-success-modal")
 
     val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
     val noPaymentsIndicator: Locator = getByDataTestId("no-payments-indicator")

@@ -1155,7 +1155,18 @@ ul {
   font-size: 13px;
 }
 
-#send-mass-email {
+#send-message-to-reserver {
+  display: flex;
+  row-gap: $block-spacing;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+#send-mass-message, #send-message-to-reserver {
+  align-items: center;
+  column-gap: 8px;
+}
+#send-mass-email, #send-email {
   .recipients {
     cursor: help;
     font-size: 13px;
