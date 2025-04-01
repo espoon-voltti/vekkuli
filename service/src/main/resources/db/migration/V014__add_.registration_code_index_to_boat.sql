@@ -1,0 +1,1 @@
+CREATE INDEX idx_boat_registration_code ON boat (registration_code);
