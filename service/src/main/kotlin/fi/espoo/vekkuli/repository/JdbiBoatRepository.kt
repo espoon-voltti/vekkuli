@@ -196,11 +196,11 @@ class JdbiBoatRepository(
                 handle.createQuery(
                     """
                     SELECT * FROM boat
-                    WHERE registration_code ILIKE (:registrationCode)
+                    WHERE lower(registration_code) = :registrationCode
                     AND deleted_at IS NULL
                     """.trimIndent()
                 )
-            query.bind("registrationCode", registrationCode)
+            query.bind("registrationCode", registrationCode.lowercase())
             query.mapTo<Boat>().list()
         }
 }
