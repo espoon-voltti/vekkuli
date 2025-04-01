@@ -73,7 +73,7 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                 espooRulesApplied = false,
                 discountPercentage = 0,
                 dataProtection = false,
-                exceptionNotes = "Test notes"
+                exceptionNotes = null
             )
         val updatedCitizen =
             reserverService.updateCitizen(
@@ -89,7 +89,7 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                     nationalId = newCitizen.nationalId,
                     streetAddressSv = newCitizen.streetAddressSv,
                     postOffice = newCitizen.postOffice,
-                    postOfficeSv = newCitizen.postOfficeSv
+                    postOfficeSv = newCitizen.postOfficeSv,
                 )
             )
         val citizen = reserverService.getCitizen(this.citizenIdLeo)

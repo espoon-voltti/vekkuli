@@ -1421,9 +1421,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetails = CitizenDetailsPage(page)
         assertThat(citizenDetails.citizenLastNameField).hasText(reserverName)
         citizenDetails.exceptionsNavi.click()
+        citizenDetails.exceptionsEditButton.click()
         val discount0 = page.getByTestId("reserver_discount_0")
         assertThat(discount0).isChecked()
         page.getByTestId("reserver_discount_$discount").check()
+        citizenDetails.exceptionsSubmitButton.click()
         assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
     }
 
