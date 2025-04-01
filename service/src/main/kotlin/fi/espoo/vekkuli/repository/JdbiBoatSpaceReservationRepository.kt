@@ -351,53 +351,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatId", boatId)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
-            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
-            reservations.map {
-                BoatSpaceReservationDetails(
-                    id = it.id,
-                    created = it.created,
-                    updated = it.updated,
-                    priceCents = it.priceCents,
-                    vatCents = it.vatCents,
-                    netPriceCents = it.netPriceCents,
-                    boatSpaceId = it.boatSpaceId,
-                    startDate = it.startDate,
-                    endDate = it.endDate,
-                    status = it.status,
-                    terminationReason = it.terminationReason,
-                    terminationComment = it.terminationComment,
-                    terminationTimestamp = it.terminationTimestamp,
-                    reserverType = it.reserverType,
-                    reserverId = it.reserverId,
-                    actingCitizenId = it.actingCitizenId,
-                    name = it.name,
-                    email = it.email,
-                    phone = it.phone,
-                    streetAddress = it.streetAddress,
-                    postalCode = it.postalCode,
-                    municipalityCode = it.municipalityCode,
-                    municipalityName = it.municipalityName,
-                    type = it.type,
-                    place = it.place,
-                    locationName = it.locationName,
-                    boat = loadBoatForReserver(handle, it.id, it.boatId),
-                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
-                    boatSpaceLengthCm = it.boatSpaceLengthCm,
-                    boatSpaceWidthCm = it.boatSpaceWidthCm,
-                    amenity = it.amenity,
-                    validity = it.validity,
-                    excludedBoatTypes = emptyList(),
-                    originalReservationId = it.originalReservationId,
-                    paymentDate = it.paymentDate,
-                    paymentId = it.paymentId,
-                    storageType = it.storageType,
-                    paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate,
-                    creationType = it.creationType,
-                    discountPercentage = it.discountPercentage,
-                    paymentType = it.paymentType
-                )
-            }
+            toBoatSpaceReservationDetailsList(query, handle)
         }
 
     override fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> =
@@ -410,54 +364,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("boatId", boatId)
-
-            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
-            reservations.map {
-                BoatSpaceReservationDetails(
-                    id = it.id,
-                    created = it.created,
-                    updated = it.updated,
-                    priceCents = it.priceCents,
-                    vatCents = it.vatCents,
-                    netPriceCents = it.netPriceCents,
-                    boatSpaceId = it.boatSpaceId,
-                    startDate = it.startDate,
-                    endDate = it.endDate,
-                    status = it.status,
-                    terminationReason = it.terminationReason,
-                    terminationComment = it.terminationComment,
-                    terminationTimestamp = it.terminationTimestamp,
-                    reserverType = it.reserverType,
-                    reserverId = it.reserverId,
-                    actingCitizenId = it.actingCitizenId,
-                    name = it.name,
-                    email = it.email,
-                    phone = it.phone,
-                    streetAddress = it.streetAddress,
-                    postalCode = it.postalCode,
-                    municipalityCode = it.municipalityCode,
-                    municipalityName = it.municipalityName,
-                    type = it.type,
-                    place = it.place,
-                    locationName = it.locationName,
-                    boat = loadBoatForReserver(handle, it.id, it.boatId),
-                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
-                    boatSpaceLengthCm = it.boatSpaceLengthCm,
-                    boatSpaceWidthCm = it.boatSpaceWidthCm,
-                    amenity = it.amenity,
-                    validity = it.validity,
-                    excludedBoatTypes = emptyList(),
-                    originalReservationId = it.originalReservationId,
-                    paymentDate = it.paymentDate,
-                    paymentId = it.paymentId,
-                    storageType = it.storageType,
-                    paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate,
-                    creationType = it.creationType,
-                    discountPercentage = it.discountPercentage,
-                    paymentType = it.paymentType
-                )
-            }
+            toBoatSpaceReservationDetailsList(query, handle)
         }
 
     override fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
@@ -471,53 +378,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("trailerId", trailerId)
 
-            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
-            reservations.map {
-                BoatSpaceReservationDetails(
-                    id = it.id,
-                    created = it.created,
-                    updated = it.updated,
-                    priceCents = it.priceCents,
-                    vatCents = it.vatCents,
-                    netPriceCents = it.netPriceCents,
-                    boatSpaceId = it.boatSpaceId,
-                    startDate = it.startDate,
-                    endDate = it.endDate,
-                    status = it.status,
-                    terminationReason = it.terminationReason,
-                    terminationComment = it.terminationComment,
-                    terminationTimestamp = it.terminationTimestamp,
-                    reserverType = it.reserverType,
-                    reserverId = it.reserverId,
-                    actingCitizenId = it.actingCitizenId,
-                    name = it.name,
-                    email = it.email,
-                    phone = it.phone,
-                    streetAddress = it.streetAddress,
-                    postalCode = it.postalCode,
-                    municipalityCode = it.municipalityCode,
-                    municipalityName = it.municipalityName,
-                    type = it.type,
-                    place = it.place,
-                    locationName = it.locationName,
-                    boat = loadBoatForReserver(handle, it.id, it.boatId),
-                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
-                    boatSpaceLengthCm = it.boatSpaceLengthCm,
-                    boatSpaceWidthCm = it.boatSpaceWidthCm,
-                    amenity = it.amenity,
-                    validity = it.validity,
-                    excludedBoatTypes = emptyList(),
-                    originalReservationId = it.originalReservationId,
-                    paymentDate = it.paymentDate,
-                    paymentId = it.paymentId,
-                    storageType = it.storageType,
-                    paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate,
-                    creationType = it.creationType,
-                    discountPercentage = it.discountPercentage,
-                    paymentType = it.paymentType
-                )
-            }
+            toBoatSpaceReservationDetailsList(query, handle)
         }
 
     override fun getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id: Int): ReservationWithDependencies? =
@@ -648,53 +509,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("reserverId", reserverId)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
-            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
-            reservations.map {
-                BoatSpaceReservationDetails(
-                    id = it.id,
-                    created = it.created,
-                    updated = it.updated,
-                    priceCents = it.priceCents,
-                    vatCents = it.vatCents,
-                    netPriceCents = it.netPriceCents,
-                    boatSpaceId = it.boatSpaceId,
-                    startDate = it.startDate,
-                    endDate = it.endDate,
-                    status = it.status,
-                    terminationReason = it.terminationReason,
-                    terminationComment = it.terminationComment,
-                    terminationTimestamp = it.terminationTimestamp,
-                    reserverType = it.reserverType,
-                    reserverId = it.reserverId,
-                    actingCitizenId = it.actingCitizenId,
-                    name = it.name,
-                    email = it.email,
-                    phone = it.phone,
-                    streetAddress = it.streetAddress,
-                    postalCode = it.postalCode,
-                    municipalityCode = it.municipalityCode,
-                    municipalityName = it.municipalityName,
-                    type = it.type,
-                    place = it.place,
-                    locationName = it.locationName,
-                    boat = loadBoatForReserver(handle, it.id, it.boatId),
-                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
-                    boatSpaceLengthCm = it.boatSpaceLengthCm,
-                    boatSpaceWidthCm = it.boatSpaceWidthCm,
-                    amenity = it.amenity,
-                    validity = it.validity,
-                    excludedBoatTypes = emptyList(),
-                    originalReservationId = it.originalReservationId,
-                    paymentDate = it.paymentDate,
-                    paymentId = it.paymentId,
-                    storageType = it.storageType,
-                    paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate,
-                    creationType = it.creationType,
-                    discountPercentage = it.discountPercentage,
-                    paymentType = it.paymentType
-                )
-            }
+            toBoatSpaceReservationDetailsList(query, handle)
         }
 
     override fun getBoatSpaceReservationDetails(reservationId: Int): BoatSpaceReservationDetails? =
@@ -1074,19 +889,58 @@ class JdbiBoatSpaceReservationRepository(
         }
     }
 
-    override fun hasUniqueRegistrationNumber(registrationCode: String): Boolean =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT COUNT(*)
-                    FROM boat
-                    WHERE registration_code = :registrationCode
-                    """.trimIndent()
-                )
-            query.bind("registrationCode", registrationCode)
-            query.mapTo<Int>().one() == 1
+    private fun toBoatSpaceReservationDetailsList(
+        query: Query,
+        handle: Handle
+    ): List<BoatSpaceReservationDetails> {
+        val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
+        return reservations.map {
+            BoatSpaceReservationDetails(
+                id = it.id,
+                created = it.created,
+                updated = it.updated,
+                priceCents = it.priceCents,
+                vatCents = it.vatCents,
+                netPriceCents = it.netPriceCents,
+                boatSpaceId = it.boatSpaceId,
+                startDate = it.startDate,
+                endDate = it.endDate,
+                status = it.status,
+                terminationReason = it.terminationReason,
+                terminationComment = it.terminationComment,
+                terminationTimestamp = it.terminationTimestamp,
+                reserverType = it.reserverType,
+                reserverId = it.reserverId,
+                actingCitizenId = it.actingCitizenId,
+                name = it.name,
+                email = it.email,
+                phone = it.phone,
+                streetAddress = it.streetAddress,
+                postalCode = it.postalCode,
+                municipalityCode = it.municipalityCode,
+                municipalityName = it.municipalityName,
+                type = it.type,
+                place = it.place,
+                locationName = it.locationName,
+                boat = loadBoatForReserver(handle, it.id, it.boatId),
+                trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
+                boatSpaceLengthCm = it.boatSpaceLengthCm,
+                boatSpaceWidthCm = it.boatSpaceWidthCm,
+                amenity = it.amenity,
+                validity = it.validity,
+                excludedBoatTypes = emptyList(),
+                originalReservationId = it.originalReservationId,
+                paymentDate = it.paymentDate,
+                paymentId = it.paymentId,
+                storageType = it.storageType,
+                paymentReference = it.paymentReference,
+                invoiceDueDate = it.invoiceDueDate,
+                creationType = it.creationType,
+                discountPercentage = it.discountPercentage,
+                paymentType = it.paymentType
+            )
         }
+    }
 
     private fun buildSqlSelectPartForBoatSpaceReservationDetails() =
         """
