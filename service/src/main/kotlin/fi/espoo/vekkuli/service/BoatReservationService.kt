@@ -74,6 +74,8 @@ sealed class PaymentProcessResult {
 interface ReservationWarningRepository {
     fun addReservationWarnings(warnings: List<ReservationWarning>): Unit
 
+    fun getReservationWarning(warningId: UUID): ReservationWarning?
+
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
     fun getWarningsForReserver(reserverId: UUID): List<ReservationWarning>

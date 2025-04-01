@@ -338,7 +338,15 @@ class CitizenUserController(
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         val reserver =
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-        val memo = "Suorituksen kuittaus" + if (content.isNotEmpty()) ": $content" else ""
+        val warning =
+            reservationWarningRepository.getReservationWarning(reservationWarningId)
+                ?: throw IllegalArgumentException("ReservationWarning not found: $reservationWarningId")
+        val reservation =
+            reservationService.getReservationWithDependencies(warning.reservationId)
+                ?: throw IllegalArgumentException("Reservation not found: ${warning.reservationId}")
+
+        val memo = reservationToText(reservation) + " kuitattu suoritetuksi" + if (content.isNotEmpty()) ": $content" else ""
+
         memoService.insertMemo(citizenId, userId, memo)
         reservationWarningRepository.deleteReservationWarning(reservationWarningId)
         val history = paymentService.getReserverPaymentHistory(reserver.id)
