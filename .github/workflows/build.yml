@@ -463,8 +463,12 @@ jobs:
       - name: Retag
         run: |
           for repository in service api-gateway frontend; do
-            MANIFEST=$(aws ecr batch-get-image --repository-name "vekkuli/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            aws ecr put-image --repository-name "vekkuli/$repository" --image-tag "env-${{ matrix.environment }}" --image-manifest "$MANIFEST"
+            if [ "$(aws ecr describe-images --repository-name "vekkuli/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" | jq -r '.imageDetails[].imageTags | index("env-${{ matrix.environment }}")')" = "null" ]; then
+              MANIFEST=$(aws ecr batch-get-image --repository-name "vekkuli/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" --output json | jq --raw-output --join-output '.images[0].imageManifest')
+              aws ecr put-image --repository-name "vekkuli/$repository" --image-tag "env-${{ matrix.environment }}" --image-manifest "$MANIFEST"
+            else
+              echo "env-tag on image already exists on $repository"
+            fi
           done
 
       - name: Configure AWS credentials
