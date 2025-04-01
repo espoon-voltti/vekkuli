@@ -196,7 +196,7 @@ class JdbiBoatRepository(
                 handle.createQuery(
                     """
                     SELECT * FROM boat
-                    WHERE registration_code = :registrationCode
+                    WHERE registration_code ILIKE (:registrationCode)
                     AND deleted_at IS NULL
                     """.trimIndent()
                 )

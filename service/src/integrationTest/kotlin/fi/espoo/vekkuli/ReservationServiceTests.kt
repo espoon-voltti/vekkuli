@@ -635,7 +635,7 @@ class ReservationServiceTests : IntegrationTestBase() {
                         length = BigDecimal(1),
                         depth = BigDecimal(1),
                         weight = 1000,
-                        registrationNumber = registrationCode,
+                        registrationNumber = registrationCode.lowercase(),
                         otherIdentification = "",
                         extraInformation = "",
                         ownership = OwnershipStatus.Owner,
