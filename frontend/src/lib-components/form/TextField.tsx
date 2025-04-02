@@ -51,7 +51,7 @@ export default React.memo(function TextField({
               type="text"
               id={id}
               name={name}
-              value={state}
+              value={state === '-' ? '' : state}
               aria-label={ariaLabel}
               aria-required={required}
               aria-invalid={showError}
