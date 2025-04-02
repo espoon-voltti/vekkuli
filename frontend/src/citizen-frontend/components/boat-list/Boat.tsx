@@ -9,6 +9,7 @@ import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state.js'
 import { MutationDescription, useMutation } from 'lib-common/query'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
@@ -32,6 +33,7 @@ export default React.memo(function Boat({
     () => transformBoatToFormBoat(boat),
     i18n.components.validationErrors
   )
+  const { setShowAllErrors } = useFormErrorContext()
   const { mutateAsync: updateBoat, isPending } = useMutation(updateMutation)
   const [editMode, setEditMode] = React.useState(false)
 
@@ -43,6 +45,8 @@ export default React.memo(function Boat({
     if (bind.isValid()) {
       await updateBoat({ boatId: boat.id, input: bind.value() })
       setEditMode(false)
+    } else {
+      setShowAllErrors(true)
     }
   }
   const {
