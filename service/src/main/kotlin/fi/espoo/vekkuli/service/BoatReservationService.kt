@@ -172,7 +172,7 @@ class BoatReservationService(
         reservationId: Int,
         params: CreatePaymentParams
     ): Payment {
-        paymentService.deletePaymentInCreatedStatusForReservation(reservationId)
+        paymentService.abandonActivePaymentsForReservation(reservationId)
         return paymentService.insertPayment(params, reservationId)
     }
 

@@ -154,12 +154,12 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {
+    override fun abandonActivePaymentsForReservation(reservationId: Int) {
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
                     """
-                    DELETE FROM payment WHERE reservation_id = :reservationId AND status = 'Created'
+                    UPDATE payment SET status = 'Abandoned' WHERE reservation_id = :reservationId AND status = 'Created'
                     """.trimIndent()
                 ).bind("reservationId", reservationId)
                 .execute()

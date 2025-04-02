@@ -256,7 +256,7 @@ open class ReservationService(
             throw Conflict("Reservation is not in payment state")
         }
         val updatedReservation = boatReservationService.setReservationStatusToInfo(reservation.id)
-        paymentService.deletePaymentInCreatedStatusForReservation(reservationId)
+        paymentService.abandonActivePaymentsForReservation(reservationId)
 
         return updatedReservation
     }

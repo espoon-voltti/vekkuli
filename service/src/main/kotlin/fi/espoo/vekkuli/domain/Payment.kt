@@ -9,7 +9,8 @@ enum class PaymentStatus {
     Created,
     Success,
     Failed,
-    Refunded
+    Refunded,
+    Abandoned
 }
 
 enum class PaymentType {

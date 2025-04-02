@@ -13,7 +13,7 @@ interface PaymentRepository {
 
     fun getPaymentForReservation(reservationId: Int): Payment?
 
-    fun deletePaymentInCreatedStatusForReservation(reservationId: Int): Unit
+    fun abandonActivePaymentsForReservation(reservationId: Int): Unit
 
     fun insertPayment(
         params: CreatePaymentParams,
