@@ -392,7 +392,7 @@ class CitizenUserController(
             logger.audit(it, "EDIT_RESERVER_PROFILE_EXCEPTIONS", mapOf("targetId" to reserverId.toString()))
         }
         val reserver =
-            reserverService.updateExceptions(reserverId, input.espooRulesApplied, input.discountPercentage, input.expectionNotes)
+            reserverService.updateExceptions(reserverId, input.espooRulesApplied, input.discountPercentage, input.exceptionNotes)
                 ?: throw IllegalArgumentException("Reserver not found")
 
         return reserverDetailsExceptionsContainer.tabContent(reserver)
@@ -544,7 +544,7 @@ class CitizenUserController(
     data class ExceptionUpdate(
         val discountPercentage: Int,
         val espooRulesApplied: Boolean?,
-        val expectionNotes: String?
+        val exceptionNotes: String?
     )
 
     data class BoatUpdateForm(

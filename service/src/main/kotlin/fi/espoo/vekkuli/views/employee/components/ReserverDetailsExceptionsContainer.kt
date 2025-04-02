@@ -79,24 +79,24 @@ class ReserverDetailsExceptionsContainer : BaseView() {
     }
 
     private fun descriptionInput(reserver: ReserverWithDetails): String {
-        val expectionNotesInput =
+        val exceptionNotesInput =
             formComponents.textInput(
                 labelKey = "employee.reserverDetails.exceptions.descriptionTitle",
-                id = "expectionNotes",
+                id = "exceptionNotes",
                 value = reserver.exceptionNotes ?: "",
             )
         // language=HTML
         return """
             <div class="description">
-                $expectionNotesInput               
+                $exceptionNotesInput               
             </div>
             """.trimIndent()
     }
 
-    private fun expectionNotesContent(reserver: ReserverWithDetails): String =
+    private fun exceptionNotesContent(reserver: ReserverWithDetails): String =
         formComponents.field(
             labelKey = "employee.reserverDetails.exceptions.descriptionTitle",
-            id = "expectionNotes",
+            id = "exceptionNotes",
             value = reserver.exceptionNotes,
         )
 
@@ -115,7 +115,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                         ${discountContent(reserver)}
                         </div>
                         <div class='mb-l'>
-                        ${expectionNotesContent(reserver)}
+                        ${exceptionNotesContent(reserver)}
                         </div>
                   </div>
                    <div class="column is-narrow ml-auto">
@@ -141,7 +141,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
         return """
             <div id="tab-content" class="container block">
               ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Exceptions)}
-              <form id="expection-edit-form" class="exceptions-container">
+              <form id="exception-edit-form" class="exceptions-container">
                 <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
                 <div class='mb-l'>
                 ${espooRulesAppliedInput(reserver)}
@@ -164,7 +164,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                     </a>
                 <a class="button is-primary" ${addTestId("exceptions-submit")} 
                     hx-post="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/muokkaa")}"
-                    hx-include="#expection-edit-form"
+                    hx-include="#exception-edit-form"
                     hx-trigger="click"
                     hx-target="#tab-content"
                     hx-select="#tab-content"
