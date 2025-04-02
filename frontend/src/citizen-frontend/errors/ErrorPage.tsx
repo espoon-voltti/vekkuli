@@ -93,8 +93,7 @@ const ErrorComponent400 = React.memo(function ErrorComponent400() {
   )
 })
 
-const ErrorComponent401 = React.memo(function ErrorComponent400() {
-  const navigate = useNavigate()
+const ErrorComponent401 = React.memo(function ErrorComponent401() {
   return (
     <>
       <Column isFull textCentered>
