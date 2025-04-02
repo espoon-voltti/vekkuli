@@ -5,6 +5,7 @@ import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat, BoatId } from 'citizen-frontend/shared/types'
+import { FormErrorProvider } from 'lib-common/form/state.js'
 import { MutationDescription } from 'lib-common/query'
 
 import BoatComponent from './Boat'
@@ -30,11 +31,9 @@ export default React.memo(function Boats({
       <div className="reservation-list form-section no-bottom-border">
         {boatsInActiveReservationsFilter(boats, activeReservations).map(
           (boat) => (
-            <BoatComponent
-              key={boat.id}
-              boat={boat}
-              updateMutation={updateMutation}
-            />
+            <FormErrorProvider key={boat.id}>
+              <BoatComponent boat={boat} updateMutation={updateMutation} />
+            </FormErrorProvider>
           )
         )}
       </div>

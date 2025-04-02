@@ -5,6 +5,7 @@ import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat, BoatId } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { FormErrorProvider } from 'lib-common/form/state.js'
 import { MutationDescription, useMutationResult } from 'lib-common/query'
 
 import BoatComponent from './Boat'
@@ -54,16 +55,17 @@ export default React.memo(function BoatsNotInreservations({
           {!!show.value()?.length && (
             <div className="reservation-list form-section no-bottom-border">
               {boats.map((boat) => (
-                <BoatComponent
-                  key={boat.id}
-                  boat={boat}
-                  onDelete={
-                    deleteDisabled
-                      ? undefined
-                      : () => setBoatPendingDeletion(boat)
-                  }
-                  updateMutation={updateMutation}
-                />
+                <FormErrorProvider key={boat.id}>
+                  <BoatComponent
+                    boat={boat}
+                    onDelete={
+                      deleteDisabled
+                        ? undefined
+                        : () => setBoatPendingDeletion(boat)
+                    }
+                    updateMutation={updateMutation}
+                  />
+                </FormErrorProvider>
               ))}
             </div>
           )}
