@@ -21,6 +21,7 @@ class ReservationPaymentService(
     private val paytrail: PaytrailInterface,
     private val paytrailEnv: PaytrailEnv,
     private val switchService: BoatSpaceSwitchService,
+    private val paytrailCacheService: PaytrailCacheService,
 ) {
     suspend fun createPaymentForBoatSpaceReservation(
         citizen: CitizenWithDetails,
@@ -37,7 +38,7 @@ class ReservationPaymentService(
         val category = "MYY255"
         val payment =
             withContext(Dispatchers.IO) {
-                boatReservationService.addPaymentToReservation(
+                boatReservationService.upsertCreatedPaymentToReservation(
                     reservation.id,
                     CreatePaymentParams(
                         reserverId = citizen.id,
@@ -51,34 +52,45 @@ class ReservationPaymentService(
                 )
             }
 
-        return paytrail.createPayment(
-            PaytrailPaymentParams(
-                stamp = payment.id.toString(),
-                reference = reference,
-                amount = amount,
-                language = "FI",
-                customer =
-                    PaytrailCustomer(
-                        email = citizen.email.take(200),
-                        firstName = citizen.firstName.take(50),
-                        lastName = citizen.lastName.take(50),
-                        phone = citizen.phone
-                    ),
-                items =
-                    listOf(
-                        PaytrailPurchaseItem(
-                            amount,
-                            1,
-                            BOAT_RESERVATION_ALV_PERCENTAGE,
-                            paytrailProductCode(reservation.type),
-                            paytrailDescription(reservation),
-                            category
-                        )
-                    ),
-                redirectUrls = ReservationPaymentConfig.redirectUrls(),
-                callbackUrls = ReservationPaymentConfig.callbackUrls(),
+        if (payment.transactionId != null) {
+            return paytrailCacheService.getPayment(payment.transactionId)
+                ?: throw IllegalStateException("Paytrail payment not found in cache")
+        }
+
+        val response =
+            paytrail.createPayment(
+                PaytrailPaymentParams(
+                    stamp = payment.id.toString(),
+                    reference = reference,
+                    amount = amount,
+                    language = "FI",
+                    customer =
+                        PaytrailCustomer(
+                            email = citizen.email.take(200),
+                            firstName = citizen.firstName.take(50),
+                            lastName = citizen.lastName.take(50),
+                            phone = citizen.phone
+                        ),
+                    items =
+                        listOf(
+                            PaytrailPurchaseItem(
+                                amount,
+                                1,
+                                BOAT_RESERVATION_ALV_PERCENTAGE,
+                                paytrailProductCode(reservation.type),
+                                paytrailDescription(reservation),
+                                category
+                            )
+                        ),
+                    redirectUrls = ReservationPaymentConfig.redirectUrls(),
+                    callbackUrls = ReservationPaymentConfig.callbackUrls(),
+                )
             )
-        )
+
+        boatReservationService.addTransactionIdToPayment(payment.id, response.transactionId)
+        paytrailCacheService.putPayment(response.transactionId, response)
+
+        return response
     }
 
     fun getPriceInfo(

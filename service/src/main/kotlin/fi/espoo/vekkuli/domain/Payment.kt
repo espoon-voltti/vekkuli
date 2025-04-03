@@ -38,6 +38,7 @@ data class Payment(
     val vatPercentage: Double,
     val productCode: String,
     val reservationId: Int,
+    val transactionId: String?,
     val paid: LocalDateTime?
 )
 

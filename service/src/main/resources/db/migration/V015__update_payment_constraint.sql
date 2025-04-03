@@ -1,3 +1,5 @@
+ALTER TABLE payment ADD COLUMN transaction_id text default null;
+
 DROP INDEX IF EXISTS unique_active_payment_per_reservation;
 
 CREATE UNIQUE INDEX unique_active_payment_per_reservation

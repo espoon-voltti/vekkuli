@@ -112,7 +112,7 @@ class TestUtils(
                 endDate = params.endDate,
             )
         val payment =
-            reservationService.addPaymentToReservation(
+            reservationService.upsertCreatedPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1", PaymentType.OnlinePayment)
             )

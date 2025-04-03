@@ -1,14 +1,20 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationPaymentService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.PaymentRepository
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.*
@@ -21,6 +27,12 @@ import kotlin.test.assertNotNull
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class DuplicatePaymentsTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var reserverRepository: ReserverRepository
+
+    @Autowired
+    private lateinit var reservationPaymentService: ReservationPaymentService
+
     @Autowired
     private lateinit var paymentService: PaymentService
 
@@ -35,6 +47,9 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var reservationService: BoatReservationService
+
+    @MockBean
+    private lateinit var paytrail: PaytrailInterface
 
     @BeforeEach
     override fun resetDatabase() {
@@ -106,6 +121,63 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
         assertEquals(PaymentStatus.Created, secondPayment?.status)
     }
 
+    @Test
+    fun `should add transaction id to payment`() {
+        val expectedTransactionId = "expectedTransactionId"
+        val reservation = createReservationInPaymentState()
+        val paymentId = addPaymentToReservation(reservation.id)
+
+        val payment = paymentRepository.addTransactionIdToPayment(paymentId, expectedTransactionId)
+
+        assertEquals(expectedTransactionId, payment.transactionId)
+    }
+
+    @Test
+    fun `should prevent overriding transaction id`() {
+        val reservation = createReservationInPaymentState()
+        val paymentId = addPaymentToReservation(reservation.id)
+
+        paymentRepository.addTransactionIdToPayment(paymentId, "first transaction id")
+
+        assertThrows<Exception> {
+            paymentRepository.addTransactionIdToPayment(paymentId, "second transaction id")
+        }
+    }
+
+    @Test
+    fun `should add transaction id to when adding new payment to reservation`() {
+        val expectedTransactionId = "expectedTransactionId"
+        val (reservationId) = createReservationInPaymentState()
+        val citizen = reserverRepository.getCitizenById(this.citizenIdLeo) ?: throw RuntimeException("citizen not found")
+        val reservation = reservationService.getBoatSpaceReservation(reservationId) ?: throw RuntimeException("reservation not found")
+
+        runBlocking {
+            setNextNewPaytrailTransactionId(expectedTransactionId)
+            reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
+            val payment = paymentRepository.getPaymentForReservation(reservationId) ?: throw RuntimeException("payment not found")
+
+            assertEquals(PaymentStatus.Created, payment.status)
+            assertEquals(expectedTransactionId, payment.transactionId)
+        }
+    }
+
+    @Test
+    fun `should fetch existing Paytrail payment when using existing local payment`() {
+        val (reservationId) = createReservationInPaymentState()
+        val citizen = reserverRepository.getCitizenById(this.citizenIdLeo) ?: throw RuntimeException("citizen not found")
+        val reservation = reservationService.getBoatSpaceReservation(reservationId) ?: throw RuntimeException("reservation not found")
+
+        runBlocking {
+            setNextNewPaytrailTransactionId("firstTransactionId")
+            val firstResponse = reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
+
+            setNextNewPaytrailTransactionId("secondTransactionId")
+            val secondResponse = reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
+
+            assertEquals(firstResponse.transactionId, secondResponse.transactionId)
+        }
+    }
+
     private fun createReservationInPaymentState() =
         testUtils.createReservationInPaymentState(
             timeProvider,
@@ -117,7 +189,7 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
 
     private fun addPaymentToReservation(reservationId: Int) =
         reservationService
-            .addPaymentToReservation(
+            .upsertCreatedPaymentToReservation(
                 reservationId,
                 CreatePaymentParams(
                     reserverId = this.citizenIdLeo,
@@ -163,4 +235,18 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
                 "",
                 OwnershipStatus.Owner
             ).id
+
+    private fun setNextNewPaytrailTransactionId(transactionId: String) {
+        Mockito
+            .`when`(
+                paytrail.createPayment(any())
+            ).thenReturn(
+                PaytrailPaymentResponse(
+                    transactionId = transactionId,
+                    reference = "reference",
+                    terms = "https://www.paytrail.com",
+                    providers = listOf()
+                )
+            )
+    }
 }

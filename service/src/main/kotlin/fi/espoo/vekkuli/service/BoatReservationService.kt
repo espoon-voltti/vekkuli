@@ -167,11 +167,17 @@ class BoatReservationService(
         return PaymentProcessResult.Paid(reservation)
     }
 
-    @Transactional
-    fun addPaymentToReservation(
+    fun upsertCreatedPaymentToReservation(
         reservationId: Int,
         params: CreatePaymentParams
     ): Payment = paymentService.upsertCreatedPaymentToReservation(params, reservationId)
+
+    fun addTransactionIdToPayment(
+        paymentId: UUID,
+        transactionId: String
+    ) {
+        paymentService.addTransactionIdToPayment(paymentId, transactionId)
+    }
 
     fun addBoatWarningsToReservations(
         boat: Boat,

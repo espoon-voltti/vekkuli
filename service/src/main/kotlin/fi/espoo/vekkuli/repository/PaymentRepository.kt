@@ -25,6 +25,11 @@ interface PaymentRepository {
         reservationId: Int
     ): Payment
 
+    fun addTransactionIdToPayment(
+        paymentId: UUID,
+        transactionId: String
+    ): Payment
+
     fun updatePayment(payment: Payment): Payment
 
     fun updatePaymentStatus(

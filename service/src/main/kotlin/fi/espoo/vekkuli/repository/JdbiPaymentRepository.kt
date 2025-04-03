@@ -72,6 +72,29 @@ class JdbiPaymentRepository(
             result
         }
 
+    override fun addTransactionIdToPayment(
+        paymentId: UUID,
+        transactionId: String
+    ): Payment =
+        jdbi.withHandleUnchecked { handle ->
+            val result =
+                handle
+                    .createQuery(
+                        """
+                        UPDATE payment
+                        SET transaction_id = :transactionId,
+                            updated = :currentTime
+                        WHERE id = :id AND transaction_id IS NULL
+                        RETURNING *
+                        """
+                    ).bind("id", paymentId)
+                    .bind("transactionId", transactionId)
+                    .bind("currentTime", timeProvider.getCurrentDateTime())
+                    .mapTo<Payment>()
+                    .one()
+            result
+        }
+
     override fun updatePayment(payment: Payment): Payment =
         jdbi.withHandleUnchecked { handle ->
             val result =

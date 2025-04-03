@@ -69,7 +69,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
             )
 
         val payment =
-            reservationService.addPaymentToReservation(
+            reservationService.upsertCreatedPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
                     reserverId = this.citizenIdLeo,
