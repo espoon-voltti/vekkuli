@@ -171,10 +171,7 @@ class BoatReservationService(
     fun addPaymentToReservation(
         reservationId: Int,
         params: CreatePaymentParams
-    ): Payment {
-        paymentService.deletePaymentInCreatedStatusForReservation(reservationId)
-        return paymentService.insertPayment(params, reservationId)
-    }
+    ): Payment = paymentService.upsertCreatedPaymentToReservation(params, reservationId)
 
     fun addBoatWarningsToReservations(
         boat: Boat,

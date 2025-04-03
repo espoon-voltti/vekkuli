@@ -38,6 +38,40 @@ class JdbiPaymentRepository(
             result
         }
 
+    override fun upsertCreatedPaymentToReservation(
+        params: CreatePaymentParams,
+        reservationId: Int
+    ): Payment =
+        jdbi.withHandleUnchecked { handle ->
+            val id = UUID.randomUUID()
+            val result =
+                handle
+                    .createQuery(
+                        """
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type, paid, price_info, created, updated)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, 'Created', :paymentType, :paid, :priceInfo, :currentTime, :currentTime)
+                        ON CONFLICT (reservation_id) WHERE status = 'Created' DO UPDATE
+                            SET
+                                reference = :reference,
+                                total_cents = :totalCents,
+                                vat_percentage = :vatPercentage,
+                                product_code = :productCode,
+                                status = :status,
+                                payment_type = :paymentType,
+                                paid = :paid,
+                                price_info = :priceInfo,
+                                updated = :currentTime
+                        RETURNING *
+                        """
+                    ).bindKotlin(params)
+                    .bind("id", id)
+                    .bind("reservationId", reservationId)
+                    .bind("currentTime", timeProvider.getCurrentDateTime())
+                    .mapTo<Payment>()
+                    .one()
+            result
+        }
+
     override fun updatePayment(payment: Payment): Payment =
         jdbi.withHandleUnchecked { handle ->
             val result =

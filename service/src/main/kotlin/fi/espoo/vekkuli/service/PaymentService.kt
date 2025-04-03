@@ -24,6 +24,11 @@ class PaymentService(
         paymentRepo.deletePaymentInCreatedStatusForReservation(reservationId)
     }
 
+    fun upsertCreatedPaymentToReservation(
+        params: CreatePaymentParams,
+        reservationId: Int
+    ) = paymentRepo.upsertCreatedPaymentToReservation(params, reservationId)
+
     fun updatePayment(
         id: UUID,
         success: Boolean,
