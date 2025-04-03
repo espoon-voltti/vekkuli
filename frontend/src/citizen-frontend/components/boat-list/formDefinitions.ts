@@ -47,7 +47,7 @@ export const boatForm = mapped(
 export type BoatForm = typeof boatForm
 
 export const transformBoatToFormBoat = (boat: Boat): StateOf<BoatForm> => ({
-  name: boat.name || '-',
+  name: boat.name || '',
   depth: boat.depth.toString(),
   length: boat.length.toString(),
   weight: boat.weight.toString(),
@@ -60,9 +60,9 @@ export const transformBoatToFormBoat = (boat: Boat): StateOf<BoatForm> => ({
       value: type
     }))
   },
-  registrationNumber: boat.registrationNumber || '-',
-  extraInformation: boat.extraInformation || '-',
-  otherIdentification: boat.otherIdentification || '-',
+  registrationNumber: boat.registrationNumber || '',
+  extraInformation: boat.extraInformation || '',
+  otherIdentification: boat.otherIdentification || '',
   ownership: {
     domValue: boat.ownership,
     options: ownershipStatuses.map((type) => ({
