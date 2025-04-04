@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -24,11 +23,6 @@ class HistoryNavigationTest : PlaywrightTest() {
     private fun invoicePageUrl(reservationId: Int) = "$baseUrl/virkailija/venepaikka/varaus/$reservationId/lasku"
 
     private val defaultReservationId = 9
-
-    @BeforeEach
-    fun init() {
-        page.setDefaultTimeout(3000.0)
-    }
 
     @Test
     fun `canceling new reservation should navigate back to reservation list`() {
