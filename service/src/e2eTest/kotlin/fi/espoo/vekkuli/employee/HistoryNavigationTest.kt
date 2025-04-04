@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -16,11 +17,23 @@ import java.util.UUID
 @ActiveProfiles("test")
 class HistoryNavigationTest : PlaywrightTest() {
     private val listingPageUrl = "$baseUrl/virkailija/venepaikat/varaukset"
+    private val reservePageUrl = "$baseUrl/virkailija/venepaikat"
+
     private fun citizenDetailsPageUrl(citizenId: UUID) = "$baseUrl/virkailija/kayttaja/$citizenId"
+
+    private fun invoicePageUrl(reservationId: Int) = "$baseUrl/virkailija/venepaikka/varaus/$reservationId/lasku"
+
+    private val defaultReservationId = 9
+
+    @BeforeEach
+    fun init() {
+        page.setDefaultTimeout(3000.0)
+    }
 
     @Test
     fun `canceling new reservation should navigate back to reservation list`() {
         val invoicePreviewPage = createReservationInPreviewInvoiceState()
+        page.waitForURL(invoicePageUrl(defaultReservationId))
         invoicePreviewPage.cancelButton.click()
 
         page.waitForURL(listingPageUrl)
@@ -31,20 +44,22 @@ class HistoryNavigationTest : PlaywrightTest() {
     fun `reserving with invoice a new reservation should navigate to citizen details`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val invoicePreviewPage = createReservationInPreviewInvoiceState()
+        page.waitForURL(invoicePageUrl(defaultReservationId))
         invoicePreviewPage.sendButton.click()
 
         page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
         assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         citizenDetailsPage.backButton.click()
-        page.waitForURL(listingPageUrl)
-        assertThat(ReservationListPage(page).header).isVisible()
+        page.waitForURL(reservePageUrl)
+        assertThat(ReserveBoatSpacePage(page, UserType.EMPLOYEE).header).isVisible()
     }
 
     @Test
     fun `reserving without invoice a new reservation should navigate to citizen details`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val invoicePreviewPage = createReservationInPreviewInvoiceState()
+        page.waitForURL(invoicePageUrl(defaultReservationId))
         invoicePreviewPage.markAsPaid.click()
         invoicePreviewPage.confirmModalSubmit.click()
 
@@ -52,14 +67,15 @@ class HistoryNavigationTest : PlaywrightTest() {
         assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         citizenDetailsPage.backButton.click()
-        page.waitForURL(listingPageUrl)
-        assertThat(ReservationListPage(page).header).isVisible()
+        page.waitForURL(reservePageUrl)
+        assertThat(ReserveBoatSpacePage(page, UserType.EMPLOYEE).header).isVisible()
     }
 
     @Test
     fun `canceling reservation renewing should navigate back to citizen details`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val invoicePreviewPage = startRenewingReservation()
+        page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
         invoicePreviewPage.cancelButton.click()
 
         page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
@@ -74,6 +90,7 @@ class HistoryNavigationTest : PlaywrightTest() {
     fun `renewing reservation with invoice should navigate back to citizen details`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val invoicePreviewPage = startRenewingReservation()
+        page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
         invoicePreviewPage.sendButton.click()
 
         page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
@@ -88,6 +105,7 @@ class HistoryNavigationTest : PlaywrightTest() {
     fun `renewing reservation without invoice should navigate back to citizen details`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val invoicePreviewPage = startRenewingReservation()
+        page.waitForURL(citizenDetailsPageUrl(CitizenIds.leo))
         invoicePreviewPage.markAsPaid.click()
         invoicePreviewPage.confirmModalSubmit.click()
 
