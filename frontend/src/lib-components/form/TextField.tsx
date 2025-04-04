@@ -43,7 +43,7 @@ export default React.memo(function TextField({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly dataTestId={dataTestId} value={readOnlyValue} />
+          <ReadOnly dataTestId={dataTestId} value={readOnlyValue || '-'} />
         ) : (
           <>
             <input
