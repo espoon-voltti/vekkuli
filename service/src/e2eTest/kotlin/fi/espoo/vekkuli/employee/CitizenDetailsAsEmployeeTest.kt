@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.pages.getByDataTestId
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -364,58 +365,48 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun `employee can set the reserver to be treated as Espoo citizen`() {
+    fun `employee can set the reserver exceptions`() {
         try {
             val listingPage = reservationListPage()
             listingPage.exceptionsFilter.click()
             page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
-            val jorma = listingPage.getByDataTestId("reserver-name").first()
-            assertThat(jorma).containsText("Pulkkinen Jorma")
-            jorma.click()
+            val reserver = listingPage.getByDataTestId("reserver-name").first()
+            assertThat(reserver).containsText("Pulkkinen Jorma")
+            reserver.click()
+
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenLastNameField).hasText("Pulkkinen")
             citizenDetails.exceptionsNavi.click()
-            val espooRulesAppliedCheckbox = page.getByTestId("edit-espoorules-applied-checkbox")
+
+            val espooRulesAppliedCheckbox = page.getByDataTestId("edit-espoorules-applied-checkbox")
+            val espooRulesAppliedCheckboxContent = page.getByDataTestId("espoorules-applied-checkbox")
+            // Check that cancel does not save the changes
+            citizenDetails.exceptionsEditButton.click()
+            espooRulesAppliedCheckbox.click()
+            citizenDetails.exceptionsCancelButton.click()
+            assertThat(espooRulesAppliedCheckboxContent).isChecked()
+
+            // Make sure that the attention indicator is shown when exceptions are added
+            assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
+            citizenDetails.exceptionsEditButton.click()
             assertThat(espooRulesAppliedCheckbox).isChecked()
             espooRulesAppliedCheckbox.click()
             assertFalse((espooRulesAppliedCheckbox).isChecked)
-            listingPage.navigateTo()
-            listingPage.exceptionsFilter.click()
-            page.waitForCondition { listingPage.reservations.count() == 0 }
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
-    fun `employee can set the reserver to have a discount`() {
-        try {
-            val listingPage = reservationListPage()
-            listingPage.exceptionsFilter.click()
-            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
-            assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Pulkkinen Jorma")
-            listingPage.exceptionsFilter.click()
-            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 5 }
-            listingPage
-                .getByDataTestId("reserver-name")
-                .getByText("Korhonen")
-                .click()
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenLastNameField).hasText("Korhonen")
-            citizenDetails.exceptionsNavi.click()
-            val discount0 = page.getByTestId("reserver_discount_0")
-            assertThat(discount0).isChecked()
+            citizenDetails.exceptionsSubmitButton.click()
             assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention")
+
+            citizenDetails.exceptionsEditButton.click()
+            val discount0 = page.getByDataTestId("reserver_discount_0")
+            assertThat(discount0).isChecked()
             page.getByTestId("reserver_discount_50").check()
+
+            citizenDetails.exceptionsSubmitButton.click()
+
             assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
             listingPage.navigateTo()
             listingPage.exceptionsFilter.click()
-            page.waitForCondition { listingPage.reservations.count() == 2 }
-            assertThat(
-                listingPage
-                    .getByDataTestId("reserver-name")
-                    .getByText("Korhonen")
-            ).containsText("Korhonen Leo")
+
+            page.waitForCondition { listingPage.reservations.count() == 1 }
         } catch (e: AssertionError) {
             handleError(e)
         }

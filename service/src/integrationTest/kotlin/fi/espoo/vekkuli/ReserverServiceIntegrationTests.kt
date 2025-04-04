@@ -72,7 +72,8 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                 streetAddressSv = "",
                 espooRulesApplied = false,
                 discountPercentage = 0,
-                dataProtection = false
+                dataProtection = false,
+                exceptionNotes = null
             )
         val updatedCitizen =
             reserverService.updateCitizen(
@@ -88,7 +89,7 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                     nationalId = newCitizen.nationalId,
                     streetAddressSv = newCitizen.streetAddressSv,
                     postOffice = newCitizen.postOffice,
-                    postOfficeSv = newCitizen.postOfficeSv
+                    postOfficeSv = newCitizen.postOfficeSv,
                 )
             )
         val citizen = reserverService.getCitizen(this.citizenIdLeo)
@@ -117,7 +118,8 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                 streetAddressSv = "",
                 espooRulesApplied = false,
                 discountPercentage = 0,
-                dataProtection = false
+                dataProtection = false,
+                exceptionNotes = "Test notes"
             )
         reserverService.updateCitizen(
             UpdateCitizenParams(
@@ -170,5 +172,23 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
         val municipalities = reserverService.getMunicipalities()
         assertTrue(municipalities.isNotEmpty())
         assertEquals("Espoo", municipalities.first { it.code == 49 }.name)
+    }
+
+    @Test
+    fun `should update citizen exceptions`() {
+        val exceptionNotesTest = "Test exception"
+        val updatedCitizen =
+            reserverService.updateExceptions(
+                this.citizenIdLeo,
+                rulesApplied = true,
+                exceptionNotes = exceptionNotesTest,
+                discountPercentage = 10
+            )
+
+        val citizen = reserverService.getCitizen(this.citizenIdLeo)
+        assertNotNull(updatedCitizen)
+        assertEquals(true, citizen?.espooRulesApplied, "Citizen's Espoo rules are correctly updated")
+        assertEquals(exceptionNotesTest, citizen?.exceptionNotes, "Citizen's exception notes are correctly updated")
+        assertEquals(10, citizen?.discountPercentage, "Citizen's discount percentage is correctly updated")
     }
 }

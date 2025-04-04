@@ -48,7 +48,8 @@ class JdbiReserverRepository(
                         r.post_office_sv,
                         r.postal_code,
                         r.espoo_rules_applied,
-                        r.discount_percentage
+                        r.discount_percentage,
+                        r.exception_notes
                     FROM reserver r
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE r.id = :id
@@ -309,6 +310,33 @@ class JdbiReserverRepository(
                     RETURNING r.*, m.name as municipality_name
                     """.trimIndent()
                 )
+            query.bind("discountPercentage", discountPercentage)
+            query.bind("id", reserverId)
+            query.mapTo<ReserverWithDetails>().one()
+        }
+
+    override fun updateExceptions(
+        reserverId: UUID,
+        rulesApplied: Boolean,
+        exceptionNotes: String?,
+        discountPercentage: Int
+    ): ReserverWithDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE reserver r
+                    SET espoo_rules_applied = :rulesApplied,
+                        exception_notes = :exceptionNotes,
+                        discount_percentage = :discountPercentage
+                    FROM municipality m 
+                    WHERE r.municipality_code = m.code
+                    AND r.id = :id
+                    RETURNING r.*, m.name as municipality_name
+                    """.trimIndent()
+                )
+            query.bind("rulesApplied", rulesApplied)
+            query.bind("exceptionNotes", exceptionNotes)
             query.bind("discountPercentage", discountPercentage)
             query.bind("id", reserverId)
             query.mapTo<ReserverWithDetails>().one()

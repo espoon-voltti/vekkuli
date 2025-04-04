@@ -355,58 +355,46 @@ class CitizenUserController(
 
     @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset")
     @ResponseBody
-    fun boatSpaceExceptionContent(
+    fun reserverExceptionContent(
         request: HttpServletRequest,
         @PathVariable reserverId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVER_PROFILE_EXEPTIONS", mapOf("targetId" to reserverId.toString()))
+            logger.audit(it, "RESERVER_PROFILE_EXCEPTIONS", mapOf("targetId" to reserverId.toString()))
         }
         val reserver =
             reserverRepository.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
         return reserverDetailsExceptionsContainer.tabContent(reserver)
     }
 
-    @PatchMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/toggle-espoo-rules-applied")
+    @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/muokkaa")
     @ResponseBody
-    fun boatSpaceEspooRulesAppliedPatch(
+    fun reserverExceptionEdit(
         request: HttpServletRequest,
-        @PathVariable reserverId: UUID,
-    ): String {
-        val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
-        val espooRulesAppliedChangedTo = !reserver.espooRulesApplied
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE",
-                mapOf(
-                    "targetId" to reserverId.toString(),
-                    "espoo_rules_applied" to espooRulesAppliedChangedTo.toString()
-                )
-            )
-        }
-        return reserverDetailsExceptionsContainer.tabContent(reserver)
-    }
-
-    @PatchMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/discount")
-    @ResponseBody
-    fun boatSpaceDiscountPatch(
-        request: HttpServletRequest,
-        @PathVariable reserverId: UUID,
-        @RequestParam discountPercentage: Int,
+        @PathVariable reserverId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE",
-                mapOf("discount_percentage" to discountPercentage.toString())
-            )
+            logger.audit(it, "START_TO_EDIT_RESERVER_PROFILE_EXCEPTIONS", mapOf("targetId" to reserverId.toString()))
         }
         val reserver =
-            reserverRepository.updateDiscount(
-                reserverId,
-                discountPercentage
-            ) ?: throw IllegalArgumentException("Reserver not found")
+            reserverRepository.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
+        return reserverDetailsExceptionsContainer.tabEdit(reserver)
+    }
+
+    @PostMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/muokkaa")
+    @ResponseBody
+    fun reserverExceptionPost(
+        request: HttpServletRequest,
+        @PathVariable reserverId: UUID,
+        @ModelAttribute input: ExceptionUpdate
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EDIT_RESERVER_PROFILE_EXCEPTIONS", mapOf("targetId" to reserverId.toString()))
+        }
+        val reserver =
+            reserverService.updateExceptions(reserverId, input.espooRulesApplied, input.discountPercentage, input.exceptionNotes)
+                ?: throw IllegalArgumentException("Reserver not found")
+
         return reserverDetailsExceptionsContainer.tabContent(reserver)
     }
 
@@ -551,6 +539,12 @@ class CitizenUserController(
         val firstName: String? = null,
         val lastName: String? = null,
         val city: String? = null,
+    )
+
+    data class ExceptionUpdate(
+        val discountPercentage: Int,
+        val espooRulesApplied: Boolean?,
+        val exceptionNotes: String?
     )
 
     data class BoatUpdateForm(

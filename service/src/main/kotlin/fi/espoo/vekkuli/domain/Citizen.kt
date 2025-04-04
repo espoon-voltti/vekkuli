@@ -38,6 +38,7 @@ data class CitizenWithDetails(
     val postalCode: String,
     val espooRulesApplied: Boolean,
     val discountPercentage: Int,
+    val exceptionNotes: String?,
     // Fields for Citizen
     val nationalId: String,
     val firstName: String,

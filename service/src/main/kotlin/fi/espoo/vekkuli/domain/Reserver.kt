@@ -41,7 +41,8 @@ data class ReserverWithDetails(
     val postOfficeSv: String,
     val postalCode: String,
     val espooRulesApplied: Boolean,
-    val discountPercentage: Int
+    val discountPercentage: Int,
+    val exceptionNotes: String? = null,
 ) {
     fun hasExceptions() = espooRulesApplied || discountPercentage > 0
 
