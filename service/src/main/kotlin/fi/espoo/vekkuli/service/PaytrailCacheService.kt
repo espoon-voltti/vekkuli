@@ -3,13 +3,13 @@ package fi.espoo.vekkuli.service
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service
 class PaytrailCacheService(
-    private val redisTemplate: RedisTemplate<String, String>
+    private val redisTemplate: StringRedisTemplate
 ) {
     fun putPayment(
         key: String,
