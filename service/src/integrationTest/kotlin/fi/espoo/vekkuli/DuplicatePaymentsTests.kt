@@ -108,17 +108,17 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should create new payment when payment exists in Refunded state`() {
+    fun `should fail when payment exists in Refunded state`() {
         val reservation = createReservationInPaymentState()
-        val firstPaymentId = addPaymentToReservation(reservation.id)
-        val firstPayment = paymentRepository.getPayment(firstPaymentId) ?: throw RuntimeException("payment not found")
-        paymentService.updatePayment(firstPayment.copy(status = PaymentStatus.Refunded))
+        val paymentId = addPaymentToReservation(reservation.id)
+        val payment = paymentRepository.getPayment(paymentId) ?: throw RuntimeException("payment not found")
+        paymentService.updatePayment(payment.copy(status = PaymentStatus.Refunded))
 
-        val secondPaymentId = addPaymentToReservation(reservation.id)
-        val secondPayment = paymentRepository.getPayment(secondPaymentId)
+        assertEquals(paymentId, payment.id)
 
-        assertNotEquals(firstPaymentId, secondPaymentId)
-        assertEquals(PaymentStatus.Created, secondPayment?.status)
+        assertThrows<Exception> {
+            addPaymentToReservation(reservation.id)
+        }
     }
 
     @Test
