@@ -2,20 +2,28 @@ package fi.espoo.vekkuli.domain
 
 import java.util.UUID
 
-enum class ReservationWarningType {
-    BoatWidth,
-    BoatLength,
-    BoatFutureOwner,
-    BoatCoOwner,
-    BoatOwnershipChange,
-    BoatRegistrationCodeChange,
-    BoatWeight,
-    BoatType,
-    TrailerWidth,
-    TrailerLength,
-    GeneralReservationWarning,
-    InvoicePayment,
-    RegistrationCodeNotUnique
+enum class ReservationWarningType(
+    val category: Category
+) {
+    BoatWidth(Category.Boat),
+    BoatLength(Category.Boat),
+    BoatFutureOwner(Category.Boat),
+    BoatCoOwner(Category.Boat),
+    BoatOwnershipChange(Category.Boat),
+    BoatRegistrationCodeChange(Category.Boat),
+    BoatWeight(Category.Boat),
+    BoatType(Category.Boat),
+    TrailerWidth(Category.Trailer),
+    TrailerLength(Category.Trailer),
+    GeneralReservationWarning(Category.General),
+    InvoicePayment(Category.General),
+    RegistrationCodeNotUnique(Category.Boat);
+
+    enum class Category {
+        Boat,
+        Trailer,
+        General
+    }
 }
 
 data class ReservationWarning(

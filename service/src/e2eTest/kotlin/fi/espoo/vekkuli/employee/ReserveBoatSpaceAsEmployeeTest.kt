@@ -116,7 +116,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             listingPage.createReservation.click()
 
             val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
-
             // fill in the filters
             assertThat(reservationPage.emptyDimensionsWarning).isVisible()
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
