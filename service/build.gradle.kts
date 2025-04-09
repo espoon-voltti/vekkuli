@@ -138,6 +138,8 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.16")
     implementation("commons-codec:commons-codec:1.18.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
     downloadOnly("com.datadoghq:dd-java-agent:1.47.0")
 }
 

@@ -26,6 +26,9 @@ services:
     environment:
       JAVA_OPTS: -server -Djava.security.egd=file:/dev/./urandom -Xms1024m -Xss512k -Xmx1024m -XX:TieredStopAtLevel=1
       SPRING_DATASOURCE_URL: jdbc:postgresql://vekkuli-db:5432/vekkuli
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     entrypoint: ./gradlew integrationTest
     depends_on:
       - vekkuli-db
+      - redis
