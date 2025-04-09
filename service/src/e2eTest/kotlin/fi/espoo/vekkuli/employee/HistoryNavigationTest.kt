@@ -9,12 +9,19 @@ import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIf
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import java.util.UUID
 
 @ActiveProfiles("test")
+@EnabledIf(value = "fi.espoo.vekkuli.employee.HistoryNavigationTest#isLocal", disabledReason = "HistoryNavigationTests only works locally")
 class HistoryNavigationTest : PlaywrightTest() {
+    companion object {
+        @JvmStatic
+        fun isLocal(): Boolean = System.getenv("ENVIRONMENT") == null || System.getenv("ENVIRONMENT") == "local"
+    }
+
     private val listingPageUrl = "$baseUrl/virkailija/venepaikat/varaukset"
     private val reservePageUrl = "$baseUrl/virkailija/venepaikat"
 
