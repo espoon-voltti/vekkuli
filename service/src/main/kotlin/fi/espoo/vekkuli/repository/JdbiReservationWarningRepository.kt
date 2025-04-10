@@ -124,7 +124,7 @@ class JdbiReservationWarningRepository(
 
     override fun deleteReservationWarningsForReservation(
         reservationId: Int,
-        key: ReservationWarningType?
+        keys: List<ReservationWarningType>?
     ) {
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -133,11 +133,11 @@ class JdbiReservationWarningRepository(
                         """
                     DELETE from reservation_warning
                     WHERE reservation_id = :reservationId
-                    ${if (key != null) " AND key = :key" else "" }
+                    ${if (keys != null) " AND key IN (<keys>)" else ""}
                     """
                     ).bind("reservationId", reservationId)
-            if (key != null) {
-                query.bind("key", key)
+            if (keys != null) {
+                query.bindList("keys", keys)
             }
 
             query.execute()

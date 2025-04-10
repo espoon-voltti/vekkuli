@@ -90,7 +90,7 @@ interface ReservationWarningRepository {
 
     fun deleteReservationWarningsForReservation(
         reservationId: Int,
-        key: ReservationWarningType? = null
+        keys: List<ReservationWarningType>? = null
     )
 }
 
@@ -870,10 +870,18 @@ class BoatReservationService(
         memoService.insertSystemMemo(userId, infoText)
     }
 
+    @Transactional
     fun changeReservationBoat(
         reservationId: Int,
         boatId: Int
-    ): Boolean = boatSpaceReservationRepo.changeReservationBoat(reservationId, boatId)
+    ): Boolean {
+        val reservationForBoat = boatSpaceReservationRepo.changeReservationBoat(reservationId, boatId)
+        reservationWarningRepo.deleteReservationWarningsForReservation(
+            reservationId,
+            ReservationWarningType.values().filter { it.category != ReservationWarningType.Category.General }
+        )
+        return reservationForBoat
+    }
 
     fun getBoatAndReserverWithRegistrationCode(registrationCode: String): List<Pair<Boat, ReserverWithDetails?>> =
         boatRepository.getBoatsByRegistrationCode(registrationCode).map { boat ->

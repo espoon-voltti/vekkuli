@@ -1,11 +1,10 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
+import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -35,7 +34,10 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     lateinit var boatService: BoatService
 
     @Autowired
-    lateinit var reservationService: BoatReservationService
+    lateinit var boatReservationService: BoatReservationService
+
+    @Autowired
+    lateinit var reservationWarningRepository: ReservationWarningRepository
 
     private fun insertNewBoat(
         citizenId: UUID = this.citizenIdLeo,
@@ -146,6 +148,71 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         val boats = boatService.getBoatsForReserversOrganizations(citizenIdMikko)
         assertEquals(1, boats.size, "Correct number of organizations are fetched")
         assertEquals(2, boats[orgId.toString()]?.size, "Correct number of boats are fetched")
+    }
+
+    @Test
+    fun `should switch boat and reset warnings for it`() {
+        val boatWithWarnings =
+            boatService.insertBoat(
+                this.citizenIdLeo,
+                "registrationCode",
+                "TestBoatWithWarnings",
+                250,
+                450,
+                150,
+                10050,
+                BoatType.Sailboat,
+                "",
+                "",
+                OwnershipStatus.CoOwner
+            )
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    boatWithWarnings.id
+                )
+            )
+        reservationWarningRepository.addReservationWarnings(
+            listOf(
+                ReservationWarning(
+                    UUID.randomUUID(),
+                    reservation.id,
+                    boatWithWarnings.id,
+                    null,
+                    null,
+                    ReservationWarningType.BoatWidth,
+                    "Boat width is too wide"
+                )
+            )
+        )
+        val warnings = reservationWarningRepository.getWarningsForReservation(reservation.id)
+        assertEquals(1, warnings.size, "There should be one warning for the reservation")
+
+        val newBoat =
+            insertNewBoat(
+                this.citizenIdLeo,
+                "TestBoat2",
+            )
+        boatReservationService.changeReservationBoat(
+            reservationId = reservation.id,
+            boatId = newBoat.id,
+        )
+
+        assertEquals(
+            newBoat.id,
+            boatReservationService
+                .getReservationsForBoat(newBoat.id)
+                .first()
+                .boat
+                ?.id,
+            "Boat should be changed in the reservation"
+        )
+
+        val updatedWarnings = reservationWarningRepository.getWarningsForReservation(reservation.id)
+        assertEquals(0, updatedWarnings.size, "There should be no warnings for the reservation after boat change")
     }
 
     private fun insertBoat(reserverId: UUID): Int =

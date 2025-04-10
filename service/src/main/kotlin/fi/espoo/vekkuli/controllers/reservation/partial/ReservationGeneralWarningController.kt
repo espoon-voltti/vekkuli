@@ -110,7 +110,7 @@ class ReservationGeneralWarningController {
     ): ResponseEntity<String> {
         logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_UPDATE_GENERAL_WARNING")
 
-        warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
+        warningsRepository.deleteReservationWarningsForReservation(reservationId, listOf(generalWarningsKey))
         warningsRepository.addReservationWarnings(
             listOf(
                 ReservationWarning(
@@ -154,7 +154,7 @@ class ReservationGeneralWarningController {
             logAndGetUser(request, reserverId, reservationId, "CITIZEN_PROFILE_ACKNOWLEDGE_GENERAL_WARNING")
         val userId = authenticatedUser?.id
 
-        warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
+        warningsRepository.deleteReservationWarningsForReservation(reservationId, listOf(generalWarningsKey))
         if (infoText.isNotEmpty()) {
             memoService.insertMemo(reserverId, userId, infoText.trim())
         }
