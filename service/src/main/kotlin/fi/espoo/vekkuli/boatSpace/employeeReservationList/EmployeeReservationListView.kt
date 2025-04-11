@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList
 
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.*
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
@@ -125,40 +126,40 @@ class EmployeeReservationListView(
                                 <table class="table is-hoverable">
                                     <thead id='reservation-table-header'>
                                         <tr class="table-borderless">
-                                            <th></th>
+                                            <th>${sortButton(WARNING_CREATED.toString(), "")}</th>
                                             <th class="nowrap">
-                                                ${sortButton("PLACE", t("boatSpaceReservation.title.harbor"))}
+                                                ${sortButton(PLACE.toString(), t("boatSpaceReservation.title.harbor"))}
                                             </th>
                                             <th class="nowrap">
-                                                ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
+                                                ${sortButton(PLACE.toString(), t("boatSpaceReservation.title.place"))}
                                             </th>
             
                                             <th class="nowrap">
-                                                ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
+                                                ${sortButton(PLACE_TYPE.toString(), t("employee.boatSpaceReservations.table.title.type"))}
                                             </th>
                                             <th class="nowrap">
-                                                ${sortButton("AMENITY", t("employee.boatReservations.title.amenity"))}
+                                                ${sortButton(AMENITY.toString(), t("employee.boatReservations.title.amenity"))}
                                             </th>
                                             <th class="nowrap">
-                                                ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
+                                                ${sortButton(CUSTOMER.toString(), t("boatSpaceReservation.title.subject"))}
                                             </th>
                                             <th class="nowrap">
-                                                ${sortButton("PHONE", t("boatSpaceReservation.title.phoneNumber"))}
+                                                ${sortButton(PHONE.toString(), t("boatSpaceReservation.title.phoneNumber"))}
                                             </th>                                    
                                             <th class="nowrap">
-                                                ${sortButton("EMAIL", t("employee.boatSpaceReservations.table.title.email"))}
+                                                ${sortButton(EMAIL.toString(), t("employee.boatSpaceReservations.table.title.email"))}
                                             </th>                                    
                                             <th class="nowrap">
-                                                ${sortButton("HOME_TOWN", t("boatSpaceReservation.title.homeTown"))}
+                                                ${sortButton(HOME_TOWN.toString(), t("boatSpaceReservation.title.homeTown"))}
                                             </th>
                                             <th><span class="reservation-table-header">
                                                 ${t("boatSpaceReservation.title.paymentState")}
                                             </span></th>
                                             <th class="nowrap">
-                                                ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
+                                                ${sortButton(START_DATE.toString(), t("boatSpaceReservation.title.startDate"))}
                                             </th>
                                             <th class="nowrap">
-                                                ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
+                                                ${sortButton(END_DATE.toString(), t("boatSpaceReservation.title.endDate"))}
                                             </th>
             
                                         </tr>      
@@ -227,10 +228,8 @@ class EmployeeReservationListView(
         text: String
     ) = """
         <a href="#" @click.prevent="updateSort('$column')">
-            <span class="reservation-table-header">
-                $text
-            </span>
-            <span class="reservation-table-icon">
+        ${if (text.isNotEmpty()) """<span class="reservation-table-header">$text</span>""" else "" }
+        <span class="reservation-table-icon">
                 <span x-show="sortColumn != '$column'">${icons.sort("")}</span>
                 <span x-show="sortColumn == '$column' && sortDirection=='true'">${icons.sort("asc")}</span>
                 <span x-show="sortColumn == '$column' && sortDirection=='false'">${icons.sort("desc")}</span>
