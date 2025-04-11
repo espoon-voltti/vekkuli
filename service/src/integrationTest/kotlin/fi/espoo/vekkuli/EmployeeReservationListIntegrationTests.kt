@@ -95,8 +95,8 @@ class EmployeeReservationListIntegrationTests : IntegrationTestBase() {
         val reservationsWithWarnings =
             employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
-                    sortBy = BoatSpaceReservationFilterColumn.CUSTOMER,
-                    ascending = true,
+                    sortBy = BoatSpaceReservationFilterColumn.WARNING_CREATED,
+                    ascending = false,
                     warningFilter = true
                 )
             )
