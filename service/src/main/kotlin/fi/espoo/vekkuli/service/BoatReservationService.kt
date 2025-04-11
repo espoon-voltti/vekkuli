@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.utils.decimalToInt
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -37,6 +38,7 @@ enum class PaymentProcessErrorCode {
     InvalidSignature,
     PaymentNotFound,
     ReservationNotFound,
+    SystemError
 }
 
 sealed class ReservationResult(
@@ -94,6 +96,8 @@ interface ReservationWarningRepository {
     )
 }
 
+private val logger = KotlinLogging.logger {}
+
 @Service
 class BoatReservationService(
     private val paymentService: PaymentService,
@@ -139,32 +143,37 @@ class BoatReservationService(
             boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(paymentId)
                 ?: return PaymentProcessResult.Failure(PaymentProcessErrorCode.ReservationNotFound, isPaid)
 
-        if (payment.status != PaymentStatus.Created) {
-            return PaymentProcessResult.HandledAlready(reservation)
+        try {
+            if (payment.status != PaymentStatus.Created) {
+                return PaymentProcessResult.HandledAlready(reservation)
+            }
+
+            paymentService.updatePayment(payment.id, isPaid, if (isPaid) timeProvider.getCurrentDateTime() else null)
+
+            if (!isPaid) {
+                return PaymentProcessResult.Cancelled(reservation)
+            }
+
+            val boatSpaceWasAvailable =
+                boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
+                    payment.id
+                ) != null
+
+            if (!boatSpaceWasAvailable) {
+                return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
+            }
+
+            if (reservation.originalReservationId != null) {
+                markReservationEnded(reservation.originalReservationId)
+            }
+
+            sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
+
+            return PaymentProcessResult.Paid(reservation)
+        } catch (e: Exception) {
+            logger.error { "Payment handling failed for reservation ${reservation.id}: ${e.message}" }
+            return PaymentProcessResult.Failure(PaymentProcessErrorCode.SystemError, isPaid, reservation)
         }
-
-        paymentService.updatePayment(payment.id, isPaid, if (isPaid) timeProvider.getCurrentDateTime() else null)
-
-        if (!isPaid) {
-            return PaymentProcessResult.Cancelled(reservation)
-        }
-
-        val boatSpaceWasAvailable =
-            boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
-                payment.id
-            ) != null
-
-        if (!boatSpaceWasAvailable) {
-            return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
-        }
-
-        if (reservation.originalReservationId != null) {
-            markReservationEnded(reservation.originalReservationId)
-        }
-
-        sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
-
-        return PaymentProcessResult.Paid(reservation)
     }
 
     fun upsertCreatedPaymentToReservation(
