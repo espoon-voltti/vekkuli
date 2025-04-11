@@ -1,38 +1,85 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.utils.TimeProvider
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.springframework.data.redis.core.StringRedisTemplate
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.springframework.context.annotation.Profile
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import java.util.concurrent.TimeUnit
 
+@Profile("!test")
 @Service
-class PaytrailCacheService(
-    private val redisTemplate: StringRedisTemplate
+class PaytrailCacheCleanupJob(
+    private val paytrailCacheService: PaytrailCacheService
 ) {
-    fun putPayment(
-        key: String,
-        response: PaytrailPaymentResponse
-    ) {
-        val json = RedisMapper.serializeResponse(response)
-        val gracePeriodInSeconds = 5 * 60
-        val timeoutInSeconds = BoatSpaceConfig.SESSION_TIME_IN_SECONDS.toLong() + gracePeriodInSeconds
-        redisTemplate.opsForValue().set(
-            key,
-            json,
-            timeoutInSeconds,
-            TimeUnit.SECONDS
-        )
-    }
-
-    fun getPayment(key: String): PaytrailPaymentResponse? {
-        val json = redisTemplate.opsForValue().get(key) ?: return null
-        return RedisMapper.deserializeResponse(json)
+    @Scheduled(cron = "0 0 3 * * *")
+    fun cleanupExpiredTransactions() {
+        paytrailCacheService.clearExpired()
     }
 }
 
-object RedisMapper {
+@Service
+class PaytrailCacheService(
+    private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
+) {
+    companion object {
+        const val CACHE_DURATION_IN_DAYS = 7L
+    }
+
+    fun putPayment(
+        transactionId: String,
+        response: PaytrailPaymentResponse
+    ) {
+        val json = JsonMapper.serializeResponse(response)
+        val currentTime = timeProvider.getCurrentDateTime()
+        val expiresAt = currentTime.plusDays(CACHE_DURATION_IN_DAYS)
+
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    INSERT INTO paytrail_payment_cache (transaction_id, response, created_at, expires_at)
+                    VALUES (:transaction_id, CAST(:response AS jsonb), :currentTime, :expiresAt)
+                    ON CONFLICT (transaction_id) DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at
+                    """
+                ).bind("transaction_id", transactionId)
+                .bind("response", json)
+                .bind("currentTime", currentTime)
+                .bind("expiresAt", expiresAt)
+                .execute()
+        }
+    }
+
+    fun getPayment(transactionId: String): PaytrailPaymentResponse? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT response FROM paytrail_payment_cache
+                    WHERE transaction_id = :transaction_id
+                    """
+                ).bind("transaction_id", transactionId)
+                .mapTo(String::class.java)
+                .findOne()
+                .map(JsonMapper::deserializeResponse)
+                .orElse(null)
+        }
+
+    fun clearExpired() {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    "DELETE FROM paytrail_payment_cache WHERE expires_at < :currentTime"
+                ).bind("currentTime", timeProvider.getCurrentDateTime())
+                .execute()
+        }
+    }
+}
+
+object JsonMapper {
     private val json =
         Json {
             ignoreUnknownKeys = true
