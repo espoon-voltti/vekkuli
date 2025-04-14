@@ -13,7 +13,7 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,7 +34,7 @@ abstract class PlaywrightTest {
     protected lateinit var context: BrowserContext
     protected lateinit var page: Page
 
-    @MockBean
+    @MockitoBean
     protected lateinit var timeProvider: TimeProvider
 
     @BeforeAll

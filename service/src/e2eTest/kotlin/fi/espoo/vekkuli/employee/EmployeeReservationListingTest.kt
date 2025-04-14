@@ -98,6 +98,34 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `should sort the reservations by most recent warnings first when warning filter is chosen`() {
+        val listingPage = reservationListPage()
+        assertThat(listingPage.warningsFilterCheckbox).not().isChecked()
+        val warningsFilter = page.getByTestId("employee-reservation-list-warnings-filter")
+        assertThat(warningsFilter).containsText("(0 reservations)")
+        listingPage.boatSpaceLeoKorhonen.click()
+        val citizenDetails = CitizenDetailsPage(page)
+        // click the link to add general warning
+        citizenDetails.addNewGeneralWarningLink.clickAndWaitForHtmxSettle()
+        assertThat(citizenDetails.generalWarningModal).isVisible()
+        citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
+        listingPage.navigateTo()
+        assertThat(warningsFilter).containsText("(1 reservations)")
+        listingPage.boatSpaceJormaPulkkinen.click()
+        // click the link to add general warning
+        citizenDetails.addNewGeneralWarningLink.clickAndWaitForHtmxSettle()
+        assertThat(citizenDetails.generalWarningModal).isVisible()
+        citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
+        listingPage.navigateTo()
+        assertThat(warningsFilter).containsText("(2 reservations)")
+        listingPage.warningsFilterCheckbox.click()
+        assertThat(listingPage.reservations).hasCount(2)
+        // Jorma Pulkkinen should be on top since it has most recent warning
+        assertThat(listingPage.reservations.first()).containsText("Pulkkinen")
+        assertThat(listingPage.reservations.last()).containsText("Korhonen")
+    }
+
+    @Test
     fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }

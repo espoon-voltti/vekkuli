@@ -92,20 +92,9 @@ class EmployeeReservationListService(
         }
 
         val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
-        val warningsSort =
-            if (params.warningFilter == true) {
-                listOf(
-                    BoatSpaceReservationFilterColumn.WARNING_CREATED to SortDirection.Descending
-                )
-            } else {
-                emptyList()
-            }
         val sortBy =
             BoatSpaceReservationSortBy(
-                warningsSort +
-                    listOf(
-                        params.sortBy to direction
-                    )
+                listOf(params.sortBy to direction)
             )
 
         return getPaginatedBoatSpaceReservationItemsWithWarnings(
