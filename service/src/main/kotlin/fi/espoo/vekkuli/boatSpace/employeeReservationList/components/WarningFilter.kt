@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 
@@ -17,6 +18,7 @@ class WarningFilter : BaseView() {
             <label class="checkbox">
                 <input type="checkbox" 
                     name="warningFilter"
+                    ${addTestId("filter-warnings")}
                     :checked="$active"
                     @change="
                         if (event.target.checked) {

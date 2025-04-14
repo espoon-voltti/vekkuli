@@ -29,6 +29,7 @@ class ReservationListPage(
     val boatSpace2 = page.locator("#boat-space-2").first()
     val boatSpace8 = page.locator("#boat-space-8").first()
     val boatSpaceLeoKorhonen = page.locator("tr:has-text('Korhonen Leo')").first()
+    val boatSpaceJormaPulkkinen = page.locator("tr:has-text('Pulkkinen Jorma')").first()
     val createReservation = page.locator("#create-reservation")
     val warningIcon = getByDataTestId("warning-icon", boatSpace1)
     val warningIcon8 = getByDataTestId("warning-icon", boatSpace8)
@@ -51,6 +52,7 @@ class ReservationListPage(
     val sendMassMessageContentInput = getByDataTestId("message-content")
     val sendMassMessageModalSubmit = getByDataTestId("send-mass-email-modal-confirm")
     val sendMassMessageModalSuccess = getByDataTestId("message-sent-success-modal")
+    val warningsFilterCheckbox = filterLocator("warnings")
 
     fun boatSpace(customer: String) =
         getByDataTestId("reserver-name")
