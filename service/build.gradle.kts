@@ -140,7 +140,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.47.0")
+    downloadOnly("com.datadoghq:dd-java-agent:1.48.1")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
