@@ -330,7 +330,7 @@ class BoatReservationService(
             warnings.add(Pair(ReservationWarningType.BoatType, null))
         }
 
-        if (boat.registrationCode != null) {
+        if (!boat.registrationCode.isNullOrBlank()) {
             val boatsWithSameRegistrationCode: List<Pair<Boat, ReserverWithDetails?>> =
                 getBoatAndReserverWithRegistrationCode(boat.registrationCode)
                     .filter { it.first.id != boat.id }
