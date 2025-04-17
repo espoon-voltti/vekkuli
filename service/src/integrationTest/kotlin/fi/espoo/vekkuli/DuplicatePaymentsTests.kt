@@ -7,6 +7,8 @@ import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
 import kotlinx.coroutines.runBlocking
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -18,15 +20,15 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class DuplicatePaymentsTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var paytrailCacheService: PaytrailCacheService
+
     @Autowired
     private lateinit var reserverRepository: ReserverRepository
 
@@ -58,6 +60,31 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
         deleteAllBoatSpaces(jdbi)
         deleteAllBoats(jdbi)
         deleteAllOrganizations(jdbi)
+        deleteAllPaytrailCacheResponses(jdbi)
+    }
+
+    @Test
+    fun `Paytrail cache should return null when transaction id does not have cached response`() {
+        val transactionId = "some transaction id"
+        val cachedResponse = paytrailCacheService.getPayment(transactionId)
+        assertNull(cachedResponse)
+    }
+
+    @Test
+    fun `Paytrail cache should return cached response`() {
+        val transactionId = "some transaction id"
+        val response =
+            PaytrailPaymentResponse(
+                transactionId = transactionId,
+                reference = "reference",
+                terms = "https://www.paytrail.com",
+                providers = listOf()
+            )
+
+        paytrailCacheService.putPayment(transactionId, response)
+        val cachedResponse = paytrailCacheService.getPayment(transactionId)
+
+        assertEquals(response, cachedResponse)
     }
 
     @Test
@@ -248,5 +275,11 @@ class DuplicatePaymentsTests : IntegrationTestBase() {
                     providers = listOf()
                 )
             )
+    }
+
+    fun deleteAllPaytrailCacheResponses(jdbi: Jdbi) {
+        jdbi.withHandleUnchecked { handle ->
+            handle.execute("DELETE FROM paytrail_payment_cache")
+        }
     }
 }

@@ -48,8 +48,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://vekkuli-db:5432/vekkuli
       SPRING_DATASOURCE_USERNAME: vekkuli
       SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
       ENVIRONMENT: local-docker
     entrypoint: ./e2e-test-entrypoint.sh
     depends_on:
