@@ -80,15 +80,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/wasm-js-rewriter@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@datadog/wasm-js-rewriter@npm:4.0.0"
+"@datadog/wasm-js-rewriter@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@datadog/wasm-js-rewriter@npm:4.0.1"
   dependencies:
     js-yaml: "npm:^4.1.0"
     lru-cache: "npm:^7.14.0"
     module-details-from-path: "npm:^1.0.3"
     node-gyp-build: "npm:^4.5.0"
-  checksum: 765e690b2f35ffe14542038a122e43423100fafc37de46c4313557ba4daf5b75e2a1f7189c0c49a78fad5801fb3ba007c3c28246c3f6abcb4005d47833b49fe9
+  checksum: 8d0620e86a4ca1ed9268306db0b200c08cf2e9d483d97f8bf11bad61ae6aa205eebc097bc3ba2b67161c3c3d3584431319cff48e7919cbc559a1c25948cb3528
   languageName: node
   linkType: hard
 
@@ -1551,9 +1551,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:^5.47.0":
-  version: 5.47.0
-  resolution: "dd-trace@npm:5.47.0"
+"dd-trace@npm:^5.48.1":
+  version: 5.48.1
+  resolution: "dd-trace@npm:5.48.1"
   dependencies:
     "@datadog/libdatadog": "npm:^0.5.1"
     "@datadog/native-appsec": "npm:8.5.2"
@@ -1561,7 +1561,7 @@ __metadata:
     "@datadog/native-metrics": "npm:^3.1.1"
     "@datadog/pprof": "npm:5.7.1"
     "@datadog/sketches-js": "npm:^2.1.0"
-    "@datadog/wasm-js-rewriter": "npm:4.0.0"
+    "@datadog/wasm-js-rewriter": "npm:4.0.1"
     "@isaacs/ttlcache": "npm:^1.4.1"
     "@opentelemetry/api": "npm:>=1.0.0 <1.9.0"
     "@opentelemetry/core": "npm:^1.14.0"
@@ -1587,7 +1587,7 @@ __metadata:
     source-map: "npm:^0.7.4"
     tlhunter-sorted-set: "npm:^0.1.0"
     ttl-set: "npm:^1.0.0"
-  checksum: 764f3df6bde8aa45842ceaf38bf0b33c686b5741b72ba74c7bef4d03946c7b5d38fd73390f1c5b5b13cc4c68b1a59fab3ae8163ed2aaef7112517775978a24a0
+  checksum: 25a9b931c04a251486b6e6688a325a3fcdd776c295597150793bd23c97e30484d5e883a9f0b048323056a1a9e8f56a6bf6798d6bbf20a0a997da6fc0ff3c6fc0
   languageName: node
   linkType: hard
 
@@ -4712,7 +4712,7 @@ __metadata:
     cookie-parser: "npm:^1.4.6"
     csurf: "npm:^1.11.0"
     date-fns: "npm:^4.1.0"
-    dd-trace: "npm:^5.47.0"
+    dd-trace: "npm:^5.48.1"
     eslint: "npm:9.24.0"
     eslint-config-prettier: "npm:^10.1.1"
     eslint-plugin-prettier: "npm:^5.2.1"
