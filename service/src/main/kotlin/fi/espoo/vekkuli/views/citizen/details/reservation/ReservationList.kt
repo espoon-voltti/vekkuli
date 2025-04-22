@@ -26,14 +26,13 @@ class ReservationList(
         // language=HTML
         return """
             <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                ${createReservationCards(boatSpaceReservations, userType, reserverId)}
+                ${createReservationCards(boatSpaceReservations, reserverId)}
             </div>
             """.trimIndent()
     }
 
     private fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType,
         reserverId: UUID
     ): String =
         boatSpaceReservations.joinToString("\n") { reservation ->
@@ -41,15 +40,11 @@ class ReservationList(
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
-                ${cardInfo.render(reservation, userType, reserverId)}
+                ${cardInfo.render(reservation, reserverId)}
                 ${reservationTerminationReason.render(reservation)}
-                ${reservationCardWarningBox.render(reservation, userType)}
-                ${
-                if (userType == UserType.EMPLOYEE) {
-                    employeeButtons.render(reservation, reserverId)
-                } else {
-                    citizenButtons.render(reservation)
-                }}
+                ${reservationCardWarningBox.render(reservation)}
+                ${employeeButtons.render(reservation, reserverId)}
+
             </div>
             """.trimIndent()
         }

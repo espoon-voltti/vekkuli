@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
@@ -18,7 +17,6 @@ class ReservationCardInformation(
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
-        userType: UserType,
         reserverId: UUID,
     ): String {
         val amenity =
@@ -180,7 +178,7 @@ class ReservationCardInformation(
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId) } ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it, reserverId) } ?: ""}
 
             """.trimIndent()
     }
