@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.web.util.HtmlUtils.htmlEscape
 
 @Component
 class ReserverDetailsExceptionsContainer : BaseView() {
@@ -83,7 +84,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
             formComponents.textInput(
                 labelKey = "employee.reserverDetails.exceptions.descriptionTitle",
                 id = "exceptionNotes",
-                value = reserver.exceptionNotes ?: "",
+                value = htmlEscape(reserver.exceptionNotes ?: ""),
             )
         // language=HTML
         return """
