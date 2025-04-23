@@ -2,7 +2,7 @@
 
 [![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/vekkuli)](https://api.reuse.software/info/github.com/espoon-voltti/vekkuli)
 
-A tool for tracking the monitoring and guidance cases related to compulsory education.
+A tool for renting reservable resources (such as pier/wharf space for boats).
 
 ## Technical overview
 
