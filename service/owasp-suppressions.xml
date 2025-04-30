@@ -67,4 +67,10 @@ SPDX-License-Identifier: LGPL-2.1-or-later
         <cve>CVE-2025-24970</cve>
         <cve>CVE-2025-25193</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        EndpointRequest.to() is not used 30.4.2025
+       ]]></notes>
+        <cve>CVE-2025-22235</cve>
+    </suppress>
 </suppressions>
