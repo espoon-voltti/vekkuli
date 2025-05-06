@@ -1579,9 +1579,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:^5.49.0":
-  version: 5.49.0
-  resolution: "dd-trace@npm:5.49.0"
+"dd-trace@npm:^5.50.0":
+  version: 5.50.0
+  resolution: "dd-trace@npm:5.50.0"
   dependencies:
     "@datadog/libdatadog": "npm:^0.5.1"
     "@datadog/native-appsec": "npm:8.5.2"
@@ -1604,6 +1604,7 @@ __metadata:
     lodash.sortby: "npm:^4.7.0"
     lru-cache: "npm:^7.14.0"
     module-details-from-path: "npm:^1.0.3"
+    mutexify: "npm:^1.4.0"
     opentracing: "npm:>=0.12.1"
     path-to-regexp: "npm:^0.1.12"
     pprof-format: "npm:^2.1.0"
@@ -1615,7 +1616,7 @@ __metadata:
     source-map: "npm:^0.7.4"
     tlhunter-sorted-set: "npm:^0.1.0"
     ttl-set: "npm:^1.0.0"
-  checksum: 560c3f0f7520e58eadcf8ebf77ac2960a0ef62c9faf733a890dbccd044e506d94cc51df54d1d840cb0e238a71587fb266e7796ad2e53177a6bb2d6d7228dcf2a
+  checksum: 2b29c7c2ddbe2ff1ebd50d4d08e35d1ff89e1734eab10ec257524c17565e63385ab56526b34f3dd26974f9327e6127d1fae7922e17a131256c8bec200def0ecc
   languageName: node
   linkType: hard
 
@@ -3310,6 +3311,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mutexify@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "mutexify@npm:1.4.0"
+  dependencies:
+    queue-tick: "npm:^1.0.0"
+  checksum: 2ad9712d4f2e75551a2dbfb1dc274dfa6c1dea7418ee48468a9bf252014d3480adc70c264bd93775b034d29b7dbfcfd26ecb2a4d83aa8d137456e617a01d3f76
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -3876,6 +3886,13 @@ __metadata:
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
   checksum: 72900df0616e473e824202113c3df6abae59150dfb73ed13273503127235320e9c8ca4aaaaccfd58cf417c6ca92a6e68ee9a5c3182886ae949a768639b388a7b
+  languageName: node
+  linkType: hard
+
+"queue-tick@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "queue-tick@npm:1.0.1"
+  checksum: f447926c513b64a857906f017a3b350f7d11277e3c8d2a21a42b7998fa1a613d7a829091e12d142bb668905c8f68d8103416c7197856efb0c72fa835b8e254b5
   languageName: node
   linkType: hard
 
@@ -4788,7 +4805,7 @@ __metadata:
     cookie-parser: "npm:^1.4.6"
     csurf: "npm:^1.11.0"
     date-fns: "npm:^4.1.0"
-    dd-trace: "npm:^5.49.0"
+    dd-trace: "npm:^5.50.0"
     eslint: "npm:9.26.0"
     eslint-config-prettier: "npm:^10.1.1"
     eslint-plugin-prettier: "npm:^5.3.1"
