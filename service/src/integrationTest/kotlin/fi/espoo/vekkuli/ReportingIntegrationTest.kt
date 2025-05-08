@@ -115,6 +115,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals(today.atStartOfDay(), stickerReportRows[0].paid)
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
         assertEquals("Testi Venho", row?.boatName)
+        assertEquals("leo@noreplytest.fi", row?.email)
     }
 
     @Test
