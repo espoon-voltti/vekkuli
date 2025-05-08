@@ -29,10 +29,8 @@ class CitizenContainer(
 
         // language=HTML
         return """
-            <div class='form-section'>
-                <h3 class="header">${t("boatApplication.title.reserver")}</h3>
-                $citizenContainer
-            </div>
+            <h3 class="header">${t("boatApplication.title.reserver")}</h3>
+            $citizenContainer
             """.trimIndent()
     }
 }

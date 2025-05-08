@@ -114,57 +114,59 @@ class BoatSpaceForm(
                         <div id="form-inputs" class="block">
                            $formContent
                            $reserverPriceInfoContent
-                            <div class="block">
-                                <div id="certify-control" class="field">
-                                    <label class="checkbox">
-                                        <input
-                                            type="checkbox"
-                                            data-required
-                                            id="certifyInformation"
-                                            name="certifyInformation"
-                                        >
-                                        <span >${t("boatApplication.certifyInfoCheckbox")}</span>
-                                    </label>
-                                    <div id="certify-error-container">
-                                        <span id="certifyInformation-error" class="help is-danger" style="display: none">
-                                        ${t("validation.certifyInformation")}</span>
+                           <div class='form-section'>
+                                <div class="block">
+                                    <div id="certify-control" class="field">
+                                        <label class="checkbox">
+                                            <input
+                                                type="checkbox"
+                                                data-required
+                                                id="certifyInformation"
+                                                name="certifyInformation"
+                                            >
+                                            <span >${t("boatApplication.certifyInfoCheckbox")}</span>
+                                        </label>
+                                        <div id="certify-error-container">
+                                            <span id="certifyInformation-error" class="help is-danger" style="display: none">
+                                            ${t("validation.certifyInformation")}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="agree-control" class="field">
-                                    <label class="checkbox">
-                                        <input
-                                            type="checkbox"
-                                            data-required
-                                            id="agreeToRules"
-                                            name="agreeToRules"
-                                        />
-                                        <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
-                                    </label>
-                                    <div id="agree-error-container">
-                                        <span id="agreeToRules-error" class="help is-danger" style="display: none">
-                                        ${t("validation.agreeToRules")}</span>
+                                    <div id="agree-control" class="field">
+                                        <label class="checkbox">
+                                            <input
+                                                type="checkbox"
+                                                data-required
+                                                id="agreeToRules"
+                                                name="agreeToRules"
+                                            />
+                                            <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
+                                        </label>
+                                        <div id="agree-error-container">
+                                            <span id="agreeToRules-error" class="help is-danger" style="display: none">
+                                            ${t("validation.agreeToRules")}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="warning block form-validation-message" id="validation-warning" style="display: none">
-                                <span class="icon">${icons.warningExclamation(false)}</span>
-                                <span class="p-l">${t("boatApplication.validationWarning")}</span>
-                            </div> 
-                        </div >
-                        <div class="field block">
-                            <div class="control">
-                                <button id="cancel"
-                                    class="button is-secondary"
-                                    type="button"
-                                    x-on:click="modalOpen = true">
-                                    ${t("boatApplication.cancelReservation")}
-                                </button>
-                                <button id="submit-button"
-                                    class="button is-primary form-submit"
-                                    type="submit">
-                                    ${t("boatApplication.$userType.continueToPaymentButton")}
-                                </button>
-                            </div>
+                                    <div class="warning block form-validation-message" id="validation-warning" style="display: none">
+                                        <span class="icon">${icons.warningExclamation(false)}</span>
+                                        <span class="p-l">${t("boatApplication.validationWarning")}</span>
+                                    </div> 
+                                </div> 
+                                <div class="field block">
+                                    <div class="control">
+                                        <button id="cancel"
+                                            class="button is-secondary"
+                                            type="button"
+                                            x-on:click="modalOpen = true">
+                                            ${t("boatApplication.cancelReservation")}
+                                        </button>
+                                        <button id="submit-button"
+                                            class="button is-primary form-submit"
+                                            type="submit">
+                                            ${t("boatApplication.$userType.continueToPaymentButton")}
+                                        </button>
+                                    </div>
+                                </div>             
+                            </div>             
                         </div>             
                         <script>
                             validation.init({forms: ['form']})
