@@ -54,16 +54,14 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     @Autowired lateinit var emailEnv: EmailEnv
 
     @Test
-    fun `should terminate the reservation for the owner and set ending date to now`() {
-        val boatSpaceId = 1
-
+    fun `should terminate the slip type reservation for the owner and set ending date to now`() {
         val endDate = timeProvider.getCurrentDate().plusWeeks(2)
 
         val newReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenIdOlivia,
                 citizenIdOlivia,
-                boatSpaceId,
+                boatSpaceIdForSlip,
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate().minusWeeks(2),
                 endDate = endDate,
@@ -102,6 +100,55 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertEquals(endDate, originalReservation?.endDate, "Reservation endDate is $endDate")
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
         assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate, "End date is set to now")
+    }
+
+    @Test
+    fun `should terminate the storage type reservation for the owner and keep the end date of original reservation`() {
+        val endDate = timeProvider.getCurrentDate().plusWeeks(2)
+
+        val newReservation =
+            reservationService.insertBoatSpaceReservation(
+                citizenIdOlivia,
+                citizenIdOlivia,
+                boatSpaceIdForStorage,
+                CreationType.New,
+                startDate = timeProvider.getCurrentDate().minusWeeks(2),
+                endDate = endDate,
+                validity = ReservationValidity.FixedTerm
+            )
+
+        formReservationService.processBoatSpaceReservation(
+            citizenIdOlivia,
+            ReserveBoatSpaceInput(
+                newReservation.id,
+                boatId = 0,
+                boatType = BoatType.Sailboat,
+                width = BigDecimal(3.5),
+                length = BigDecimal(6.5),
+                depth = BigDecimal(3.0),
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                email = "test@email.com",
+                phone = "1234567890",
+                storageType = StorageType.Buck,
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.FixedTerm,
+            newReservation.startDate,
+            newReservation.endDate
+        )
+
+        val originalReservation = reservationService.getBoatSpaceReservation(newReservation.id)
+        terminateService.terminateBoatSpaceReservationAsOwner(newReservation.id, citizenIdOlivia)
+        val terminatedReservation = reservationService.getBoatSpaceReservation(newReservation.id)
+
+        assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
+        assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
+        assertEquals(endDate, terminatedReservation?.endDate, "End date is set to the original end date")
     }
 
     @Test
