@@ -208,6 +208,7 @@ data class BoatSpaceReportRow(
     val creationType: CreationType?,
     val boatSpaceType: BoatSpaceType?,
     val reservationStatus: ReservationStatus?,
+    val email: String?,
 )
 
 data class BoatSpaceReportRowWithWarnings(
@@ -312,7 +313,8 @@ fun getBoatSpaceReport(
                         p.paid,
                         bsr.creation_type,
                         bs.type AS boat_space_type,
-                        bsr.status AS reservation_status
+                        bsr.status AS reservation_status,
+                        r.email
                     FROM boat_space bs
                          LEFT JOIN location l ON l.id = bs.location_id
                          LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
@@ -360,7 +362,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "irtisanomissyy",
             "alkupvm",
             "loppupvm",
-            "maksupäivä"
+            "maksupäivä",
+            "sähköposti"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -407,6 +410,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.email ?: ""))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -477,7 +482,8 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             "irtisanomissyy",
             "alkupvm",
             "loppupvm",
-            "maksupäivä"
+            "maksupäivä",
+            "sähköposti"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -524,6 +530,8 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.email ?: ""))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -553,7 +561,8 @@ fun warningsBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRowWithWarnings
             "alkupvm",
             "loppupvm",
             "maksupäivä",
-            "varoitukset"
+            "varoitukset",
+            "sähköposti"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -603,6 +612,8 @@ fun warningsBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRowWithWarnings
             .append(sanitizeCsvCellData(localDateTimeToText(reservation.paid)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(warningsToText(reservationWithWarnings.warnings)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservation.email ?: ""))
             .append(CSV_RECORD_SEPARATOR)
     }
 
