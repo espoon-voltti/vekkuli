@@ -35,21 +35,26 @@ class TerminateReservationService(
         if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
             throw Unauthorized()
         }
-        val reservation =
-            terminateReservationRepository.terminateBoatSpaceReservation(
-                reservationId,
-                timeProvider.getCurrentDate(),
-                ReservationTerminationReason.UserRequest,
-                null
-            )
 
-        if (reservation == null) {
-            throw BadRequest("Reservation not found")
-        }
+        val reservation = reservationService.getBoatSpaceReservation(reservationId) ?: throw BadRequest("Reservation not found")
 
+        val terminatedReservation =
+            when (reservation.type) {
+                BoatSpaceType.Trailer,
+                BoatSpaceType.Slip ->
+                    executeBoatSpaceReservationTerminationAsOwner(
+                        reservationId,
+                        timeProvider.getCurrentDate()
+                    )
+                BoatSpaceType.Storage, BoatSpaceType.Winter ->
+                    executeBoatSpaceReservationTerminationAsOwner(
+                        reservationId,
+                        reservation.endDate
+                    )
+            }
         reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
-        sendTerminationNotice(reservation, terminatorId)
+        sendTerminationNotice(terminatedReservation, terminatorId)
     }
 
     @Transactional
@@ -80,6 +85,23 @@ class TerminateReservationService(
         reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
         sendCustomTerminationNotice(reservation, terminatorId, messageTitle, messageContent)
+    }
+
+    private fun executeBoatSpaceReservationTerminationAsOwner(
+        reservationId: Int,
+        endDate: LocalDate,
+        comment: String? = null
+    ): BoatSpaceReservation {
+        val reservation =
+            terminateReservationRepository.terminateBoatSpaceReservation(
+                reservationId,
+                endDate,
+                ReservationTerminationReason.UserRequest,
+                comment
+            )
+                ?: throw BadRequest("Reservation not found")
+
+        return reservation
     }
 
     private fun sendTerminationNotice(
