@@ -1,5 +1,5 @@
 import type { CacheProvider } from '@node-saml/passport-saml'
-import { RedisClient } from '../../clients/redis-client.js'
+import { VekkuliRedisClient } from '../../index.js'
 
 export interface ProviderOptions {
   /**
@@ -25,7 +25,7 @@ export interface ProviderOptions {
  * Strategies simultaneously by allowing keyPrefix configuration.
  */
 export default function redisCacheProvider(
-  client: RedisClient,
+  client: VekkuliRedisClient,
   options: ProviderOptions
 ): CacheProvider {
   const { ttlSeconds = 60 * 60, keyPrefix } = options

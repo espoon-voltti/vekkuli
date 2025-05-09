@@ -1,4 +1,3 @@
-import { RedisClientOptions } from 'redis'
 import { ValidateInResponseTo } from '@node-saml/node-saml'
 
 export interface Config {
@@ -36,17 +35,6 @@ interface RedisConfig {
   tlsServerName: string | undefined
   disableSecurity: boolean
 }
-
-export const toRedisClientOpts = (config: RedisConfig): RedisClientOptions => ({
-  socket: {
-    host: config.host,
-    port: config.port,
-    ...(config.disableSecurity
-      ? undefined
-      : { tls: true, servername: config.tlsServerName })
-  },
-  ...(config.disableSecurity ? undefined : { password: config.password })
-})
 
 export interface EspooSamlConfig {
   callbackUrl: string
