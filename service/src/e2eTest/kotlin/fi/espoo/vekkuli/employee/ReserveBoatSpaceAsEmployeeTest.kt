@@ -978,7 +978,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun `After reselecting "new citizen", the previously selected citizen is no longer selected`() {
+    fun `After reselecting 'new citizen', the previously selected citizen is no longer selected`() {
         val listingPage = reservationListPage()
         listingPage.createReservation.click()
 
@@ -1039,6 +1039,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.citizenSearchOption1.click()
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
+        val email = "test@email.com"
+        val phone = "123456789"
+        formPage.emailInput.fill(email)
+        formPage.phoneInput.fill(phone)
 
         val orgName = "My Organization"
         formPage.organizationRadioButton.click()
@@ -1096,7 +1100,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
         assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("foo@bar.com", expectedInvoiceAddress, false)
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", expectedInvoiceAddress, false)
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice(email, expectedInvoiceAddress, false)
     }
 
     @Test

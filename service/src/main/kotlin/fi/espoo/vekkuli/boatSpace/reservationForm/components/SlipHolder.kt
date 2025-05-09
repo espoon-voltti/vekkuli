@@ -26,8 +26,8 @@ class SlipHolder(
                hx-trigger="change"
                hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                hx-include="#form"
-               hx-target="#form"
-               hx-select="#form"
+               hx-target="#reserver-boat-information"
+               hx-select="#reserver-boat-information"
                hx-swap="outerHTML"
                ${if (selectedOrganizationId == org.id) "checked" else ""}
             />
@@ -52,8 +52,8 @@ class SlipHolder(
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                         hx-include="#form"
-                        hx-target="#form"
-                        hx-select="#form"
+                        hx-target="#reserver-boat-information"
+                        hx-select="#reserver-boat-information"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
                     />
@@ -115,7 +115,7 @@ class SlipHolder(
             )
         // language=HTML
         return """
-            <div>
+            <div class='pt-m'>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $nameInput
@@ -270,7 +270,7 @@ class SlipHolder(
             <div class="form-section-top-line">
                 <div class="columns">
                     <div class="column is-narrow">
-                        <h4>${t("organizationDetails.title.billingInformation")}</h4>
+                        <h3>${t("organizationDetails.title.billingInformation")}</h3>
                     </div>
                 </div>
                 <div class="columns">
@@ -313,8 +313,8 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form"
-                            hx-select="#form"
+                            hx-target="#reserver-boat-information"
+                            hx-select="#reserver-boat-information"
                             hx-swap="outerHTML"
                            ${if (!isOrganization) "checked" else ""}
                         />
@@ -328,8 +328,8 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form"
-                            hx-select="#form"
+                            hx-target="#reserver-boat-information"
+                            hx-select="#reserver-boat-information"
                             hx-swap="outerHTML"
                            ${if (isOrganization) "checked" else ""}
                         />
