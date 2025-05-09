@@ -7,11 +7,11 @@ import {
 } from 'date-fns'
 import express from 'express'
 import session from 'express-session'
-import { RedisClient } from '../clients/redis-client.js'
 import { SessionConfig } from '../config.js'
 import { LogoutToken, toMiddleware } from '../utils/express.js'
 import { fromCallback } from '../utils/promise-utils.js'
 import { UserType } from './index.js'
+import { VekkuliRedisClient } from '../index.js'
 
 type SessionType = UserType
 
@@ -52,7 +52,7 @@ export interface Sessions {
 
 export function sessionSupport(
   sessionType: SessionType,
-  redisClient: RedisClient,
+  redisClient: VekkuliRedisClient,
   config: SessionConfig
 ): Sessions {
   const cookieName = sessionCookie(sessionType)

@@ -9,14 +9,14 @@ import redisCacheProvider from './auth/saml/passport-saml-cache-redis.js'
 import createSamlRouter from './auth/saml/saml-routes.js'
 import { sessionSupport } from './auth/session.js'
 import { createSuomiFiStrategy } from './auth/suomifi-saml.js'
-import { RedisClient } from './clients/redis-client.js'
 import { citizenRootUrl, Config } from './config.js'
 import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
+import { VekkuliRedisClient } from './index.js'
 
 export function createAuthRouter(
   config: Config,
-  redisClient: RedisClient
+  redisClient: VekkuliRedisClient
 ): Router {
   const router = Router()
 
