@@ -74,6 +74,7 @@ class BoatSpaceRenewController(
                 invoicePreview.render(
                     invoiceModel,
                     submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.originalReservationId}/lasku",
+                    redirectUrl = "/virkailija/kayttaja/${renewedReservation.reserverId}",
                     backUrl = getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId),
                     deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.id}/lasku",
                     invoiceModel.orgId.isNotEmpty()
