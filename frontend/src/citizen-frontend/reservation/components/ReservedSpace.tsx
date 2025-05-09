@@ -14,10 +14,12 @@ import ReserverPriceInfo from './ReserverPriceInfo'
 
 export default React.memo(function ReservedSpace({
   reservation,
-  reservationInfoForReservation
+  reservationInfoForReservation,
+  showPriceInfo = true
 }: {
   reservation: BoatSpaceReservation
   reservationInfoForReservation: ReservationInfoForReservation
+  showPriceInfo?: boolean
 }) {
   const i18n = useTranslation()
   const { netPrice, totalPrice, vatValue, boatSpace } = reservation
@@ -111,9 +113,11 @@ export default React.memo(function ReservedSpace({
             />
           </div>
         </div>
-        <ReserverPriceInfo
-          reservationInfoForReservation={reservationInfoForReservation}
-        />
+        {showPriceInfo && (
+          <ReserverPriceInfo
+            reservationInfoForReservation={reservationInfoForReservation}
+          />
+        )}
       </div>
     </>
   )
