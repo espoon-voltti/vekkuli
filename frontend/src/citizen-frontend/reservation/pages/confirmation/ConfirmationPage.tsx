@@ -66,6 +66,7 @@ const Content = React.memo(function Content({
             <ReservedSpace
               reservation={loadedReservation}
               reservationInfoForReservation={reservationPriceInfo}
+              showPriceInfo={false}
             />
           </>
         )
