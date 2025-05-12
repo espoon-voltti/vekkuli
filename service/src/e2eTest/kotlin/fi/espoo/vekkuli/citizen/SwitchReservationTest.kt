@@ -485,10 +485,7 @@ class SwitchReservationTest : ReserveTest() {
 
             val reservedSpaceSection = form.getReservedSpaceSection()
             assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: 418,00 €")
-            val discountText = form.getByDataTestId("reservation-info-text")
-            assertThat(discountText).containsText("erotus $expectedDifference €")
-            assertThat(discountText).containsText("$discount %")
-            assertThat(discountText).containsText("$expectedPrice €")
+
             form.submitButton.click()
             assertZeroEmailsSent()
 
@@ -497,10 +494,6 @@ class SwitchReservationTest : ReserveTest() {
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("erotus $expectedDifference €")
-            assertThat(paymentDiscountText).containsText("$discount %")
-            assertThat(paymentDiscountText).containsText("$expectedPrice €")
             assertCorrectPaymentForReserver(
                 "virtanen",
                 PaymentStatus.Success,

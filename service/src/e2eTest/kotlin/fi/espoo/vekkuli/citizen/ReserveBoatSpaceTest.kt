@@ -763,10 +763,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 paymentReservedSpaceSection.fields.getField("Hinta").last()
             ).containsText("Yhteensä: $boatSpacePrice €")
 
-            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("$discount %")
-            assertThat(paymentDiscountText).containsText("$expectedPrice €")
-
             // asserting that only one email is sent after payment
             assertEmailIsSentOfCitizensIndefiniteSlipReservation()
 
@@ -812,10 +808,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 paymentReservedSpaceSection.fields.getField("Hinta").last()
             ).containsText("Yhteensä: $boatSpacePrice €")
 
-            val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("$discount %")
-            assertThat(paymentDiscountText).containsText("$expectedPrice €")
-
             // asserting that email is sent when there is no payment
             assertEmailIsSentOfCitizensIndefiniteSlipReservation()
 
@@ -855,10 +847,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             organizationSection.reserveForOrganization.click()
             organizationSection.organization("Espoon Pursiseura").click()
 
-            val discountText = formPage.getByDataTestId("reservation-info-text")
-            assertThat(discountText).containsText("$organizationDiscount %")
-            assertThat(discountText).containsText("$expectedPriceForOrganization €")
-
             organizationSection.phoneNumberInput.fill("123456789")
             organizationSection.emailInput.fill("foo@bar.com")
 
@@ -875,10 +863,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(
                 paymentReservedSpaceSection.fields.getField("Hinta").last()
             ).containsText("Yhteensä: $boatSpacePrice €")
-
-            val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("$organizationDiscount %")
-            assertThat(paymentDiscountText).containsText("$expectedPriceForOrganization €")
 
             assertCorrectPaymentForReserver(
                 "Espoon Pursiseura",

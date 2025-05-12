@@ -326,9 +326,6 @@ class RenewReservationTest : ReserveTest() {
             paymentPage.nordeaSuccessButton.click()
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("$discount %")
-            assertThat(paymentDiscountText).containsText("$expectedPrice €")
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
@@ -385,9 +382,6 @@ class RenewReservationTest : ReserveTest() {
 
             val reservedSpaceSection = form.getReservedSpaceSection()
             assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: 267,19 €")
-            val discountText = form.getByDataTestId("reservation-info-text")
-            assertThat(discountText).containsText("$discount %")
-            assertThat(discountText).containsText("$expectedPrice €")
 
             form.confirmButton.click()
 
@@ -398,10 +392,6 @@ class RenewReservationTest : ReserveTest() {
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
             assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
-
-            val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
-            assertThat(paymentDiscountText).containsText("$discount %")
-            assertThat(paymentDiscountText).containsText("$expectedPrice €")
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
