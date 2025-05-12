@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
@@ -26,6 +27,9 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         deleteAllReservations(jdbi)
         deleteAllBoats(jdbi)
     }
+
+    @Autowired
+    private lateinit var terminateReservationService: TerminateReservationService
 
     @Autowired
     private lateinit var organizationService: OrganizationService
@@ -124,6 +128,56 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         val boat = boatService.getBoat(newBoat.id)
         assertEquals(true, boatDeleted, "Boat is deleted according to return value")
         assertEquals(timeProvider.getCurrentDateTime(), boat?.deletedAt, "Boat is deleted at current time")
+    }
+
+    @Test
+    fun `should delete warnings for the deleted boat`() {
+        val citizen = citizenIdMikko
+        val newBoat = insertNewBoat(citizen)
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    newBoat.id
+                )
+            )
+        reservationWarningRepository.addReservationWarnings(
+            listOf(
+                ReservationWarning(
+                    id = UUID.randomUUID(),
+                    reservationId = reservation.id,
+                    boatId = newBoat.id,
+                    key = ReservationWarningType.BoatWidth,
+                    infoText = null,
+                    invoiceNumber = null,
+                    trailerId = null
+                ),
+                ReservationWarning(
+                    id = UUID.randomUUID(),
+                    reservationId = reservation.id,
+                    boatId = null,
+                    key = ReservationWarningType.GeneralReservationWarning,
+                    infoText = null,
+                    invoiceNumber = null,
+                    trailerId = null
+                )
+            )
+        )
+
+        val warningsBefore = reservationWarningRepository.getWarningsForReserver(citizen)
+        assertEquals(1, warningsBefore, "One warning should exist for the reserver")
+
+        // go forth a year and one day, the previous reservation has now expired
+        mockTimeProvider(
+            timeProvider,
+            timeProvider.getCurrentDateTime().plusYears(1).plusDays(1),
+        )
+        val boatDeleted = boatService.deleteBoat(newBoat.id)
+        val warnings = reservationWarningRepository.getWarningsForReserver(citizenIdLeo)
+        assertEquals(true, boatDeleted, "Boat is successfully deleted")
+        assertEquals(0, warnings, "Warnings should have been removed")
     }
 
     @Test

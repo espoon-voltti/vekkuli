@@ -94,6 +94,8 @@ interface ReservationWarningRepository {
         reservationId: Int,
         keys: List<ReservationWarningType>? = null
     )
+
+    fun deleteReservationWarningsForBoat(boatId: Int)
 }
 
 private val logger = KotlinLogging.logger {}

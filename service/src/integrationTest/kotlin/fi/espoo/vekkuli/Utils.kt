@@ -120,26 +120,6 @@ class TestUtils(
         return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
     }
 
-    fun createReservationInRenewState(params: CreateReservationParams): BoatSpaceReservation =
-        createReservationWithBoat(
-            reservationService,
-            params.reserverId,
-            params.citizenId,
-            params.boatSpaceId,
-            params.timeProvider,
-            params.boatId,
-            ReservationStatus.Info
-        )
-
-    fun createReservationInPaymentState(
-        timeProvider: TimeProvider,
-        reservationService: BoatReservationService,
-        reserverId: UUID,
-        citizenId: UUID = reserverId,
-        boatSpaceId: Int = 1,
-        boatId: Int = 1
-    ): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, citizenId, boatSpaceId, timeProvider, boatId)
-
     fun createReservationInPaymentState(
         timeProvider: TimeProvider,
         reservationService: BoatReservationService,
