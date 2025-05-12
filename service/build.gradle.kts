@@ -138,7 +138,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.16")
     implementation("commons-codec:commons-codec:1.18.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.48.1")
+    downloadOnly("com.datadoghq:dd-java-agent:1.49.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
