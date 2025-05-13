@@ -138,7 +138,7 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
                     timeProvider,
-                    this.citizenIdLeo,
+                    citizen,
                     1,
                     newBoat.id
                 )
@@ -166,8 +166,8 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
             )
         )
 
-        val warningsBefore = reservationWarningRepository.getWarningsForReserver(citizen)
-        assertEquals(1, warningsBefore, "One warning should exist for the reserver")
+        val warningsBefore = reservationWarningRepository.getWarningsForReserver(citizen).size
+        assertEquals(2, warningsBefore, "Added warnings should exist for the reserver")
 
         // go forth a year and one day, the previous reservation has now expired
         mockTimeProvider(
@@ -175,9 +175,9 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDateTime().plusYears(1).plusDays(1),
         )
         val boatDeleted = boatService.deleteBoat(newBoat.id)
-        val warnings = reservationWarningRepository.getWarningsForReserver(citizenIdLeo)
+        val warnings = reservationWarningRepository.getWarningsForReserver(citizen).size
         assertEquals(true, boatDeleted, "Boat is successfully deleted")
-        assertEquals(0, warnings, "Warnings should have been removed")
+        assertEquals(1, warnings, "Boat warnings should have been removed")
     }
 
     @Test
