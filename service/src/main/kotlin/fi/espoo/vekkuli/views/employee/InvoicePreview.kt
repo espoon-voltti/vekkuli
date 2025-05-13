@@ -90,6 +90,7 @@ class InvoicePreview(
     fun render(
         model: SendInvoiceModel,
         submitUrl: String,
+        redirectUrl: String,
         backUrl: String,
         deleteUrl: String,
         isOrganization: Boolean
@@ -184,7 +185,7 @@ class InvoicePreview(
                     <form
                         hx-post="$submitUrl"
                         hx-target="body"
-                        hx-push-url="true"
+                        hx-replace-url="$redirectUrl"
                         id="form"
                     >
                     ${invoiceLine(t("invoice.label.booker"), model.reserverName,"reserverName")}
@@ -231,6 +232,7 @@ class InvoicePreview(
                                 hx-target="body"
                                 hx-params="none"
                                 hx-on-htmx-after-request="window.location = '$backUrl';"
+                                hx-replace-url="$backUrl"
                                 type="button">
                                 ${t("invoice.button.cancel")}
                             </button>

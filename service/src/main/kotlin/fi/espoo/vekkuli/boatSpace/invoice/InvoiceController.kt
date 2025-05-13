@@ -56,6 +56,7 @@ class InvoiceController(
             invoicePreview.render(
                 model,
                 submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
+                redirectUrl = "/virkailija/kayttaja/${reservation.reserverId}",
                 backUrl = "/virkailija/venepaikat/varaukset",
                 deleteUrl = "/virkailija/venepaikka/varaus/$reservationId/lasku",
                 isOrganization = reservation.reserverType == ReserverType.Organization
