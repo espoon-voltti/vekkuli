@@ -139,7 +139,7 @@ export const harbors = [
   { value: '7', label: 'Svinö' }
 ] as const
 
-export type Harbor = (typeof harbors)[number]
+export type HarborId = (typeof harbors)[number]['value']
 
 export type TrailerId = number
 

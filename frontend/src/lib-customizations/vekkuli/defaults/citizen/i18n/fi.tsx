@@ -131,8 +131,10 @@ export default {
     mainNavigation: 'Päänavigaatio',
     instructionsLink: 'Ohje',
     openInANewWindow: 'Avaa uudessa välilehdessä',
-    mapsLink: 'Satamien ja säilytyspaikkojen kartat voit avata uudelle välilehdelle tästä',
-    harborsInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venesatamat',
+    mapsLink:
+      'Satamien ja säilytyspaikkojen kartat voit avata uudelle välilehdelle tästä',
+    harborsInfoLink:
+      'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venesatamat'
   },
   footer: {
     accessibilityLink: 'Saavutettavuusseloste',
@@ -560,6 +562,15 @@ export default {
       Trailer: 'Trailerisäilytys',
       Buck: 'Pukkisäilytys',
       None: '-'
+    },
+    harbors: {
+      1: 'Haukilahti',
+      2: 'Kivenlahti',
+      3: 'Laajalahti',
+      4: 'Otsolahti',
+      5: 'Soukka',
+      6: 'Suomenoja',
+      7: 'Svinö'
     },
     winterStorageType: {
       Trailer: 'Trailerisäilytys',

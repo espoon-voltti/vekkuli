@@ -132,8 +132,9 @@ const en: Translations = {
     mainNavigation: 'Main navigation',
     instructionsLink: 'Guide',
     openInANewWindow: 'Open in a new tab',
-    mapsLink: 'You can open the maps of harbors and storage locations in a new tab from here.',
-    harborsInfoLink: 'https://www.espoo.fi/en/sports-and-nature/boating/marinas',
+    mapsLink:
+      'You can open the maps of harbors and storage locations in a new tab from here.',
+    harborsInfoLink: 'https://www.espoo.fi/en/sports-and-nature/boating/marinas'
   },
   footer: {
     accessibilityLink: 'Accessibility statement',
@@ -548,6 +549,15 @@ const en: Translations = {
       Trailer: 'Trailer storage',
       Buck: 'Stand storage',
       None: '-'
+    },
+    harbors: {
+      1: 'Haukilahti',
+      2: 'Kivenlahti',
+      3: 'Laajalahti',
+      4: 'Otsolahti',
+      5: 'Soukka',
+      6: 'Suomenoja',
+      7: 'Svinö'
     },
     ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
       if (type === 'CoOwner') {

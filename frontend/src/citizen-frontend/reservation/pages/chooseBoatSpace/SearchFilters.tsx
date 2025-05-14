@@ -8,8 +8,8 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 
+import { StorageInfo } from './StorageInfo'
 import { SearchForm } from './formDefinitions'
-import {StorageInfo} from "./StorageInfo";
 
 interface SearchFiltersProps {
   bind: BoundForm<SearchForm>
@@ -42,16 +42,19 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
         />
       </div>
       <div className="block">
-          <CheckboxField
-              id="harbor"
-              name="harbor"
-              bind={harbor}
-              label={i18n.reservation.searchPage.filters.harborHeader}
-              infoText={i18n.reservation.searchPage.filters.branchSpecific[branch].harborInfo}
-          />
+        <CheckboxField
+          id="harbor"
+          name="harbor"
+          bind={harbor}
+          label={i18n.reservation.searchPage.filters.harborHeader}
+          infoText={
+            i18n.reservation.searchPage.filters.branchSpecific[branch]
+              .harborInfo
+          }
+        />
       </div>
 
-        {boatType.state.options.length === 0 ? null : (
+      {boatType.state.options.length === 0 ? null : (
         <div className="block">
           <SelectField
             id="boat-type"

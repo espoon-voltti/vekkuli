@@ -3,7 +3,7 @@ import {
   BoatSpaceType,
   boatSpaceTypes,
   BoatType,
-  Harbor,
+  HarborId,
   harbors
 } from 'citizen-frontend/shared/types'
 import { StateOf } from 'lib-common/form/types'
@@ -27,7 +27,7 @@ export type BranchSearchState = {
   width?: number
   length?: number
   amenities: BoatSpaceAmenity[]
-  harbors: Harbor[]
+  harbors: HarborId[]
 }
 
 function useStoredSearchState(): [
@@ -80,8 +80,10 @@ function convertSpaceStateToBranchSearchState(
     width: parseFloat(spaceState.width) || undefined,
     length: parseFloat(spaceState.length) || undefined,
     amenities: amenities as BoatSpaceAmenity[],
-    harbors: harbors.filter((h) => {
-      return spaceState.harbor.domValues.includes(h.value)
-    })
+    harbors: harbors
+      .filter((h) => {
+        return spaceState.harbor.domValues.includes(h.value)
+      })
+      .map((h) => h.value)
   }
 }

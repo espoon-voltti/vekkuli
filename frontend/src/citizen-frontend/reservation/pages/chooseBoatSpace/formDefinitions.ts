@@ -7,7 +7,7 @@ import {
   boatSpaceTypes,
   BoatType,
   boatTypes,
-  Harbor,
+  HarborId,
   harbors
 } from 'citizen-frontend/shared/types'
 import { positiveNumber } from 'lib-common/form/fields'
@@ -31,7 +31,7 @@ const searchSpaceParamsForm = object({
   length: required(positiveNumber()),
   amenities: multiSelect<BoatSpaceAmenity>(),
   storageAmenity: oneOf<BoatSpaceAmenity>(),
-  harbor: multiSelect<Harbor>()
+  harbor: multiSelect<HarborId>()
 })
 
 export type SearchSpaceParamsForm = typeof searchSpaceParamsForm
@@ -78,8 +78,7 @@ export const searchFreeSpacesForm = mapped(
       spaceType: output.boatSpaceType,
       amenities: parseAmenities(output.boatSpaceUnionForm),
       harbor:
-        output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor.value) ||
-        [],
+        output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor) || [],
       width: output.boatSpaceUnionForm.value.width,
       length: output.boatSpaceUnionForm.value.length
     }
@@ -100,7 +99,7 @@ function buildBranchDefaultValues(
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
   let boatType: BoatType = 'OutboardMotor'
-  let harbors: Harbor[] = []
+  let harbors: HarborId[] = []
   let amenities: BoatSpaceAmenity[] = []
   if (switchInfo && switchInfo.spaceType === branch) {
     if (switchInfo.width) width = formatInputNumberValue(switchInfo.width)
@@ -153,7 +152,7 @@ type initialFormStateDefaultValues = {
 type initialFormStateDefaultValue = {
   width: string
   length: string
-  harbors: Harbor[]
+  harbors: HarborId[]
   amenities: BoatSpaceAmenity[]
   boatType: BoatType
 }
@@ -196,7 +195,7 @@ export const initialUnionFormState = (
   defaults: initialFormStateDefaultValues
 ): StateOf<SearchFormUnion> => {
   let branchAmenities: BoatSpaceAmenity[] = []
-  let branchHarbors: Harbor[] = []
+  let branchHarbors: HarborId[] = []
   let branchBoatTypes: BoatType[] = []
   let storageAmenities: BoatSpaceAmenity[] = []
   let selectedStorageAmenity = ''
@@ -207,12 +206,14 @@ export const initialUnionFormState = (
     case 'Slip':
       branchBoatTypes = boatTypes.map((t) => t)
       branchAmenities = ['Buoy', 'RearBuoy', 'Beam', 'WalkBeam']
-      branchHarbors = harbors.map((h) => h)
+      branchHarbors = harbors.map((h) => h.value)
       break
     case 'Winter':
-      branchHarbors = harbors.filter((h) =>
-        ['Laajalahti', 'Otsolahti', 'Suomenoja'].includes(h.label)
-      )
+      branchHarbors = harbors
+        .filter((h) =>
+          ['Laajalahti', 'Otsolahti', 'Suomenoja'].includes(h.label)
+        )
+        .map((h) => h.value)
       break
     case 'Storage':
       storageAmenities = ['Trailer', 'Buck']
@@ -221,10 +222,8 @@ export const initialUnionFormState = (
   }
 
   const selectedHarbors = branchHarbors
-    .filter((bh) =>
-      defaults[branch].harbors.map((dh) => dh.value).includes(bh.value)
-    )
-    .map((h) => h.value)
+    .filter((bh) => defaults[branch].harbors.map((dh) => dh).includes(bh))
+    .map((h) => h)
 
   return {
     branch: branch,
@@ -247,10 +246,10 @@ export const initialUnionFormState = (
       },
       harbor: {
         domValues: selectedHarbors,
-        options: branchHarbors.map((harbor) => ({
-          domValue: harbor.value,
-          label: harbor.label,
-          value: harbor
+        options: branchHarbors.map((harborId) => ({
+          domValue: harborId,
+          label: (i18n) => i18n.boatSpace.harbors[harborId],
+          value: harborId
         }))
       },
       width: width,
