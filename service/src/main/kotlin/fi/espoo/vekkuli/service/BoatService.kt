@@ -10,7 +10,8 @@ import java.util.*
 @Service
 class BoatService(
     private val boatRepository: BoatRepository,
-    private val boatReservationService: BoatReservationService
+    private val boatReservationService: BoatReservationService,
+    private val warningRepository: ReservationWarningRepository
 ) {
     fun getBoatsForReserver(reserverId: UUID): List<Boat> = boatRepository.getBoatsForReserver(reserverId)
 
@@ -61,7 +62,9 @@ class BoatService(
         if (reservations.isNotEmpty()) {
             throw IllegalStateException("Cannot delete boat with active reservations")
         }
+        val boatDeleted = boatRepository.deleteBoat(boatId)
 
-        return boatRepository.deleteBoat(boatId)
+        warningRepository.deleteReservationWarningsForBoat(boatId)
+        return boatDeleted
     }
 }

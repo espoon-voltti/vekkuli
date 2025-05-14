@@ -143,4 +143,19 @@ class JdbiReservationWarningRepository(
             query.execute()
         }
     }
+
+    override fun deleteReservationWarningsForBoat(boatId: Int) {
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle
+                    .createUpdate(
+                        """
+                    DELETE from reservation_warning
+                    WHERE boat_id = :boatId
+                    """
+                    ).bind("boatId", boatId)
+
+            query.execute()
+        }
+    }
 }
