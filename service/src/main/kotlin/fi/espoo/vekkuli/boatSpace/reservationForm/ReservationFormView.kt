@@ -123,11 +123,10 @@ class ReservationFormView(
         val slipHolder =
             slipHolder.render(
                 organizations,
-                input.isOrganization ?: false,
-                input.organizationId,
                 userType,
                 reservation.id,
-                municipalities
+                municipalities,
+                input
             )
         val boatForm =
             boatForm.render(
@@ -209,11 +208,10 @@ class ReservationFormView(
         val slipHolder =
             slipHolder.render(
                 organizations,
-                input.isOrganization ?: false,
-                input.organizationId,
                 userType,
                 reservation.id,
-                municipalities
+                municipalities,
+                input
             )
         val boatForm =
             boatForm.render(
@@ -300,11 +298,10 @@ class ReservationFormView(
         val slipHolder =
             slipHolder.render(
                 organizations,
-                input.isOrganization ?: false,
-                input.organizationId,
                 userType,
                 reservation.id,
-                municipalities
+                municipalities,
+                input
             )
         val boatForm =
             boatForm.render(
@@ -387,11 +384,10 @@ class ReservationFormView(
         val slipHolder =
             slipHolder.render(
                 organizations,
-                input.isOrganization ?: false,
-                input.organizationId,
                 userType,
                 reservation.id,
-                municipalities
+                municipalities,
+                input
             )
         val boatForm =
             boatForm.render(
