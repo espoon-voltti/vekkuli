@@ -29,7 +29,7 @@ export default React.memo(function OrganizationInformation({
     organization.postOffice || ''
   )
   return (
-    <Container isBlock>
+    <Container isBlock data-testid='organization-information'>
       <FormSection>
         <Columns>
           <Column>

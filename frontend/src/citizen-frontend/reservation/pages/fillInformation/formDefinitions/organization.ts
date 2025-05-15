@@ -5,7 +5,7 @@ import {
   ReserverType,
   reserverTypes
 } from 'citizen-frontend/shared/types'
-import { number, string } from 'lib-common/form/fields'
+import {number, string, whitespaceTrimmedString} from 'lib-common/form/fields'
 import {
   mapped,
   object,
@@ -27,8 +27,8 @@ const organizationInfoForm = object({
   name: required(string()),
   businessId: required(string()),
   municipality: required(oneOf<Municipality>()),
-  phone: required(string()),
-  email: required(string()),
+  phone: required(whitespaceTrimmedString()),
+  email: required(whitespaceTrimmedString()),
   streetAddress: string(),
   postalCode: string(),
   postOffice: string(),

@@ -46,12 +46,11 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.editButton.click()
-
             assertThat(page.getByTestId("edit-citizen-form")).isVisible()
             val citizenFirstName = "New First Name"
             val citizenLastName = "New Last Name"
-            val citizenPhone = "0405839281"
-            val citizenEmail = "test2@email.com"
+            val citizenPhone = "040 5839281"
+            val citizenEmail = "test2@ email.com"
             val citizenAddress = "New Address"
             val citizenNationalId = "031195-950Y"
             val citizenPostalCode = "12345"
@@ -84,8 +83,8 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             // assert that the values are updated
             assertThat(citizenDetails.citizenFirstNameField).hasText(citizenFirstName)
             assertThat(citizenDetails.citizenLastNameField).hasText(citizenLastName)
-            assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone)
-            assertThat(citizenDetails.citizenEmailField).hasText(citizenEmail)
+            assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone.replace("\\s+".toRegex(), ""))
+            assertThat(citizenDetails.citizenEmailField).hasText(citizenEmail.replace("\\s+".toRegex(), ""))
             assertThat(citizenDetails.citizenAddressField).hasText(citizenAddress)
             assertThat(citizenDetails.citizenNationalIdField).hasText(citizenNationalId)
             assertThat(citizenDetails.citizenPostalCodeField).hasText(citizenPostalCode)

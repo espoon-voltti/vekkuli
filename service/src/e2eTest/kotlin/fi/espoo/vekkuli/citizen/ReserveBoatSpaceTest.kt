@@ -398,10 +398,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val trailerSection = formPage.getTrailerStorageTypeSection()
             trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
             val citizenSection = formPage.getCitizenSection()
-            citizenSection.emailInput.fill("test@example.com")
+            citizenSection.emailInput.fill(" test @example.com")
             assertThat(citizenSection.emailError).isHidden()
 
-            citizenSection.phoneInput.fill("123456789")
+            citizenSection.phoneInput.fill("045 123456")
             assertThat(citizenSection.phoneError).isHidden()
 
             userAgreementSection.certifyInfoCheckbox.check()
@@ -420,6 +420,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
+
+            assertThat(confirmationPage.getByDataTestId("citizen-information")).containsText("045123456")
+            assertThat(confirmationPage.getByDataTestId("citizen-information")).containsText("test@example.com")
+
             val reservation = citizenDetailsPage.getReservationSection(0)
             assertEquals("Maksettu 01.05.2025", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
@@ -590,7 +594,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             organizationSection.reserveForOrganization.click()
             organizationSection.organization("Espoon Pursiseura").click()
 
-            organizationSection.phoneNumberInput.fill("123456789")
+            organizationSection.phoneNumberInput.fill("044 123456")
             organizationSection.emailInput.fill("foo@bar.com")
 
             val boatSection = formPage.getBoatSection()
@@ -612,7 +616,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             boatSection.ownerRadio.check()
 
             val citizenSection = formPage.getCitizenSection()
-            citizenSection.emailInput.fill("test@example.com")
+            citizenSection.emailInput.fill(" test@ example.com")
             citizenSection.phoneInput.fill("123456789")
 
             val userAgreementSection = formPage.getUserAgreementSection()
@@ -642,6 +646,14 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertEmailIsSentOfCitizensFixedTermSlipReservation(emailAddress = "foo@bar.com", sendAndAssertSendCount = false)
 
             assertCorrectPaymentForReserver("Espoon Pursiseura", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+            val organizationDetailsPage = OrganizationDetailsPage(page)
+            assertThat(organizationDetailsPage.getByDataTestId("organization-information")).containsText("044123456")
+            assertThat(organizationDetailsPage.getByDataTestId("organization-information")).containsText("test@example.com")
         } catch (e: AssertionError) {
             handleError(e)
         }
