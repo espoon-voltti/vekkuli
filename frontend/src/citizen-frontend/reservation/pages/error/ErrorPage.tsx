@@ -41,7 +41,11 @@ export default React.memo(function ErrorPage() {
                 <div className="column is-one-quarter">
                   <TextField
                     label={i18n.reservation.formPage.harbor}
-                    value={boatSpace.locationName ?? '-'}
+                    value={
+                      boatSpace.locationId
+                        ? i18n.boatSpace.harbors[boatSpace.locationId]
+                        : '-'
+                    }
                     readonly={true}
                   />
                 </div>

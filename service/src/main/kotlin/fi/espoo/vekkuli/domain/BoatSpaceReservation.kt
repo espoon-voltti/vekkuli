@@ -34,6 +34,7 @@ data class BoatSpace(
     val excludedBoatTypes: List<BoatType>? = null,
     val locationName: String?,
     val locationAddress: String?,
+    val locationId: Int?,
     val isActive: Boolean,
 )
 

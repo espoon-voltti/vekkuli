@@ -570,7 +570,8 @@ export default {
       4: 'Otsolahti',
       5: 'Soukka',
       6: 'Suomenoja',
-      7: 'Svinö'
+      7: 'Svinö',
+      8: 'Ämmäsmäki'
     },
     winterStorageType: {
       Trailer: 'Trailerisäilytys',

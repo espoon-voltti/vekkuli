@@ -2,18 +2,19 @@ import React from 'react'
 
 import { Translations, useTranslation } from 'citizen-frontend/localization'
 import { InfoBox } from 'citizen-frontend/reservation/components/InfoBox'
+import { HarborId } from 'citizen-frontend/shared/types'
 
 const BridgeHeightLimitedLocations = {
-  Laajalahti: 3,
-  Otsolahti: 4
+  Laajalahti: '3',
+  Otsolahti: '4'
 } as const
 
-const bridgeHeightLimitedLocationIds: number[] = Object.values(
+const bridgeHeightLimitedLocationIds: string[] = Object.values(
   BridgeHeightLimitedLocations
 )
 
 const getBridgeHeightWarningByLocationId = (
-  locationId: number,
+  locationId: HarborId,
   i18n: Translations
 ) => {
   switch (locationId) {
@@ -27,7 +28,7 @@ const getBridgeHeightWarningByLocationId = (
 }
 
 export const BridgeHeightWarningBox = React.memo(
-  function BridgeHeightWarningBox({ placeId }: { placeId: number }) {
+  function BridgeHeightWarningBox({ placeId }: { placeId: HarborId }) {
     const i18n = useTranslation()
 
     if (!bridgeHeightLimitedLocationIds.includes(placeId)) {

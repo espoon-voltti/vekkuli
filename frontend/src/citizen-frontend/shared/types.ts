@@ -122,7 +122,7 @@ export type BoatSpace = {
   length: number
   description: string
   excludedBoatTypes: BoatType[] | null
-  locationName: string | null
+  locationId: HarborId | null
   minLength: number | null
   maxLength: number | null
   minWidth: number | null
@@ -130,16 +130,17 @@ export type BoatSpace = {
 }
 
 export const harbors = [
-  { value: '1', label: 'Haukilahti' },
-  { value: '2', label: 'Kivenlahti' },
-  { value: '3', label: 'Laajalahti' },
-  { value: '4', label: 'Otsolahti' },
-  { value: '5', label: 'Soukka' },
-  { value: '6', label: 'Suomenoja' },
-  { value: '7', label: 'Svinö' }
+  '1', // Haukilahti
+  '2', // Kivenlahti
+  '3', // Laajalahti
+  '4', // Otsolahti
+  '5', // Soukka
+  '6', // Suomenoja
+  '7', // Svinö
+  '8' // Ämmäsmäki
 ] as const
 
-export type HarborId = (typeof harbors)[number]['value']
+export type HarborId = (typeof harbors)[number]
 
 export type TrailerId = number
 

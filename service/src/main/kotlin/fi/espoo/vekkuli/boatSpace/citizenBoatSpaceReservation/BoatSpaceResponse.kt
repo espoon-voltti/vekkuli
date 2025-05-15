@@ -16,6 +16,7 @@ data class BoatSpaceResponse(
     val width: BigDecimal,
     val length: BigDecimal,
     val locationName: String?,
+    val locationId: Int?
 )
 
 @Service
@@ -44,5 +45,6 @@ class BoatSpaceResponseMapper(
             width = intToDecimal(boatSpace.widthCm),
             length = intToDecimal(boatSpace.lengthCm),
             locationName = boatSpace.locationName,
+            locationId = boatSpace.locationId
         )
 }

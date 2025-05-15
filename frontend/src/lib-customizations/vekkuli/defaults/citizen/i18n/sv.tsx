@@ -166,7 +166,7 @@ const sv: Translations = {
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
+            `${period} endast Esbobor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
           (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
           (period: string) => `${period} alla kan boka båtplatser`
         ]
@@ -177,7 +177,7 @@ const sv: Translations = {
           `Hyressäsong ${season}. Båt på trailer, sjösättning från ramp.`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
+            `${period} endast Esbobor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
           (period: string) => `${period} alla kan boka trailerplatser`
         ]
       },
@@ -186,13 +186,13 @@ const sv: Translations = {
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
+            `${period} endast Esbobor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
           (period: string) =>
-            `${period} endast Esbo-bor* kan boka vinterförvaringsplatser`
+            `${period} endast Esbobor* kan boka vinterförvaringsplatser`
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplatser i Ämmässuo 2025 **',
+        title: 'Boka förvaringsplatser i Käringbacken 2025 **',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -568,7 +568,8 @@ const sv: Translations = {
       4: 'Bredvik',
       5: 'Björnviken',
       6: 'Sökö',
-      7: 'Gäddvik'
+      7: 'Gäddvik',
+      8: 'Käringbacken'
     },
     winterStorageType: {
       Trailer: 'Trailerförvaring',

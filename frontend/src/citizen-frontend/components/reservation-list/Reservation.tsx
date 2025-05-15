@@ -34,7 +34,8 @@ export default React.memo(function Reservation({
 }) {
   const canSwitch = reservation.allowedReservationOperations.includes('Switch')
   const canRenew = reservation.allowedReservationOperations.includes('Renew')
-  const canTerminate = reservation.allowedReservationOperations.includes('Terminate')
+  const canTerminate =
+    reservation.allowedReservationOperations.includes('Terminate')
 
   const i18n = useTranslation()
   const [buttonsVisible, setButtonsVisible] = useState(true)
@@ -64,15 +65,15 @@ export default React.memo(function Reservation({
   const formattedPlaceIdentifier = formatPlaceIdentifier(
     boatSpace.section,
     boatSpace.placeNumber,
-    boatSpace.locationName
+    boatSpace.locationId && i18n.boatSpace.harbors[boatSpace.locationId]
   )
 
   const paymentStatus =
-      reservation.status === 'Confirmed' || reservation.status === 'Cancelled' ?
-        i18n.reservation.paymentState(reservation.paymentDate) :
-      reservation.status === 'Invoiced' ?
-        i18n.reservation.invoiceState(reservation.dueDate)
-      : '-'
+    reservation.status === 'Confirmed' || reservation.status === 'Cancelled'
+      ? i18n.reservation.paymentState(reservation.paymentDate)
+      : reservation.status === 'Invoiced'
+        ? i18n.reservation.invoiceState(reservation.dueDate)
+        : '-'
 
   return (
     <>
@@ -86,7 +87,11 @@ export default React.memo(function Reservation({
           <Column>
             <TextField
               label={i18n.citizenPage.reservation.harbor}
-              value={boatSpace.locationName || undefined}
+              value={
+                boatSpace.locationId
+                  ? i18n.boatSpace.harbors[boatSpace.locationId]
+                  : undefined
+              }
               readonly={true}
             />
             <NumberField

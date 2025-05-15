@@ -557,7 +557,8 @@ const en: Translations = {
       4: 'Otsolahti',
       5: 'Soukka',
       6: 'Suomenoja',
-      7: 'Svinö'
+      7: 'Svinö',
+      8: 'Ämmäsmäki'
     },
     ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
       if (type === 'CoOwner') {

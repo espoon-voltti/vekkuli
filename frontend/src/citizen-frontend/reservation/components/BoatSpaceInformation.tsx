@@ -21,7 +21,7 @@ export default React.memo(function BoatSpaceInformation({
         {formatPlaceIdentifier(
           boatSpace.section,
           boatSpace.placeNumber,
-          boatSpace.locationName
+          boatSpace.locationId && i18n.boatSpace.harbors[boatSpace.locationId]
         )}
       </li>
       <li>

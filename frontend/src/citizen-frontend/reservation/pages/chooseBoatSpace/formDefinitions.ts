@@ -206,14 +206,14 @@ export const initialUnionFormState = (
     case 'Slip':
       branchBoatTypes = boatTypes.map((t) => t)
       branchAmenities = ['Buoy', 'RearBuoy', 'Beam', 'WalkBeam']
-      branchHarbors = harbors.map((h) => h.value)
+      // filter out 'Ämmäsmäki'
+      branchHarbors = harbors.filter((h) => h != '8')
       break
+
     case 'Winter':
-      branchHarbors = harbors
-        .filter((h) =>
-          ['Laajalahti', 'Otsolahti', 'Suomenoja'].includes(h.label)
-        )
-        .map((h) => h.value)
+      // filter in 'Laajalahti', 'Otsolahti', 'Suomenoja'
+      branchHarbors = harbors.filter((h) => ['3', '4', '6'].includes(h))
+
       break
     case 'Storage':
       storageAmenities = ['Trailer', 'Buck']
@@ -221,9 +221,9 @@ export const initialUnionFormState = (
       break
   }
 
-  const selectedHarbors = branchHarbors
-    .filter((bh) => defaults[branch].harbors.map((dh) => dh).includes(bh))
-    .map((h) => h)
+  const selectedHarbors = branchHarbors.filter((bh) =>
+    defaults[branch].harbors.map((dh) => dh).includes(bh)
+  )
 
   return {
     branch: branch,

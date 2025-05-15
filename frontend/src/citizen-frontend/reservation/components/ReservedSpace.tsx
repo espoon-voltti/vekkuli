@@ -27,7 +27,6 @@ export default React.memo(function ReservedSpace({
   const hasStorageType =
     reservation.boatSpace.type === 'Winter' ||
     reservation.boatSpace.type === 'Storage'
-
   return (
     <>
       <div className="form-section" data-testid="reserved-space">
@@ -38,7 +37,11 @@ export default React.memo(function ReservedSpace({
           <div className="column is-one-quarter">
             <TextField
               label={i18n.reservation.formPage.harbor}
-              value={boatSpace.locationName ?? '-'}
+              value={
+                reservation.boatSpace.locationId
+                  ? i18n.boatSpace.harbors[reservation.boatSpace.locationId]
+                  : '-'
+              }
               readonly={true}
             />
           </div>

@@ -66,7 +66,8 @@ export default React.memo(function TerminateModal({
               {formatPlaceIdentifier(
                 reservation.boatSpace.section,
                 reservation.boatSpace.placeNumber,
-                reservation.boatSpace.locationName
+                reservation.boatSpace.locationId &&
+                  i18n.boatSpace.harbors[reservation.boatSpace.locationId]
               )}
             </li>
             <li data-testid="boat-space">
