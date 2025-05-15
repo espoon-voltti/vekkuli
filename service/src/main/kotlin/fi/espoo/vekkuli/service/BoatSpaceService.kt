@@ -71,6 +71,8 @@ interface BoatSpaceRepository {
     fun deleteBoatSpaces(boatSpaceIds: List<Int>)
 
     fun createBoatSpace(params: CreateBoatSpaceParams): Int
+
+    fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceReservation>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -182,4 +184,6 @@ class BoatSpaceService(
         }
         boatSpaceRepo.deleteBoatSpaces(boatSpaceIds)
     }
+
+    fun getBoatSpaceHistory(boatSpaceId: Int) = boatSpaceRepo.getBoatSpaceHistory(boatSpaceId)
 }

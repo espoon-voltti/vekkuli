@@ -412,6 +412,32 @@ class JdbiBoatSpaceRepository(
                 .one()
         }
 
+    override fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceReservation> =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT bsr.id,
+                    bsr.boat_space_id,
+                    bsr.start_date,
+                    bsr.end_date,
+                    bsr.created,
+                    bsr.updated,
+                    bsr.status,
+                    bsr.acting_citizen_id,
+                    bsr.reserver_id,
+                    bsr.validity,
+                    p.paid as payment_date,
+                    bsr.creation_type
+                    FROM boat_space_reservation bsr
+                    LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
+                    WHERE bsr.boat_space_id = :boatSpaceId
+                    ORDER BY bsr.start_date DESC
+                """.trimIndent()
+            val query = handle.createQuery(sql)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.mapTo<BoatSpaceReservation>().toList()
+        }
+
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
         jdbi.withHandleUnchecked { handle ->
             val sql =
