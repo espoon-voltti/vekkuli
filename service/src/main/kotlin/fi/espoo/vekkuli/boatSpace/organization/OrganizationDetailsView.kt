@@ -37,7 +37,7 @@ class OrganizationDetailsView(
                     ${commonComponents.goBackButton(backUrl)} 
                     <h2 class='mb-none'>${organization.name}</h2>
                 </div>
-                <div class='container block'>
+                <div class='container block' data-test-id="organization-details">
                     <h3>${t("organizationDetails.title.organizationInformation")}</h3>
                     <div id="organization-information">
                       ${organizationContactDetails.render(organization, organizationMembers)}
