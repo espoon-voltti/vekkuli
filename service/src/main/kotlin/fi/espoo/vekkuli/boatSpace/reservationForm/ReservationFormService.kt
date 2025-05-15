@@ -84,7 +84,12 @@ class ReservationFormService(
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(citizenId, input)
         }
-        updateCitizenReserverContactInfo(citizenId, input.phone ?: "", input.email ?: "")
+
+        // Trim whitespace from phone and email
+        val phone = input.phone?.replace("\\s+".toRegex(), "") ?: ""
+        val email = input.email?.replace("\\s+".toRegex(), "") ?: ""
+
+        updateCitizenReserverContactInfo(citizenId, phone, email)
 
         when (reservation.creationType) {
             CreationType.New ->
@@ -152,7 +157,12 @@ class ReservationFormService(
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(reserverId, input)
         }
-        updateCitizenReserverContactInfo(citizen.id, input.phone ?: "", input.email ?: "")
+
+        // Trim whitespace from phone and email
+        val phone = input.phone?.replace("\\s+".toRegex(), "") ?: ""
+        val email = input.email?.replace("\\s+".toRegex(), "") ?: ""
+
+        updateCitizenReserverContactInfo(citizen.id, phone, email)
         reserveSpaceForEmployee(reservationId, reserverId, input)
     }
 
