@@ -497,4 +497,57 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
         assertEquals("Some of the boat spaces have reservations", message, "Boat space deletion throws correct exception")
     }
+
+    @Test
+    fun `should fetch reservation history for a boat space`() {
+        val params =
+            CreateBoatSpaceParams(
+                1,
+                BoatSpaceType.Storage,
+                "A",
+                1,
+                BoatSpaceAmenity.Trailer,
+                100,
+                200,
+                1,
+                true
+            )
+        val boatSpaceId =
+            boatSpaceService.createBoatSpace(
+                params
+            )
+
+        val endDate = timeProvider.getCurrentDate().plusDays(1)
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdLeo,
+                boatSpaceId,
+                1,
+                validity = ReservationValidity.Indefinite,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = endDate
+            )
+        )
+        var boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+
+        assertEquals(1, boatSpaceReservationHistory.size, "Boat space history should return only current boat space")
+        assertEquals(citizenIdLeo, boatSpaceReservationHistory.single().reserverId, "Boat space history should show current reserver")
+        mockTimeProvider(timeProvider, endDate.plusDays(1).atTime(1, 0, 0, 0))
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdOlivia,
+                boatSpaceId,
+                2,
+                validity = ReservationValidity.Indefinite,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = endDate
+            )
+        )
+        boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+
+        assertEquals(2, boatSpaceReservationHistory.size, "Boat space history should return the expired and new reservation")
+        assertEquals(citizenIdOlivia, boatSpaceReservationHistory[0].reserverId, "Boat space history should show current reserver as first")
+    }
 }
