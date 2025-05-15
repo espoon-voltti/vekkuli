@@ -131,8 +131,10 @@ const sv: Translations = {
     mainNavigation: 'Huvudnavigering',
     instructionsLink: 'Instruktioner',
     openInANewWindow: 'Öppna i en ny flik',
-    mapsLink: 'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.',
-    harborsInfoLink: 'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/bathamnar',
+    mapsLink:
+      'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.',
+    harborsInfoLink:
+      'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/bathamnar'
   },
   footer: {
     accessibilityLink: 'Tillgänglighetsutlåtande',
@@ -146,7 +148,7 @@ const sv: Translations = {
     title: 'Båtplatser',
     info: {
       locations:
-        'Lediga båtplatser finns i följande hamnar: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja och Svinö. Vinterförvaringsplatser finns i Laajalahti, Otsolahti och Suomenoja samt året-runt-förvaringsplatser i Ämmäsmäki.',
+        'Lediga båtplatser finns i följande hamnar: Gäddvik, Stensvik, Bredvik, Björnviken, Sökö, Finno och Svinö. Vinterförvaringsplatser finns i Bredvik, Björnviken och Finno samt året-runt-förvaringsplatser i Käringbacken.',
       authenticationRequired:
         'För att boka en plats krävs stark autentisering, och båtplatsen betalas vid bokningstillfället. Bokningssystemet fungerar bäst med Google Chrome och Edge-webbläsare.',
       boatRequired:
@@ -164,18 +166,18 @@ const sv: Translations = {
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
+            `${period} endast Esbobor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
           (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
           (period: string) => `${period} alla kan boka båtplatser`
         ]
       },
       Trailer: {
-        title: 'Boka trailerplatser vid Suomenoja 2025',
+        title: 'Boka trailerplatser vid Finno 2025',
         season: (season: string) =>
           `Hyressäsong ${season}. Båt på trailer, sjösättning från ramp.`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
+            `${period} endast Esbobor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
           (period: string) => `${period} alla kan boka trailerplatser`
         ]
       },
@@ -184,13 +186,13 @@ const sv: Translations = {
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
+            `${period} endast Esbobor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
           (period: string) =>
-            `${period} endast Esbo-bor* kan boka vinterförvaringsplatser`
+            `${period} endast Esbobor* kan boka vinterförvaringsplatser`
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplatser i Ämmässuo 2025 **',
+        title: 'Boka förvaringsplatser i Käringbacken 2025 **',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -256,7 +258,7 @@ const sv: Translations = {
             width: 'Förvaringsplatsens bredd (m)',
             length: 'Förvaringsplatsens längd (m)',
             harborInfo:
-              'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
+              'Du kan endast reservera en året-runt-förvaringsplats i Käringbacken.'
           }
         },
         storageInfo:
@@ -274,9 +276,9 @@ const sv: Translations = {
           winter:
             'Bokning vinterplatser för Esbo-invånare från 15.9.–31.12.2025. Bokningen är för vintersäsongen 15.9.2025–10.6.2026.',
           storage1:
-            'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2024–14.9.2025 är öppen till 14.9.2025.',
+            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2024–14.9.2025 är öppen till 14.9.2025.',
           storage2:
-            'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
+            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
         }
       },
       modal: {
@@ -512,7 +514,7 @@ const sv: Translations = {
         info: 'Båt förvarad på trailer eller bock.'
       },
       Storage: {
-        label: 'Förvaringsplats i Ämmäsmäki (året runt)',
+        label: 'Förvaringsplats i Käringbacken (året runt)',
         info: 'Båt förvarad på trailer eller bock.'
       }
     },
@@ -544,7 +546,7 @@ const sv: Translations = {
             return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att platsen ska kunna förnyas årligen. Annars är platsen tidsbegränsad.'
 
           case 'Winter':
-            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att ni ska kunna boka en vinterplats. Förvaringsplatser i Ämmäsmäki kan bokas av alla oavsett hemkommun.'
+            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att ni ska kunna boka en vinterplats. Förvaringsplatser i Käringbacken kan bokas av alla oavsett hemkommun.'
         }
       }
       return undefined
@@ -558,6 +560,16 @@ const sv: Translations = {
       Trailer: 'Trailerförvaring',
       Buck: 'Förvaring på bock',
       None: '-'
+    },
+    harbors: {
+      1: 'Svinö',
+      2: 'Finno',
+      3: 'Stensvik',
+      4: 'Bredvik',
+      5: 'Björnviken',
+      6: 'Sökö',
+      7: 'Gäddvik',
+      8: 'Käringbacken'
     },
     winterStorageType: {
       Trailer: 'Trailerförvaring',

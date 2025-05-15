@@ -27,7 +27,9 @@ export const ResultGroup = React.memo(function ResultGroup({
   return (
     <div className="block">
       <div className="mb-m">
-        <h3 className="subtitle harbor-header mb-s">{place.name}</h3>
+        <h3 className="subtitle harbor-header mb-s">
+          {i18n.boatSpace.harbors[place.id]}
+        </h3>
         <div className="block mb-s">{place.address}</div>
         <BridgeHeightWarningBox placeId={place.id} />
       </div>
@@ -46,7 +48,7 @@ export const ResultGroup = React.memo(function ResultGroup({
               <ResultRow
                 onReserveSpace={onReserveSpace}
                 space={space}
-                placeName={place.name}
+                placeName={i18n.boatSpace.harbors[place.id]}
                 key={`result-row-${space.id}`}
               />
             ))}
@@ -58,7 +60,7 @@ export const ResultGroup = React.memo(function ResultGroup({
         resultCount={spacesCount}
         showMoreState={showMore}
         setShowMoreState={setShowMore}
-        ariaLabel={place.name}
+        ariaLabel={i18n.boatSpace.harbors[place.id]}
       />
     </div>
   )

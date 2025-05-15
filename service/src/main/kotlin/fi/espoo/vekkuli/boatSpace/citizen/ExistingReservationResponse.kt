@@ -60,6 +60,7 @@ data class ExistingReservationResponse(
         val length: BigDecimal,
         val excludedBoatTypes: List<BoatType>? = null,
         val locationName: String?,
+        val locationId: Int?
     )
 
     data class Trailer(
@@ -129,7 +130,8 @@ class ExistingReservationResponseMapper(
                         fi.espoo.vekkuli.utils
                             .intToDecimal(boatSpace.lengthCm),
                     excludedBoatTypes = boatSpace.excludedBoatTypes,
-                    locationName = boatSpace.locationName
+                    locationName = boatSpace.locationName,
+                    locationId = boatSpace.locationId
                 ),
             boat = formatBoat(boat),
             created = boatSpaceReservation.created,

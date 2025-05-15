@@ -155,7 +155,8 @@ export default React.memo(function Form({ reservation }: FormProperties) {
             formatPlaceIdentifier(
               updatedReservation.boatSpace.section,
               updatedReservation.boatSpace.placeNumber,
-              updatedReservation.boatSpace.locationName
+              updatedReservation.boatSpace.locationId &&
+                i18n.boatSpace.harbors[updatedReservation.boatSpace.locationId]
             )
           )}
         </h2>
