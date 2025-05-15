@@ -17,7 +17,7 @@ class StorageTypeContainer(
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
     ): String =
-        """ <div class='form-section mb-none'>
+        """ <div class='form-section'>
                 <h1 class='label'>${t("boatApplication.title.trailerType")}</h1>
                 <input type="hidden" name="storageType" value='Trailer'>
                     ${trailerEdit(

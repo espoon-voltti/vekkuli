@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.Organization
@@ -26,8 +27,8 @@ class SlipHolder(
                hx-trigger="change"
                hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                hx-include="#form"
-               hx-target="#form"
-               hx-select="#form"
+               hx-target="#reserver-boat-information"
+               hx-select="#reserver-boat-information"
                hx-swap="outerHTML"
                ${if (selectedOrganizationId == org.id) "checked" else ""}
             />
@@ -41,6 +42,7 @@ class SlipHolder(
         selectedOrganizationId: UUID?,
         organizations: List<Organization>
     ) = if (organizations.isNotEmpty()) {
+        // language=HTML
         """
             <div class="field" style="margin-left: 32px">
                 ${organizations.joinToString("\n") { organizationRadioButton(userType, reservationId, selectedOrganizationId, it) }}
@@ -52,8 +54,8 @@ class SlipHolder(
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                         hx-include="#form"
-                        hx-target="#form"
-                        hx-select="#form"
+                        hx-target="#reserver-boat-information"
+                        hx-select="#reserver-boat-information"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
                     />
@@ -67,55 +69,64 @@ class SlipHolder(
 
     fun newOrganizationForm(
         municipalities: List<Municipality>,
+        input: ReservationInput,
         userType: UserType
     ): String {
         val nameInput =
             formComponents.textInput(
                 "boatApplication.organizationName",
                 "orgName",
-                null,
+                input.orgName,
                 required = true
             )
 
         //language=HTML
-        val businessIdInput = businessIdInput.render(userType == UserType.EMPLOYEE)
+        val businessIdInput = businessIdInput.render(input.orgBusinessId, userType == UserType.EMPLOYEE)
 
         val municipalityInput =
             formComponents.select(
                 "boatSpaceReservation.title.municipality",
                 "orgMunicipalityCode",
-                null,
+                input.orgMunicipalityCode,
                 municipalities.map { Pair(it.code.toString(), it.name) },
                 required = true
             )
 
-        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", null, true)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", input.orgPhone, true)
 
-        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", null, true)
+        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", input.orgEmail, true)
 
         val addressInput =
             formComponents.textInput(
                 "boatApplication.address",
                 "orgAddress",
-                null,
+                input.orgAddress,
             )
 
         val postalCodeInput =
             formComponents.textInput(
                 "boatApplication.postalCode",
                 "orgPostalCode",
-                null,
+                input.orgPostalCode,
             )
 
         val cityFieldInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.city",
                 "orgCity",
-                null,
+                input.orgCity,
+            )
+
+        val billingInformation =
+            billingInformation(
+                input.orgBillingName ?: "",
+                input.orgBillingAddress ?: "",
+                input.orgBillingPostalCode ?: "",
+                input.orgBillingPostOffice ?: ""
             )
         // language=HTML
         return """
-            <div>
+            <div class='pt-m'>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $nameInput
@@ -146,7 +157,8 @@ class SlipHolder(
                         $cityFieldInput
                     </div>
                 </div>
-                ${billingInformation(null)}
+                $billingInformation
+            
             </div>
             """.trimIndent()
     }
@@ -214,38 +226,43 @@ class SlipHolder(
                       $cityFieldInput
                     </div>
                 </div>
-                ${billingInformation(org)}
+                ${billingInformation(org.billingName, org.billingStreetAddress, org.billingPostalCode, org.billingPostOffice)}
             </div>
             """.trimIndent()
     }
 
-    fun billingInformation(org: Organization?): String {
+    fun billingInformation(
+        orgBillingName: String,
+        orgBillingStreetAddress: String,
+        orgBillingPostalCode: String,
+        orgBillingPostOffice: String,
+    ): String {
         val billingNameField =
             formComponents.textInput(
                 "organizationDetails.title.billingName",
                 "orgBillingName",
-                org?.billingName,
+                orgBillingName,
                 required = false,
             )
         val billingAddressInput =
             formComponents.textInput(
                 "organizationDetails.title.billingAddress",
                 "orgBillingAddress",
-                org?.billingStreetAddress,
+                orgBillingStreetAddress,
                 required = true,
             )
         val billingPostalCodeInput =
             formComponents.textInput(
                 "organizationDetails.title.postalCode",
                 "orgBillingPostalCode",
-                org?.billingPostalCode,
+                orgBillingPostalCode,
                 required = true,
             )
         val billingPostOfficeInput =
             formComponents.textInput(
                 "organizationDetails.title.postOffice",
                 "orgBillingPostOffice",
-                org?.billingPostOffice,
+                orgBillingPostOffice,
                 required = true,
             )
         val billingAddressFields =
@@ -270,7 +287,7 @@ class SlipHolder(
             <div class="form-section-top-line">
                 <div class="columns">
                     <div class="column is-narrow">
-                        <h4>${t("organizationDetails.title.billingInformation")}</h4>
+                        <h3>${t("organizationDetails.title.billingInformation")}</h3>
                     </div>
                 </div>
                 <div class="columns">
@@ -282,17 +299,17 @@ class SlipHolder(
 
     fun render(
         organizations: List<Organization>,
-        isOrganization: Boolean,
-        selectedOrganizationId: UUID?,
         userType: UserType,
         reservationId: Int,
-        municipalities: List<Municipality>
+        municipalities: List<Municipality>,
+        input: ReservationInput
     ): String {
+        val isOrganization = input.isOrganization ?: false
         val organizationForm =
-            if (isOrganization && selectedOrganizationId == null) {
-                newOrganizationForm(municipalities, userType)
+            if (isOrganization && input.organizationId == null) {
+                newOrganizationForm(municipalities, input, userType)
             } else if (isOrganization) {
-                val org = organizations.find { it.id == selectedOrganizationId }
+                val org = organizations.find { it.id == input.organizationId }
                 if (org == null) throw IllegalArgumentException("Organization not found")
                 editOrganizationForm(org, municipalities)
             } else {
@@ -313,8 +330,8 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form"
-                            hx-select="#form"
+                            hx-target="#reserver-boat-information"
+                            hx-select="#reserver-boat-information"
                             hx-swap="outerHTML"
                            ${if (!isOrganization) "checked" else ""}
                         />
@@ -328,14 +345,14 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form"
-                            hx-select="#form"
+                            hx-target="#reserver-boat-information"
+                            hx-select="#reserver-boat-information"
                             hx-swap="outerHTML"
                            ${if (isOrganization) "checked" else ""}
                         />
                         <label for="reseverTypeOrg" >${t("boatApplication.reserverType.organization")}</label>
                     </div>
-                    ${if (isOrganization) organizationSelect(userType, reservationId, selectedOrganizationId, organizations) else ""}
+                    ${if (isOrganization) organizationSelect(userType, reservationId, input.organizationId, organizations) else ""}
                     $organizationForm
                 </div>   
             </div>

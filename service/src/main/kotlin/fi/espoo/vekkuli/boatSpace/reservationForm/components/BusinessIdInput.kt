@@ -11,7 +11,10 @@ class BusinessIdInput(
     private val markDownService: MarkDownService,
     private val warningBox: WarningBox
 ) : BaseView() {
-    fun render(allowDuplicateIds: Boolean): String {
+    fun render(
+        selectedValue: String?,
+        allowDuplicateIds: Boolean
+    ): String {
         val allowedDuplicateInfo =
             """
             hx-post="/info/businessid" 
@@ -31,7 +34,8 @@ class BusinessIdInput(
                         ${if (allowDuplicateIds) allowedDuplicateInfo else """data-validate-url="/validate/businessid"""" }
                         type="text"
                         id="orgBusinessId"
-                        name="orgBusinessId" />
+                        name="orgBusinessId"
+                        value="${selectedValue ?: ""}"/>
                     <div id="orgBusinessId-info-container">
                     </div>
 
