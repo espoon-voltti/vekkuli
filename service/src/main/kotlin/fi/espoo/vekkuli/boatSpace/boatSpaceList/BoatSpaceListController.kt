@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceDetails.BoatSpaceDetails
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
@@ -71,6 +72,9 @@ class BoatSpaceListController {
 
     @Autowired
     lateinit var boatSpaceList: BoatSpaceList
+
+    @Autowired
+    lateinit var boatSpaceDetails: BoatSpaceDetails
 
     @Autowired
     lateinit var layout: EmployeeLayout
@@ -235,5 +239,34 @@ class BoatSpaceListController {
                 failModalView.deletionModal()
             )
         }
+    }
+
+    @GetMapping("/{boatSpaceId}")
+    @ResponseBody
+    fun boatSpaceDetails(
+        @PathVariable boatSpaceId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "EMPLOYEE_BOAT_SPACE_DETAILS",
+                mapOf(
+                    "targetId" to boatSpaceId.toString()
+                )
+            )
+        }
+        request.ensureEmployeeId()
+        val boatSpace = boatSpaceService.getBoatSpace(boatSpaceId) ?: return ResponseEntity.notFound().build()
+        val boatSpaceHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+        val boatSpaceName =
+            "${boatSpace.locationName} ${boatSpace.place}"
+        return ResponseEntity.ok(
+            layout.render(
+                true,
+                request.requestURI,
+                boatSpaceDetails.render(boatSpaceName, boatSpaceHistory)
+            )
+        )
     }
 }

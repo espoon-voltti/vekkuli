@@ -28,6 +28,7 @@ data class BoatSpace(
     val type: BoatSpaceType,
     val section: String,
     val placeNumber: Int,
+    val place: String,
     val amenity: BoatSpaceAmenity,
     val widthCm: Int,
     val lengthCm: Int,

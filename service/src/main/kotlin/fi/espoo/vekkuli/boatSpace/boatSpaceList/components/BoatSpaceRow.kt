@@ -37,12 +37,12 @@ class BoatSpaceRow : BaseView() {
                 ${addTestId("boat-space-${result.id}")}>
                     <td>${editCheckBox(result)}</td>
                     <td>${result.locationName}</td>
-                    <td 
-                        ${
+                    <td ${
             addTestId(
                 "place"
             )
-        }>${result.place}</td>
+        }><a href=${getBoatSpaceDetailsUrl(result.id)}>
+                        ${result.place}</a></td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                    
@@ -57,4 +57,6 @@ class BoatSpaceRow : BaseView() {
         )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>
                 </tr>
         """.trimIndent()
+
+    private fun getBoatSpaceDetailsUrl(id: Int): String = "/virkailija/venepaikat/$id"
 }

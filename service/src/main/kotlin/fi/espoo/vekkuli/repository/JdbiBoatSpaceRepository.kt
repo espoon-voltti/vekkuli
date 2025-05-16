@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceDetails.BoatSpaceHistory
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceStats
@@ -193,6 +194,7 @@ class JdbiBoatSpaceRepository(
                 """
                 SELECT 
                      bs.*,
+                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                      location.name as location_name, 
                      location.address as location_address,
                      ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
@@ -412,30 +414,26 @@ class JdbiBoatSpaceRepository(
                 .one()
         }
 
-    override fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceReservation> =
+    override fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceHistory> =
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
-                SELECT bsr.id,
-                    bsr.boat_space_id,
-                    bsr.start_date,
-                    bsr.end_date,
-                    bsr.created,
-                    bsr.updated,
-                    bsr.status,
-                    bsr.acting_citizen_id,
-                    bsr.reserver_id,
-                    bsr.validity,
-                    p.paid as payment_date,
-                    bsr.creation_type
+                SELECT r.id as reserver_id,
+                    r.name as reserver_name,
+                    r.phone as reserver_phone_number,
+                    r.email as reserver_email,
+                    r.type as reserver_type,
+                    bsr.end_date as reservation_end_date,
+                    bsr.created as reservation_create_date,
+                    bsr.status as reservation_status
                     FROM boat_space_reservation bsr
-                    LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
+                    LEFT JOIN reserver r ON r.id = bsr.reserver_id
                     WHERE bsr.boat_space_id = :boatSpaceId
                     ORDER BY bsr.start_date DESC
                 """.trimIndent()
             val query = handle.createQuery(sql)
             query.bind("boatSpaceId", boatSpaceId)
-            query.mapTo<BoatSpaceReservation>().toList()
+            query.mapTo<BoatSpaceHistory>().toList()
         }
 
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
