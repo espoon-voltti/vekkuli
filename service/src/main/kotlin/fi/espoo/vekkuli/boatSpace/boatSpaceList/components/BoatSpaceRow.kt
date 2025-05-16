@@ -11,7 +11,7 @@ import java.util.*
 
 @Component
 class BoatSpaceRow : BaseView() {
-    fun getBoatSpacePage(
+    fun getReserverPage(
         reserverId: UUID?,
         reserverType: ReserverType?
     ) = if (reserverId !== null) {
@@ -51,7 +51,7 @@ class BoatSpaceRow : BaseView() {
                     <td>${result.priceClass}</td>
                     <td>${result.priceInEuro}</td>
                     <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
-                    <td> <a href=${getBoatSpacePage(
+                    <td> <a href=${getReserverPage(
             result.reserverId,
             result.reserverType
         )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>

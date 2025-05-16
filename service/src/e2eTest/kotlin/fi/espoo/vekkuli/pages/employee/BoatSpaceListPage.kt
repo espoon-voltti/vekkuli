@@ -52,6 +52,8 @@ class BoatSpaceListPage(
     val createModal = BoatSpaceCreationModal(page)
 
     val addBoatSpaceButton = page.getByDataTestId("create-boat-space")
+
+    fun placeColumn(boatSpaceId: Int) = boatSpaceRow(boatSpaceId).locator("[data-testid='place']")
 }
 
 class BoatSpaceEditModalPage(

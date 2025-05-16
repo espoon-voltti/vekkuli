@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceDetails
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsFullDateTime
 import fi.espoo.vekkuli.views.BaseView
@@ -31,28 +32,30 @@ class BoatSpaceDetails(
         boatSpaceName: String,
         boatSpaceReservationHistory: List<BoatSpaceHistory>
     ): String {
-        fun historyRow(reservation: BoatSpaceHistory) =
-            """
-             <tr>
-                <td><a href=${boatSpaceRow.getBoatSpacePage(
-                reservation.reserverId,
-                reservation.reserverType
-            )}>${reservation.reserverName}</a></td>
-                <td>${reservation.reserverPhoneNumber}</td>
-                <td>${t("boatSpaceDetails.reservationStatus.${reservation.reservationStatus}")}</td>
-                <td>${formatAsFullDateTime(reservation.reservationCreateDate)}</td>
-                <td>${formatAsFullDate(reservation.reservationEndDate)}</td>
+        fun getReserverDetailsUrl(reservation: BoatSpaceHistory) =
+            boatSpaceRow.getReserverPage(reservation.reserverId, reservation.reserverType)
+
+        fun historyRow(
+            reservation: BoatSpaceHistory,
+            index: Int
+        ) = """
+            <tr>
+               <td ${addTestId("reserver-column-$index")}><a href=${getReserverDetailsUrl(reservation)}>${reservation.reserverName}</a></td>
+               <td>${reservation.reserverPhoneNumber}</td>
+               <td>${t("boatSpaceDetails.reservationStatus.${reservation.reservationStatus}")}</td>
+               <td>${formatAsFullDateTime(reservation.reservationCreateDate)}</td>
+               <td>${formatAsFullDate(reservation.reservationEndDate)}</td>
             </tr>
             """.trimIndent()
 
         val reservationHistoryRows =
             boatSpaceReservationHistory
-                .mapIndexed { index, reservation -> historyRow(reservation) }
+                .mapIndexed { index, reservation -> historyRow(reservation, index) }
                 .joinToString("")
 
         // language=HTML
         return """
-            <div class='section'>
+            <div class='section' ${addTestId("boat-space-details-container")}>
                 <div class='container block'>
                 ${commonComponents.goBackButton("/virkailija/venepaikat/selaa")}
                    <h2>$boatSpaceName</h2>
@@ -60,7 +63,7 @@ class BoatSpaceDetails(
                 <div class='container block'>
                         <h3>${t("boatSpaceDetails.history.title")}</h3>
                         <div class='table-container'>
-                            <table class='table is-hoverable'>
+                            <table ${addTestId("reservation-history-table")} class='table is-hoverable'>
                                 <thead>
                                     <tr>
                                         <th>${t("boatSpaceDetails.header.reserver")}</th>
