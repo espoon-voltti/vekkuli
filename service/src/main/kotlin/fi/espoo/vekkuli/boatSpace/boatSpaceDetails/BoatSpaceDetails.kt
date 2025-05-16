@@ -18,9 +18,12 @@ data class BoatSpaceHistory(
     val reserverType: ReserverType,
     val reserverName: String,
     val reserverPhoneNumber: String,
+    val reserverEmailAddress: String,
     val reservationStatus: ReservationStatus,
     val reservationCreateDate: LocalDateTime,
     val reservationEndDate: LocalDate,
+    val boatRegistrationNumber: String?,
+    val boatOtherIdentification: String?,
 )
 
 @Service
@@ -42,6 +45,9 @@ class BoatSpaceDetails(
             <tr>
                <td ${addTestId("reserver-column-$index")}><a href=${getReserverDetailsUrl(reservation)}>${reservation.reserverName}</a></td>
                <td>${reservation.reserverPhoneNumber}</td>
+               <td>${reservation.reserverEmailAddress}</td>
+               <td>${reservation.boatRegistrationNumber ?: '-'}</td>
+               <td>${reservation.boatOtherIdentification ?: '-'}</td>
                <td>${t("boatSpaceDetails.reservationStatus.${reservation.reservationStatus}")}</td>
                <td>${formatAsFullDateTime(reservation.reservationCreateDate)}</td>
                <td>${formatAsFullDate(reservation.reservationEndDate)}</td>
@@ -68,6 +74,9 @@ class BoatSpaceDetails(
                                     <tr>
                                         <th>${t("boatSpaceDetails.header.reserver")}</th>
                                         <th>${t("boatSpaceDetails.header.phoneNumber")}</th>
+                                        <th>${t("boatSpaceDetails.header.email")}</th>
+                                        <th>${t("boatSpaceDetails.header.registrationNumber")}</th>
+                                        <th>${t("boatSpaceDetails.header.otherIdentification")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationStatus")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationCreated")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationValidUntil")}</th>
