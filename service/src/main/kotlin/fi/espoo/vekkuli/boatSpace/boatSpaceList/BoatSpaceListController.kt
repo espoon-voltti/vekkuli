@@ -258,9 +258,13 @@ class BoatSpaceListController {
         }
         request.ensureEmployeeId()
         val boatSpace = boatSpaceService.getBoatSpace(boatSpaceId) ?: return ResponseEntity.notFound().build()
-        val boatSpaceHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+
+        fun padPlaceNumberWitZeros(boatSpace: BoatSpace) = (boatSpace.placeNumber).toString().padStart(3, '0')
         val boatSpaceName =
-            "${boatSpace.locationName} ${boatSpace.place}"
+            "${boatSpace.locationName} ${boatSpace.section}${padPlaceNumberWitZeros(boatSpace)}"
+
+        val boatSpaceHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+
         return ResponseEntity.ok(
             layout.render(
                 true,
