@@ -442,16 +442,10 @@ body > .columns {
   }
 }
 
-.reservation-list {
-  .table-container {
-    width: 100%;
-    overflow: auto;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 0 20px;
-  }
+table.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
 
   th, td {
     border-bottom: 1px solid $gainsboro ;
@@ -468,6 +462,13 @@ body > .columns {
   th a {
     text-decoration: none;
     color: $darkGray;
+  }
+}
+
+.reservation-list {
+  .table-container {
+    width: 100%;
+    overflow: auto;
   }
 }
 
@@ -814,30 +815,7 @@ label.filter-button:has(input:checked) .icon {
 }
 
 .message-list {
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-  }
-
   thead th {
-    color: $darkGray;
-  }
-
-  th, td {
-    border-bottom: 1px solid $gainsboro;
-    text-align: left;
-    padding: $spacing-small;
-    vertical-align: middle;
-  }
-
-  th {
-    text-transform: uppercase;
-    font-weight: normal;
-  }
-
-  th a {
-    text-decoration: none;
     color: $darkGray;
   }
 }
@@ -854,25 +832,12 @@ label.filter-button:has(input:checked) .icon {
   }
 
   th, td {
-    border-bottom: 1px solid $gainsboro;
-    text-align: left;
-    padding: $spacing-small;
-    vertical-align: middle;
-
     &.description {
       max-width: 50px;
     }
   }
 
-  th {
-    text-transform: uppercase;
-    font-weight: normal;
-  }
 
-  th a {
-    text-decoration: none;
-    color: $darkGray;
-  }
 
   tr.settlement-row {
     background-color: $light-gray;
