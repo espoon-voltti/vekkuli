@@ -43,7 +43,7 @@ class BoatSpaceDetails(
             index: Int
         ) = """
             <tr>
-               <td ${addTestId("reserver-column-$index")}><a href=${getReserverDetailsUrl(reservation)}>${reservation.reserverName}</a></td>
+               <td><a ${addTestId("reserver-column-$index")} href=${getReserverDetailsUrl(reservation)}>${reservation.reserverName}</a></td>
                <td>${reservation.reserverPhoneNumber}</td>
                <td>${reservation.reserverEmailAddress}</td>
                <td>${reservation.boatRegistrationNumber ?: '-'}</td>

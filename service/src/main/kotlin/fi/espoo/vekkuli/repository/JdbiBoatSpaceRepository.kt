@@ -194,7 +194,6 @@ class JdbiBoatSpaceRepository(
                 """
                 SELECT 
                      bs.*,
-                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                      location.name as location_name, 
                      location.address as location_address,
                      ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types

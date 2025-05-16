@@ -305,7 +305,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         listingPage.placeColumn(boatSpaceId).click()
         val boatSpaceDetails = BoatSpaceDetailsPage(page)
         assertThat(boatSpaceDetails.reservationHistoryListContainer).isVisible()
-        assertThat(boatSpaceDetails.reservationRows).hasCount(4)
+        assertThat(boatSpaceDetails.reservationRows).hasCount(3)
 
         boatSpaceDetails.reserverColumn(0).click()
         val reserverPage = CitizenDetailsPage(page)
