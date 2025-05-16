@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
@@ -11,6 +12,7 @@ import fi.espoo.vekkuli.service.CreateBoatSpaceParams
 import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationTerminationReason
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -33,6 +35,12 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var reservationService: ReservationService
+
+    @Autowired
+    private lateinit var reservationTerminationReason: ReservationTerminationReason
+
     @Autowired
     private lateinit var boatSpaceReservationRepository: BoatSpaceReservationRepository
 
@@ -500,6 +508,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should fetch reservation history for a boat space`() {
+        // Create a boat space
         val params =
             CreateBoatSpaceParams(
                 1,
@@ -517,6 +526,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 params
             )
 
+        // Create a reservation for the boat space
         val endDate = timeProvider.getCurrentDate().plusDays(1)
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
@@ -529,25 +539,67 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 endDate = endDate
             )
         )
-        var boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
 
-        assertEquals(1, boatSpaceReservationHistory.size, "Boat space history should return only current boat space")
+        // Fetch the reservation history for the boat space
+        var boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+        assertEquals(1, boatSpaceReservationHistory.size, "Boat space history should return only the current reservation")
         assertEquals(citizenIdLeo, boatSpaceReservationHistory.single().reserverId, "Boat space history should show current reserver")
+
+        // Let the reservation expire
+        mockTimeProvider(timeProvider, endDate.plusDays(1).atTime(0, 0, 0, 0))
+
+        // Create a new unfinished reservation for the same boat space
+        testUtils.createReservationInInfoState(
+            citizenIdLeo,
+            boatSpaceId,
+            CreationType.New
+        )
+
+        // Make sure the info reservation has expired
         mockTimeProvider(timeProvider, endDate.plusDays(1).atTime(1, 0, 0, 0))
+
+        // Create a new paid and valid reservation for the same boat space
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    boatSpaceId,
+                    2,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = timeProvider.getCurrentDate().plusDays(1),
+                    endDate = endDate.plusDays(1),
+                )
+            )
+
+        boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+        assertEquals(2, boatSpaceReservationHistory.size, "Boat space history should return the expired and new reservation")
+        assertEquals(citizenIdOlivia, boatSpaceReservationHistory[0].reserverId, "Boat space history should show current reserver as first")
+
+        // Terminate the reservation and add a new one for the boat space
+        terminateReservationService.terminateBoatSpaceReservationAsOwner(
+            reservation.id,
+            this.citizenIdOlivia
+        )
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
-                citizenIdOlivia,
+                citizenIdMarko,
                 boatSpaceId,
                 2,
                 validity = ReservationValidity.Indefinite,
                 startDate = timeProvider.getCurrentDate(),
-                endDate = endDate
+                endDate = endDate.plusDays(2),
             )
         )
-        boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
 
-        assertEquals(2, boatSpaceReservationHistory.size, "Boat space history should return the expired and new reservation")
-        assertEquals(citizenIdOlivia, boatSpaceReservationHistory[0].reserverId, "Boat space history should show current reserver as first")
+        boatSpaceReservationHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+        assertEquals(
+            3,
+            boatSpaceReservationHistory.size,
+            "Boat space history should return the expired, terminated and new reservation"
+        )
+
+        assertEquals(citizenIdMarko, boatSpaceReservationHistory[0].reserverId, "Boat space history should show current reserver as first")
     }
 }

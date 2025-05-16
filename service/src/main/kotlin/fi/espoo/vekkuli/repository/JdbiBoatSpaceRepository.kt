@@ -428,8 +428,9 @@ class JdbiBoatSpaceRepository(
                     bsr.status as reservation_status
                     FROM boat_space_reservation bsr
                     LEFT JOIN reserver r ON r.id = bsr.reserver_id
-                    WHERE bsr.boat_space_id = :boatSpaceId
-                    ORDER BY bsr.start_date DESC
+                    WHERE bsr.boat_space_id = :boatSpaceId 
+                        AND (bsr.status IN ('Confirmed', 'Invoiced','Cancelled'))
+                    ORDER BY bsr.end_date DESC
                 """.trimIndent()
             val query = handle.createQuery(sql)
             query.bind("boatSpaceId", boatSpaceId)
