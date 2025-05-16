@@ -421,13 +421,17 @@ class JdbiBoatSpaceRepository(
                 SELECT r.id as reserver_id,
                     r.name as reserver_name,
                     r.phone as reserver_phone_number,
-                    r.email as reserver_email,
+                    r.email as reserver_email_address,
                     r.type as reserver_type,
+                    r.email as reserver_email,
                     bsr.end_date as reservation_end_date,
                     bsr.created as reservation_create_date,
-                    bsr.status as reservation_status
+                    bsr.status as reservation_status,
+                    b.registration_code as boat_registration_number,
+                    b.other_identification as boat_other_identification
                     FROM boat_space_reservation bsr
-                    LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                    JOIN reserver r ON r.id = bsr.reserver_id
+                    JOIN boat b ON b.id = bsr.boat_id
                     WHERE bsr.boat_space_id = :boatSpaceId 
                         AND (bsr.status IN ('Confirmed', 'Invoiced','Cancelled'))
                     ORDER BY bsr.end_date DESC
