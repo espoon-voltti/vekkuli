@@ -23,7 +23,7 @@ data class BoatSpaceHistory(
     val reservationCreateDate: LocalDateTime,
     val reservationEndDate: LocalDate,
     val boatRegistrationNumber: String?,
-    val boatOtherIdentification: String?,
+    val boatName: String,
 )
 
 @Service
@@ -47,7 +47,7 @@ class BoatSpaceDetails(
                <td>${reservation.reserverPhoneNumber}</td>
                <td>${reservation.reserverEmailAddress}</td>
                <td>${reservation.boatRegistrationNumber ?: '-'}</td>
-               <td>${reservation.boatOtherIdentification ?: '-'}</td>
+               <td>${reservation.boatName}</td>
                <td>${t("boatSpaceDetails.reservationStatus.${reservation.reservationStatus}")}</td>
                <td>${formatAsFullDateTime(reservation.reservationCreateDate)}</td>
                <td>${formatAsFullDate(reservation.reservationEndDate)}</td>
@@ -76,7 +76,7 @@ class BoatSpaceDetails(
                                         <th>${t("boatSpaceDetails.header.phoneNumber")}</th>
                                         <th>${t("boatSpaceDetails.header.email")}</th>
                                         <th>${t("boatSpaceDetails.header.registrationNumber")}</th>
-                                        <th>${t("boatSpaceDetails.header.otherIdentification")}</th>
+                                        <th>${t("boatSpaceDetails.header.boatName")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationStatus")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationCreated")}</th>
                                         <th>${t("boatSpaceDetails.header.reservationValidUntil")}</th>

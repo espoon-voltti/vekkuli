@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -52,6 +53,9 @@ data class BoatSpaceListRow(
 @Controller
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
+    @Autowired
+    private lateinit var messageUtil: MessageUtil
+
     @Autowired
     private lateinit var failModalView: FailModalView
 
@@ -261,7 +265,9 @@ class BoatSpaceListController {
 
         fun padPlaceNumberWitZeros(boatSpace: BoatSpace) = (boatSpace.placeNumber).toString().padStart(3, '0')
         val boatSpaceName =
-            "${boatSpace.locationName} ${boatSpace.section}${padPlaceNumberWitZeros(boatSpace)}"
+            "${messageUtil.getMessage(
+                "boatSpaces.typeOption.${boatSpace.type}"
+            )}: ${boatSpace.locationName} ${boatSpace.section}${padPlaceNumberWitZeros(boatSpace)}"
 
         val boatSpaceHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
 

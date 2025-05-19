@@ -427,7 +427,7 @@ class JdbiBoatSpaceRepository(
                     bsr.created as reservation_create_date,
                     bsr.status as reservation_status,
                     b.registration_code as boat_registration_number,
-                    b.other_identification as boat_other_identification
+                    b.name as boat_name
                     FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat b ON b.id = bsr.boat_id
