@@ -4,12 +4,10 @@ import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Component
 
 @Component
 class DateFilter(
-    private val commonComponents: CommonComponents,
     private val formComponents: FormComponents
 ) : BaseView() {
     fun render(active: Boolean): String {
@@ -25,7 +23,7 @@ class DateFilter(
         //language=HTML
         return """
             <label class="checkbox">
-                <input type="checkbox" name="dateFilter" $checked ${addTestId("filter-exceptions")}>
+                <input type="checkbox" name="dateFilter" ${addTestId("filter-date")} $checked ${addTestId("filter-exceptions")}>
                 <span>${t("boatSpaceReservation.showDatesWithin")}</span>
                $dateInput - $dateInputEnd
             </label>

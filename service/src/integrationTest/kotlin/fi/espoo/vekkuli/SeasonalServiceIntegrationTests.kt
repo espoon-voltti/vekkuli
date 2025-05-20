@@ -984,13 +984,35 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                     endDate = timeProvider.getCurrentDate().plusDays(5),
                 )
             )
-        val params =
+        val reservation3 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    3,
+                    3,
+                    startDate = timeProvider.getCurrentDate().minusDays(5),
+                    endDate = timeProvider.getCurrentDate().plusDays(10),
+                )
+            )
+        var params =
             BoatSpaceReservationFilter(
                 reservationValidFrom = timeProvider.getCurrentDate().minusDays(6),
-                reservationValidUntil = timeProvider.getCurrentDate().plusDays(6)
+                dateFilter = true,
             )
-        val reservations = employeeReservationListService.getBoatSpaceReservations(params).items
-        assertEquals(2, reservations.size)
+        var reservations = employeeReservationListService.getBoatSpaceReservations(params).items
+        assertEquals(2, reservations.size, "Reservations that are valid within dates is returned")
+        assertEquals(reservation2.id, reservations[0].id, "Reservation that is valid from date is returned")
+        assertEquals(reservation3.id, reservations[1].id, "Reservation that is valid from date is returned")
+
+        params =
+            BoatSpaceReservationFilter(
+                reservationValidFrom = timeProvider.getCurrentDate().minusDays(6),
+                reservationValidUntil = timeProvider.getCurrentDate().plusDays(6),
+                dateFilter = true,
+            )
+        reservations = employeeReservationListService.getBoatSpaceReservations(params).items
+        assertEquals(1, reservations.size, "Reservation that is valid within dates is returned")
         assertEquals(reservation2.id, reservations[0].id, "Reservation that is valid within dates is returned")
     }
 

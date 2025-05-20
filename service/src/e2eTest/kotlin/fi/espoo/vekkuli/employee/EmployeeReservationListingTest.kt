@@ -10,11 +10,13 @@ import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
+import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDate
 import java.util.regex.Pattern
 import kotlin.test.assertEquals
 
@@ -94,6 +96,20 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
         listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+    }
+
+    @Test
+    fun `Employee can filter by date`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.pause()
+        listingPage.reservationValidFromInput.fill(formatAsTestDate(LocalDate.of(2024, 1, 1)))
+        listingPage.reservationValidUntilInput.fill(formatAsTestDate(LocalDate.of(2024, 12, 31)))
+        listingPage.dateFilter.click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 003")
+        listingPage.dateFilter.click()
         page.waitForCondition { listingPage.reservations.count() == 5 }
     }
 
