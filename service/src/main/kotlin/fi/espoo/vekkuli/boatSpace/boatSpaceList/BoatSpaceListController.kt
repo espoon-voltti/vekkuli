@@ -1,9 +1,11 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceDetails.BoatSpaceDetails
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -52,6 +54,9 @@ data class BoatSpaceListRow(
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
     @Autowired
+    private lateinit var messageUtil: MessageUtil
+
+    @Autowired
     private lateinit var failModalView: FailModalView
 
     @Autowired
@@ -71,6 +76,9 @@ class BoatSpaceListController {
 
     @Autowired
     lateinit var boatSpaceList: BoatSpaceList
+
+    @Autowired
+    lateinit var boatSpaceDetails: BoatSpaceDetails
 
     @Autowired
     lateinit var layout: EmployeeLayout
@@ -235,5 +243,40 @@ class BoatSpaceListController {
                 failModalView.deletionModal()
             )
         }
+    }
+
+    @GetMapping("/{boatSpaceId}")
+    @ResponseBody
+    fun boatSpaceDetails(
+        @PathVariable boatSpaceId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "EMPLOYEE_BOAT_SPACE_DETAILS",
+                mapOf(
+                    "targetId" to boatSpaceId.toString()
+                )
+            )
+        }
+        request.ensureEmployeeId()
+        val boatSpace = boatSpaceService.getBoatSpace(boatSpaceId) ?: return ResponseEntity.notFound().build()
+
+        fun padPlaceNumberWitZeros(boatSpace: BoatSpace) = (boatSpace.placeNumber).toString().padStart(3, '0')
+        val boatSpaceName =
+            "${messageUtil.getMessage(
+                "boatSpaces.typeOption.${boatSpace.type}"
+            )}: ${boatSpace.locationName} ${boatSpace.section}${padPlaceNumberWitZeros(boatSpace)}"
+
+        val boatSpaceHistory = boatSpaceService.getBoatSpaceHistory(boatSpaceId)
+
+        return ResponseEntity.ok(
+            layout.render(
+                true,
+                request.requestURI,
+                boatSpaceDetails.render(boatSpaceName, boatSpaceHistory)
+            )
+        )
     }
 }

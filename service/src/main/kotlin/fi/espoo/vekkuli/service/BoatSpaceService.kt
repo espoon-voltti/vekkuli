@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceDetails.BoatSpaceHistory
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
@@ -71,6 +72,8 @@ interface BoatSpaceRepository {
     fun deleteBoatSpaces(boatSpaceIds: List<Int>)
 
     fun createBoatSpace(params: CreateBoatSpaceParams): Int
+
+    fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceHistory>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -182,4 +185,8 @@ class BoatSpaceService(
         }
         boatSpaceRepo.deleteBoatSpaces(boatSpaceIds)
     }
+
+    fun getBoatSpace(boatSpaceId: Int): BoatSpace? = boatSpaceRepo.getBoatSpace(boatSpaceId)
+
+    fun getBoatSpaceHistory(boatSpaceId: Int) = boatSpaceRepo.getBoatSpaceHistory(boatSpaceId)
 }

@@ -4,7 +4,9 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceState
+import fi.espoo.vekkuli.pages.employee.BoatSpaceDetailsPage
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
@@ -294,6 +296,25 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         listingPage.checkBox(inactiveBoatSpaceId).click()
 
         assertSelectedBoatSpaceCount(1)
+    }
+
+    @Test
+    fun `should open boat space details page and show reservation history`() {
+        val listingPage = boatSpaceListPage()
+        val boatSpaceId = 2
+        listingPage.placeColumn(boatSpaceId).click()
+        val boatSpaceDetails = BoatSpaceDetailsPage(page)
+        assertThat(boatSpaceDetails.reservationHistoryListContainer).isVisible()
+        assertThat(boatSpaceDetails.reservationRows).hasCount(3)
+
+        boatSpaceDetails.reserverColumn(0).click()
+        val reserverPage = CitizenDetailsPage(page)
+        assertThat(reserverPage.citizenDetailsSection).isVisible()
+        reserverPage.backButton.click()
+
+        assertThat(boatSpaceDetails.reservationHistoryListContainer).isVisible()
+        boatSpaceDetails.goBack.click()
+        assertThat(listingPage.boatSpaceRow(boatSpaceId)).isVisible()
     }
 
     private fun boatSpaceListPage(): BoatSpaceListPage {
