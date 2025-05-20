@@ -187,8 +187,6 @@ enum class BoatSpaceState {
     Inactive
 }
 
-val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O")
-
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
     val ascending: Boolean = true,
@@ -205,7 +203,10 @@ data class BoatSpaceReservationFilter(
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
     val validity: List<ReservationValidity> = emptyList(),
     val paginationStart: Int = 0,
-    val paginationEnd: Int = 50
+    val paginationEnd: Int = 50,
+    val reservationValidFrom: LocalDate? = null,
+    val reservationValidUntil: LocalDate? = null,
+    val dateFilter: Boolean? = null
 )
 
 fun ReservationWithDependencies.toBoatSpaceReservation() =

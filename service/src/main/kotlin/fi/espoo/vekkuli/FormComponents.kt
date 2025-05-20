@@ -260,30 +260,46 @@ class FormComponents {
             """.trimIndent()
     }
 
-    fun dateInput(options: DateInputOptions): String {
+    fun dateInputContainer(options: DateInputOptions): String {
         val (id, labelKey, value, required, pattern, attributes, labelAttributes, compact, serverValidate, autoWidth) = options
         val errorContainer = renderErrorContainer(id, pattern, serverValidate)
-
+        val dateInput =
+            dateInput(
+                options
+            )
         //language=HTML
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
-                    <input
-                    lang="fi"
-                        class="input${if (compact) " compact" else ""}${if (autoWidth) " auto-width" else ""}"
-                        ${if (required == true) "data-required" else ""}
-                        ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
-                        ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
-                        type="date"
-                        id="$id"
-                        name="$id"
-                        ${if (value != null) "value=\"$value\"" else ""}
-                        $attributes />
-                   $errorContainer
+                    $dateInput           
+                    $errorContainer
                 </div>
             </div>
             """.trimIndent()
+    }
+
+    fun dateInput(options: DateInputOptions): String {
+        val (id, labelKey, value, required, pattern, attributes, labelAttributes, compact, serverValidate, autoWidth) = options
+        // language=HTML
+        return """  
+            ${if (labelKey != null) {
+            """<label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(
+                labelKey
+            )}</label>"""
+        } else {
+            ""
+        }}
+            <input
+                lang="fi"
+                class="input${if (compact) " compact" else ""}${if (autoWidth) " auto-width" else ""}"
+                ${if (required == true) "data-required" else ""}
+                ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
+                ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
+                type="date"
+                id="$id"
+                name="$id"
+                ${if (value != null) "value=\"$value\"" else ""}
+                $attributes />"""
     }
 
     fun textArea(options: TextAreaOptions): String {
@@ -385,7 +401,7 @@ class FormComponents {
 
 data class DateInputOptions(
     val id: String,
-    val labelKey: String,
+    val labelKey: String? = null,
     val value: String?,
     val required: Boolean? = false,
     val pattern: Pair<String, String>? = null,

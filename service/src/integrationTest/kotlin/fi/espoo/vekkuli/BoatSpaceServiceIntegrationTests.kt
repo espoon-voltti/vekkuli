@@ -507,6 +507,32 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should filter boat spaces by boat space type, harbor and amenity`() {
+        val params =
+            BoatSpaceListParams(
+                boatSpaceType = listOf(BoatSpaceType.Slip),
+                harbor = listOf(1),
+                amenity = listOf(BoatSpaceAmenity.Beam),
+            )
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+
+        assertTrue(
+            boatSpaces.items.all { it.type == BoatSpaceType.Slip },
+            "All boat spaces are of type Slip"
+        )
+
+        assertTrue(
+            boatSpaces.items.all { it.amenity == BoatSpaceAmenity.Beam },
+            "All boat spaces have amenity Beam"
+        )
+
+        assertTrue(
+            boatSpaces.items.all { it.locationName == "Haukilahti" },
+            "All boat spaces are in harbor 1"
+        )
+    }
+
+    @Test
     fun `should fetch reservation history for a boat space`() {
         // Create a boat space
         val params =

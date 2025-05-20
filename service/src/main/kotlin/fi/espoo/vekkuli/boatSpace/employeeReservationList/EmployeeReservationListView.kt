@@ -15,6 +15,7 @@ class EmployeeReservationListView(
     private val reservationListRowsPartial: ReservationListRowsPartial,
     private val warningFilter: WarningFilter,
     private val exceptionsFilter: ExceptionsFilter,
+    private val dateFilter: DateFilter,
     private val amenityFilter: AmenityFilter,
     private val sectionFilter: SectionFilter,
     private val sendMessageView: SendMessageView
@@ -65,7 +66,7 @@ class EmployeeReservationListView(
                           hx-get="/virkailija/venepaikat/varaukset"
                           hx-target="#table-body"
                           hx-select="#table-body, #modal"
-                          hx-trigger="change from:#reservation-filter-container, change from:#reservation-table-header delay:1ms, keyup delay:500ms" 
+                          hx-trigger="change from:#reservation-filter-container delay:500ms, change from:#reservation-table-header delay:1ms, keyup delay:500ms" 
                           hx-swap="outerHTML"
                           hx-history="false"
                           hx-push-url="true"
@@ -116,6 +117,7 @@ class EmployeeReservationListView(
                                 ${warningFilter.render(params.warningFilter == true, reservations.totalWarnings)}
                             </div>
                             <div>${exceptionsFilter.render(params.exceptionsFilter == true)}</div>
+                            <div>${dateFilter.render(params.exceptionsFilter == true)}</div>
                         </div>
                         </div>  
                         <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">

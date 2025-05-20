@@ -960,6 +960,41 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should return reservations within time`() {
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+        val reservation1 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    1,
+                    startDate = timeProvider.getCurrentDate().minusDays(10),
+                    endDate = timeProvider.getCurrentDate().plusDays(10),
+                )
+            )
+        val reservation2 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    2,
+                    2,
+                    startDate = timeProvider.getCurrentDate().minusDays(5),
+                    endDate = timeProvider.getCurrentDate().plusDays(5),
+                )
+            )
+        val params =
+            BoatSpaceReservationFilter(
+                reservationValidFrom = timeProvider.getCurrentDate().minusDays(6),
+                reservationValidUntil = timeProvider.getCurrentDate().plusDays(6)
+            )
+        val reservations = employeeReservationListService.getBoatSpaceReservations(params).items
+        assertEquals(2, reservations.size)
+        assertEquals(reservation2.id, reservations[0].id, "Reservation that is valid within dates is returned")
+    }
+
+    @Test
     fun `should fetch all harbors`() {
         val harbors = reservationService.getHarbors()
         assertEquals(8, harbors.size, "Correct number of harbors are fetched")

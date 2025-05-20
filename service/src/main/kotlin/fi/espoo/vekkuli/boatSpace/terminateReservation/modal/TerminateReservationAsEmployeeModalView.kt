@@ -86,7 +86,7 @@ class TerminateReservationAsEmployeeModalView(
 
     private fun buildFields(messageTemplate: Map<String, String>): List<String> {
         val endDateField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "endDate",
                     labelKey = "boatSpaceTermination.fields.endDate",

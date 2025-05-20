@@ -71,7 +71,7 @@ class ReservationStatusUpdateModal : BaseView() {
                     "paymentStatusText",
                     reservation.paymentReference ?: ""
                 )}
-                                    ${formComponents.dateInput(
+                                    ${formComponents.dateInputContainer(
                     DateInputOptions(
                         labelKey = "citizenDetails.dueDate",
                         id = "paymentDate",
@@ -88,7 +88,7 @@ class ReservationStatusUpdateModal : BaseView() {
                     "paymentStatusText",
                     reservation.paymentReference ?: ""
                 )}
-                                    ${formComponents.dateInput(
+                                    ${formComponents.dateInputContainer(
                     DateInputOptions(
                         labelKey = "citizenDetails.paymentDate",
                         id = "paymentDate",
