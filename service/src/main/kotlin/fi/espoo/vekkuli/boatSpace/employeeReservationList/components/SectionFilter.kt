@@ -1,18 +1,18 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
+import fi.espoo.vekkuli.views.employee.components.ExpandingFilter
 import org.springframework.stereotype.Component
 
 @Component
 class SectionFilter(
-    private val expandingSelectionFilter: ExpandingSelectionFilter,
+    private val expandingFilter: ExpandingFilter,
 ) : BaseView() {
     fun render(
         selectedSections: List<String>,
         sections: List<String>,
     ): String =
-        expandingSelectionFilter.render(
+        expandingFilter.filterDropdown(
             selectedSections,
             "selectedSections",
             sections.joinToString("") { sectionCheckbox(it) }

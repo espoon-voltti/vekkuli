@@ -215,6 +215,24 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should get filtered boat width and length options`() {
+        val params =
+            BoatSpaceListParams(
+                boatSpaceType = listOf(BoatSpaceType.Slip),
+                amenity = listOf(BoatSpaceAmenity.Beam),
+                boatSpaceState = listOf(BoatSpaceState.Active),
+                harbor = listOf(1),
+            )
+        val boatWidthOptions = boatSpaceService.getBoatWidthOptions(params)
+        val boatLengthOptions = boatSpaceService.getBoatLengthOptions(params)
+
+        assertEquals(14, boatWidthOptions.size, "Boat width options that match the filters are fetched")
+        assertEquals(6, boatLengthOptions.size, "Boat length options that match the filters are fetched\"")
+        assertEquals(250, boatWidthOptions[0], "First boat width option is fetched")
+        assertEquals(450, boatLengthOptions[0], "Correct length is fetched")
+    }
+
+    @Test
     fun `should get all boat spaces`() {
         val params = BoatSpaceListParams()
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
