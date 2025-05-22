@@ -447,12 +447,13 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 SELECT DISTINCT bs.width_cm
-                FROM boat_space bs
+                ${buildBoatSpacePickQuery()}
                 $filterQuery
                 ORDER BY bs.width_cm ASC
                 """.trimIndent()
             val query = handle.createQuery(sql)
             filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
             query.mapTo<Int>().toList()
         }
 
@@ -463,12 +464,13 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 SELECT DISTINCT bs.length_cm
-                FROM boat_space bs
+                 ${buildBoatSpacePickQuery()}
                 $filterQuery
                  ORDER BY bs.length_cm ASC
                 """.trimIndent()
             val query = handle.createQuery(sql)
             filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
             query.mapTo<Int>().toList()
         }
 
