@@ -186,10 +186,7 @@ class BoatSpaceList(
             return Array.from(checkboxes).map(e => e.value);
         }
     }">
-        <form id="boat-space-filter-form"
-              
-             
-        >
+        <form id="boat-space-filter-form">
              <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
              <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
             
@@ -201,6 +198,7 @@ class BoatSpaceList(
                 hx-include="#boat-space-filter-form"
                 hx-params="not spaceId"
                 hx-indicator="#loader, .loaded-content"
+                hx-push-url="true"
                 @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
                 hx-trigger="change">
                 <div class="employee-filter-container">                        
@@ -279,6 +277,7 @@ class BoatSpaceList(
                                 hx-swap="outerHTML"
                                 hx-include="#boat-space-filter-form"
                                 hx-indicator="#loader, .loaded-content"
+                                hx-push-url="true"
                                 @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
                                 hx-params="not spaceId"
                                 hx-trigger="change">
