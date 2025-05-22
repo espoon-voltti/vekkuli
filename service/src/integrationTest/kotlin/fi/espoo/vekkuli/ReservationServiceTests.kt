@@ -14,6 +14,7 @@ import jakarta.validation.ConstraintViolationException
 import kotlinx.coroutines.runBlocking
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -23,6 +24,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
@@ -46,7 +48,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var boatService: BoatService
 
-    @MockBean
+    @MockitoBean
     private lateinit var citizenContextProvider: CitizenContextProvider
 
     @Autowired
@@ -58,7 +60,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var reservationService: ReservationService
 
-    @MockBean
+    @MockitoBean
     private lateinit var seasonalService: SeasonalService
 
     @Autowired
