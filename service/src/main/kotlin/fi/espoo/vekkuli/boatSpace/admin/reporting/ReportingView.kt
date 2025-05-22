@@ -13,7 +13,7 @@ class ReportingView(
 ) : BaseView() {
     fun render(): String {
         val stickerReportStartDateInputField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "reportingDate",
                     labelKey = "reporting.filter.creationDate",
@@ -23,7 +23,7 @@ class ReportingView(
             )
 
         val boatSpaceReportStartDateInputField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "reportingDate",
                     labelKey = "reporting.filter.reportingDate",
@@ -33,7 +33,7 @@ class ReportingView(
             )
 
         val freeBoatSpaceReportStartDateInputField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "reportingDate",
                     labelKey = "reporting.filter.reportingDate",
@@ -43,7 +43,7 @@ class ReportingView(
             )
 
         val reservedBoatSpaceReportStartDateInputField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "reportingDate",
                     labelKey = "reporting.filter.reportingDate",
@@ -53,7 +53,7 @@ class ReportingView(
             )
 
         val terminatedBoatSpaceReportStartDateInputField =
-            formComponents.dateInput(
+            formComponents.dateInputContainer(
                 DateInputOptions(
                     id = "reportingDate",
                     labelKey = "reporting.filter.reportingDate",

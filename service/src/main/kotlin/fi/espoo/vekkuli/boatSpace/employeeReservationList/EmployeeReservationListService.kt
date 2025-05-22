@@ -91,6 +91,10 @@ class EmployeeReservationListService(
             filters.add(ReservationValidityExpr(params.validity))
         }
 
+        if (params.dateFilter != null && (params.reservationValidFrom != null || params.reservationValidUntil != null)) {
+            filters.add(ReservationValidWithinExpr(params.reservationValidFrom, params.reservationValidUntil))
+        }
+
         val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
         val sortBy =
             BoatSpaceReservationSortBy(
