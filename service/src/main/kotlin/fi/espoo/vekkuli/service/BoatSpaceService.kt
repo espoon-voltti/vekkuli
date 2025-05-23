@@ -91,7 +91,8 @@ class BoatSpaceService(
         val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
         val sortBy =
             BoatSpaceSortBy(
-                listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending)
+                listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending) +
+                    listOf(BoatSpaceFilterColumn.PLACE to SortDirection.Ascending) // Always sort by place as a fallback
             )
 
         val boatSpaces =
