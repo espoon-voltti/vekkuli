@@ -474,48 +474,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/bloom@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@redis/bloom@npm:5.0.0"
+"@redis/bloom@npm:5.1.0":
+  version: 5.1.0
+  resolution: "@redis/bloom@npm:5.1.0"
   peerDependencies:
-    "@redis/client": ^5.0.0
-  checksum: 92e9ea102af053b8eab7a9658e58fe3b7041bcfc6edb53d2dcf8da037d8dbdc6fc7bd3221b226e39fe7185b9b8c6289c36c4a3c7e816ae58d980035b24f54772
+    "@redis/client": ^5.1.0
+  checksum: d0422d4950e4d476d9b975e798b7c8565cdd7086575035ac71c45acf8bf873abe045438d6ab0f8ba053a5a0800ed8e2bf5473e2e86b23b42349f4a124b3bfa14
   languageName: node
   linkType: hard
 
-"@redis/client@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@redis/client@npm:5.0.0"
+"@redis/client@npm:5.1.0":
+  version: 5.1.0
+  resolution: "@redis/client@npm:5.1.0"
   dependencies:
     cluster-key-slot: "npm:1.1.2"
-  checksum: c2352073ecdd635a3b9d154c61523c8215186b5b08e23d5179a3fe4b6e0db427df2abe2414bef717551a04bc41e36473029e72fa8c2210a084c235170d03cd95
+  checksum: 3d06855f284b84808e97a3de23a28f10471373e209fdd260b1cb4a7b6e229bf0488b107f3db3a155e6e5b64eb268c6dee9292720a265f76b772a02a74fdb5abb
   languageName: node
   linkType: hard
 
-"@redis/json@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@redis/json@npm:5.0.0"
+"@redis/json@npm:5.1.0":
+  version: 5.1.0
+  resolution: "@redis/json@npm:5.1.0"
   peerDependencies:
-    "@redis/client": ^5.0.0
-  checksum: 644d6fa7d80459ca7cc2040bdb8945f7ae0bc844cd602b826c54f3cbe2d24baa091e9ad2326f2801c2a43cb75474e93ad65e60d4d7a435fed3579f673bde9820
+    "@redis/client": ^5.1.0
+  checksum: 113416313587eb938f442eb94521cbdb4dcd25f0fbc37c503ebf8001addb75513c8c4aa747b58bfe095c177fbc7cda612e29d8f614c5da8cc9a73208d187d608
   languageName: node
   linkType: hard
 
-"@redis/search@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@redis/search@npm:5.0.0"
+"@redis/search@npm:5.1.0":
+  version: 5.1.0
+  resolution: "@redis/search@npm:5.1.0"
   peerDependencies:
-    "@redis/client": ^5.0.0
-  checksum: 779c660fc41d8a230183dd202755fd36580014e3c794e6fac069f84ecb2508ed069ea0991c849147ec72d31d70976ab00769fcf200103cd847e8fc37beac28c6
+    "@redis/client": ^5.1.0
+  checksum: 3e41aabb96b95dfb374abef8b950f48995b39b9d10acace1331074b3f1aacef7aa79daef7ddb03c6f6fe5ae2d0b4f44e3183e2baca566e99444e981c2acf12dd
   languageName: node
   linkType: hard
 
-"@redis/time-series@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@redis/time-series@npm:5.0.0"
+"@redis/time-series@npm:5.1.0":
+  version: 5.1.0
+  resolution: "@redis/time-series@npm:5.1.0"
   peerDependencies:
-    "@redis/client": ^5.0.0
-  checksum: 890adcfbfd83750bb7c2511367ee1bd69108d22393e7817415df56e436351e22fad5dcda2a634ee2a65b0c9cfd7cea8f66de429c77281841fc4d2cd96b9ac0c4
+    "@redis/client": ^5.1.0
+  checksum: b507db08b68152cbd23e004c6ca97021ebe0c5988fbc17b3fc9cbfd76c3a7a7732f94412ffbb7ba16fda010083d6465b258a8f61dc4c5999678dac3219c8389b
   languageName: node
   linkType: hard
 
@@ -3901,16 +3901,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "redis@npm:5.0.0"
+"redis@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "redis@npm:5.1.0"
   dependencies:
-    "@redis/bloom": "npm:5.0.0"
-    "@redis/client": "npm:5.0.0"
-    "@redis/json": "npm:5.0.0"
-    "@redis/search": "npm:5.0.0"
-    "@redis/time-series": "npm:5.0.0"
-  checksum: f49e4276007a645b9d154cc1d3324fca6b4fec1a6b905a145219f0255b45be765de2005f897467d67beea2988884b2f24fabb493e32e284927e7de3f93470e03
+    "@redis/bloom": "npm:5.1.0"
+    "@redis/client": "npm:5.1.0"
+    "@redis/json": "npm:5.1.0"
+    "@redis/search": "npm:5.1.0"
+    "@redis/time-series": "npm:5.1.0"
+  checksum: 2b873d34cb4aa875bb4e6c6e1dad2dca2112715e0e4da8e8ec7c09cfb134a8379c61bd1d6ec05b4065882dff7ee6ac82b11b3840c9108892e25ca3946311432b
   languageName: node
   linkType: hard
 
@@ -4755,7 +4755,7 @@ __metadata:
     pino-pretty: "npm:^13.0.0"
     prettier: "npm:^3.5.0"
     query-string: "npm:^9.2.0"
-    redis: "npm:^5.0.0"
+    redis: "npm:^5.1.0"
     source-map-support: "npm:^0.5.21"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.8.2"
