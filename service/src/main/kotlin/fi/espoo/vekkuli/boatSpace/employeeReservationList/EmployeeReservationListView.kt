@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
@@ -31,6 +32,27 @@ class EmployeeReservationListView(
     ): String {
         val paginationStartFrom = reservations.end
         val paginationEndTo = reservations.end + paginationSize
+
+        val selectAllToggle =
+            """
+            <label class="checkbox" x-data="{ selectAll: false }">
+                <input
+                    id="select-all-toggle"
+                    ${addTestId("select-all-toggle")}
+                    type="checkbox"
+                    x-model="selectAll"
+                    @change="reservationIds = selectAll ? getCurrentlyVisibleReservationIds() : []"
+                    x-effect="
+                        reservationIds; // access property to ensures Alpine tracks this reactive property
+                                          // even when table is empty
+                        selectAll = getCurrentlyVisibleReservationIds().length > 0 &&  
+                            getCurrentlyVisibleReservationIds().every(id => reservationIds.includes(id));
+                    "
+                    hx-on:change="event.stopPropagation()"
+                />
+            </label>
+            """.trimIndent()
+
         // language=HTML
         return """
             <section class="section">
@@ -48,6 +70,7 @@ class EmployeeReservationListView(
                 <div class="container" x-data="{
                         sortColumn: '${params.sortBy}',
                         sortDirection: '${params.ascending}',
+                        reservationIds: [],
                         updateSort(column) {
                             if (this.sortColumn === column) {
                                 this.sortDirection = this.sortDirection === 'true' ? 'false' : 'true';
@@ -58,10 +81,18 @@ class EmployeeReservationListView(
                             document.getElementById('sortColumn').value = this.sortColumn;
                             document.getElementById('sortDirection').value = this.sortDirection;
                             document.getElementById('reservation-table-header').dispatchEvent(new Event('change'));
+                        },
+                        pruneFilteredReservationsFromSelection() {
+                            const visibleIds = this.getCurrentlyVisibleReservationIds();
+                            this.reservationIds = this.reservationIds.filter(id => visibleIds.includes(id));
+                        },
+                        getCurrentlyVisibleReservationIds() {
+                            const table = this.${'$'}refs.tableBody;
+                            const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
+                            return Array.from(checkboxes).map(e => e.value);
                         }
                     }"
                     > 
-                    
                     <form id="reservation-filter-form"
                           hx-get="/virkailija/venepaikat/varaukset"
                           hx-target="#table-body"
@@ -71,7 +102,8 @@ class EmployeeReservationListView(
                           hx-history="false"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
-                    >
+                          @htmx:after-settle="pruneFilteredReservationsFromSelection()">
+                          
                         <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
                         <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
                    
@@ -121,13 +153,14 @@ class EmployeeReservationListView(
                         </div>
                         </div>  
                         <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">
-                            ${sendMessageView.renderSendMassMessageLink(reservations.totalRows)}
+                            ${sendMessageView.renderSendMassMessageLink()}
                         </div>
                         <div class="reservation-list form-section block">
                             <div class='table-container'>
                                 <table class="table is-hoverable">
                                     <thead id='reservation-table-header'>
                                         <tr class="table-borderless">
+                                            <th>$selectAllToggle</th>
                                             <th>${sortButton(WARNING_CREATED.toString(), "")}</th>
                                             <th class="nowrap">
                                                 ${sortButton(PLACE.toString(), t("boatSpaceReservation.title.harbor"))}
@@ -168,6 +201,7 @@ class EmployeeReservationListView(
                                         <tr>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
                                             <th>${sectionFilter.render(params.sectionFilter, sections)}</th>
                                             <th></th>
                                             <th>${amenityFilter.render(params.amenity, amenities)}</th>
@@ -180,8 +214,8 @@ class EmployeeReservationListView(
                                             <th></th>
                                         </tr>
                                         </thead>
-                                        <tbody id="table-body" class="loaded-content">
-                                        ${reservationListRowsPartial.render(reservations)}
+                                        <tbody id="table-body" class="loaded-content" x-ref="tableBody">
+                                            ${reservationListRowsPartial.render(reservations)}
                                         </tbody>
                                 </table>
                             </div>

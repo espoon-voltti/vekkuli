@@ -44,6 +44,8 @@ interface BoatSpaceReservationRepository {
 
     fun getBoatSpaceReservationDetails(reservationId: Int): BoatSpaceReservationDetails?
 
+    fun getReservationRecipients(reservationIds: List<Int>): List<ReserverRecipient>
+
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
 
     fun insertBoatSpaceReservation(

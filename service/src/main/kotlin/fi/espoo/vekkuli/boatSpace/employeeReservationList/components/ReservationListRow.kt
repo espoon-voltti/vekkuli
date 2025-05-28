@@ -13,6 +13,15 @@ import java.util.UUID
 
 @Component
 class ReservationListRow : BaseView() {
+    fun emailCheckBox(reservationId: Int) =
+        """
+             <label class="checkbox">
+                <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${addTestId(
+            "reservation-${reservationId}"
+        )} type="checkbox" value="$reservationId" x-model='reservationIds' />
+            </label>
+        """.trimIndent()
+
     fun render(reservation: BoatSpaceReservationItem): String {
         val statusText = getStatusText(reservation)
         val startDateText = formatAsShortYearDate(reservation.startDate)
@@ -23,12 +32,13 @@ class ReservationListRow : BaseView() {
         //language=HTML
         return """
             <tr class="reservation-item"
-                id="boat-space-${reservation.boatSpaceId}"
+               id="boat-space-${reservation.boatSpaceId}"
                 hx-trigger="click"
                 hx-get=$reserverUrl
                 hx-push-url="true"
                 hx-target=".section"
                 hx-select=".section">
+                <td>${emailCheckBox(reservation.id)}</td>
                 <td>$warningIcon</td>
                 <td>${reservation.locationName}</td>
                 <td>
@@ -91,7 +101,7 @@ class ReservationListRow : BaseView() {
     private fun getReserverPageUrl(
         reserverId: UUID,
         reserverType: ReserverType
-    ) = """"/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId""""
+    ): String = """/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId"""
 
     private fun getWarningIcon(hasWarnings: Boolean) =
         if (hasWarnings) {

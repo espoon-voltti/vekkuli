@@ -16,21 +16,24 @@ class SendMessageView(
     private var modal: Modal,
     private var formComponents: FormComponents
 ) : BaseView() {
-    fun renderSendMassMessageLink(totalRows: Int): String {
+    fun renderSendMassMessageLink(): String {
         //language=HTML
         return """            
             <span class="icon is-small">
                     ${icons.letter}
             </span>
             <a                     
-                class="${if (totalRows == 0) "disabled" else ""} is-link has-text-weight-semibold"
+                class="is-link has-text-weight-semibold"
+                :class="{'disabled': reservationIds.length <= 0}"
                 hx-target="#modal-container"
                 hx-swap="innerHTML"
                 hx-boost="false"
                 hx-push-url="false"
                 hx-include="#reservation-filter-form"
                 hx-get="/virkailija/viestit/massa/modal"
-                ${addTestId("send-mass-email-link")}>${t("employee.messages.title", listOf(totalRows.toString()))}
+                hx-params="spaceId"
+                :disabled='reservationIds.length <= 0'
+                ${addTestId("send-mass-email-link")}>${t("employee.messages.title")} <span x-text="'(' + reservationIds.length + ' varausta)'"></span>
             </a>
             """.trimIndent()
     }
@@ -141,7 +144,7 @@ class SendMessageView(
                     </script>
                 <div class='columns is-multiline'>
                     <div class="column is-full" ${addTestId("$formId-modal-subtitle")}>
-                            ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipients.size.toString()))}
+                        ${t("employee.messages.modal.subtitle", listOf(reservationCount.toString(), recipients.size.toString()))}
                     </div>
                     <div class="column is-full recipients"><a data-emails="$emails" onclick="toggleEmailList(this)">Näytä vastaanottajat</a></div>
                     <div id="recipient-emails"></div>

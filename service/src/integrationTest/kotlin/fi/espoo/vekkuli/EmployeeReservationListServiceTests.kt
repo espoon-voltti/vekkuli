@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
@@ -25,6 +26,9 @@ import kotlin.test.assertContains
 @ActiveProfiles("test")
 class EmployeeReservationListServiceTests : IntegrationTestBase() {
 
+
+    @Autowired
+    private lateinit var reservationService: ReservationService
 
     @Autowired
     private lateinit var terminateReservationService: TerminateReservationService
@@ -260,5 +264,48 @@ class EmployeeReservationListServiceTests : IntegrationTestBase() {
         assertEquals(1, reservations.size, "Reservation that is valid within dates is returned")
         assertEquals(reservation2.id, reservations[0].id, "Reservation that is valid within dates is returned")
     }
+
+    @Test
+    fun `should return distinct emails`() {
+        val reservation = testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdLeo,
+                1,
+                1,
+            )
+        )
+        val reservation2 = testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdOlivia,
+                2,
+                2,
+                reserverId = organizationId,
+            )
+        )
+
+        val reservation3 = testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdOlivia,
+                3,
+                3
+            )
+        )
+
+        val reservation4 = testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdMarko,
+                4,
+                4,
+            )
+        )
+
+        val recipients = reservationService.getReservationRecipients(listOf(reservation.id, reservation2.id, reservation3.id, reservation4.id))
+        assertEquals(4, recipients.size)
+    }
+
 
 }

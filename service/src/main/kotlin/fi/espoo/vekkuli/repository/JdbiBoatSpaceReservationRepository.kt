@@ -525,6 +525,48 @@ class JdbiBoatSpaceReservationRepository(
             buildBoatSpaceReservationDetails(query, handle)
         }
 
+    override fun getReservationRecipients(reservationIds: List<Int>): List<ReserverRecipient> =
+        jdbi.withHandleUnchecked { handle ->
+            if (reservationIds.isEmpty()) {
+                return@withHandleUnchecked emptyList<ReserverRecipient>()
+            }
+            val query = handle.createQuery("""
+                SELECT 
+                    r.id AS reserver_id, 
+                    r.email AS reserver_email,
+                    om.id AS org_member_id,
+                    om.email AS org_member_email
+                FROM boat_space_reservation bsr
+                JOIN reserver r ON bsr.reserver_id = r.id
+                LEFT JOIN organization_member o ON o.organization_id = r.id
+                LEFT JOIN reserver om ON om.id = o.member_id
+                WHERE bsr.id IN (<reservationIds>)
+                """.trimIndent())
+                    .bindList("reservationIds", reservationIds)
+                    .map { rs, _ ->
+                        Triple(
+                            UUID.fromString(rs.getString("reserver_id")),
+                            rs.getString("reserver_email"),
+                            if(rs.getString("org_member_id") != null) Recipient(
+                                UUID.fromString(rs.getString("org_member_id")),
+                                rs.getString("org_member_email")
+                            )  else null
+                        )
+                    }
+                    .list()
+
+            // Group by reserver
+           query
+                .groupBy { Pair(it.first, it.second) }
+                .map { (reserverInfo, recipients) ->
+                    ReserverRecipient(
+                        id = reserverInfo.first,
+                        email = reserverInfo.second,
+                        organizationRecipients = recipients.map { it.third }.filterNotNull()
+                    )
+                }
+                    }
+
     override fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
         jdbi.withHandleUnchecked { handle ->
             val query =

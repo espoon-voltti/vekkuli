@@ -122,7 +122,6 @@ class BoatSpaceListController {
                     boatSpaceTypes,
                     actualAmenities,
                     sections,
-                    params.edit,
                     loadMorePageSize
                 )
             )
