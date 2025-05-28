@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.util.UUID
@@ -18,7 +19,7 @@ class ReservationListRow : BaseView() {
         val startDateText = formatAsShortYearDate(reservation.startDate)
         val endDateText = getEndDateText(reservation)
         val reserverUrl = getReserverPageUrl(reservation.reserverId, reservation.reserverType)
-        val warningIcon = getWarningIcon(reservation.hasAnyWarnings())
+        val warningIcon = getWarningIcon(reservation.hasAnyWarnings(), reservation.hasGeneralWarnings())
 
         //language=HTML
         return """
@@ -93,10 +94,13 @@ class ReservationListRow : BaseView() {
         reserverType: ReserverType
     ) = """"/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId""""
 
-    private fun getWarningIcon(hasWarnings: Boolean) =
+    private fun getWarningIcon(hasWarnings: Boolean, hasGeneralWarnings: Boolean) =
         if (hasWarnings) {
-            "<div ${addTestId("warning-icon")}>${icons.warningExclamation(false)}</div>"
-        } else {
+            if(hasGeneralWarnings) {
+                "<div ${addTestId("warning-icon")}>${icons.warningExclamation(AlertLevel.GeneralWarning)}</div>"
+            } else {
+            "<div ${addTestId("warning-icon")}>${icons.warningExclamation(AlertLevel.SystemWarning)}</div>"
+        }} else {
             ""
         }
 }

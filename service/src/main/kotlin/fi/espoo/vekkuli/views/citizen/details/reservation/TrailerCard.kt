@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -22,7 +23,7 @@ class TrailerCard(
     ): String {
         val warning =
             if (showWarning) {
-                """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+                """<span class="icon ml-s">${icons.warningExclamation(AlertLevel.SystemWarning)}</span>"""
             } else {
                 ""
             }
@@ -53,7 +54,7 @@ class TrailerCard(
                 <div class="column">
                     <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
                         <span class="icon ml-s">
-                            ${icons.warningExclamation(false)}
+                            ${icons.warningExclamation(AlertLevel.SystemWarning)}
                         </span>
                         <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
@@ -103,7 +104,7 @@ class TrailerCard(
                                     <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText"></textarea>
                                 </div>
                             </div>
-                            ${warningBox.render(t("reservationWarning.ackInfo"))}
+                            ${warningBox.render(t("reservationWarning.ackInfo"), AlertLevel.SystemWarning)}
                             <div class="block">
                                 <button id="ack-modal-cancel"
                                         class="button"

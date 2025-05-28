@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 
 @Component
@@ -34,7 +35,7 @@ class WarningFilter : BaseView() {
                     ">
                 <span>$label</span>
             </label>
-            <span class="ml-s">${icons.warningExclamation(false)}</span>
+            <span class="ml-s">${icons.warningExclamation(AlertLevel.SystemWarning)}</span>
             """.trimIndent()
     }
 }

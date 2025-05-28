@@ -1,15 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList
 
-import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceReservationItem
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.domain.ReserverType
-import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.PaginatedResult
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.PaginationExpr
@@ -60,7 +51,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val trailerRegistrationCode: String?,
     val trailerWidthCm: Int?,
     val trailerLengthCm: Int?,
-    val warning: String?,
+    val warning: ReservationWarningType?,
     val section: String,
     val municipalityCode: Int,
     val municipalityName: String,

@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
@@ -147,7 +148,7 @@ class BoatSpaceForm(
                                         </div>
                                     </div>
                                     <div class="warning block form-validation-message" id="validation-warning" style="display: none">
-                                        <span class="icon">${icons.warningExclamation(false)}</span>
+                                        <span class="icon">${icons.warningExclamation(AlertLevel.SystemWarning)}</span>
                                         <span class="p-l">${t("boatApplication.validationWarning")}</span>
                                     </div> 
                                 </div> 

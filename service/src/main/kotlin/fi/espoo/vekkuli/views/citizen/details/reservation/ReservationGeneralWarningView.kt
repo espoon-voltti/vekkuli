@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -21,7 +22,7 @@ class ReservationGeneralWarningView : BaseView() {
                         class="is-link is-icon-link has-text-warning has-text-weight-semibold" 
                         ${addTestId("acknowledge-general-warning")}
                         x-on:click="modalOpen = true">
-                        <span class="icon ml-s">${icons.warningExclamation(false)}</span> 
+                        <span class="icon ml-s">${icons.warningExclamation(AlertLevel.GeneralWarning)}</span> 
                         <span>${t("employee.reservation.warning.acknowledge")}</span> 
                     </a>
                 </div>

@@ -121,13 +121,14 @@ data class BoatSpaceReservationItem(
     val municipalityName: String,
     val paymentDate: LocalDate?,
     val invoiceDueDate: LocalDate?,
-    val warnings: Set<String> = emptySet(),
+    val warnings: Set<ReservationWarningType> = emptySet(),
     val validity: ReservationValidity?,
     val amenity: BoatSpaceAmenity?
 ) {
-    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+    fun hasWarning(warning: ReservationWarningType): Boolean = warnings.contains(warning)
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
+    fun hasGeneralWarnings(): Boolean = warnings.any { it == ReservationWarningType.GeneralReservationWarning }
 
     private fun getAmenityForStorageType(): BoatSpaceAmenity =
         when (storageType) {

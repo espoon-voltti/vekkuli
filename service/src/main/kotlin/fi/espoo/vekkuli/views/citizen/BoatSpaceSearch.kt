@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Service
 
 @Service
@@ -301,7 +302,7 @@ class BoatSpaceSearch(
                  ${if (harbor.location.id == 955) {
                     """
                     <div class="ack-info">
-                        <div class="info-icon">${icons.warningExclamation(false)}</div>
+                        <div class="info-icon">${icons.warningExclamation(AlertLevel.SystemWarning)}</div>
                         <div class="info-content">
                             ${t("boatSpace.infoText.otsolahtiSailingBoat")}
                         </div>

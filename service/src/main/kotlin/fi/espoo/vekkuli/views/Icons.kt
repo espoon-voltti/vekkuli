@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views
 
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Service
 
 @Service
@@ -29,9 +30,9 @@ class Icons {
         </svg>
         """
 
-    fun warningExclamation(isError: Boolean): String =
+    fun warningExclamation(warningType: AlertLevel): String =
         """
-        <svg height="16px" fill="${if (isError) "#FF3D3D" else "#FF8E31"}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <svg height="16px" fill="${if (warningType == AlertLevel.Error) "#FF3D3D" else {if(warningType == AlertLevel.SystemWarning) "#FF8E31" else "#ffea31"}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
         </svg>
         """.trimIndent()

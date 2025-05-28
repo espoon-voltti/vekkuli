@@ -14,7 +14,6 @@ class ReservationList(
     private val cardInfo: ReservationCardInformation,
     private val citizenButtons: CitizenCardButtons,
     private val employeeButtons: EmployeeCardButtons,
-    private val warningBox: WarningBox,
     private val reservationTerminationReason: ReservationTerminationReason,
     private val reservationCardWarningBox: ReservationCardWarningBox
 ) : BaseView() {

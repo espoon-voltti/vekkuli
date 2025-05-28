@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.AlertLevel
 import org.springframework.stereotype.Component
 
 @Component
@@ -56,7 +57,7 @@ class BusinessIdInput(
         val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
         val secondParagraph = markDownService.render(t("info.businessId2"))
 
-        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations))
+        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations), AlertLevel.GeneralWarning)
     }
 
     fun warning(
@@ -66,7 +67,7 @@ class BusinessIdInput(
         val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
         val secondParagraph = markDownService.render(t("warning.businessId2"))
 
-        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations))
+        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations), AlertLevel.SystemWarning)
     }
 
     private fun duplicateOrgIdContent(

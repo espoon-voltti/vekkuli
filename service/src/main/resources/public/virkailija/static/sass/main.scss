@@ -10,6 +10,7 @@ $red: #FF4F57;
 $gainsboro: #dddddd;
 $warning: #FF8E31;
 $error: #FF3D3D;
+$light-orange: #ffea31;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -987,6 +988,11 @@ ul {
 
 .has-text-danger {
   color: $error !important;
+}
+
+
+.has-text-general-warning {
+  color: $light-orange !important;
 }
 
 .centered {

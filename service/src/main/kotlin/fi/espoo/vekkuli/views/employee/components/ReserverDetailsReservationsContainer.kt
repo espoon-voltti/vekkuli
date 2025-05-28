@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
+import fi.espoo.vekkuli.views.components.AlertLevel
 import fi.espoo.vekkuli.views.components.modal.Modal
 import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
 import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
@@ -45,7 +46,7 @@ class ReserverDetailsReservationsContainer(
                 <div class="column">
                     <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
                         <span class="icon ml-s">
-                            ${icons.warningExclamation(false)}
+                            ${icons.warningExclamation(AlertLevel.SystemWarning)}
                         </span>
                         <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
@@ -198,7 +199,7 @@ class ReserverDetailsReservationsContainer(
         ): String {
             val warning =
                 if (showWarning) {
-                    """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+                    """<span class="icon ml-s">${icons.warningExclamation(AlertLevel.SystemWarning)}</span>"""
                 } else {
                     ""
                 }
@@ -468,7 +469,7 @@ class ReserverDetailsReservationsContainer(
                     data-testid="invoice-payment-rw-button"
                    x-on:click="invoicePaymentRWModal = true">
                     <div class="centered-row">
-                        <div>${icons.warningExclamation(false)}</div>
+                        <div>${icons.warningExclamation(AlertLevel.SystemWarning)}</div>
                         <span class="ack-link">${t("citizenDetails.payments.ackRW")}</span>
                     </div>
                 </a>
@@ -543,7 +544,7 @@ class ReserverDetailsReservationsContainer(
                             ${if (i.reservationWarningId != null) {
                         "<span>${
                             icons.warningExclamation(
-                                false
+                                AlertLevel.SystemWarning
                             )
                         }</span>"
                     } else {
