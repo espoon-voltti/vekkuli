@@ -21,6 +21,22 @@ class EmployeeReservationListService(
         paginationEnd: Int? = null
     ): PaginatedReservationsResult<BoatSpaceReservationItem> {
         val pagination = PaginationExpr(paginationStart ?: params.paginationStart, paginationEnd ?: params.paginationEnd)
+        val filters = buildBoatSpaceReservationFilters(params)
+
+        val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
+        val sortBy =
+            BoatSpaceReservationSortBy(
+                listOf(params.sortBy to direction)
+            )
+
+        return getPaginatedBoatSpaceReservationItemsWithWarnings(
+            filters,
+            sortBy,
+            pagination
+        )
+    }
+
+    private fun buildBoatSpaceReservationFilters(params: BoatSpaceReservationFilter): AndExpr {
         val filters: MutableList<SqlExpr> = mutableListOf()
         // Add status filters based on the payment status
         filters.add(
@@ -94,19 +110,8 @@ class EmployeeReservationListService(
         if (params.dateFilter != null && (params.reservationValidFrom != null || params.reservationValidUntil != null)) {
             filters.add(ReservationValidWithinExpr(params.reservationValidFrom, params.reservationValidUntil))
         }
-
-        val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
-        val sortBy =
-            BoatSpaceReservationSortBy(
-                listOf(params.sortBy to direction)
-            )
-
-        return getPaginatedBoatSpaceReservationItemsWithWarnings(
-            AndExpr(
-                filters
-            ),
-            sortBy,
-            pagination
+        return AndExpr(
+            filters
         )
     }
 

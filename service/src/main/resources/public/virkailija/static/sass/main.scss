@@ -1190,7 +1190,8 @@ ul {
 }
 
 a {
-  &.disabled {
+  &.disabled,
+  &:disabled {
     pointer-events: none;
     color: $grey;
   }

@@ -1,17 +1,13 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.PaginatedReservationsResult
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
-import fi.espoo.vekkuli.domain.BoatSpaceReservationItem
-import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
@@ -27,10 +23,10 @@ import java.util.*
 class MessageSendingController(
     private val sendMessageView: SendMessageView,
     private val messageService: MessageService,
-    private var reservationListService: EmployeeReservationListService,
     private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
     private val emailEnv: EmailEnv,
+    private val reservationService: ReservationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -41,7 +37,7 @@ class MessageSendingController(
     @ResponseBody
     fun sendMassMessageModal(
         request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceReservationFilter
+        @RequestParam spaceId: List<Int>,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
         authenticatedUser.let {
@@ -54,11 +50,10 @@ class MessageSendingController(
             throw Unauthorized()
         }
 
-        val reservations =
-            reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
-        val recipients = getDistinctRecipients(reservations)
+        val recipients =
+            reservationService.getReservationRecipients(spaceId)
         return ResponseEntity.ok(
-            sendMessageView.renderSendMassMessageModal(reservations.totalRows, recipients.sortedBy { it.email })
+            sendMessageView.renderSendMassMessageModal(spaceId.size, recipients.sortedBy { it.email })
         )
     }
 
@@ -66,7 +61,7 @@ class MessageSendingController(
     @ResponseBody
     fun sendMassEmailMessage(
         request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceReservationFilter,
+        @RequestParam spaceId: List<Int>,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
     ): ResponseEntity<String> {
@@ -77,7 +72,7 @@ class MessageSendingController(
                 it,
                 "SEND_MASS_EMAILS",
                 mapOf(
-                    "params" to params.toString()
+                    "reservationIds" to spaceId.joinToString(", ")
                 )
             )
         }
@@ -87,9 +82,7 @@ class MessageSendingController(
         }
 
         try {
-            val reservations =
-                reservationListService.getBoatSpaceReservations(params, 0, paginationEnd)
-            val recipients = getDistinctRecipients(reservations)
+            val recipients = reservationService.getReservationRecipients(spaceId)
 
             sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
 
@@ -159,20 +152,6 @@ class MessageSendingController(
                 sendMessageView.renderSendingFailed()
             )
         }
-    }
-
-    private fun getDistinctRecipients(reservations: PaginatedReservationsResult<BoatSpaceReservationItem>): List<Recipient> {
-        val recipients: List<List<Recipient>> =
-            reservations.items.map { reservation ->
-                val contactDetails = mutableListOf<Recipient>()
-                contactDetails.add(Recipient(reservation.reserverId, reservation.email))
-
-                if (reservation.reserverType == ReserverType.Organization) {
-                    contactDetails.addAll(getOrganizationRecipients(reservation.reserverId))
-                }
-                contactDetails
-            }
-        return recipients.flatten().distinctBy { it.id }.filter { it.email.isNotEmpty() }
     }
 
     private fun getRecipientsByReserverId(reserverId: UUID): List<Recipient> {

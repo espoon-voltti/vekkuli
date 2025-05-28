@@ -103,7 +103,6 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     fun `Employee can filter by date`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }
-        page.pause()
         listingPage.reservationValidFromInput.fill(formatAsTestDate(LocalDate.of(2024, 1, 1)))
         listingPage.reservationValidUntilInput.fill(formatAsTestDate(LocalDate.of(2024, 12, 31)))
         listingPage.dateFilter.click()
@@ -145,7 +144,11 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 5 }
-        assertThat(listingPage.sendMassMessageLink).not().hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
+        assertThat(listingPage.sendMassMessageLink).hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
+        assertThat(listingPage.sendMassMessageLink).containsText("(0 varausta)")
+        listingPage.selectAllReservations.click()
+        listingPage.reservations
+        assertThat(listingPage.sendMassMessageLink).containsText("(5 varausta)")
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
     }
@@ -153,6 +156,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Send mass email link is disabled when reservation list is empty`() {
         val listingPage = reservationListPage()
+        listingPage.selectAllReservations.click()
         page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.searchInput("phoneSearch").fill("8888888888")
         listingPage.searchInput("phoneSearch").blur()
@@ -163,13 +167,17 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Email is sent to filtered recipients with mass message`() {
         val expectedReservationCount = 5
-        val expectedSentEmailCount = 4
+        val expectedSentEmailCount = 3
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == expectedReservationCount }
+
+        listingPage.selectAllReservations.click()
+        listingPage.reservationRowCheckBox(1).click()
+
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
         assertThat(listingPage.sendMassMessageModalSubtitle).containsText(
-            "Varauksia $expectedReservationCount kpl, viestin vastaanottajia $expectedSentEmailCount kpl."
+            "Varauksia ${expectedReservationCount - 1} kpl, viestin vastaanottajia $expectedSentEmailCount kpl."
         )
         val emailSubject = "Email message title"
         val emailBody = "Email message content"

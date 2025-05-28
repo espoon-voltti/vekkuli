@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatRepository
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -25,6 +26,7 @@ import java.util.*
 @Service
 open class ReservationService(
     private val boatReservationService: BoatReservationService,
+    private val boatSpaceReservationRepository: BoatSpaceReservationRepository,
     private val seasonalService: SeasonalService,
     private val timeProvider: TimeProvider,
     private val reservationFormServiceAdapter: ReservationFormServiceAdapter,
@@ -73,6 +75,21 @@ open class ReservationService(
         boatReservationService.getExpiredBoatSpaceReservationsForReserver(orgId)
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservationAsCurrentCitizen(reservationId).toBoatSpaceReservation()
+
+    private fun getDistinctRecipients(recipients: List<ReserverRecipient>): List<Recipient> {
+        val recipients =
+            recipients
+                .flatMap { it.organizationRecipients + Recipient(it.id, it.email) }
+                .distinctBy { it.email }
+                .filter { it.email.isNotEmpty() }
+        return recipients
+    }
+
+    fun getReservationRecipients(reservationIds: List<Int>): List<Recipient> {
+        val recipients = boatSpaceReservationRepository.getReservationRecipients(reservationIds)
+        val uniqueEmailAddresses = getDistinctRecipients(recipients)
+        return uniqueEmailAddresses
+    }
 
     fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()

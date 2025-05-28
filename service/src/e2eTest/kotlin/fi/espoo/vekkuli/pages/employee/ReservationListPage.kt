@@ -49,6 +49,10 @@ class ReservationListPage(
     val dateFilter = filterLocator("date")
     val reservationValidFromInput: Locator = page.getByTestId("reservationValidFrom")
     val reservationValidUntilInput: Locator = page.getByTestId("reservationValidUntil")
+    val selectAllReservations = getByDataTestId("select-all-toggle")
+    val reservationRowCheckBox = { reservationId: Int ->
+        getByDataTestId("reservation-$reservationId")
+    }
     val sendMassMessageLink = getByDataTestId("send-mass-email-link")
     val sendMassMessageForm = getByDataTestId("send-mass-email")
     val sendMassMessageModalSubtitle = getByDataTestId("send-mass-email-modal-subtitle")

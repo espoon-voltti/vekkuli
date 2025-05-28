@@ -24,7 +24,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -46,7 +45,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var boatService: BoatService
 
-    @MockBean
+    @MockitoBean
     private lateinit var citizenContextProvider: CitizenContextProvider
 
     @Autowired
@@ -58,7 +57,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var reservationService: ReservationService
 
-    @MockBean
+    @MockitoBean
     private lateinit var seasonalService: SeasonalService
 
     @Autowired

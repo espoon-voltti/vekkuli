@@ -21,7 +21,6 @@ data class BoatSpaceListParams(
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
     val boatSpaceState: List<BoatSpaceState> = emptyList(),
     val sectionFilter: List<String> = emptyList(),
-    val edit: List<String> = emptyList(),
     val showOnlyFreeSpaces: Boolean = false,
     val paginationStart: Int = 0,
     val paginationEnd: Int = 100
@@ -86,12 +85,10 @@ class BoatSpaceList(
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
         sections: List<String>,
-        editList: List<String>,
         paginationSize: Int,
     ): String {
         val paginationStartFrom = boatSpaces.end
         val paginationEndTo = boatSpaces.end + paginationSize
-        val shownItemCount = paginationEndTo - paginationStartFrom
 
         val sectionFilter =
             expandingSelectionFilter.render(
