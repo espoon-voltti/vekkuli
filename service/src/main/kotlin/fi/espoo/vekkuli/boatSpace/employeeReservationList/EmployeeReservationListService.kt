@@ -110,7 +110,7 @@ class EmployeeReservationListService(
         if (params.dateFilter != null && (params.reservationValidFrom != null || params.reservationValidUntil != null)) {
             filters.add(ReservationValidWithinExpr(params.reservationValidFrom, params.reservationValidUntil))
         }
-        return  AndExpr(
+        return AndExpr(
             filters
         )
     }

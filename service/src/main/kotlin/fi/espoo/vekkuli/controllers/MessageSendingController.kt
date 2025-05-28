@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
-import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.AuthenticatedUser
@@ -83,7 +82,7 @@ class MessageSendingController(
         }
 
         try {
-           val recipients = reservationService.getReservationRecipients(spaceId)
+            val recipients = reservationService.getReservationRecipients(spaceId)
 
             sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
 
@@ -154,8 +153,6 @@ class MessageSendingController(
             )
         }
     }
-
-
 
     private fun getRecipientsByReserverId(reserverId: UUID): List<Recipient> {
         val reserver =

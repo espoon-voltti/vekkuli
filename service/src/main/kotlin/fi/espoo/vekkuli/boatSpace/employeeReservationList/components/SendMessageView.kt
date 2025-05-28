@@ -33,7 +33,8 @@ class SendMessageView(
                 hx-get="/virkailija/viestit/massa/modal"
                 hx-params="spaceId"
                 :disabled='reservationIds.length <= 0'
-                ${addTestId("send-mass-email-link")}>${t("employee.messages.title")} <span x-text="'(' + reservationIds.length + ' varausta)'"></span>
+                ${addTestId("send-mass-email-link")}>
+                ${t("employee.messages.title")} <span x-text="'(' + reservationIds.length + ' varausta)'"></span>
             </a>
             """.trimIndent()
     }

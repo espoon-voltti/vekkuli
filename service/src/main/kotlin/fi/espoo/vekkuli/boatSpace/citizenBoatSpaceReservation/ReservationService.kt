@@ -76,11 +76,12 @@ open class ReservationService(
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservationAsCurrentCitizen(reservationId).toBoatSpaceReservation()
 
-
-    private fun getDistinctRecipients(recipients:  List<ReserverRecipient>): List<Recipient> {
-        val recipients = recipients.flatMap { it.organizationRecipients + Recipient(it.id, it.email) }
-            .distinctBy { it.email }
-            .filter { it.email.isNotEmpty() }
+    private fun getDistinctRecipients(recipients: List<ReserverRecipient>): List<Recipient> {
+        val recipients =
+            recipients
+                .flatMap { it.organizationRecipients + Recipient(it.id, it.email) }
+                .distinctBy { it.email }
+                .filter { it.email.isNotEmpty() }
         return recipients
     }
 
@@ -88,8 +89,7 @@ open class ReservationService(
         val recipients = boatSpaceReservationRepository.getReservationRecipients(reservationIds)
         val uniqueEmailAddresses = getDistinctRecipients(recipients)
         return uniqueEmailAddresses
-        }
-
+    }
 
     fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()

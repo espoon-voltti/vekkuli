@@ -25,21 +25,17 @@ import kotlin.test.assertContains
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class EmployeeReservationListServiceTests : IntegrationTestBase() {
-
-
     @Autowired
     private lateinit var reservationService: ReservationService
 
     @Autowired
     private lateinit var terminateReservationService: TerminateReservationService
 
-
     @Autowired
     private lateinit var boatReservationService: BoatReservationService
 
     @Autowired
     lateinit var employeeReservationListService: EmployeeReservationListService
-
 
     @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
 
@@ -267,45 +263,50 @@ class EmployeeReservationListServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should return distinct emails`() {
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                citizenIdLeo,
-                1,
-                1,
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    1,
+                )
             )
-        )
-        val reservation2 = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                citizenIdOlivia,
-                2,
-                2,
-                reserverId = organizationId,
+        val reservation2 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    2,
+                    2,
+                    reserverId = organizationId,
+                )
             )
-        )
 
-        val reservation3 = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                citizenIdOlivia,
-                3,
-                3
+        val reservation3 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    3,
+                    3
+                )
             )
-        )
 
-        val reservation4 = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                citizenIdMarko,
-                4,
-                4,
+        val reservation4 =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdMarko,
+                    4,
+                    4,
+                )
             )
-        )
 
-        val recipients = reservationService.getReservationRecipients(listOf(reservation.id, reservation2.id, reservation3.id, reservation4.id))
+        val recipients =
+            reservationService.getReservationRecipients(
+                listOf(reservation.id, reservation2.id, reservation3.id, reservation4.id)
+            )
         assertEquals(4, recipients.size)
     }
-
-
 }

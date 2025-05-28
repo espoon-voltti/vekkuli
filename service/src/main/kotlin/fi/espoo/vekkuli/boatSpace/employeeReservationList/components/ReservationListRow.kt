@@ -17,7 +17,7 @@ class ReservationListRow : BaseView() {
         """
              <label class="checkbox">
                 <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${addTestId(
-            "reservation-${reservationId}"
+            "reservation-$reservationId"
         )} type="checkbox" value="$reservationId" x-model='reservationIds' />
             </label>
         """.trimIndent()
