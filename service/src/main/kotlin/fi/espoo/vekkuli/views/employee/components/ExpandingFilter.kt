@@ -30,7 +30,8 @@ class ExpandingFilter : BaseView() {
         content: String
     ) = // language=HTML
         """
-        <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'${htmlEscape(it.toString())}'" }}] }" @click.outside="open = false">
+        <div x-data="{ open: false, $modelName: [${filter.joinToString(",")
+            { "'${htmlEscape(it.toString())}'" }}] }" @click.outside="open = false">
                     <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId(
             "filter-selection-$modelName"
         )} @click="open = !open">

@@ -176,10 +176,12 @@ class BoatSpaceService(
     fun getSections() = boatSpaceRepo.getSections()
 
     // Width filter shouldn't affect its own options
-    fun getBoatWidthOptions(params: BoatSpaceListParams) = boatSpaceRepo.getBoatWidthOptions(buildBoatSpaceFilters(params.copy(widthFilter = emptyList())))
+    fun getBoatWidthOptions(params: BoatSpaceListParams) =
+        boatSpaceRepo.getBoatWidthOptions(buildBoatSpaceFilters(params.copy(widthFilter = emptyList())))
 
     // Length filter shouldn't affect its own options
-    fun getBoatLengthOptions(params: BoatSpaceListParams) = boatSpaceRepo.getBoatLengthOptions(buildBoatSpaceFilters(params.copy(lengthFilter = emptyList())))
+    fun getBoatLengthOptions(params: BoatSpaceListParams) =
+        boatSpaceRepo.getBoatLengthOptions(buildBoatSpaceFilters(params.copy(lengthFilter = emptyList())))
 
     fun editBoatSpaces(
         boatSpaceIds: List<Int>,

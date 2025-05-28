@@ -35,7 +35,7 @@ class BoatSpaceListPage(
     val widthOptions = widthSelectionFilter.locator("label")
     val lengthSelectionFilter = filterLocator("selection-selectedLengths")
     val lengthOptions = lengthSelectionFilter.locator("label")
-    val lengthOption = {optionValue: String -> lengthSelectionFilter.locator("label:has-text('$optionValue')")}
+    val lengthOption = { optionValue: String -> lengthSelectionFilter.locator("label:has-text('$optionValue')") }
     val expandingSelectionFilter = filterLocator("selection-selectedSections")
     val expandingSelectionFilterValue = { value: String -> filterLocator("selection-selectedSections").locator("input[value='$value']") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }

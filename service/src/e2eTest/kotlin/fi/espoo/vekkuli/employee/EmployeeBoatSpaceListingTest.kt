@@ -90,38 +90,37 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         }
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "sortBy, XSS_ATTACK_SORT_BY",
+        "ascending, XSS_ATTACK_ASCENDING",
+        "harbor, XSS_ATTACK_HARBOR",
+        "sectionFilter, XSS_ATTACK_SECTION_FILTER",
+        "boatSpaceType, XSS_ATTACK_BOAT_SPACE_TYPE",
+        "boatSpaceState, XSS_ATTACK_BOAT_SPACE_STATE",
+        "validity, XSS_ATTACK_VALIDITY",
+    )
+    fun `reservations list should shield against XSS reflection scripts from parameters`(
+        parameter: String,
+        maliciousValue: String
+    ) {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val listingPage = BoatSpaceListPage(page)
 
-//    @ParameterizedTest
-//    @CsvSource(
-//        "sortBy, XSS_ATTACK_SORT_BY",
-//        "ascending, XSS_ATTACK_ASCENDING",
-//        "harbor, XSS_ATTACK_HARBOR",
-//        "sectionFilter, XSS_ATTACK_SECTION_FILTER",
-//        "boatSpaceType, XSS_ATTACK_BOAT_SPACE_TYPE",
-//        "boatSpaceState, XSS_ATTACK_BOAT_SPACE_STATE",
-//        "validity, XSS_ATTACK_VALIDITY",
-//    )
-//    fun `reservations list should shield against XSS reflection scripts from parameters`(
-//        parameter: String,
-//        maliciousValue: String
-//    ) {
-//        try {
-//            EmployeeHomePage(page).employeeLogin()
-//            val listingPage = BoatSpaceListPage(page)
-//
-//            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
-//
-//            val params =
-//                mapOf(
-//                    parameter to maliciousCode(maliciousValue),
-//                )
-//            listingPage.navigateToWithParams(params)
-//
-//            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on $parameter")
-//        } catch (e: AssertionError) {
-//            handleError(e)
-//        }
-//    }
+            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
+
+            val params =
+                mapOf(
+                    parameter to maliciousCode(maliciousValue),
+                )
+            listingPage.navigateToWithParams(params)
+
+            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on $parameter")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 
     @Test
     fun `should be able to edit boat space`() {
