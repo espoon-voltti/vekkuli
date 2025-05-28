@@ -160,11 +160,12 @@ class JdbiOrganizationRepository(
         if (params.name != null) {
             reserverParams["name"] = params.name
         }
+
         if (params.phone != null) {
-            reserverParams["phone"] = params.phone
+            reserverParams["phone"] = params.phone.replace("\\s+".toRegex(), "")
         }
         if (params.email != null) {
-            reserverParams["email"] = params.email
+            reserverParams["email"] = params.email.replace("\\s+".toRegex(), "")
         }
         if (params.streetAddress != null) {
             reserverParams["street_address"] = params.streetAddress
