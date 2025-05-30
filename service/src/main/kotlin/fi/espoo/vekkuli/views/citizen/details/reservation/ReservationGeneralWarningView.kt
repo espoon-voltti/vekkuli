@@ -19,7 +19,7 @@ class ReservationGeneralWarningView : BaseView() {
             return """
                 <div class="column">
                     <a 
-                        class="is-link is-icon-link has-text-warning has-text-weight-semibold" 
+                        class="is-link is-icon-link has-text-general-warning has-text-weight-semibold" 
                         ${addTestId("acknowledge-general-warning")}
                         x-on:click="modalOpen = true">
                         <span class="icon ml-s">${icons.warningExclamation(AlertLevel.GeneralWarning)}</span> 

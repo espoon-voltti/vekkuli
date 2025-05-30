@@ -4,18 +4,16 @@ $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
 $light-gray: #F7F7F7;
-$darkGray: #536076;
+$dark-gray: #536076;
 $gainsboro: #dddddd;
-$warning: #FF8E31;
-$error: #FF3D3D;
-$bulma-danger: #EB002F;
+$orange: #FF8E31;
+$red: #FF4F57;
+$bright-red: #EB002F;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-xl: 32px;
-$block-spacing: $spacing-medium;
-$activeColor: #D9E4F4;
 $checkbox-size: 36px;
 $help-min-height: 18px;
 
@@ -31,10 +29,10 @@ $help-min-height: 18px;
           "l": $spacing-large, "xl": $spacing-xl, "auto": auto),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
-  $block-spacing: $block-spacing,
+  $block-spacing: $spacing-medium,
   $box-radius: 0,
   $table-row-hover-background-color: $light-blue,
-  $table-head-cell-color: $darkGray,
+  $table-head-cell-color: $dark-gray,
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
@@ -51,7 +49,7 @@ $help-min-height: 18px;
   $subtitle-size: 20px,
   $subtitle-weight: 600,
   $subtitle-line-height: 24px,
-  $danger: $bulma-danger,
+  $danger: $bright-red,
   $footer-padding: 1.5rem,
 );
 @use "bulma/sass/utilities/mixins";
@@ -88,8 +86,8 @@ input:focus-visible, input.input:focus-visible,
   outline-offset: 2px;
   box-shadow: none;
   &.is-danger {
-    outline-color: $bulma-danger;
-    border-color: $bulma-danger;
+    outline-color: $bright-red;
+    border-color: $bright-red;
   }
 }
 
@@ -347,12 +345,12 @@ input[type="radio"]:checked {
 
 .warning {
   display: inline-block;
-  border: 1px solid $warning;
+  border: 1px solid $orange;
   margin-bottom: 16px
 }
 
 .error {
-  border: 1px solid $error;
+  border: 1px solid $red;
 }
 
 .error-container {
@@ -461,17 +459,17 @@ body > .columns {
   }
 
   &.is-warning {
-    border-color: $warning;
+    border-color: $orange;
   }
 
   &.is-error {
-    border-color: $warning;
+    border-color: $orange;
   }
 }
 
 .ack-info {
   padding: $spacing-medium;
-  border: 1px solid $warning;
+  border: 1px solid $orange;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -519,7 +517,7 @@ body > .columns {
 
   th a {
     text-decoration: none;
-    color: $darkGray;
+    color: $dark-gray;
   }
 }
 
@@ -638,7 +636,7 @@ body > .columns {
 }
 
 a.active {
-  background: $activeColor;
+  background: $light-blue;
 }
 
 .login-link {
@@ -847,7 +845,7 @@ label.filter-button:has(input:checked) .icon {
   }
 
   thead th {
-    color: $darkGray;
+    color: $dark-gray;
   }
 
   th, td {
@@ -864,7 +862,7 @@ label.filter-button:has(input:checked) .icon {
 
   th a {
     text-decoration: none;
-    color: $darkGray;
+    color: $dark-gray;
   }
 }
 
@@ -986,7 +984,7 @@ ul {
 }
 
 .is-error-container {
-  border: 1px solid $error;
+  border: 1px solid $red;
 }
 
 .centered {

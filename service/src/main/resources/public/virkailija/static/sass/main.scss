@@ -4,20 +4,18 @@ $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
 $light-gray: #F7F7F7;
-$darkGray: #536076;
+$dark-gray: #536076;
 $green: #70C673;
-$red: #FF4F57;
 $gainsboro: #dddddd;
-$warning: #FF8E31;
-$error: #FF3D3D;
-$light-orange: #ffea31;
+$peach-orange: #FFC386;
+$red: #FF4F57;
+$orange: #FF8E31;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-xl: 32px;
 $block-spacing: $spacing-medium;
-$activeColor: #D9E4F4;
 $checkbox-size: 36px;
 
 @use "bulma/sass" with (
@@ -35,7 +33,7 @@ $checkbox-size: 36px;
   $block-spacing: $block-spacing,
   $box-radius: 0,
   $table-row-hover-background-color: $light-blue,
-  $table-head-cell-color: $darkGray,
+  $table-head-cell-color: $dark-gray,
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
@@ -321,12 +319,12 @@ input[type="radio"]:checked {
 
 .warning {
   display: inline-block;
-  border: 1px solid $warning;
+  border: 1px solid $orange;
   margin-bottom: 16px
 }
 
 .error {
-  border: 1px solid $error;
+  border: 1px solid $red;
 }
 
 
@@ -416,7 +414,7 @@ body > .columns {
 
 .ack-info {
   padding: $spacing-medium;
-  border: 1px solid $warning;
+  border: 1px solid $orange;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -462,7 +460,7 @@ table.table {
 
   th a {
     text-decoration: none;
-    color: $darkGray;
+    color: $dark-gray;
   }
 }
 
@@ -587,7 +585,7 @@ table.table {
 }
 
 a.active {
-  background: $activeColor;
+  background: $light-blue;
 }
 
 .login-link {
@@ -817,7 +815,7 @@ label.filter-button:has(input:checked) .icon {
 
 .message-list {
   thead th {
-    color: $darkGray;
+    color: $dark-gray;
   }
 }
 
@@ -829,7 +827,7 @@ label.filter-button:has(input:checked) .icon {
   }
 
   thead th {
-    color: $darkGray;
+    color: $dark-gray;
   }
 
   th, td {
@@ -865,7 +863,7 @@ label.filter-button:has(input:checked) .icon {
 
   .ack-link {
     white-space: nowrap;
-    color: $warning;
+    color: $orange;
   }
 }
 
@@ -983,16 +981,15 @@ ul {
 }
 
 .is-error-container {
-  border: 1px solid $error;
+  border: 1px solid $red;
 }
 
 .has-text-danger {
-  color: $error !important;
+  color: $red !important;
 }
 
-
 .has-text-general-warning {
-  color: $light-orange !important;
+  color: $peach-orange !important;
 }
 
 .centered {
@@ -1115,7 +1112,7 @@ ul {
   display: none;
   height: 16px;
   width: 16px;
-  background-color: $warning;
+  background-color: $orange;
   border-radius: 50%;
   margin-left: 10px;
   &.on {
