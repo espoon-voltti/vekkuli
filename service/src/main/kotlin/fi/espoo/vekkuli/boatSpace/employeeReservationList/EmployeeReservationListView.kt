@@ -97,7 +97,7 @@ class EmployeeReservationListView(
                           hx-get="/virkailija/venepaikat/varaukset"
                           hx-target="#table-body"
                           hx-select="#table-body, #modal"
-                          hx-trigger="change from:#reservation-filter-container delay:500ms, change from:#reservation-table-header delay:1ms, keyup delay:500ms" 
+                          hx-trigger="change from:#reservation-filter-container delay:500ms, input change from:#reservation-table-header delay:100ms, keyup delay:500ms" 
                           hx-swap="outerHTML"
                           hx-history="false"
                           hx-push-url="true"
