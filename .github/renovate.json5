@@ -29,6 +29,11 @@
   postUpdateOptions: ['yarnDedupeHighest', 'npmDedupe'],
 
   labels: ['dependencies'],
+
+  "ignorePaths": [
+    "api-gateway/config/**"
+  ],
+  
   packageRules: [
     {
       matchFileNames: ['apigw/**'],
