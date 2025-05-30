@@ -5,10 +5,7 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.audit
-import fi.espoo.vekkuli.config.ensureEmployeeId
-import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
@@ -16,6 +13,7 @@ import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.employee.components.FilterOption
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
@@ -108,8 +106,19 @@ class BoatSpaceListController {
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params, params.paginationStart, initialPageSize)
 
-        val sections = boatSpaceService.getSections()
+        val sectionOptions = boatSpaceService.getSections().map { FilterOption(it, it) }
         val priceClasses = priceService.getPriceClasses()
+
+        val boatWidthOptions =
+            boatSpaceService
+                .getBoatWidthOptions(
+                    params
+                ).map { FilterOption(it.toString(), formatDecimal(intToDecimal(it))) }
+        val boatLengthOptions =
+            boatSpaceService
+                .getBoatLengthOptions(
+                    params
+                ).map { FilterOption(it.toString(), formatDecimal(intToDecimal(it))) }
         return ResponseEntity.ok(
             layout.render(
                 true,
@@ -121,7 +130,9 @@ class BoatSpaceListController {
                     priceClasses,
                     boatSpaceTypes,
                     actualAmenities,
-                    sections,
+                    sectionOptions,
+                    boatWidthOptions,
+                    boatLengthOptions,
                     loadMorePageSize
                 )
             )

@@ -3,18 +3,18 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
+import fi.espoo.vekkuli.views.employee.components.ExpandingFilter
 import org.springframework.stereotype.Component
 
 @Component
 class AmenityFilter(
-    private val expandingSelectionFilter: ExpandingSelectionFilter,
+    private val expandingFilter: ExpandingFilter,
 ) : BaseView() {
     fun render(
         selectedAmenities: List<BoatSpaceAmenity>,
         amenities: List<BoatSpaceAmenity>,
     ): String =
-        expandingSelectionFilter.render(
+        expandingFilter.filterDropdown(
             selectedAmenities.map { t ->
                 t.name
             },

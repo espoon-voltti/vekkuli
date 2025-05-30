@@ -748,12 +748,17 @@ label.filter-button:has(input:checked) .icon {
 }
 
 .filter-dropdown-menu {
-  min-width: unset;
+  min-width: 100%;
   max-width: 200px;
   background: white;
-  padding: 4px;
   border: 1px solid #DADDE2;
   border-top: 0;
+  max-height: 300px;
+  overflow-x: auto;
+
+  .dropdown-item:hover {
+    background: $light-blue;
+  }
 }
 
 .selectedSections {

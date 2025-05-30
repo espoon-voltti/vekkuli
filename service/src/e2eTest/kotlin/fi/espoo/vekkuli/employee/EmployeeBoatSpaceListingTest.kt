@@ -20,10 +20,32 @@ import kotlin.test.assertEquals
 @ActiveProfiles("test")
 class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     @Test
-    fun `Employee can filter boat spaces`() {
+    fun `Employee can filter out boat spaces that are inactive`() {
         val listingPage = boatSpaceListPage()
         listingPage.boatStateFilter("Inactive").click()
         page.waitForCondition { listingPage.listItems.count() == 4 }
+    }
+
+    @Test
+    fun `employee can filter boat spaces by width and length`() {
+        val listingPage = boatSpaceListPage()
+        listingPage.boatSpaceTypeFilter("Slip").click()
+        listingPage.amenityFilter("Beam").click()
+        listingPage.harborFilter("1").click()
+
+        page.waitForCondition { listingPage.listItems.count() == 98 }
+        assertThat(listingPage.lengthOptions).hasCount(6)
+        listingPage.lengthSelectionFilter.click()
+        listingPage.lengthOption("4,50").click()
+        assertThat(listingPage.widthOptions).hasCount(1)
+        listingPage.lengthSelectionFilter.click()
+        listingPage.lengthOption("4,50").click()
+        assertThat(listingPage.widthOptions).hasCount(14)
+        listingPage.boatStateFilter("Inactive").click()
+
+        page.waitForCondition { listingPage.listItems.count() == 4 }
+        assertThat(listingPage.lengthOptions).hasCount(1)
+        assertThat(listingPage.widthOptions).hasCount(1)
     }
 
     @Test
@@ -197,7 +219,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     fun `should be able to add and delete a boat space`() {
         try {
             val listingPage = boatSpaceListPage()
-
             // Add a new boat space
             listingPage.addBoatSpaceButton.click()
             val createModal = listingPage.createModal

@@ -334,7 +334,7 @@ class JdbiBoatSpaceRepository(
             query.execute()
         }
 
-    override fun getBoatSpaceCount(filter: SqlExpr,): BoatSpaceStats =
+    override fun getBoatSpaceCount(filter: SqlExpr): BoatSpaceStats =
         jdbi.withHandleUnchecked { handle ->
             val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
 
@@ -438,6 +438,40 @@ class JdbiBoatSpaceRepository(
             val query = handle.createQuery(sql)
             query.bind("boatSpaceId", boatSpaceId)
             query.mapTo<BoatSpaceHistory>().toList()
+        }
+
+    override fun getBoatWidthOptions(filter: SqlExpr): List<Int> =
+        jdbi.withHandleUnchecked { handle ->
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
+
+            val sql =
+                """
+                SELECT DISTINCT bs.width_cm
+                ${buildBoatSpacePickQuery()}
+                $filterQuery
+                ORDER BY bs.width_cm ASC
+                """.trimIndent()
+            val query = handle.createQuery(sql)
+            filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.mapTo<Int>().toList()
+        }
+
+    override fun getBoatLengthOptions(filter: SqlExpr): List<Int> =
+        jdbi.withHandleUnchecked { handle ->
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
+
+            val sql =
+                """
+                SELECT DISTINCT bs.length_cm
+                 ${buildBoatSpacePickQuery()}
+                $filterQuery
+                 ORDER BY bs.length_cm ASC
+                """.trimIndent()
+            val query = handle.createQuery(sql)
+            filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.mapTo<Int>().toList()
         }
 
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =

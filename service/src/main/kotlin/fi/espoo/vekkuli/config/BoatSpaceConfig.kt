@@ -14,8 +14,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Dimensions(
-    val width: Int?,
-    val length: Int?
+    val widthCm: Int?,
+    val lengthCm: Int?
 )
 
 object BoatSpaceConfig {
@@ -165,7 +165,7 @@ object BoatSpaceConfig {
         boat: Dimensions
     ): Boolean {
         // If the boat is longer than the threshold, it always needs a buoy place
-        if (boat.length != null && boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+        if (boat.lengthCm != null && boat.lengthCm > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
         return isWidthOk(space, amenity, boat) && isLengthOk(space, amenity, boat)
@@ -176,8 +176,9 @@ object BoatSpaceConfig {
         amenity: BoatSpaceAmenity,
         boat: Dimensions
     ): Boolean {
-        val (minWidth, maxWidth) = getWidthLimitsForBoat(space.width ?: 0, amenity)
-        return boat.width == null || ((minWidth == null || boat.width >= minWidth) && (maxWidth == null || boat.width <= maxWidth))
+        val (minWidth, maxWidth) = getWidthLimitsForBoat(space.widthCm ?: 0, amenity)
+        return boat.widthCm == null ||
+            ((minWidth == null || boat.widthCm >= minWidth) && (maxWidth == null || boat.widthCm <= maxWidth))
     }
 
     fun isLengthOk(
@@ -185,11 +186,12 @@ object BoatSpaceConfig {
         amenity: BoatSpaceAmenity,
         boat: Dimensions
     ): Boolean {
-        if (boat.length != null && boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+        if (boat.lengthCm != null && boat.lengthCm > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
-        val (minLength, maxLength) = getLengthLimitsForBoat(space.length ?: 0, amenity)
-        return boat.length == null || ((minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength))
+        val (minLength, maxLength) = getLengthLimitsForBoat(space.lengthCm ?: 0, amenity)
+        return boat.lengthCm == null ||
+            ((minLength == null || boat.lengthCm >= minLength) && (maxLength == null || boat.lengthCm <= maxLength))
     }
 
     // How many max days later reservation expired emails are sent after expiration

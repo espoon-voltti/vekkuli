@@ -25,7 +25,7 @@ class ConfirmDeleteModal : BaseView() {
                             <a class="button is-danger" 
                                ${addTestId("delete-modal-confirm")}
                                 hx-post="/virkailija/venepaikat/poista"
-                                hx-include="#boatSpaceIds"
+                                hx-include="#boat-space-filter-form, #boatSpaceIds"
                                 hx-swap ="innerHTML"
                                 hx-target="#modal-container"
                                 >
