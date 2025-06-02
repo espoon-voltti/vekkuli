@@ -148,62 +148,62 @@ const sv: Translations = {
     title: 'Båtplatser',
     info: {
       locations:
-        'Lediga båtplatser finns i följande hamnar: Gäddvik, Stensvik, Bredvik, Björnviken, Sökö, Finno och Svinö. Vinterförvaringsplatser finns i Bredvik, Björnviken och Finno samt året-runt-förvaringsplatser i Käringbacken.',
+        'Lediga båtplatser finns i följande hamnar: Gäddvik, Stensvik, Bredvik, Björnviken, Sökö, Finno och Svinö. Vinterförvaringsplats finns i Bredvik, Björnviken och Finno samt året-runt-förvaringsplatser i Käringbacken.',
       authenticationRequired:
         'För att boka en plats krävs stark autentisering, och båtplatsen betalas vid bokningstillfället. Bokningssystemet fungerar bäst med Google Chrome och Edge-webbläsare.',
       boatRequired:
-        'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplatser. Se till att uppgifterna är korrekta i Traficoms båtregister.',
+        'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplats. Se till att uppgifterna är korrekta i Traficoms båtregister.',
       contactInfo:
         'Om du inte kan identifiera dig elektroniskt eller bokar för första gången för en gemenskap (företag eller förening), kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 på måndagar och onsdagar kl. 12.30–15.00 och på torsdagar kl. 9.00–11.00.',
       preparations:
-        'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
+        'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registernummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
         'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring <a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">här</a>.'
     },
     periods: {
       Slip: {
-        title: 'Boka båtplatser 2025',
+        title: 'Boka båtplats 2025',
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
           (period: string) =>
             `${period} endast Esbobor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
-          (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
-          (period: string) => `${period} alla kan boka båtplatser`
+          (period: string) => `${period} endast Esbobor* kan boka båtplats.`,
+          (period: string) => `${period} alla kan boka båtplats`
         ]
       },
       Trailer: {
-        title: 'Boka trailerplatser vid Finno 2025',
+        title: 'Boka trailerplats i Finno 2025',
         season: (season: string) =>
           `Hyressäsong ${season}. Båt på trailer, sjösättning från ramp.`,
         periods: [
           (period: string) =>
-            `${period} endast Esbobor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
-          (period: string) => `${period} alla kan boka trailerplatser`
+            `${period} endast Esbobor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin trailerplats.`,
+          (period: string) => `${period} alla kan boka trailerplats`
         ]
       },
       Winter: {
-        title: 'Boka vinterförvaringsplatser 2025',
+        title: 'Boka vinterförvaringsplats 2025',
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} endast Esbobor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
+            `${period} endast Esbobor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin vinterförvaringsplats`,
           (period: string) =>
-            `${period} endast Esbobor* kan boka vinterförvaringsplatser`
+            `${period} endast Esbobor* kan boka vinterförvaringsplats`
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplatser i Käringbacken 2025 **',
+        title: 'Boka förvaringsplats i Käringbacken 2025 **',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
             `${period} nuvarande hyrestagare kan förnya sin förvaringsplats`,
-          (period: string) => `${period} alla kan boka förvaringsplatser`
+          (period: string) => `${period} alla kan boka förvaringsplats`
         ]
       },
       footNote:
-        '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.',
+        '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
       footNote2:
-        '** Fram till 14.9.2025 kan alla boka förvaringsplatser för den pågående säsongen.'
+        '** Fram till 14.9.2025 kan alla boka förvaringsplats för den pågående säsongen.'
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
@@ -245,8 +245,8 @@ const sv: Translations = {
             harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Trailer: {
-            width: 'Släpvagnens bredd (m)',
-            length: 'Släpvagnens längd (m)',
+            width: 'Trailerns bredd (m)',
+            length: 'Trailerns längd (m)',
             harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Winter: {
@@ -481,7 +481,7 @@ const sv: Translations = {
     deleteSuccess: 'Båten har tagits bort',
     confirmDelete: (boatName: string) =>
       `Du håller på att ta bort informationen för båten ${boatName}`,
-    editBoatDetails: 'Redigera båtdetaljer',
+    editBoatDetails: 'Redigera båtuppgifter',
     boatName: 'Båtnamn',
     boatDepthInMeters: 'Djupgående (m)',
     boatWeightInKg: 'Vikt (kg)',
@@ -502,7 +502,7 @@ const sv: Translations = {
   boatSpace: {
     boatSpaceType: {
       Slip: {
-        label: 'Bryggplats',
+        label: 'Båtplats',
         info: 'Båt i vattnet vid en bryggplats eller boj.'
       },
       Trailer: {
@@ -523,7 +523,7 @@ const sv: Translations = {
       OutboardMotor: 'Utbordsmotorbåt',
       Sailboat: 'Segelbåt',
       InboardMotor: 'Inombordsmotorbåt',
-      Rowboat: 'Rodd båt',
+      Rowboat: 'Roddbåt',
       JetSki: 'Vattenskoter',
       Other: 'Annan'
     },
@@ -631,7 +631,7 @@ const sv: Translations = {
       reservationValidity: 'Reservationens giltighet',
       placeType: 'Platstyp',
       price: 'Pris',
-      boatPresent: 'Båt närvarande',
+      boatPresent: 'Båt på platsen',
       equipment: 'Utrustning',
       paymentStatus: 'Betalningsstatus',
       storageType: 'Förvaringstyp'
