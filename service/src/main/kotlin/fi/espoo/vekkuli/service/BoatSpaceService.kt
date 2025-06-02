@@ -74,6 +74,10 @@ interface BoatSpaceRepository {
     fun createBoatSpace(params: CreateBoatSpaceParams): Int
 
     fun getBoatSpaceHistory(boatSpaceId: Int): List<BoatSpaceHistory>
+
+    fun getBoatWidthOptions(filter: SqlExpr): List<Int>
+
+    fun getBoatLengthOptions(filter: SqlExpr): List<Int>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -88,7 +92,7 @@ class BoatSpaceService(
         paginationEnd: Int? = null
     ): PaginatedBoatSpaceResult<BoatSpaceListRow> {
         val pagination = PaginationExpr(paginationStart ?: params.paginationStart, paginationEnd ?: params.paginationEnd)
-        val filters: MutableList<SqlExpr> = buildBoatSpaceFilters(params)
+        val filters = buildBoatSpaceFilters(params)
         val sortBy =
             BoatSpaceSortBy(
                 listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending) +
@@ -97,23 +101,19 @@ class BoatSpaceService(
 
         val boatSpaces =
             boatSpaceRepo.getBoatSpaces(
-                AndExpr(
-                    filters
-                ),
+                filters,
                 sortBy,
                 pagination
             )
         val boatSpaceStats =
             boatSpaceRepo.getBoatSpaceCount(
-                AndExpr(
-                    filters
-                )
+                filters
             )
 
         return PaginatedBoatSpaceResult(boatSpaces, boatSpaceStats.spaces, pagination.start, pagination.end, boatSpaceStats.reservations)
     }
 
-    private fun buildBoatSpaceFilters(params: BoatSpaceListParams): MutableList<SqlExpr> {
+    private fun buildBoatSpaceFilters(params: BoatSpaceListParams): AndExpr {
         val filters: MutableList<SqlExpr> = mutableListOf()
 
         if (params.harbor.isNotEmpty()) {
@@ -139,7 +139,18 @@ class BoatSpaceService(
         if (params.showOnlyFreeSpaces) {
             filters.add(ShowOnlyFreeSpacesExpr())
         }
-        return filters
+
+        if (params.lengthFilter.isNotEmpty()) {
+            filters.add(BoatSpaceLengthExpr(params.lengthFilter))
+        }
+
+        if (params.widthFilter.isNotEmpty()) {
+            filters.add(BoatSpaceWidthExpr(params.widthFilter))
+        }
+
+        return AndExpr(
+            filters
+        )
     }
 
     fun getUnreservedBoatSpaceOptions(
@@ -163,6 +174,14 @@ class BoatSpaceService(
     }
 
     fun getSections() = boatSpaceRepo.getSections()
+
+    // Width filter shouldn't affect its own options
+    fun getBoatWidthOptions(params: BoatSpaceListParams) =
+        boatSpaceRepo.getBoatWidthOptions(buildBoatSpaceFilters(params.copy(widthFilter = emptyList())))
+
+    // Length filter shouldn't affect its own options
+    fun getBoatLengthOptions(params: BoatSpaceListParams) =
+        boatSpaceRepo.getBoatLengthOptions(buildBoatSpaceFilters(params.copy(lengthFilter = emptyList())))
 
     fun editBoatSpaces(
         boatSpaceIds: List<Int>,
