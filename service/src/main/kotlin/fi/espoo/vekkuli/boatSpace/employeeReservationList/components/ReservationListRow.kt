@@ -73,7 +73,7 @@ class ReservationListRow : BaseView() {
         val paymentPart =
             reservation.paymentDate?.let {
                 ", " + t("employee.boatSpaceReservations.paidDate") +
-                        " " + formatAsShortYearDate(it)
+                    " " + formatAsShortYearDate(it)
             } ?: ""
 
         return t("boatSpaceReservation.paymentOption.confirmed") + paymentPart
@@ -83,7 +83,7 @@ class ReservationListRow : BaseView() {
         val dueDatePart =
             reservation.invoiceDueDate?.let {
                 ", " + t("employee.boatSpaceReservations.dueDate") +
-                        " " + formatAsShortYearDate(it)
+                    " " + formatAsShortYearDate(it)
             } ?: ""
 
         return t("boatSpaceReservation.paymentOption.invoiced") + dueDatePart

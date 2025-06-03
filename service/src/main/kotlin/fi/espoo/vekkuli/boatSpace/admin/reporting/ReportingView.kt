@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.boatSpace.admin.reporting
 
 import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 

@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.TextAreaOptions
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*

@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.ReservationStatusContainer
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import fi.espoo.vekkuli.views.employee.SanitizeInput
