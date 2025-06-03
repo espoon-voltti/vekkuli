@@ -312,7 +312,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
-        val freeRows = getFreeBoatSpaceReport(jdbi, today.atStartOfDay())
+        val freeRows = getFreeBoatSpaceReportRows(jdbi, today.atStartOfDay())
         assertTrue(freeRows.any { it.harbor == "Haukilahti" && it.place == "A 001" })
         assertTrue(freeRows.none { it.harbor == "Haukilahti" && it.place == "A 002" })
 

@@ -217,17 +217,6 @@ data class BoatSpaceReportRowWithWarnings(
     val warnings: List<ReservationWarning>
 )
 
-fun getFreeBoatSpaceReport(
-    jdbi: Jdbi,
-    reportDate: LocalDateTime
-): List<BoatSpaceReportRow> =
-    getBoatSpaceReportRows(jdbi, reportDate)
-        .filter {
-            it.startDate == null ||
-                !(it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced) ||
-                (it.terminationTimestamp != null && it.terminationTimestamp.isBefore(reportDate))
-        }.distinctBy { it.boatSpaceId }
-
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
@@ -337,6 +326,50 @@ fun getBoatSpaceReportRows(
         if (!ids.isNullOrEmpty()) {
             query.bindList("ids", ids)
         }
+
+        query
+            .mapTo<BoatSpaceReportRow>()
+            .list()
+    }
+
+fun getFreeBoatSpaceReportRows(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRow> =
+    jdbi.inTransactionUnchecked { tx ->
+        val query =
+            tx
+                .createQuery(
+                    """
+WITH places_with_active_reservations AS (
+    SELECT bs.id
+    FROM boat_space bs
+         JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+    WHERE                    
+    :reportDate::date >= bsr.start_date 
+    AND :reportDate::date <= bsr.end_date
+    AND (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
+)
+SELECT
+    bs.id AS boat_space_id,
+    l.name AS harbor,
+    bs.section AS pier,
+    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
+    bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
+    bs.amenity,
+    bs.type AS boat_space_type
+FROM boat_space bs
+    JOIN location l ON bs.location_id = l.id
+WHERE
+    bs.is_active AND
+    NOT EXISTS (
+        SELECT 1
+        FROM places_with_active_reservations paw
+        WHERE paw.id = bs.id
+    )
+ORDER BY harbor, pier, place
+                    """.trimIndent()
+                ).bind("reportDate", reportDate)
 
         query
             .mapTo<BoatSpaceReportRow>()
