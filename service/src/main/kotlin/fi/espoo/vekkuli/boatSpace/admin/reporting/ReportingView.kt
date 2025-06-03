@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class ReportingView(
-    private val timeProvider: TimeProvider,
     private val formComponents: FormComponents
 ) : BaseView() {
     fun render(): String {

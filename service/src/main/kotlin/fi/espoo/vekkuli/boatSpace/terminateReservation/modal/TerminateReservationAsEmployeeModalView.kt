@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class TerminateReservationAsEmployeeModalView(
     private var formComponents: FormComponents,
-    private var modal: Modal,
-    private var timeProvider: TimeProvider
+    private var modal: Modal
 ) : BaseView() {
     fun render(params: TerminateReservationAsEmployeeModalViewParameters): String {
         val reservation = params.reservation

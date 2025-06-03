@@ -25,9 +25,6 @@ class ReservationStatusUpdateModal : BaseView() {
     @Autowired
     private lateinit var modal: Modal
 
-    @Autowired
-    private lateinit var timeProvider: TimeProvider
-
     fun render(
         reserverId: UUID,
         @SanitizeInput reservation: BoatSpaceReservationDetails

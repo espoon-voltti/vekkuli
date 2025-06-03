@@ -16,9 +16,11 @@ class ReservationListRow : BaseView() {
     fun emailCheckBox(reservationId: Int) =
         """
              <label class="checkbox">
-                <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${addTestId(
-            "reservation-$reservationId"
-        )} type="checkbox" value="$reservationId" x-model='reservationIds' />
+                <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${
+            addTestId(
+                "reservation-$reservationId"
+            )
+        } type="checkbox" value="$reservationId" x-model='reservationIds' />
             </label>
         """.trimIndent()
 
@@ -71,7 +73,7 @@ class ReservationListRow : BaseView() {
         val paymentPart =
             reservation.paymentDate?.let {
                 ", " + t("employee.boatSpaceReservations.paidDate") +
-                    " " + formatAsShortYearDate(it)
+                        " " + formatAsShortYearDate(it)
             } ?: ""
 
         return t("boatSpaceReservation.paymentOption.confirmed") + paymentPart
@@ -81,7 +83,7 @@ class ReservationListRow : BaseView() {
         val dueDatePart =
             reservation.invoiceDueDate?.let {
                 ", " + t("employee.boatSpaceReservations.dueDate") +
-                    " " + formatAsShortYearDate(it)
+                        " " + formatAsShortYearDate(it)
             } ?: ""
 
         return t("boatSpaceReservation.paymentOption.invoiced") + dueDatePart
@@ -91,6 +93,8 @@ class ReservationListRow : BaseView() {
         val endDateFormatted = formatAsShortYearDate(reservation.endDate)
         return if (reservation.status == ReservationStatus.Cancelled) {
             """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
+        } else if (reservation.endDate.isBefore(timeProvider.getCurrentDate())) {
+            """<span>${t("reservations.text.ended")} $endDateFormatted</span>"""
         } else if (reservation.validity == ReservationValidity.FixedTerm) {
             endDateFormatted
         } else {
