@@ -110,7 +110,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 .execute()
         }
 
-        val stickerReportRows = getStickerReport(jdbi, today)
+        val stickerReportRows = getStickerReportRows(jdbi, today)
         assertEquals(true, stickerReportRows.size > 0)
         assertEquals(today.atStartOfDay(), stickerReportRows[0].paid)
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
@@ -171,7 +171,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
-        val reportRows = getBoatSpaceReport(jdbi, today.atStartOfDay())
+        val reportRows = getBoatSpaceReportRows(jdbi, today.atStartOfDay())
         assertEquals(true, reportRows.size > 0)
         val row = reportRows.find { (it.harbor == "Haukilahti" && it.place == "A 001") }
         assertEquals("Korhonen Leo", row?.name)
@@ -327,7 +327,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals(today.plusMonths(1).atStartOfDay(), terminatedRows[0].terminationTimestamp)
         assertEquals("leo@noreplytest.fi", terminatedRows[0].email)
 
-        val reservationWarnings = getWarningsBoatSpaceReport(jdbi, today.atStartOfDay())
+        val reservationWarnings = getWarningsBoatSpaceReportRows(jdbi, today.atStartOfDay())
         assertEquals(1, reservationWarnings.size)
         assertEquals(2, reservationWarnings[0].warnings.size)
         assertEquals(terminatedId, reservationWarnings[0].boatSpaceReportRow.reservationId)

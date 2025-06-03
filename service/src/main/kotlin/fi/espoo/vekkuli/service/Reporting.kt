@@ -56,7 +56,7 @@ data class StickerReportRow(
     val email: String?,
 )
 
-fun getStickerReport(
+fun getStickerReportRows(
     jdbi: Jdbi,
     createdCutoffDate: LocalDate
 ): List<StickerReportRow> =
@@ -187,6 +187,7 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
 
 data class BoatSpaceReportRow(
     val reservationId: Int?,
+    val boatSpaceId: Int,
     val harbor: String?,
     val pier: String?,
     val place: String?,
@@ -220,17 +221,18 @@ fun getFreeBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> =
-    getBoatSpaceReport(jdbi, reportDate).filter {
-        it.startDate == null ||
-            !(it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced) ||
-            (it.terminationTimestamp != null && it.terminationTimestamp.isBefore(reportDate))
-    }
+    getBoatSpaceReportRows(jdbi, reportDate)
+        .filter {
+            it.startDate == null ||
+                !(it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced) ||
+                (it.terminationTimestamp != null && it.terminationTimestamp.isBefore(reportDate))
+        }.distinctBy { it.boatSpaceId }
 
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> =
-    getBoatSpaceReport(jdbi, reportDate).filter {
+    getBoatSpaceReportRows(jdbi, reportDate).filter {
         it.startDate != null &&
             (it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced)
     }
@@ -238,9 +240,9 @@ fun getReservedBoatSpaceReport(
 fun getTerminatedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.terminationTimestamp != null }
+): List<BoatSpaceReportRow> = getBoatSpaceReportRows(jdbi, reportDate).filter { it.terminationTimestamp != null }
 
-fun getWarningsBoatSpaceReport(
+fun getWarningsBoatSpaceReportRows(
     jdbi: Jdbi,
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRowWithWarnings> {
@@ -269,7 +271,7 @@ fun getWarningsBoatSpaceReport(
 
     val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
     val reservationsWithWarnings =
-        getBoatSpaceReport(jdbi, reportDate, reservationsWithWarningsIds)
+        getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
             .map { row ->
                 BoatSpaceReportRowWithWarnings(
                     boatSpaceReportRow = row,
@@ -283,7 +285,7 @@ fun getWarningsBoatSpaceReport(
     return reservationsWithWarnings
 }
 
-fun getBoatSpaceReport(
+fun getBoatSpaceReportRows(
     jdbi: Jdbi,
     reportDate: LocalDateTime,
     ids: List<Int>? = null
@@ -295,6 +297,7 @@ fun getBoatSpaceReport(
                     """
                     SELECT
                         bsr.id AS reservation_id,
+                        bs.id AS boat_space_id,
                         l.name AS harbor,
                         bs.section AS pier,
                         CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
@@ -428,8 +431,7 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "paikan pituus",
             "varuste",
             "tyyppi",
-            "maksuluokka",
-            "maksupäivä"
+            "maksuluokka"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -452,8 +454,6 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
