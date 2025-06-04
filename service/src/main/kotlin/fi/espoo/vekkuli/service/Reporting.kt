@@ -1,11 +1,5 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.CreationType
-import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
@@ -19,81 +13,11 @@ import fi.espoo.vekkuli.utils.placeTypeToText
 import fi.espoo.vekkuli.utils.reservationCreationTypeToText
 import fi.espoo.vekkuli.utils.terminationReasonToText
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.jdbi.v3.core.kotlin.mapTo
-import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.unbescape.csv.CsvEscape
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.collections.List
-
-data class StickerReportRow(
-    val name: String?,
-    val streetAddress: String?,
-    val postalCode: String?,
-    val postOffice: String?,
-    val harbor: String?,
-    val place: String?,
-    val placeType: BoatSpaceType?,
-    val amenity: BoatSpaceAmenity?,
-    val boatName: String?,
-    val boatType: BoatType?,
-    val placeWidthCm: String?,
-    val placeLengthCm: String?,
-    val boatWidthCm: String?,
-    val boatLengthCm: String?,
-    val boatWeightKg: String?,
-    val registrationCode: String?,
-    val otherIdentification: String?,
-    val ownership: OwnershipStatus?,
-    val startDate: LocalDate?,
-    val endDate: LocalDate?,
-    val productCode: String?,
-    val totalCents: String?,
-    val paid: LocalDateTime?,
-    val creationType: CreationType?,
-    val email: String?,
-)
-
-fun getStickerReport(
-    jdbi: Jdbi,
-    createdCutoffDate: LocalDate
-): List<StickerReportRow> =
-    jdbi.inTransactionUnchecked { tx ->
-        tx
-            .createQuery(
-                """
-                SELECT
-                    r.name, r.street_address, r.postal_code, r.post_office,
-                    l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
-                    bs.type AS place_type, bs.amenity, b.name AS boat_name, b.type AS boat_type,
-                    bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm, b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm, b.weight_kg AS boat_weight_kg, b.registration_code, b.other_identification,
-                    b.ownership, bsr.start_date, bsr.end_date,
-                    price.name AS product_code,
-                    p.total_cents,
-                    p.paid,
-                    bsr.creation_type,
-                    bsr.created,
-                    r.email
-                FROM boat_space_reservation bsr
-                    JOIN reserver r ON r.id = bsr.reserver_id
-                    JOIN boat_space bs ON bs.id = bsr.boat_space_id
-                    JOIN location l ON l.id = bs.location_id
-                    JOIN payment p ON p.reservation_id = bsr.id
-                    LEFT JOIN boat b ON b.id = bsr.boat_id
-                    LEFT JOIN price ON price.id = bs.price_id
-                WHERE 
-                    bsr.reserver_id IS NOT NULL
-                    AND :minPaymentCreated::date <= p.created::date
-                    AND :minPaymentCreated::date <= bsr.end_date
-                    AND bsr.status = 'Confirmed'
-                    AND p.status = 'Success'
-                """.trimIndent()
-            ).bind("minPaymentCreated", createdCutoffDate)
-            .mapTo<StickerReportRow>()
-            .list()
-    }
 
 fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
     val csvHeader =
@@ -185,52 +109,11 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
     return csvContent.toString()
 }
 
-data class BoatSpaceReportRow(
-    val reservationId: Int?,
-    val harbor: String?,
-    val pier: String?,
-    val place: String?,
-    val placeWidthCm: String?,
-    val placeLengthCm: String?,
-    val boatWidthCm: String?,
-    val boatLengthCm: String?,
-    val amenity: BoatSpaceAmenity?,
-    val name: String?,
-    val municipality: String?,
-    val registrationCode: String?,
-    val totalCents: String?,
-    val productCode: String?,
-    val terminationTimestamp: LocalDateTime?,
-    val terminationReason: ReservationTerminationReason?,
-    val startDate: LocalDate?,
-    val endDate: LocalDate?,
-    val paid: LocalDateTime?,
-    val creationType: CreationType?,
-    val boatSpaceType: BoatSpaceType?,
-    val reservationStatus: ReservationStatus?,
-    val email: String?,
-)
-
-data class BoatSpaceReportRowWithWarnings(
-    val boatSpaceReportRow: BoatSpaceReportRow,
-    val warnings: List<ReservationWarning>
-)
-
-fun getFreeBoatSpaceReport(
-    jdbi: Jdbi,
-    reportDate: LocalDateTime
-): List<BoatSpaceReportRow> =
-    getBoatSpaceReport(jdbi, reportDate).filter {
-        it.startDate == null ||
-            !(it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced) ||
-            (it.terminationTimestamp != null && it.terminationTimestamp.isBefore(reportDate))
-    }
-
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> =
-    getBoatSpaceReport(jdbi, reportDate).filter {
+    getBoatSpaceReportRows(jdbi, reportDate).filter {
         it.startDate != null &&
             (it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced)
     }
@@ -238,107 +121,7 @@ fun getReservedBoatSpaceReport(
 fun getTerminatedBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.terminationTimestamp != null }
-
-fun getWarningsBoatSpaceReport(
-    jdbi: Jdbi,
-    reportDate: LocalDateTime
-): List<BoatSpaceReportRowWithWarnings> {
-    val reservationWarnings =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT
-                        id,
-                        reservation_id,
-                        boat_id, 
-                        trailer_id,
-                        invoice_number,
-                        key,
-                        info_text
-                    FROM reservation_warning
-                    """.trimIndent()
-                ).mapTo<ReservationWarning>()
-                .list()
-        }
-
-    if (reservationWarnings.isEmpty()) {
-        return emptyList()
-    }
-
-    val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
-    val reservationsWithWarnings =
-        getBoatSpaceReport(jdbi, reportDate, reservationsWithWarningsIds)
-            .map { row ->
-                BoatSpaceReportRowWithWarnings(
-                    boatSpaceReportRow = row,
-                    warnings =
-                        reservationWarnings.filter { warning ->
-                            row.reservationId == warning.reservationId
-                        }
-                )
-            }
-
-    return reservationsWithWarnings
-}
-
-fun getBoatSpaceReport(
-    jdbi: Jdbi,
-    reportDate: LocalDateTime,
-    ids: List<Int>? = null
-): List<BoatSpaceReportRow> =
-    jdbi.inTransactionUnchecked { tx ->
-        val query =
-            tx
-                .createQuery(
-                    """
-                    SELECT
-                        bsr.id AS reservation_id,
-                        l.name AS harbor,
-                        bs.section AS pier,
-                        CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
-                        bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
-                        b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm,
-                        bs.amenity,
-                        r.name,
-                        coalesce(m.name, '') AS municipality,
-                        b.registration_code,
-                        p.total_cents,
-                        price.name AS product_code,
-                        bsr.termination_timestamp,
-                        bsr.termination_reason,
-                        bsr.start_date,
-                        bsr.end_date,
-                        p.paid,
-                        bsr.creation_type,
-                        bs.type AS boat_space_type,
-                        bsr.status AS reservation_status,
-                        r.email
-                    FROM boat_space bs
-                         LEFT JOIN location l ON l.id = bs.location_id
-                         LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
-                         LEFT JOIN reserver r ON r.id = bsr.reserver_id
-                         LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
-                         LEFT JOIN boat b ON b.id = bsr.boat_id
-                         LEFT JOIN municipality m ON m.code = r.municipality_code
-                         LEFT JOIN price ON price.id = bs.price_id
-                    WHERE
-                        (bsr.start_date is NULL OR
-                        (:reportDate::date >= bsr.start_date
-                        AND :reportDate::date <= bsr.end_date))
-                        ${if (!ids.isNullOrEmpty()) "AND bsr.id in (<ids>)" else ""}
-                    ORDER BY harbor, pier, place
-                    """.trimIndent()
-                ).bind("reportDate", reportDate)
-        if (!ids.isNullOrEmpty()) {
-            query.bindList("ids", ids)
-        }
-
-        query
-            .mapTo<BoatSpaceReportRow>()
-            .list()
-    }
+): List<BoatSpaceReportRow> = getBoatSpaceReportRows(jdbi, reportDate).filter { it.terminationTimestamp != null }
 
 fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     val csvHeader =
@@ -428,8 +211,7 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "paikan pituus",
             "varuste",
             "tyyppi",
-            "maksuluokka",
-            "maksupäivä"
+            "maksuluokka"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -452,8 +234,6 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode))
-            .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
