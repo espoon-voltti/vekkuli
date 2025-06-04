@@ -240,9 +240,11 @@ SELECT
     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
     bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
     bs.amenity,
-    bs.type AS boat_space_type
+    bs.type AS boat_space_type,
+    price.name AS product_code
 FROM boat_space bs
     JOIN location l ON bs.location_id = l.id
+    LEFT JOIN price ON price.id = bs.price_id
 WHERE
     bs.is_active AND
     NOT EXISTS (
