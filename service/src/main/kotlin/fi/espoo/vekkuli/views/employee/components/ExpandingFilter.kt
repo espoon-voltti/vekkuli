@@ -5,23 +5,33 @@ import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils.htmlEscape
 
+data class FilterOption(
+    val value: String,
+    val label: String
+)
+
 @Component
-class ExpandingSelectionFilter : BaseView() {
-    fun sectionCheckbox(section: String) =
-        """
+class ExpandingFilter : BaseView() {
+    fun optionCheckbox(
+        value: String,
+        label: String,
+        name: String,
+        modelName: String
+    ) = """
         <label class="checkbox dropdown-item" style="margin-bottom:4px;">
-            <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections" >
-            <span>$section</span>
+            <input type="checkbox" name="$name" value="$value" x-model="$modelName" >
+            <span>$label</span>
         </label>
         """.trimIndent()
 
-    fun render(
-        filter: List<String>,
+    fun filterDropdown(
+        filter: List<Any>,
         modelName: String,
         content: String
     ) = // language=HTML
         """
-        <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'${htmlEscape(it)}'" }}] }" @click.outside="open = false">
+        <div x-data="{ open: false, $modelName: [${filter.joinToString(",")
+            { "'${htmlEscape(it.toString())}'" }}] }" @click.outside="open = false">
                     <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId(
             "filter-selection-$modelName"
         )} @click="open = !open">
@@ -39,4 +49,11 @@ class ExpandingSelectionFilter : BaseView() {
                     </div>
         </div>
         """.trimIndent()
+
+    fun render(
+        options: List<FilterOption>,
+        filter: List<Any>,
+        filterName: String,
+        modelName: String,
+    ): String = filterDropdown(filter, modelName, options.joinToString("\n") { optionCheckbox(it.value, it.label, filterName, modelName) })
 }

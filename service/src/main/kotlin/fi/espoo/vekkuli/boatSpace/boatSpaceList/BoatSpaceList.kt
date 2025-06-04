@@ -8,7 +8,8 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartia
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
+import fi.espoo.vekkuli.views.employee.components.ExpandingFilter
+import fi.espoo.vekkuli.views.employee.components.FilterOption
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -23,7 +24,9 @@ data class BoatSpaceListParams(
     val sectionFilter: List<String> = emptyList(),
     val showOnlyFreeSpaces: Boolean = false,
     val paginationStart: Int = 0,
-    val paginationEnd: Int = 100
+    val paginationEnd: Int = 100,
+    val lengthFilter: List<Int> = emptyList(),
+    val widthFilter: List<Int> = emptyList(),
 )
 
 data class BoatSpaceListEditParams(
@@ -53,7 +56,7 @@ data class BoatSpaceListAddParams(
 
 @Service
 class BoatSpaceList(
-    private val expandingSelectionFilter: ExpandingSelectionFilter,
+    private val expandingFilter: ExpandingFilter,
     private val filters: ListFilters,
     private val editModal: EditModal,
     private val createModal: CreateBoatSpaceModal,
@@ -84,17 +87,36 @@ class BoatSpaceList(
         paymentClasses: List<Price>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
-        sections: List<String>,
+        sections: List<FilterOption>,
+        boatWidthOptions: List<FilterOption>,
+        boatLengthOptions: List<FilterOption>,
         paginationSize: Int,
     ): String {
         val paginationStartFrom = boatSpaces.end
         val paginationEndTo = boatSpaces.end + paginationSize
 
         val sectionFilter =
-            expandingSelectionFilter.render(
+            expandingFilter.render(
+                sections,
                 searchParams.sectionFilter,
-                "selectedSections",
-                sections.joinToString("\n") { expandingSelectionFilter.sectionCheckbox(it) }
+                "sectionFilter",
+                "selectedSections"
+            )
+
+        val widthFilter =
+            expandingFilter.render(
+                boatWidthOptions,
+                searchParams.widthFilter,
+                "widthFilter",
+                "selectedWidths",
+            )
+
+        val lengthFilter =
+            expandingFilter.render(
+                boatLengthOptions,
+                searchParams.lengthFilter,
+                "lengthFilter",
+                "selectedLengths",
             )
 
         // language=HTML
@@ -161,21 +183,21 @@ class BoatSpaceList(
             return Array.from(checkboxes).map(e => e.value);
         }
     }">
-        <form id="boat-space-filter-form"
-              hx-get="/virkailija/venepaikat/selaa"
-              hx-target="#table-body"
-              hx-select="#table-body"
-              hx-trigger="change from:#boat-space-filter-container, change from:#boat-space-table-header" 
-              hx-params="not spaceId"
-              hx-swap="outerHTML"
-              hx-push-url="true"
-              hx-indicator="#loader, .loaded-content"
-              @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
-        >
+        <form id="boat-space-filter-form">
              <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
              <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
             
-            <div id='boat-space-filter-container'>
+            <div id='boat-space-filter-container'
+                hx-get="/virkailija/venepaikat/selaa"
+                hx-target="#boat-spaces-table"
+                hx-select="#boat-spaces-table"
+                hx-swap="outerHTML"
+                hx-include="#boat-space-filter-form"
+                hx-params="not spaceId"
+                hx-indicator="#loader, .loaded-content"
+                hx-push-url="true"
+                @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
+                hx-trigger="change">
                 <div class="employee-filter-container">                        
                     <div class="filter-group">
                         <h1 class="label" >${t(
@@ -243,9 +265,19 @@ class BoatSpaceList(
             
             <div class='reservation-list form-section block'>
                 <div class='table-container'>
-                    <table class="table is-hoverable">
+                    <table id="boat-spaces-table" class="table is-hoverable">
                     
-                        <thead id='boat-space-table-header'>
+                        <thead id='boat-space-table-header'
+                                hx-get="/virkailija/venepaikat/selaa"
+                                hx-target="#boat-spaces-table"
+                                hx-select="#boat-spaces-table"
+                                hx-swap="outerHTML"
+                                hx-include="#boat-space-filter-form"
+                                hx-indicator="#loader, .loaded-content"
+                                hx-push-url="true"
+                                @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
+                                hx-params="not spaceId"
+                                hx-trigger="change">
                             <tr class="table-borderless">
                                 <th>$selectAllToggle</th>
                                 <th class="nowrap" >
@@ -319,8 +351,8 @@ class BoatSpaceList(
                                 <th>$sectionFilter</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
-                                <th></th>
+                                <th>$widthFilter</th>
+                                <th>$lengthFilter</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

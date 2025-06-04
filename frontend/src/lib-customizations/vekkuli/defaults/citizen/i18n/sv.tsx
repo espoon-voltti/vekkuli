@@ -562,13 +562,13 @@ const sv: Translations = {
       None: '-'
     },
     harbors: {
-      1: 'Svinö',
-      2: 'Finno',
-      3: 'Stensvik',
-      4: 'Bredvik',
-      5: 'Björnviken',
-      6: 'Sökö',
-      7: 'Gäddvik',
+      1: 'Gäddvik',
+      2: 'Stensvik',
+      3: 'Bredvik',
+      4: 'Björnviken',
+      5: 'Sökö',
+      6: 'Finno',
+      7: 'Svinö',
       8: 'Käringbacken'
     },
     winterStorageType: {
