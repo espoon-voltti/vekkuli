@@ -1,9 +1,15 @@
 package fi.espoo.vekkuli.boatSpace.citizenTrailer
 
 import fi.espoo.vekkuli.common.Unauthorized
+import fi.espoo.vekkuli.domain.StorageType
 import fi.espoo.vekkuli.service.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
+data class UpdateStorageTypeInput(
+    val storageType: StorageType,
+    val trailer: UpdateTrailerInput? = null
+)
 
 @Service
 class CitizenTrailerService(

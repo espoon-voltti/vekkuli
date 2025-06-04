@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.citizen.toCitizenBoatListResponse
 import fi.espoo.vekkuli.boatSpace.citizen.toCitizenOrganizationListResponse
+import fi.espoo.vekkuli.boatSpace.citizenTrailer.UpdateStorageTypeInput
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureCitizenId
@@ -212,5 +213,23 @@ class ReservationController(
             )
         }
         reservationService.terminateReservation(reservationId)
+    }
+
+    @PatchMapping("/reservation/{reservationId}/update-storage-type")
+    fun patchTrailer(
+        @PathVariable reservationId: Int,
+        @RequestBody input: UpdateStorageTypeInput,
+        request: HttpServletRequest,
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "UPDATE_STORAGE_TYPE",
+                mapOf(
+                    "targetId" to reservationId.toString()
+                ),
+            )
+        }
+        reservationService.updateStorageType(reservationId, input)
     }
 }

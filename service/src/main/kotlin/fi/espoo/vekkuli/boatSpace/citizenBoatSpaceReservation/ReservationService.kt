@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
+import fi.espoo.vekkuli.boatSpace.citizenTrailer.UpdateStorageTypeInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
@@ -263,6 +264,21 @@ open class ReservationService(
         validateCurrentCitizenAccessToReservation(reservationId)
         if (!permissionService.canTerminateBoatSpaceReservation(citizenId, reservationId)) throw Unauthorized()
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
+    }
+
+    @Transactional
+    fun updateStorageType(
+        reservationId: Int,
+        input: UpdateStorageTypeInput
+    ) {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+
+        val (storageType, trailer) = input
+        // Check if the citizen has permission to update the reservation
+        if (!permissionService.canUpdateStorageType(citizenId, reservationId)) throw Unauthorized()
+
+        // Try to update the storage type and trailer
+        boatReservationService.updateStorageType(reservationId, storageType, trailer)
     }
 
     @Transactional
