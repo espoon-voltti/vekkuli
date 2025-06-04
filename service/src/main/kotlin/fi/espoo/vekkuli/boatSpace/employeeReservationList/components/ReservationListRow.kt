@@ -16,9 +16,11 @@ class ReservationListRow : BaseView() {
     fun emailCheckBox(reservationId: Int) =
         """
              <label class="checkbox">
-                <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${addTestId(
-            "reservation-$reservationId"
-        )} type="checkbox" value="$reservationId" x-model='reservationIds' />
+                <input onclick="event.stopPropagation()" class="reservation-checkbox" name="spaceId" ${
+            addTestId(
+                "reservation-$reservationId"
+            )
+        } type="checkbox" value="$reservationId" x-model='reservationIds' />
             </label>
         """.trimIndent()
 
@@ -91,6 +93,8 @@ class ReservationListRow : BaseView() {
         val endDateFormatted = formatAsShortYearDate(reservation.endDate)
         return if (reservation.status == ReservationStatus.Cancelled) {
             """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
+        } else if (reservation.endDate.isBefore(timeProvider.getCurrentDate())) {
+            """<span>${t("reservations.text.ended")} $endDateFormatted</span>"""
         } else if (reservation.validity == ReservationValidity.FixedTerm) {
             endDateFormatted
         } else {
