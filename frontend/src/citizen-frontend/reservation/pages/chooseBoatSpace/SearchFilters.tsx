@@ -10,6 +10,8 @@ import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 
 import { StorageInfo } from './StorageInfo'
 import { SearchForm } from './formDefinitions'
+import { Link } from "react-router";
+import { OpenInNew } from "../../../../lib-icons";
 
 interface SearchFiltersProps {
   bind: BoundForm<SearchForm>
@@ -41,7 +43,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           bind={boatSpaceType}
         />
       </div>
-      <div className="block">
+      <div className="filter-checkbox-container">
         <CheckboxField
           id="harbor"
           name="harbor"
@@ -52,6 +54,13 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
               .harborInfo
           }
         />
+
+        <div className="is-primary-color ">
+          <Link to={i18n.reservation.searchPage.filters.additionalHarborPlaceInfoLink} className="link open-in-new-tab" aria-label={i18n.header.openInANewWindow} target="_blank">
+            <span>{i18n.reservation.searchPage.filters.additionalHarborPlaceInfo}</span>
+            <OpenInNew />
+          </Link>
+        </div>
       </div>
 
       {boatType.state.options.length === 0 ? null : (

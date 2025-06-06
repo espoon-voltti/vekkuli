@@ -246,6 +246,8 @@ export default {
         amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
+        additionalHarborPlaceInfo: 'Lisätietoja paikoista ja niiden hinnoista tästä',
+        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',
