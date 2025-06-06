@@ -16,7 +16,17 @@ class SendMessageView(
     private var modal: Modal,
     private var formComponents: FormComponents
 ) : BaseView() {
-    fun renderSendMassMessageLink(): String {
+    fun renderSendMassMessageLink(totalRows: Int): String {
+        val messageText =
+            """
+            ${t("employee.sendMassMessage.title")} 
+            <span x-show="selectAll" class="has-text-weight-semibold">
+                ${t("employee.sendMassMessageCount.title", listOf(totalRows.toString()))}
+             </span>
+            <span x-show="!selectAll" x-text="'(' + reservationIds.length + ' varausta)'"></span>
+            
+            """.trimIndent()
+
         //language=HTML
         return """            
             <span class="icon is-small">
@@ -31,10 +41,9 @@ class SendMessageView(
                 hx-push-url="false"
                 hx-include="#reservation-filter-form"
                 hx-get="/virkailija/viestit/massa/modal"
-                hx-params="spaceId"
                 :disabled='reservationIds.length <= 0'
                 ${addTestId("send-mass-email-link")}>
-                ${t("employee.messages.title")} <span x-text="'(' + reservationIds.length + ' varausta)'"></span>
+                    $messageText
             </a>
             """.trimIndent()
     }

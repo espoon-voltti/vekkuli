@@ -172,7 +172,9 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.reservations.count() == expectedReservationCount }
 
         listingPage.selectAllReservations.click()
+        assertThat(listingPage.sendMassMessageLink).containsText("($expectedReservationCount varausta)")
         listingPage.reservationRowCheckBox(1).click()
+        assertThat(listingPage.sendMassMessageLink).containsText("(${expectedReservationCount - 1} varausta)")
 
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()

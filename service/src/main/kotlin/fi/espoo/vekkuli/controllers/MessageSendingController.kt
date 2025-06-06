@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
+import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.AuthenticatedUser
@@ -27,17 +28,16 @@ class MessageSendingController(
     private val organizationService: OrganizationService,
     private val emailEnv: EmailEnv,
     private val reservationService: ReservationService,
+    private val reservationListService: EmployeeReservationListService,
 ) {
     private val logger = KotlinLogging.logger {}
-
-    // ensure the messages are sent to all recipients regardless of pagination
-    private val paginationEnd = 100000
 
     @GetMapping("/massa/modal")
     @ResponseBody
     fun sendMassMessageModal(
         request: HttpServletRequest,
         @RequestParam spaceId: List<Int>,
+        @ModelAttribute params: BoatSpaceReservationFilter,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
         authenticatedUser.let {
@@ -50,11 +50,23 @@ class MessageSendingController(
             throw Unauthorized()
         }
 
-        val recipients =
-            reservationService.getReservationRecipients(spaceId)
+        val reservationsToSendEmails: List<Int> = getReservationsToSendEmailsTo(spaceId, params)
+        val recipients = reservationService.getReservationRecipients(reservationsToSendEmails)
+
         return ResponseEntity.ok(
-            sendMessageView.renderSendMassMessageModal(spaceId.size, recipients.sortedBy { it.email })
+            sendMessageView.renderSendMassMessageModal(reservationsToSendEmails.size, recipients.sortedBy { it.email })
         )
+    }
+
+    private fun getReservationsToSendEmailsTo(
+        spaceId: List<Int>,
+        params: BoatSpaceReservationFilter,
+    ): List<Int> {
+        if (params.selectAll) {
+            // If selectAll is true, we ignore the pagination and fetch all recipients
+            return reservationListService.getBoatSpaceReservations(params).items.map { it.id }
+        }
+        return spaceId
     }
 
     @PostMapping("/massa/laheta")
@@ -62,6 +74,7 @@ class MessageSendingController(
     fun sendMassEmailMessage(
         request: HttpServletRequest,
         @RequestParam spaceId: List<Int>,
+        @ModelAttribute params: BoatSpaceReservationFilter,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
     ): ResponseEntity<String> {
@@ -82,7 +95,8 @@ class MessageSendingController(
         }
 
         try {
-            val recipients = reservationService.getReservationRecipients(spaceId)
+            val reservationsToSendEmails: List<Int> = getReservationsToSendEmailsTo(spaceId, params)
+            val recipients = reservationService.getReservationRecipients(reservationsToSendEmails)
 
             sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
 
