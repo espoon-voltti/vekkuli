@@ -238,6 +238,8 @@ const sv: Translations = {
         amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
+        additionalHarborPlaceInfo: 'Mer information om platserna och deras priser här',
+        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/avgifter-batplatser',
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',

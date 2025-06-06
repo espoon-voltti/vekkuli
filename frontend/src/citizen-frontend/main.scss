@@ -806,6 +806,13 @@ label.filter-button:has(input:checked) .icon {
   font-size: 10px;
 }
 
+.filter-checkbox-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-medium;
+  margin-bottom: $spacing-medium;
+}
+
 .memo {
 
   .memo-label {
