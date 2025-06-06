@@ -35,11 +35,12 @@ class EmployeeReservationListView(
 
         val selectAllToggle =
             """
-            <label class="checkbox" x-data="{ selectAll: false }">
+            <label class="checkbox" >
                 <input
                     id="select-all-toggle"
                     ${addTestId("select-all-toggle")}
                     type="checkbox"
+                    name='selectAll'
                     x-model="selectAll"
                     @change="reservationIds = selectAll ? getCurrentlyVisibleReservationIds() : []"
                     x-effect="
@@ -71,6 +72,7 @@ class EmployeeReservationListView(
                         sortColumn: '${params.sortBy}',
                         sortDirection: '${params.ascending}',
                         reservationIds: [],
+                        selectAll: false,
                         updateSort(column) {
                             if (this.sortColumn === column) {
                                 this.sortDirection = this.sortDirection === 'true' ? 'false' : 'true';
@@ -153,7 +155,7 @@ class EmployeeReservationListView(
                         </div>
                         </div>  
                         <div class="employee-filter-container" id="send-mass-message" hx-swap-oob="true">
-                            ${sendMessageView.renderSendMassMessageLink()}
+                            ${sendMessageView.renderSendMassMessageLink(reservations.totalRows)}
                         </div>
                         <div class="reservation-list form-section block">
                             <div class='table-container'>
