@@ -245,6 +245,8 @@ const en: Translations = {
         amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
+        additionalHarborPlaceInfo: 'More information about the places and their prices here',
+        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',
