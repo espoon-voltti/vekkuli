@@ -135,17 +135,17 @@ interface BoatSpaceSeason {
 const boatSpaceSeasons: BoatSpaceSeason[] = [
   {
     boatSpaceType: 'Slip',
-    season: '10.6.–14.9.2025',
+    season: '10.6.2024.–14.9.2025',
     periods: ['7.1.–31.1.2025', '3.3.–31.3.2025', '1.4.-30.9.2025']
   },
   {
     boatSpaceType: 'Trailer',
-    season: '1.5.–30.4.2025',
+    season: '1.5.2024–30.4.2025',
     periods: ['1.4.–30.4.2025', '1.5.–31.12.2025']
   },
   {
     boatSpaceType: 'Winter',
-    season: '15.9.–10.6.2025',
+    season: '15.9.2024–10.6.2025',
     periods: ['15.8.–14.9.2025', '15.9.–31.12.2025']
   },
   {
