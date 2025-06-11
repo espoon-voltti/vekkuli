@@ -69,8 +69,8 @@ class ReserveBoatSpacePage(
         root: Locator
     ) {
         private val fields = FieldLocator(root)
-        val widthInput = fields.getInput("Säilytyspaikan leveys")
-        val lengthInput = fields.getInput("Säilytyspaikan pituus")
+        val widthInput = fields.getInput("Talvipaikan leveys")
+        val lengthInput = fields.getInput("Talvipaikan pituus")
     }
 
     class SearchResultsSection(
