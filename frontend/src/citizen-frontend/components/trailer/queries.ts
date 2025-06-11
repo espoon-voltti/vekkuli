@@ -1,8 +1,8 @@
-import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
+import { UpdateStorageTypeRequest } from 'citizen-frontend/api-types/reservation'
 
 import { createMutationDisabledDefault } from '../util'
 
-export const updateTrailerDisabled = createMutationDisabledDefault<
-  UpdateTrailerRequest,
+export const updateStorageTypeDisabled = createMutationDisabledDefault<
+  UpdateStorageTypeRequest,
   void
 >()

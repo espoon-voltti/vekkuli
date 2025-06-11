@@ -4,9 +4,12 @@ import { NumberField } from 'lib-components/form/NumberField'
 import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import React from 'react'
+import { Link } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
+
+import { OpenInNew } from '../../../../lib-icons'
 
 import { StorageInfo } from './StorageInfo'
 import { SearchForm } from './formDefinitions'

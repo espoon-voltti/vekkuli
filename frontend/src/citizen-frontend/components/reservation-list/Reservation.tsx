@@ -6,10 +6,13 @@ import { useNavigate } from 'react-router'
 
 import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
-import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
+import TrailerInformation, {
+  StorageTypeContainer
+} from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { ErrorBox } from 'citizen-frontend/reservation/components/ErrorBox'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
+import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import {
   MutationDescription,
   useMutation,
@@ -20,13 +23,21 @@ import ErrorModal, {
   ErrorCode
 } from '../../reservation/pages/fillInformation/ErrorModal'
 import { unfinishedReservationQuery } from '../../reservation/queries'
+import { onSpaceTypeInfoUpdate } from '../../reservation/pages/fillInformation/formDefinitions/spaceTypeInfo'
+import {
+  initialFormState,
+  storageTypeInfoUnionForm
+} from '../trailer/formDefinitions'
 
-import { startRenewReservationMutation } from './queries'
+import {
+  startRenewReservationMutation,
+  updateStorageTypeMutation
+} from './queries'
+import { StorageType, storageTypes } from 'citizen-frontend/shared/types'
 
 export default React.memo(function Reservation({
   reservation,
-  onTerminate,
-  updateTrailerMutation
+  onTerminate
 }: {
   reservation: ExistingBoatSpaceReservation
   onTerminate?: () => void
@@ -38,15 +49,27 @@ export default React.memo(function Reservation({
     reservation.allowedReservationOperations.includes('Terminate')
 
   const i18n = useTranslation()
-  const [buttonsVisible, setButtonsVisible] = useState(true)
+  const [editMode, setEditMode] = useState(false)
   const { boatSpace } = reservation
   const navigate = useNavigate()
   const [error, setError] = useState<ErrorCode | undefined>()
+
   const reservationStatus = useQueryResult(
     unfinishedReservationQuery()
   ).getOrElse(false)
   const { mutateAsync: renewReservation, isPending: renewIsPending } =
     useMutation(startRenewReservationMutation)
+
+  const boatSpaceUnionForm = useForm(
+    storageTypeInfoUnionForm,
+    () => initialFormState(i18n, reservation.storageType, reservation.trailer),
+    i18n.components.validationErrors
+  )
+  const { mutateAsync: updateStorageType, isPending } = useMutation(
+    updateStorageTypeMutation
+  )
+
+  const { form, branch } = useFormUnion(boatSpaceUnionForm)
 
   const onRenew = () => {
     renewReservation(reservation.id)
@@ -74,6 +97,36 @@ export default React.memo(function Reservation({
       : reservation.status === 'Invoiced'
         ? i18n.reservation.invoiceState(reservation.dueDate)
         : '-'
+
+  const onStorageTypeChange = async () => {
+    if (form.isValid()) {
+      const trailerInfo =
+        branch === 'Trailer' ? form.state.trailerInfo : undefined
+      const storageType =
+        form.state.storageType.domValue in storageTypes
+          ? (form.state.storageType.domValue as StorageType)
+          : 'Trailer'
+      await updateStorageType({
+        reservationId: reservation.id,
+        input: {
+          storageType: storageType,
+          trailerInfo: {
+            id: trailerInfo?.id,
+            length: trailerInfo?.length ? parseFloat(trailerInfo.length) : 0,
+            width: trailerInfo?.width ? parseFloat(trailerInfo.width) : 0,
+            registrationNumber: trailerInfo?.registrationNumber || ''
+          }
+        }
+      })
+      setEditMode(false)
+    }
+  }
+
+  const resetForm = () => {
+    boatSpaceUnionForm.set(
+      initialFormState(i18n, reservation.storageType, reservation.trailer)
+    )
+  }
 
   return (
     <>
@@ -168,39 +221,39 @@ export default React.memo(function Reservation({
                 readonly={true}
               />
             ) : (
-              <TextField
-                label={i18n.citizenPage.reservation.storageType}
-                value={
-                  reservation.storageType
-                    ? i18n.boatSpace.winterStorageType[reservation.storageType]
-                    : '-'
-                }
-                readonly={true}
+              <StorageTypeContainer
+                editIsOn={editMode}
+                setEditModeOn={() => setEditMode(true)}
+                form={form}
               />
             )}
             <TextField
-              dataTestId={'payment-status'}
+              dataTestId="payment-status"
               label={i18n.citizenPage.reservation.paymentStatus}
               value={paymentStatus}
               readonly={true}
             />
           </Column>
         </Columns>
-        {reservation.trailer && (
+        {(editMode || reservation.storageType === 'Trailer') && (
           <TrailerInformation
-            trailer={reservation.trailer}
-            setEditIsOn={(mode) => setButtonsVisible(!mode)}
-            updateMutation={updateTrailerMutation}
+            reservationId={reservation.id}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            unionForm={boatSpaceUnionForm}
+            resetForm={resetForm}
+            onSubmit={onStorageTypeChange}
+            isPending={isPending}
           />
         )}
-        {buttonsVisible && canRenew && (
+        {!editMode && canRenew && (
           <ErrorBox
             text={i18n.citizenPage.reservation.renewNotification(
               reservation.endDate
             )}
           />
         )}
-        {buttonsVisible && (
+        {!editMode && (
           <Buttons>
             {onTerminate && canTerminate && (
               <Button
