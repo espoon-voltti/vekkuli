@@ -17,6 +17,7 @@ import fi.espoo.vekkuli.utils.SqlExpr
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.jdbi.v3.core.statement.Query
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -160,7 +161,99 @@ fun getBoatSpaceReservationItemsByIds(
         val sqlParts = mutableListOf<String>()
         sqlParts.add(
             """
-            SELECT
+            ${buildBoatSpaceReservationSelect()}
+            """.trimIndent()
+        )
+        sqlParts.add("WHERE bsr.id = ANY(:ids)")
+        sortBy?.apply()?.takeIf { it.isNotEmpty() }?.let { sqlParts.add(it) }
+
+        val query = handle.createQuery(sqlParts.joinToString(" "))
+
+        query.bind("ids", ids.toIntArray())
+
+        getBoatSpaceReservationItems(query)
+    }
+
+private fun getBoatSpaceReservationItems(query: Query) =
+    query
+        .mapTo<BoatSpaceReservationItemWithWarningRow>()
+        .list()
+        .groupBy { it.id }
+        .map { (id, warnings) ->
+            val row = warnings.first()
+            BoatSpaceReservationItem(
+                id = id,
+                boatSpaceId = row.boatSpaceId,
+                startDate = row.startDate,
+                endDate = row.endDate,
+                status = row.status,
+                reserverId = row.reserverId,
+                name = row.name,
+                email = row.email,
+                phone = row.phone,
+                type = row.type,
+                place = row.place,
+                section = row.section,
+                locationName = row.locationName,
+                boat =
+                    if (row.boatId == null) {
+                        null
+                    } else {
+                        Boat(
+                            id = row.boatId,
+                            registrationCode = row.boatRegistrationCode,
+                            reserverId = row.boatReserverId ?: throw IllegalStateException("Boat reserver id is null"),
+                            name = row.boatName,
+                            widthCm = row.boatWidthCm ?: throw IllegalStateException("Boat width is null"),
+                            lengthCm = row.boatLengthCm ?: throw IllegalStateException("Boat length is null"),
+                            depthCm = row.boatDepthCm ?: throw IllegalStateException("Boat depth is null"),
+                            weightKg = row.boatWeightKg ?: throw IllegalStateException("Boat weight is null"),
+                            type = row.boatType ?: throw IllegalStateException("Boat type is null"),
+                            otherIdentification = row.boatOtherIdentification,
+                            extraInformation = row.boatExtraInformation,
+                            ownership = row.boatOwnership ?: throw IllegalStateException("Boat ownership is null"),
+                            deletedAt = row.boatDeletedAt,
+                            warnings = emptySet(),
+                        )
+                    },
+                trailer = null,
+                warnings = (warnings.mapNotNull { it.warning }).toSet(),
+                actingCitizenId = row.actingCitizenId,
+                reserverType = row.reserverType,
+                municipalityCode = row.municipalityCode,
+                municipalityName = row.municipalityName,
+                paymentDate = row.paymentDate,
+                storageType = row.storageType,
+                validity = row.validity,
+                amenity = row.amenity,
+                invoiceDueDate = row.invoiceDueDate
+            )
+        }
+
+fun getFilteredBoatSpaceReservation(
+    jdbi: Jdbi,
+    filter: SqlExpr,
+    sortBy: BoatSpaceReservationSortBy?,
+): List<BoatSpaceReservationItem> =
+    jdbi.withHandleUnchecked { handle ->
+        val sqlParts = mutableListOf<String>()
+        sqlParts.add(
+            """
+            ${buildBoatSpaceReservationSelect()}
+            """.trimIndent()
+        )
+        sqlParts.add("WHERE")
+        sqlParts.add(filter.toSql())
+        sortBy?.apply()?.takeIf { it.isNotEmpty() }?.let { sqlParts.add(it) }
+        val query =
+            handle.createQuery(sqlParts.joinToString(" ")).apply {
+                filter.bind(this)
+            }
+        getBoatSpaceReservationItems(query)
+    }
+
+private fun buildBoatSpaceReservationSelect() =
+    """  SELECT
                 bsr.id, bsr.reserver_id, bsr.boat_space_id, bsr.start_date, bsr.end_date, 
                 bsr.status, bsr.created, bsr.updated, bsr.employee_id,
                 bsr.acting_citizen_id, bsr.validity, bsr.original_reservation_id, bsr.termination_reason,
@@ -203,67 +296,4 @@ fun getBoatSpaceReservationItemsByIds(
             JOIN municipality m ON r.municipality_code = m.code
             LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
             LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
-            LEFT JOIN invoice i ON bsr.id = i.reservation_id
-            """.trimIndent()
-        )
-        sqlParts.add("WHERE bsr.id = ANY(:ids)")
-        sortBy?.apply()?.takeIf { it.isNotEmpty() }?.let { sqlParts.add(it) }
-
-        val query = handle.createQuery(sqlParts.joinToString(" "))
-
-        query
-            .bind("ids", ids.toIntArray())
-            .mapTo<BoatSpaceReservationItemWithWarningRow>()
-            .list()
-            .groupBy { it.id }
-            .map { (id, warnings) ->
-                val row = warnings.first()
-                BoatSpaceReservationItem(
-                    id = id,
-                    boatSpaceId = row.boatSpaceId,
-                    startDate = row.startDate,
-                    endDate = row.endDate,
-                    status = row.status,
-                    reserverId = row.reserverId,
-                    name = row.name,
-                    email = row.email,
-                    phone = row.phone,
-                    type = row.type,
-                    place = row.place,
-                    section = row.section,
-                    locationName = row.locationName,
-                    boat =
-                        if (row.boatId == null) {
-                            null
-                        } else {
-                            Boat(
-                                id = row.boatId,
-                                registrationCode = row.boatRegistrationCode,
-                                reserverId = row.boatReserverId ?: throw IllegalStateException("Boat reserver id is null"),
-                                name = row.boatName,
-                                widthCm = row.boatWidthCm ?: throw IllegalStateException("Boat width is null"),
-                                lengthCm = row.boatLengthCm ?: throw IllegalStateException("Boat length is null"),
-                                depthCm = row.boatDepthCm ?: throw IllegalStateException("Boat depth is null"),
-                                weightKg = row.boatWeightKg ?: throw IllegalStateException("Boat weight is null"),
-                                type = row.boatType ?: throw IllegalStateException("Boat type is null"),
-                                otherIdentification = row.boatOtherIdentification,
-                                extraInformation = row.boatExtraInformation,
-                                ownership = row.boatOwnership ?: throw IllegalStateException("Boat ownership is null"),
-                                deletedAt = row.boatDeletedAt,
-                                warnings = emptySet(),
-                            )
-                        },
-                    trailer = null,
-                    warnings = (warnings.mapNotNull { it.warning }).toSet(),
-                    actingCitizenId = row.actingCitizenId,
-                    reserverType = row.reserverType,
-                    municipalityCode = row.municipalityCode,
-                    municipalityName = row.municipalityName,
-                    paymentDate = row.paymentDate,
-                    storageType = row.storageType,
-                    validity = row.validity,
-                    amenity = row.amenity,
-                    invoiceDueDate = row.invoiceDueDate
-                )
-            }
-    }
+            LEFT JOIN invoice i ON bsr.id = i.reservation_id"""

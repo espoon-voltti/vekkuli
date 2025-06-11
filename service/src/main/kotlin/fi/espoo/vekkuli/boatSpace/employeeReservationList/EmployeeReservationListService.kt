@@ -15,6 +15,22 @@ class EmployeeReservationListService(
     private val timeProvider: TimeProvider,
     private val jdbi: Jdbi
 ) {
+    fun getAllBoatSpaceReservations(params: BoatSpaceReservationFilter,): List<BoatSpaceReservationItem> {
+        val filters = buildBoatSpaceReservationFilters(params)
+
+        val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
+        val sortBy =
+            BoatSpaceReservationSortBy(
+                listOf(params.sortBy to direction)
+            )
+
+        return getFilteredBoatSpaceReservation(
+            jdbi,
+            filters,
+            sortBy
+        )
+    }
+
     fun getBoatSpaceReservations(
         params: BoatSpaceReservationFilter,
         paginationStart: Int? = null,

@@ -309,4 +309,57 @@ class EmployeeReservationListServiceTests : IntegrationTestBase() {
             )
         assertEquals(4, recipients.size)
     }
+
+    @Test
+    fun `should return all filtered reservations`() {
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForSlip,
+                1,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            )
+        )
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForSlip2,
+                2,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            )
+        )
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForWinter,
+                3,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            )
+        )
+        var reservations =
+            employeeReservationListService.getAllBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    sortBy = BoatSpaceReservationFilterColumn.PLACE,
+                    ascending = true,
+                )
+            )
+        assertEquals(3, reservations.size, "All reservations are returned")
+
+        reservations =
+            employeeReservationListService.getAllBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    sortBy = BoatSpaceReservationFilterColumn.PLACE,
+                    ascending = true,
+                    boatSpaceType = listOf(BoatSpaceType.Slip),
+                )
+            )
+
+        assertEquals(2, reservations.size, "Only slip reservations are returned")
+    }
 }

@@ -64,7 +64,7 @@ class MessageSendingController(
     ): List<Int> {
         if (params.selectAll) {
             // If selectAll is true, we ignore the pagination and fetch all recipients
-            return reservationListService.getBoatSpaceReservations(params).items.map { it.id }
+            return reservationListService.getAllBoatSpaceReservations(params).map { it.id }
         }
         return spaceId
     }
