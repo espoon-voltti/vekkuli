@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.views.components.modal.Modal
 import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
 import fi.espoo.vekkuli.views.components.modal.OpenModalButtonType
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -185,6 +186,11 @@ class ReservationCardInformation(
             """.trimIndent()
     }
 
+    fun getEffectiveEndDate(
+        status: ReservationStatus,
+        endDate: LocalDate
+    ): LocalDate = if (status == ReservationStatus.Cancelled) endDate.minusDays(1) else endDate
+
     private fun renderReservationValidity(reservation: BoatSpaceReservationDetails): String {
         if (reservation.terminationTimestamp != null) {
             return renderWithTerminatedDate(reservation)
@@ -192,7 +198,7 @@ class ReservationCardInformation(
             var reservationValidityText =
                 t(
                     "boatSpaceReservation.validity.${reservation.validity}",
-                    listOf(formatAsFullDate(reservation.endDate))
+                    listOf(formatAsFullDate(getEffectiveEndDate(reservation.status, reservation.endDate)))
                 )
 
             // For indefinite reservations, show also the end date for employees
@@ -211,7 +217,7 @@ class ReservationCardInformation(
 
     private fun renderWithTerminatedDate(reservation: BoatSpaceReservationDetails): String =
         """
-        ${formatAsFullDate(reservation.endDate)}
+        ${formatAsFullDate(getEffectiveEndDate(reservation.status, reservation.endDate))}
         </br>
         <span ${addTestId("reservation-list-card-terminated-date")}>
         ${t("boatSpaceReservation.terminated")} ${formatAsFullDate(reservation.terminationTimestamp?.toLocalDate())}
