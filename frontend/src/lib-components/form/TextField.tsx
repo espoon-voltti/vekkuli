@@ -43,7 +43,7 @@ export default React.memo(function TextField({
   return (
     <div className="field">
       <div className="control">
-        <div className="is-display-flex">
+        <div className="label is-display-flex">
           <label
             className={`label${editAction ? ' mb-none mr-m' : ''}`}
             htmlFor={id}
