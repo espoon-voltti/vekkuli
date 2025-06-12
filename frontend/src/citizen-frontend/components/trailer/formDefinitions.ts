@@ -1,10 +1,8 @@
 import { Translations } from 'citizen-frontend/localization'
 import {
-  buckTypes,
   StorageType,
   storageTypes,
-  Trailer,
-  trailerTypes
+  Trailer
 } from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
 import { mapped, object, oneOf, required, union } from 'lib-common/form/form'
@@ -86,11 +84,7 @@ function initialTrailerFormState(
         }))
         .sort((a, b) => a.label.localeCompare(b.label))
     },
-    trailerInfo: {
-      length: trailer?.length.toString() || '',
-      width: trailer?.width.toString() || '',
-      registrationNumber: trailer?.registrationNumber || ''
-    }
+    trailerInfo: initialTrailerInfoState(trailer)
   }
 }
 

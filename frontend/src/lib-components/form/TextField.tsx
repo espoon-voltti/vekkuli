@@ -9,7 +9,6 @@ import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 import { EditLink } from 'lib-components/links'
-import { Columns } from 'lib-components/dom'
 
 interface TextFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
@@ -43,7 +42,7 @@ export default React.memo(function TextField({
   return (
     <div className="field">
       <div className="control">
-        <div className="is-display-flex">
+        <div className="label is-display-flex">
           <label
             className={`label${editAction ? ' mb-none mr-m' : ''}`}
             htmlFor={id}

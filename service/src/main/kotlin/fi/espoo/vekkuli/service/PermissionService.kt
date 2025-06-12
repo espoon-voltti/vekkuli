@@ -59,11 +59,10 @@ class PermissionService(
 
     fun canUpdateStorageType(
         reserverId: UUID,
-        reservationId: Int) : Boolean {
-        val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        reservationId: Int
+    ): Boolean {
         return when {
             hasAccessToReservation(reserverId, reservationId) -> return true
-            reservation?.type == BoatSpaceType.Winter -> return true
             else -> false
         }
     }

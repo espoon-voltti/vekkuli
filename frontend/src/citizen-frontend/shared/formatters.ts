@@ -23,12 +23,16 @@ export function formatNumber(
   separator = ','
 ): string {
   const useDecimal = precision != undefined && precision > 0
+
   if (typeof value === 'string') {
     value = useDecimal ? parseFloat(value) : parseInt(value, 10)
   }
-  return value !== undefined
-    ? value.toFixed(precision ?? 0).replace('.', separator)
-    : ''
+
+  if (typeof value !== 'number' || isNaN(value)) {
+    return ''
+  }
+
+  return value.toFixed(precision ?? 0).replace('.', separator)
 }
 
 export function formatInputNumberValue(value: number | undefined): string {
