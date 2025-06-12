@@ -278,7 +278,7 @@ open class ReservationService(
         if (!permissionService.canUpdateStorageType(citizenId, reservationId)) throw Unauthorized()
 
         // Try to update the storage type and trailer
-        boatReservationService.updateStorageType(reservationId, storageType, trailer)
+        boatReservationService.updateStorageTypeAndTrailer(reservationId, storageType, trailer)
     }
 
     @Transactional
