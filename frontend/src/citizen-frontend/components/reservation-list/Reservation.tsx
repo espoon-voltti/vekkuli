@@ -217,6 +217,7 @@ export default React.memo(function Reservation({
               <StorageTypeContainer
                 editIsOn={editMode}
                 setEditModeOn={() => setEditMode(true)}
+                showEdit={boatSpace.type === 'Winter'}
                 form={form}
               />
             )}

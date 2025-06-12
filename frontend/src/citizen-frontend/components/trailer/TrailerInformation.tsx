@@ -3,29 +3,28 @@ import { NumberField, SelectField, TextField } from 'lib-components/form'
 import { EditLink } from 'lib-components/links'
 import React from 'react'
 
-import { UpdateStorageTypeRequest } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { ReservationId, StorageType } from 'citizen-frontend/shared/types'
 import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
-import { MutationDescription } from 'lib-common/query'
 
 import {
   StorageTypeInfoForm,
   StorageTypeInfoUnionForm,
   TrailerStorageForm
 } from './formDefinitions'
-import { updateStorageTypeDisabled } from './queries'
 
 interface StorageTypeProps {
   setEditModeOn?: () => void
   editIsOn: boolean
   form: BoundForm<StorageTypeInfoForm>
+  showEdit?: boolean
 }
 
 export function StorageTypeContainer({
   editIsOn,
   setEditModeOn,
-  form
+  form,
+  showEdit
 }: StorageTypeProps) {
   const i18n = useTranslation()
 
@@ -34,7 +33,7 @@ export function StorageTypeContainer({
 
   return (
     <>
-      {editIsOn ? (
+      {showEdit && editIsOn ? (
         <SelectField
           label={i18n.reservation.formPage.storageType}
           bind={storageTypeBind}
@@ -48,7 +47,7 @@ export function StorageTypeContainer({
             storageType ? i18n.boatSpace.winterStorageType[storageType] : '-'
           }
           readonly={true}
-          editAction={setEditModeOn}
+          editAction={showEdit ? setEditModeOn : undefined}
         />
       )}
     </>
@@ -58,22 +57,21 @@ export function StorageTypeContainer({
 export default React.memo(function TrailerInformation({
   setEditMode,
   editMode,
-  updateMutation = updateStorageTypeDisabled,
   unionForm,
   resetForm,
   onSubmit,
-  isPending
+  isPending,
+  editDisabled = false
 }: {
   reservationId: ReservationId
   setEditMode: (value: boolean) => void
   editMode: boolean
-  updateMutation?: MutationDescription<UpdateStorageTypeRequest, void>
   unionForm: BoundForm<StorageTypeInfoUnionForm>
   resetForm: () => void
   onSubmit?: () => Promise<void>
   isPending: boolean
+  editDisabled?: boolean
 }) {
-  const editDisabled = updateMutation === updateStorageTypeDisabled
   const i18n = useTranslation()
 
   const cancel = () => {
