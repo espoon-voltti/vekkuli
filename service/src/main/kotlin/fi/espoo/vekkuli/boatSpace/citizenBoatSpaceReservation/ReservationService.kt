@@ -267,7 +267,7 @@ open class ReservationService(
     }
 
     @Transactional
-    fun updateStorageType(
+    fun updateStorageTypeAndTrailer(
         reservationId: Int,
         input: UpdateStorageTypeInput
     ) {

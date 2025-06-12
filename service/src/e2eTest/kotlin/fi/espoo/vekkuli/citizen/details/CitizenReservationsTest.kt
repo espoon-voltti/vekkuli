@@ -22,18 +22,18 @@ class CitizenReservationsTest : PlaywrightTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
-            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            val firstReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 003")
             assertThat(firstReservationSection.locationName).hasText("Haukilahti")
             assertThat(firstReservationSection.place).hasText("B 003")
 
             assertThat(firstReservationSection.validity).hasText("31.12.2024 asti")
 
-            val secondReservationSection = citizenDetailsPage.getReservationSection(1)
+            val secondReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
             assertThat(secondReservationSection.place).hasText("B 015")
             assertThat(secondReservationSection.validity).hasText("Toistaiseksi, jatko vuosittain")
 
-            // Seed user has 2 active reservations
-            assertThat(citizenDetailsPage.reservationListCards).hasCount(2)
+            // Seed user has 3 active reservations
+            assertThat(citizenDetailsPage.reservationListCards).hasCount(3)
         } catch (e: AssertionError) {
             handleError(e)
         }

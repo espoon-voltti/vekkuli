@@ -57,7 +57,7 @@ class EditReservationTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
-            val reservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 007")
+            val reservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
 
             val trailerSection = reservationSection.getTrailerSection()
             assertThat(trailerSection.registrationCodeInput).isHidden()

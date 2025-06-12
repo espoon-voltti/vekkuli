@@ -4040,7 +4040,7 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01T00:00:00','2024-02
        ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01T00:00:00', '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
        ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null),
        ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 1185, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 7, 'Indefinite', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 4, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 2, 'Indefinite', null, 'Trailer');
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 5, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 2, 'Indefinite', null, 'Trailer');
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)

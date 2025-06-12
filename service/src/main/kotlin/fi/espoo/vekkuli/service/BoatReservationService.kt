@@ -689,7 +689,7 @@ class BoatReservationService(
         // If storage type is Trailer, update or create it
         val trailer: Trailer? =
             if (storageType == StorageType.Trailer) {
-                createOrUpdateTrailer(trailerInput, reservationId, reservation.trailerId, reservation.reserverId)
+                createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId)
             } else {
                 null
             }
@@ -713,34 +713,40 @@ class BoatReservationService(
         }
     }
 
-    private fun createOrUpdateTrailer(
+    private fun createOrUpdateTrailerAndAddWarnings(
         trailerInput: UpdateTrailerInput?,
         reservationId: Int,
         trailerId: Int?,
         reserverId: UUID
     ): Trailer? {
         if (trailerInput == null) return null
+        var trailer: Trailer
         // If trailer does not exist, create it
         if (trailerId != null) {
             // If trailer already exists, update it
-            return trailerRepository.updateTrailer(
-                Trailer(
-                    id = trailerId,
-                    registrationCode = trailerInput.registrationNumber,
-                    widthCm = decimalToInt(trailerInput.width),
-                    lengthCm = decimalToInt(trailerInput.length),
-                    reserverId = reserverId
+            trailer =
+                trailerRepository.updateTrailer(
+                    Trailer(
+                        id = trailerId,
+                        registrationCode = trailerInput.registrationNumber,
+                        widthCm = decimalToInt(trailerInput.width),
+                        lengthCm = decimalToInt(trailerInput.length),
+                        reserverId = reserverId
+                    )
                 )
-            )
+        } else {
+            // If trailer does not exist, create it
+            trailer =
+                trailerRepository.insertTrailerAndAddToReservation(
+                    reservationId,
+                    reserverId,
+                    trailerInput.registrationNumber,
+                    decimalToInt(trailerInput.width),
+                    decimalToInt(trailerInput.length)
+                )
         }
-        // If trailer does not exist, create it
-        return trailerRepository.insertTrailerAndAddToReservation(
-            reservationId,
-            reserverId,
-            trailerInput.registrationNumber,
-            decimalToInt(trailerInput.width),
-            decimalToInt(trailerInput.length)
-        )
+        addTrailerWarningsToReservations(trailer.id)
+        return trailer
     }
 
     private fun canUpdateTrailerForType(reservationId: Int): Boolean {
