@@ -685,16 +685,31 @@ class BoatReservationService(
         }
         var trailer: Trailer? = null
 
+        // If trailer does not exist, create it
         if (storageType == StorageType.Trailer && trailerInput != null) {
-            // Create trailer storage type is being changed to Trailer
-            trailer =
-                trailerRepository.insertTrailerAndAddToReservation(
-                    reservationId,
-                    reservation.reserverId,
-                    trailerInput.registrationNumber,
-                    decimalToInt(trailerInput.width),
-                    decimalToInt(trailerInput.length)
-                )
+            if (reservation.trailer?.id != null) {
+                // If trailer already exists, update it
+                trailer =
+                    trailerRepository.updateTrailer(
+                        Trailer(
+                            id = reservation.trailer.id,
+                            registrationCode = trailerInput.registrationNumber,
+                            widthCm = decimalToInt(trailerInput.width),
+                            lengthCm = decimalToInt(trailerInput.length),
+                            reserverId = reservation.reserverId
+                        )
+                    )
+            } else {
+                // If trailer does not exist, create it
+                trailer =
+                    trailerRepository.insertTrailerAndAddToReservation(
+                        reservationId,
+                        reservation.reserverId,
+                        trailerInput.registrationNumber,
+                        decimalToInt(trailerInput.width),
+                        decimalToInt(trailerInput.length)
+                    )
+            }
         }
 
         val updatedReservation =

@@ -6,14 +6,13 @@ import {
   Trailer,
   trailerTypes
 } from 'citizen-frontend/shared/types'
-import { optionalNumber, positiveNumber, string } from 'lib-common/form/fields'
+import { positiveNumber, string } from 'lib-common/form/fields'
 import { mapped, object, oneOf, required, union } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 
-export const storageTypeForm = oneOf<StorageType>()
+export const storageTypeForm = required(oneOf<StorageType>())
 
 export const trailerInfoForm = object({
-  id: optionalNumber(),
   length: required(positiveNumber()),
   width: required(positiveNumber()),
   registrationNumber: required(string())
@@ -21,16 +20,25 @@ export const trailerInfoForm = object({
 
 export type TrailerInfoForm = typeof trailerInfoForm
 
+function initialTrailerInfoState(
+  initialTrailer?: Trailer
+): StateOf<TrailerInfoForm> {
+  return {
+    registrationNumber: initialTrailer?.registrationNumber ?? '',
+    width: initialTrailer?.width.toString() ?? positiveNumber.empty().value,
+    length: initialTrailer?.length.toString() ?? positiveNumber.empty().value
+  }
+}
+
 export const trailerStorageForm = mapped(
   object({
     storageType: storageTypeForm,
     trailerInfo: trailerInfoForm
   }),
-  ({ trailerInfo }) => {
+  ({ trailerInfo, storageType }) => {
     return {
-      storageType: trailerTypes,
+      storageType: storageType,
       trailerInfo: {
-        id: trailerInfo.id || undefined,
         length: trailerInfo.length,
         width: trailerInfo.width,
         registrationNumber: trailerInfo.registrationNumber
@@ -45,7 +53,7 @@ export const buckStorageTypeForm = mapped(
   }),
   ({ storageType }) => {
     return {
-      storageType: buckTypes
+      storageType: storageType
     }
   }
 )
@@ -79,7 +87,6 @@ function initialTrailerFormState(
         .sort((a, b) => a.label.localeCompare(b.label))
     },
     trailerInfo: {
-      id: trailer?.id || undefined,
       length: trailer?.length.toString() || '',
       width: trailer?.width.toString() || '',
       registrationNumber: trailer?.registrationNumber || ''
@@ -128,4 +135,39 @@ export function initialFormState(
         state: initialBuckFormState(i18n, storageType)
       }
   }
+}
+
+export function onStorageTypeInfoFormUpdate({
+  prev,
+  next,
+  trailer
+}: {
+  prev: StateOf<StorageTypeInfoUnionForm>
+  next: StateOf<StorageTypeInfoUnionForm>
+  trailer?: Trailer
+}): StateOf<StorageTypeInfoUnionForm> {
+  const prevType = prev.state.storageType.domValue as StorageType
+  const nextType = next.state.storageType.domValue as StorageType
+  if (prevType !== nextType) {
+    switch (nextType) {
+      case 'Trailer':
+        return {
+          branch: nextType,
+          state: {
+            storageType: next.state.storageType,
+            trailerInfo: initialTrailerInfoState(trailer)
+          }
+        }
+      case 'Buck':
+      case 'BuckWithTent':
+        return {
+          branch: nextType,
+          state: {
+            storageType: next.state.storageType
+          }
+        }
+    }
+  }
+
+  return next
 }

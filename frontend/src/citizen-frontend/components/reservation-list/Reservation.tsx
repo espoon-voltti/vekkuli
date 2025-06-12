@@ -12,7 +12,7 @@ import TrailerInformation, {
 import { useTranslation } from 'citizen-frontend/localization'
 import { ErrorBox } from 'citizen-frontend/reservation/components/ErrorBox'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
-import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
+import { useForm, useFormUnion } from 'lib-common/form/hooks'
 import {
   MutationDescription,
   useMutation,
@@ -23,9 +23,9 @@ import ErrorModal, {
   ErrorCode
 } from '../../reservation/pages/fillInformation/ErrorModal'
 import { unfinishedReservationQuery } from '../../reservation/queries'
-import { onSpaceTypeInfoUpdate } from '../../reservation/pages/fillInformation/formDefinitions/spaceTypeInfo'
 import {
   initialFormState,
+  onStorageTypeInfoFormUpdate,
   storageTypeInfoUnionForm
 } from '../trailer/formDefinitions'
 
@@ -33,7 +33,6 @@ import {
   startRenewReservationMutation,
   updateStorageTypeMutation
 } from './queries'
-import { StorageType, storageTypes } from 'citizen-frontend/shared/types'
 
 export default React.memo(function Reservation({
   reservation,
@@ -63,14 +62,22 @@ export default React.memo(function Reservation({
   const boatSpaceUnionForm = useForm(
     storageTypeInfoUnionForm,
     () => initialFormState(i18n, reservation.storageType, reservation.trailer),
-    i18n.components.validationErrors
+    i18n.components.validationErrors,
+    {
+      onUpdate: (prev, next) =>
+        onStorageTypeInfoFormUpdate({
+          prev,
+          next,
+          trailer: reservation.trailer
+        })
+    }
   )
+
   const { mutateAsync: updateStorageType, isPending } = useMutation(
     updateStorageTypeMutation
   )
 
   const { form, branch } = useFormUnion(boatSpaceUnionForm)
-
   const onRenew = () => {
     renewReservation(reservation.id)
       .then(() => {
@@ -98,25 +105,11 @@ export default React.memo(function Reservation({
         ? i18n.reservation.invoiceState(reservation.dueDate)
         : '-'
 
-  const onStorageTypeChange = async () => {
+  const onStorageTypeSubmit = async () => {
     if (form.isValid()) {
-      const trailerInfo =
-        branch === 'Trailer' ? form.state.trailerInfo : undefined
-      const storageType =
-        form.state.storageType.domValue in storageTypes
-          ? (form.state.storageType.domValue as StorageType)
-          : 'Trailer'
       await updateStorageType({
         reservationId: reservation.id,
-        input: {
-          storageType: storageType,
-          trailerInfo: {
-            id: trailerInfo?.id,
-            length: trailerInfo?.length ? parseFloat(trailerInfo.length) : 0,
-            width: trailerInfo?.width ? parseFloat(trailerInfo.width) : 0,
-            registrationNumber: trailerInfo?.registrationNumber || ''
-          }
-        }
+        input: form.value()
       })
       setEditMode(false)
     }
@@ -235,17 +228,16 @@ export default React.memo(function Reservation({
             />
           </Column>
         </Columns>
-        {(editMode || reservation.storageType === 'Trailer') && (
-          <TrailerInformation
-            reservationId={reservation.id}
-            editMode={editMode}
-            setEditMode={setEditMode}
-            unionForm={boatSpaceUnionForm}
-            resetForm={resetForm}
-            onSubmit={onStorageTypeChange}
-            isPending={isPending}
-          />
-        )}
+
+        <TrailerInformation
+          reservationId={reservation.id}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          unionForm={boatSpaceUnionForm}
+          resetForm={resetForm}
+          onSubmit={onStorageTypeSubmit}
+          isPending={isPending}
+        />
         {!editMode && canRenew && (
           <ErrorBox
             text={i18n.citizenPage.reservation.renewNotification(

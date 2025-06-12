@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 
 data class UpdateStorageTypeInput(
     val storageType: StorageType,
-    val trailer: UpdateTrailerInput? = null
+    val trailerInfo: UpdateTrailerInput? = null
 )
 
 @Service

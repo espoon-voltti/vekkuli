@@ -9,17 +9,18 @@ export type EditLinkProps = {
   children?: React.ReactNode
   action?: () => void
   href?: string
-  text?: string
+  showText?: boolean
 }
 
 export default React.memo(function EditLink({
   children,
   action,
   href,
-  text
+  showText
 }: EditLinkProps) {
   const i18n = useTranslation()
-  const defaultedChildren = children || text || i18n.components.links.edit
+  const defaultText = i18n.common.edit
+  const defaultedChildren = showText ? children || defaultText : undefined
   return (
     <IconLink icon={<Edit />} action={action} href={href}>
       {defaultedChildren}

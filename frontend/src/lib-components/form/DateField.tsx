@@ -9,7 +9,8 @@ import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 
-interface TextFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
+export interface TextFieldProps
+  extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
   value?: LocalDate
 }

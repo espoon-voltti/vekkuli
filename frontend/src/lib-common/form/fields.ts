@@ -33,7 +33,6 @@ export const whitespaceTrimmedString = () =>
   mapped(value<string>(), (s) => s.replace(/\s+/g, ''))
 export const boolean = () => value<boolean>()
 export const number = () => value<number>()
-export const optionalNumber = () => value<number | undefined>()
 
 export const positiveNumber = Object.assign(
   () =>

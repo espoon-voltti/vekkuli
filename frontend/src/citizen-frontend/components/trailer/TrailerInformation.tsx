@@ -5,22 +5,11 @@ import React from 'react'
 
 import { UpdateStorageTypeRequest } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  ReservationId,
-  StorageType,
-  storageTypes,
-  Trailer
-} from 'citizen-frontend/shared/types'
-import {
-  BoundForm,
-  useForm,
-  useFormFields,
-  useFormUnion
-} from 'lib-common/form/hooks'
-import { MutationDescription, useMutation } from 'lib-common/query'
+import { ReservationId, StorageType } from 'citizen-frontend/shared/types'
+import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
+import { MutationDescription } from 'lib-common/query'
 
 import {
-  initialFormState,
   StorageTypeInfoForm,
   StorageTypeInfoUnionForm,
   TrailerStorageForm
@@ -41,31 +30,26 @@ export function StorageTypeContainer({
   const i18n = useTranslation()
 
   const { storageType: storageTypeBind } = useFormFields(form)
-  const storageType =
-    storageTypeBind.state.domValue in storageTypes
-      ? (storageTypeBind.state.domValue as StorageType)
-      : undefined
+  const storageType = storageTypeBind.state.domValue as StorageType | undefined
 
   return (
     <>
       {editIsOn ? (
         <SelectField
-          label="Select storage type"
+          label={i18n.reservation.formPage.storageType}
           bind={storageTypeBind}
           readonly={!editIsOn}
           required={editIsOn}
         />
       ) : (
-        <Columns isVCentered>
-          <TextField
-            label={i18n.citizenPage.reservation.storageType}
-            value={
-              storageType ? i18n.boatSpace.winterStorageType[storageType] : '-'
-            }
-            readonly={true}
-          />
-          <EditLink action={setEditModeOn} text=" " />
-        </Columns>
+        <TextField
+          label={i18n.citizenPage.reservation.storageType}
+          value={
+            storageType ? i18n.boatSpace.winterStorageType[storageType] : '-'
+          }
+          readonly={true}
+          editAction={setEditModeOn}
+        />
       )}
     </>
   )
