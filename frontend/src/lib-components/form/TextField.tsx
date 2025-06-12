@@ -9,7 +9,6 @@ import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 import { EditLink } from 'lib-components/links'
-import { Columns } from 'lib-components/dom'
 
 interface TextFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
