@@ -252,8 +252,8 @@ const sv: Translations = {
             harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Winter: {
-            width: 'Förvaringsplatsens bredd (m)',
-            length: 'Förvaringsplatsens längd (m)',
+            width: 'Vinterplatsens bredd (m)',
+            length: 'Vinterplatsens längd (m)',
             harborInfo: 'Välj en vinterplats i din båthamn eller i Finno.'
           },
           Storage: {

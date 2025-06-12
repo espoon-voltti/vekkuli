@@ -260,8 +260,8 @@ export default {
             harborInfo: 'Traileripaikan voit varata ainoastaan Suomenojalta.'
           },
           Winter: {
-            width: 'Säilytyspaikan leveys (m)',
-            length: 'Säilytyspaikan pituus (m)',
+            width: 'Talvipaikan leveys (m)',
+            length: 'Talvipaikan pituus (m)',
             harborInfo:
               'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
           },

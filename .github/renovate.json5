@@ -14,10 +14,7 @@
   minimumReleaseAge: '3 days',
 
   // Update during weekends
-  //schedule: ['* * * * 0,6'],
-
-  // Update every night while renovate is onboarding
-  "schedule": ["* 0-4 * * *"],
+  schedule: ['* * * * 0,6'],
 
   // Allow most 20 PRs open concurrently
   prConcurrentLimit: 20,

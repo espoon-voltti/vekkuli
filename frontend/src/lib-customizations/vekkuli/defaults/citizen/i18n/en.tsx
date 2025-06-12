@@ -259,8 +259,8 @@ const en: Translations = {
             harborInfo: 'You can only reserve a trailer spot from Suomenoja.'
           },
           Winter: {
-            width: 'Storage space width (m)',
-            length: 'Storage space length (m)',
+            width: 'Winter space width (m)',
+            length: 'Winter space length (m)',
             harborInfo:
               'Select a winter storage space from your boat harbor or from Suomenoja.'
           },

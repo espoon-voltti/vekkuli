@@ -41,6 +41,8 @@ data class StickerReportRow(
     val paid: LocalDateTime?,
     val creationType: CreationType?,
     val email: String?,
+    val phone: String?,
+    val boatInfo: String?,
 )
 
 fun getStickerReportRows(
@@ -62,7 +64,9 @@ fun getStickerReportRows(
                     p.paid,
                     bsr.creation_type,
                     bsr.created,
-                    r.email
+                    r.email, 
+                    r.phone,
+                    TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info
                 FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
@@ -107,6 +111,8 @@ data class BoatSpaceReportRow(
     val boatSpaceType: BoatSpaceType?,
     val reservationStatus: ReservationStatus?,
     val email: String?,
+    val phone: String?,
+    val boatInfo: String?,
 )
 
 data class BoatSpaceReportRowWithWarnings(
@@ -189,7 +195,9 @@ fun getBoatSpaceReportRows(
                         bsr.creation_type,
                         bs.type AS boat_space_type,
                         bsr.status AS reservation_status,
-                        r.email
+                        r.email,
+                        r.phone,
+                        TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info
                     FROM boat_space bs
                          LEFT JOIN location l ON l.id = bs.location_id
                          LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
