@@ -50,7 +50,9 @@ export default React.memo(function TextField({
             {label}
             {required && ' *'}
           </label>
-          {editAction && <EditLink action={editAction} />}
+          {editAction && (
+            <EditLink action={editAction} dataTestId={`edit-${dataTestId}`} />
+          )}
         </div>
         <InputOrReadOnly
           readonly={readonly}

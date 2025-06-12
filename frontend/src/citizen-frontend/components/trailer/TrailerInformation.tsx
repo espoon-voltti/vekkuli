@@ -39,6 +39,7 @@ export function StorageTypeContainer({
           bind={storageTypeBind}
           readonly={!editIsOn}
           required={editIsOn}
+          dataTestId="storage-type-select"
         />
       ) : (
         <TextField
@@ -48,6 +49,7 @@ export function StorageTypeContainer({
           }
           readonly={true}
           editAction={showEdit ? setEditModeOn : undefined}
+          dataTestId="storage-type-field"
         />
       )}
     </>
