@@ -68,7 +68,7 @@ abstract class IntegrationTestBase {
     val boatSpaceIdForSlip3 = 3
     val boatSpaceIdForStorage = 4
     val boatSpaceIdForStorage1 = 5
-    val boatSpaceIdForStorage2 = 6
+    val boatSpaceIdForBuckStorage = 6
     val boatSpaceIdForWinter = 8
     val boatSpaceIdForWinter2 = 9
     val boatSpaceIdForTrailer = 2203

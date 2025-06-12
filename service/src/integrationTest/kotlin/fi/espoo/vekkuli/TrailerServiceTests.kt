@@ -36,11 +36,20 @@ class TrailerServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         PaytrailMock.reset()
+        deleteAllReservations(jdbi)
     }
 
     @Test
     fun `citizen should be able to change storage type to trailer`() {
-        val reservationId = 1
+        val reservationId =
+            testUtils
+                .createReservationInConfirmedState(
+                    CreateReservationParams(
+                        timeProvider,
+                        this.citizenIdLeo,
+                        boatSpaceIdForWinter
+                    )
+                ).id
         val trailer =
             UpdateTrailerInput(
                 registrationNumber = "ABC-123",
@@ -48,7 +57,7 @@ class TrailerServiceTests : IntegrationTestBase() {
                 length = BigDecimal(5.0)
             )
 
-        boatReservationService.updateStorageType(
+        boatReservationService.updateStorageTypeAndTrailer(
             reservationId,
             storageType = StorageType.Trailer,
             trailerInput = trailer
@@ -70,10 +79,18 @@ class TrailerServiceTests : IntegrationTestBase() {
 
     @Test
     fun `if user tries to update storage type to Trailer should throw error if no trailer information is give`() {
-        val reservationId = 1
+        val reservationId =
+            testUtils
+                .createReservationInConfirmedState(
+                    CreateReservationParams(
+                        timeProvider,
+                        this.citizenIdLeo,
+                        boatSpaceIdForWinter
+                    )
+                ).id
 
         assertThrows<IllegalArgumentException> {
-            boatReservationService.updateStorageType(
+            boatReservationService.updateStorageTypeAndTrailer(
                 reservationId,
                 storageType = StorageType.Trailer,
                 trailerInput = null
@@ -83,17 +100,78 @@ class TrailerServiceTests : IntegrationTestBase() {
 
     @Test
     fun `citizen should be able to change storage type to buck`() {
-        val originalReservation = boatSpaceReservationRepository.getReservationWithDependencies(reservationIdForTrailerSpace)
+        val reservationId =
+            testUtils
+                .createReservationInConfirmedState(
+                    CreateReservationParams(
+                        timeProvider,
+                        this.citizenIdLeo,
+                        boatSpaceIdForWinter
+                    )
+                ).id
+        boatReservationService.updateStorageTypeAndTrailer(
+            reservationId,
+            StorageType.Trailer,
+            trailerInput = UpdateTrailerInput("ABC123", BigDecimal(1), BigDecimal(1),)
+        )
+        val originalReservation = boatSpaceReservationRepository.getReservationWithDependencies(reservationId)
+
         assertEquals(StorageType.Trailer, originalReservation?.storageType, "Reservation should originally be trailer storage type")
-        boatReservationService.updateStorageType(
-            reservationIdForTrailerSpace,
+
+        boatReservationService.updateStorageTypeAndTrailer(
+            reservationId,
             StorageType.Buck
         )
-
-        val updatedReservation = boatSpaceReservationRepository.getReservationWithDependencies(reservationIdForTrailerSpace)
+        val updatedReservation = boatSpaceReservationRepository.getReservationWithDependencies(reservationId)
         val trailer = originalReservation?.trailerId?.let { trailerRepository.getTrailer(it) }
         assertEquals(StorageType.Buck, updatedReservation?.storageType, "Storage type should have been updated to Buck")
         assertEquals(null, updatedReservation?.trailerId, "Trailer should have been removed from the reservation")
         assertNull(trailer, "Trailer should have been deleted")
+    }
+
+    @Test
+    fun `trying to update trailer for Storage with different amenity storage type, throws an exception`() {
+        val reservationId =
+            testUtils
+                .createReservationInConfirmedState(
+                    CreateReservationParams(
+                        timeProvider,
+                        this.citizenIdLeo,
+                        boatSpaceIdForBuckStorage
+                    )
+                ).id
+
+        val expection =
+            assertThrows<IllegalArgumentException> {
+                boatReservationService.updateStorageTypeAndTrailer(
+                    reservationId,
+                    StorageType.Trailer,
+                    trailerInput = UpdateTrailerInput("ABC123", BigDecimal(1), BigDecimal(1),)
+                )
+            }
+        assertEquals("Can't update trailer if amenity does not match", expection.message, "Should throw specific message")
+    }
+
+    @Test
+    fun `trying to update trailer for Split type space, throws an exception`() {
+        val reservationId =
+            testUtils
+                .createReservationInConfirmedState(
+                    CreateReservationParams(
+                        timeProvider,
+                        this.citizenIdLeo,
+                        boatSpaceIdForSlip
+                    )
+                ).id
+
+        val expection =
+            assertThrows<IllegalArgumentException> {
+                boatReservationService.updateStorageTypeAndTrailer(
+                    reservationId,
+                    StorageType.Trailer,
+                    trailerInput = UpdateTrailerInput("ABC123", BigDecimal(1), BigDecimal(1),)
+                )
+            }
+        assertEquals("Can't update trailer if amenity does not match", expection.message, "Should throw specific message")
     }
 }
