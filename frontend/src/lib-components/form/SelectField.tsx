@@ -54,7 +54,7 @@ function SelectField_<T>({
                 id={id}
                 name={name}
                 required={required}
-                data-testId={dataTestId}
+                data-testid={dataTestId}
                 value={state?.domValue}
                 aria-invalid={showError}
                 onBlur={() => setTouched(true)}
