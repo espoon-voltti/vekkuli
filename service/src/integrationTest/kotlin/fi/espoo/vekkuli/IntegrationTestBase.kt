@@ -61,12 +61,14 @@ abstract class IntegrationTestBase {
 
     val userId: UUID = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
 
+    val reservationIdForTrailerSpace = 6
+
     val boatSpaceIdForSlip = 1
     val boatSpaceIdForSlip2 = 2
     val boatSpaceIdForSlip3 = 3
     val boatSpaceIdForStorage = 4
     val boatSpaceIdForStorage1 = 5
-    val boatSpaceIdForStorage2 = 6
+    val boatSpaceIdForBuckStorage = 6
     val boatSpaceIdForWinter = 8
     val boatSpaceIdForWinter2 = 9
     val boatSpaceIdForTrailer = 2203

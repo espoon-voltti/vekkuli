@@ -21,6 +21,7 @@ import {
 } from '../shared/types'
 
 import { CitizenBoatsResponse } from './citizen'
+import { UpdateStorageTypeInput } from './storageType'
 
 export type UnfinishedBoatSpaceReservation = {
   reservation: BoatSpaceReservation
@@ -222,3 +223,8 @@ export type ReservationError =
   | 'InvalidSignature'
   | 'PaymentNotFound'
   | 'ReservationNotFound'
+
+export type UpdateStorageTypeRequest = {
+  reservationId: ReservationId
+  input: UpdateStorageTypeInput
+}

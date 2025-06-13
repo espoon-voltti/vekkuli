@@ -18,7 +18,8 @@ import {
   ReservationOperation,
   SwitchReservationInformation,
   UnfinishedBoatSpaceReservation,
-  UnfinishedBoatSpaceReservationResponse
+  UnfinishedBoatSpaceReservationResponse,
+  UpdateStorageTypeRequest
 } from '../api-types/reservation'
 
 import {
@@ -184,6 +185,17 @@ export async function paymentInformation(
   })
 
   return data
+}
+
+export async function updateStorageType({
+  reservationId,
+  input
+}: UpdateStorageTypeRequest): Promise<void> {
+  await client.request<void>({
+    url: uri`/reservation/${reservationId}/update-storage-type`.toString(),
+    method: 'PATCH',
+    data: input
+  })
 }
 
 export function deserializeJsonBoatSpaceReservationResponse(

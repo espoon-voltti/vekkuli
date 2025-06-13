@@ -25,7 +25,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter boat spaces`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
     }
@@ -33,7 +33,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver phone number`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         typeText(listingPage.searchInput("phoneSearch"), "04056")
         page.waitForCondition { listingPage.reservations.count() == 1 }
 
@@ -46,7 +46,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver email address`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         typeText(listingPage.searchInput("emailSearch"), "leo")
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.reserverRowEmail).hasText("leo@noreplytest.fi")
@@ -59,7 +59,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver name`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         typeText(listingPage.searchInput("nameSearch"), "leo")
         page.waitForCondition { listingPage.reservations.count() == 1 }
 
@@ -72,7 +72,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reservation validity`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.toString()).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 003")
@@ -81,7 +81,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver exceptions`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.exceptionsFilter.click()
         page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
         assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Pulkkinen Jorma")
@@ -90,26 +90,26 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by amenity`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.expandingSelectionFilter("amenity").click()
         listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
-        page.waitForCondition { listingPage.reservations.count() == 1 }
-        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
+        page.waitForCondition { listingPage.reservations.count() == 2 }
+        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 009")
         listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
     }
 
     @Test
     fun `Employee can filter by date`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.reservationValidFromInput.fill(formatAsTestDate(LocalDate.of(2024, 1, 1)))
         listingPage.reservationValidUntilInput.fill(formatAsTestDate(LocalDate.of(2024, 12, 31)))
         listingPage.dateFilter.click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 003")
         listingPage.dateFilter.click()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
     }
 
     @Test
@@ -143,12 +143,12 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         assertThat(listingPage.sendMassMessageLink).hasClass(Pattern.compile("(^|\\s)disabled(\\s|$)"))
         assertThat(listingPage.sendMassMessageLink).containsText("(0 varausta)")
         listingPage.selectAllReservations.click()
         listingPage.reservations
-        assertThat(listingPage.sendMassMessageLink).containsText("(5 varausta)")
+        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
     }
@@ -157,7 +157,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     fun `Send mass email link is disabled when reservation list is empty`() {
         val listingPage = reservationListPage()
         listingPage.selectAllReservations.click()
-        page.waitForCondition { listingPage.reservations.count() == 5 }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
         listingPage.searchInput("phoneSearch").fill("8888888888")
         listingPage.searchInput("phoneSearch").blur()
         page.waitForCondition { listingPage.reservations.count() == 0 }
@@ -166,7 +166,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
 
     @Test
     fun `Email is sent to filtered recipients with mass message`() {
-        val expectedReservationCount = 5
+        val expectedReservationCount = 6
         val expectedSentEmailCount = 3
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == expectedReservationCount }

@@ -12,6 +12,7 @@ class FieldLocator(
         .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
+        .locator("..")
         .locator("p")
 
     fun getInput(
@@ -21,6 +22,7 @@ class FieldLocator(
         .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
+        .locator("..")
         .locator("input")
 
     fun getInputError(
@@ -29,6 +31,7 @@ class FieldLocator(
     ) = root
         .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
+        .locator("..")
         .locator("..")
         .locator(".help.is-danger:not(:empty)")
 

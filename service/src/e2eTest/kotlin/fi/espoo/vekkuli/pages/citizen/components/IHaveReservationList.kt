@@ -28,6 +28,9 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val paymentStatus = fields.getField("Maksun tila")
 
         val renewNotification = root.getByText("Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu")
+        val editStorageTypeButton = root.getByDataTestId("edit-storage-type-field")
+        val storageTypeInput = root.getByDataTestId("storage-type-select")
+        val storageTypeField = root.getByDataTestId("storage-type-field")
 
         fun getTrailerSection() = TrailerSection(root.getByDataTestId("trailer-information"))
     }
@@ -57,6 +60,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val root: Locator
     ) {
         private val fields = FieldLocator(root)
+
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))

@@ -789,7 +789,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            val reservation = citizenDetailsPage.getReservationSection(2)
+            val reservation = citizenDetailsPage.getReservationSection("Haukilahti B 314")
             assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
@@ -834,7 +834,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            val reservation = citizenDetailsPage.getReservationSection(2)
+            val reservation = citizenDetailsPage.getReservationSection("Haukilahti B 314")
             assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)

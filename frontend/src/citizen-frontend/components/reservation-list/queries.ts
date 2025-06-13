@@ -1,4 +1,8 @@
-import { startRenewReservation } from 'citizen-frontend/api-clients/reservation'
+import {
+  startRenewReservation,
+  updateStorageType
+} from 'citizen-frontend/api-clients/reservation'
+import { UpdateStorageTypeInput } from 'citizen-frontend/api-types/storageType'
 import { ReservationId } from 'citizen-frontend/shared/types'
 import { mutation } from 'lib-common/query'
 
@@ -13,4 +17,11 @@ export const terminateReservationDisabled = createMutationDisabledDefault<
 export const startRenewReservationMutation = mutation({
   api: startRenewReservation,
   invalidateQueryKeys: () => [queryKeys.unfinishedReservation()]
+})
+
+export const updateStorageTypeMutation = mutation({
+  api: (params: {
+    reservationId: ReservationId
+    input: UpdateStorageTypeInput
+  }) => updateStorageType(params)
 })

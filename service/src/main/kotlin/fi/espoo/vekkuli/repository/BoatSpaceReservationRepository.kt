@@ -81,11 +81,6 @@ interface BoatSpaceReservationRepository {
         boatId: Int
     ): Boolean
 
-    fun updateTrailerInBoatSpaceReservation(
-        reservationId: Int,
-        trailerId: Int
-    ): BoatSpaceReservation
-
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
@@ -107,7 +102,8 @@ interface BoatSpaceReservationRepository {
 
     fun updateStorageType(
         reservationId: Int,
-        storageType: StorageType
+        storageType: StorageType,
+        trailerId: Int? = null
     ): BoatSpaceReservation
 
     fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails>

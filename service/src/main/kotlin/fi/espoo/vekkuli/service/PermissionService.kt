@@ -57,6 +57,16 @@ class PermissionService(
         }
     }
 
+    fun canUpdateStorageType(
+        reserverId: UUID,
+        reservationId: Int
+    ): Boolean {
+        return when {
+            hasAccessToReservation(reserverId, reservationId) -> return true
+            else -> false
+        }
+    }
+
     fun canTerminateBoatSpaceReservationForOtherUser(
         terminatorId: UUID,
         reservationId: Int

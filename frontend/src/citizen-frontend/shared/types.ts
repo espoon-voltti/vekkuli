@@ -19,7 +19,7 @@ export const reserverTypes = ['Citizen', 'Organization'] as const
 
 export type ReserverType = (typeof reserverTypes)[number]
 
-export const storageTypes = ['Trailer', 'Buck', 'BuckWithTent'] as const
+export const storageTypes = ['Buck', 'BuckWithTent', 'Trailer'] as const
 
 export type StorageType = (typeof storageTypes)[number]
 

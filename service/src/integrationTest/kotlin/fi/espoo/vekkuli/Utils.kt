@@ -33,6 +33,12 @@ fun deleteAllBoats(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllTrailers(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM trailer")
+    }
+}
+
 fun deleteAllBoatSpaces(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM boat_space")

@@ -10,6 +10,7 @@ export type IconLinkProps = {
   href?: string
   ariaLabel?: string
   type?: IconLinkType
+  dataTestId?: string
 }
 
 export default React.memo(function IconLink({
@@ -18,11 +19,13 @@ export default React.memo(function IconLink({
   action,
   href,
   ariaLabel,
-  type
+  type,
+  dataTestId
 }: IconLinkProps) {
   if (href) {
     return (
       <a
+        data-testid={dataTestId}
         href={href}
         className={iconLinkClasses(type)}
         aria-label={ariaLabel}
@@ -36,6 +39,7 @@ export default React.memo(function IconLink({
 
   return (
     <button
+      data-testid={dataTestId}
       onClick={action}
       className={iconLinkClasses(type, 'has-text-link')}
       aria-label={ariaLabel}

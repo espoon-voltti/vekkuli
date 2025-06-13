@@ -171,10 +171,10 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         "Storage, Buck, 10, 10, 0",
         "Storage, Buck, 1, 1, 11",
         "Storage, Trailer, 10, 10, 0",
-        "Storage, Trailer, 1, 1, 10",
+        "Storage, Trailer, 1, 1, 9",
         "Storage, None, 1, 1, 0",
     )
-    fun `should fetch spaces boat spaces with expected filters`(
+    fun `should fetch unreserved boat spaces with expected filters`(
         spaceType: BoatSpaceType,
         amenity: BoatSpaceAmenity,
         width: BigDecimal,

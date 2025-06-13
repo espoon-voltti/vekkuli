@@ -48,7 +48,7 @@ function NumberFieldR({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly value={formatNumber(readOnlyValue, precision)} />
+          <ReadOnly value={formatNumber(readOnlyValue, precision) || '-'} />
         ) : (
           <>
             <input

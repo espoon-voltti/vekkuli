@@ -720,45 +720,27 @@ class JdbiBoatSpaceReservationRepository(
                 .execute() > 0
         }
 
-    override fun updateTrailerInBoatSpaceReservation(
-        reservationId: Int,
-        trailerId: Int
-    ): BoatSpaceReservation =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET trailer_id = :trailerId
-                    WHERE id = :reservationId
-                        AND (status = 'Info' OR status = 'Payment')
-                        AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("reservationId", reservationId)
-            query.bind("trailerId", trailerId)
-            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.mapTo<BoatSpaceReservation>().one()
-        }
-
     override fun updateStorageType(
         reservationId: Int,
-        storageType: StorageType
+        storageType: StorageType,
+        trailerId: Int?
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET storage_type = :storageType
+                    SET storage_type = :storageType,
+                        trailer_id = :trailerId,
+                        updated = :updatedTime
                     WHERE id = :reservationId
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
             query.bind("storageType", storageType)
+            query.bind("trailerId", trailerId)
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 

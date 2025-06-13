@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.citizenTrailer.UpdateTrailerInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Unauthorized
@@ -210,6 +211,15 @@ class BoatReservationService(
                     previousBoatInfo
                 )
             }
+    }
+
+    fun addTrailerWarningsToReservations(trailerId: Int) {
+        val trailer = trailerRepository.getTrailer(trailerId) ?: throw BadRequest("Trailer $trailerId not found")
+        addTrailerWarningsToReservations(
+            trailerId,
+            trailer.widthCm,
+            trailer.lengthCm
+        )
     }
 
     fun addTrailerWarningsToReservations(
@@ -654,6 +664,99 @@ class BoatReservationService(
         val result = trailerRepository.updateTrailer(updatedTrailer)
         addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
         return result
+    }
+
+    @Transactional
+    fun updateStorageTypeAndTrailer(
+        reservationId: Int,
+        storageType: StorageType,
+        trailerInput: UpdateTrailerInput? = null
+    ) {
+        val reservation =
+            boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+                ?: throw IllegalArgumentException("Reservation $reservationId not found")
+
+        if (reservation.reserverId == null) throw Unauthorized()
+
+        if (!canUpdateTrailerForType(reservationId)) {
+            throw IllegalArgumentException("Can't update trailer if amenity does not match")
+        }
+
+        if (storageType == StorageType.Trailer && trailerInput == null) {
+            throw IllegalArgumentException("Trailer information must be provided when storage type is Trailer")
+        }
+
+        // If storage type is Trailer, update or create it
+        val trailer: Trailer? =
+            if (storageType == StorageType.Trailer) {
+                createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId)
+            } else {
+                null
+            }
+
+        // Update storage type only if boat space type is Winter
+        if (reservation.type === BoatSpaceType.Winter) {
+            boatSpaceReservationRepo.updateStorageType(
+                reservationId,
+                storageType,
+                trailerId = trailer?.id
+            )
+        }
+
+        // Should delete trailer from reservation if storage type is changed to something else
+        if (storageType !== StorageType.Trailer && reservation.trailerId !== null) {
+            try {
+                trailerRepository.deleteTrailer(reservation.trailerId)
+            } catch (e: Exception) {
+                // Suppress error
+            }
+        }
+    }
+
+    private fun createOrUpdateTrailerAndAddWarnings(
+        trailerInput: UpdateTrailerInput?,
+        reservationId: Int,
+        trailerId: Int?,
+        reserverId: UUID
+    ): Trailer? {
+        if (trailerInput == null) return null
+        var trailer: Trailer
+        // If trailer does not exist, create it
+        if (trailerId != null) {
+            // If trailer already exists, update it
+            trailer =
+                trailerRepository.updateTrailer(
+                    Trailer(
+                        id = trailerId,
+                        registrationCode = trailerInput.registrationNumber,
+                        widthCm = decimalToInt(trailerInput.width),
+                        lengthCm = decimalToInt(trailerInput.length),
+                        reserverId = reserverId
+                    )
+                )
+        } else {
+            // If trailer does not exist, create it
+            trailer =
+                trailerRepository.insertTrailerAndAddToReservation(
+                    reservationId,
+                    reserverId,
+                    trailerInput.registrationNumber,
+                    decimalToInt(trailerInput.width),
+                    decimalToInt(trailerInput.length)
+                )
+        }
+        addTrailerWarningsToReservations(trailer.id)
+        return trailer
+    }
+
+    private fun canUpdateTrailerForType(reservationId: Int): Boolean {
+        val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        return when {
+            reservation?.type === BoatSpaceType.Trailer -> return true
+            reservation?.type === BoatSpaceType.Storage && reservation.amenity === BoatSpaceAmenity.Trailer -> return true
+            reservation?.type === BoatSpaceType.Winter -> return true
+            else -> false
+        }
     }
 
     fun sendReservationEmailAndInsertMemoIfSwitch(reservationId: Int) {

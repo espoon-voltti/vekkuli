@@ -29,9 +29,11 @@ export type FieldType<F extends () => AnyForm> = Form<
 >
 
 export const string = () => mapped(value<string>(), (s) => s.trim())
-export const whitespaceTrimmedString = () => mapped(value<string>(), (s) => s.replace(/\s+/g, ''))
+export const whitespaceTrimmedString = () =>
+  mapped(value<string>(), (s) => s.replace(/\s+/g, ''))
 export const boolean = () => value<boolean>()
 export const number = () => value<number>()
+
 export const positiveNumber = Object.assign(
   () =>
     transformed(value<string>(), (state) => {
@@ -45,7 +47,6 @@ export const positiveNumber = Object.assign(
     empty: () => ({ value: '' })
   }
 )
-
 export interface CheckboxListConfig {
   minSelections?: number | undefined
   maxSelections?: number | undefined

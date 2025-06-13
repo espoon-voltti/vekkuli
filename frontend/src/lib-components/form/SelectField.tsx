@@ -24,7 +24,8 @@ function SelectField_<T>({
   bind,
   readonly,
   value,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  dataTestId
 }: SelectFieldProps<T>) {
   const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
@@ -53,6 +54,7 @@ function SelectField_<T>({
                 id={id}
                 name={name}
                 required={required}
+                data-testid={dataTestId}
                 value={state?.domValue}
                 aria-invalid={showError}
                 onBlur={() => setTouched(true)}
