@@ -4830,10 +4830,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compute-scroll-into-view@npm:3.1.0":
-  version: 3.1.0
-  resolution: "compute-scroll-into-view@npm:3.1.0"
-  checksum: 10/cc5211d49bced5ad23385da5c2eaf69b6045628581b0dcb9f4dd407bfee51bbd26d2bce426be26edf2feaf8c243706f5a7c3759827d89cc5a01a5cf7d299a5eb
+"compute-scroll-into-view@npm:3.1.1":
+  version: 3.1.1
+  resolution: "compute-scroll-into-view@npm:3.1.1"
+  checksum: 10/b68827555c39862cf3d7def838f3b8ee3751e3e88b9ec3bb601484666f0596963cd91db16b23248e14759339cf2ddff72b9c53c3070f6fd27177393ea83185f3
   languageName: node
   linkType: hard
 
@@ -11888,7 +11888,7 @@ __metadata:
     babel-loader: "npm:9.2.1"
     bulma: "npm:1.0.4"
     classnames: "npm:2.5.1"
-    compute-scroll-into-view: "npm:3.1.0"
+    compute-scroll-into-view: "npm:3.1.1"
     concurrently: "npm:9.1.2"
     core-js: "npm:3.39.0"
     css-loader: "npm:7.1.2"
