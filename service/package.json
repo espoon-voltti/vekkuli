@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "alpinejs": "3.14.3",
+    "alpinejs": "3.14.9",
     "bulma": "1.0.4",
     "htmx.org": "1.9.12",
     "sass": "1.77.8"
