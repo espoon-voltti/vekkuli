@@ -104,7 +104,7 @@ dependencies {
     implementation("com.auth0:java-jwt:4.5.0")
 
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.5")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
 
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.7")
 
@@ -134,8 +134,8 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
-    implementation("ch.qos.logback:logback-classic:1.5.16")
-    implementation("ch.qos.logback:logback-core:1.5.16")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
+    implementation("ch.qos.logback:logback-core:1.5.18")
     implementation("commons-codec:commons-codec:1.18.0")
 
     downloadOnly("com.datadoghq:dd-java-agent:1.49.0")
