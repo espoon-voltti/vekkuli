@@ -63,5 +63,15 @@
       matchDepTypes: ['engines'],
       rangeStrategy: 'auto'
     },
+    {
+      "matchPackageNames": ["bulma"],
+      "allowedVersions": "1.0.2"
+    },
+    {
+      "packageNames": [
+        "@types/jsonwebtoken"
+      ],
+      "allowedVersions": "9.0.2"
+    }
   ],
 }
