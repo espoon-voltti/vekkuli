@@ -76,8 +76,8 @@ fun getStickerReportRows(
                     LEFT JOIN price ON price.id = bs.price_id
                 WHERE 
                     bsr.reserver_id IS NOT NULL
-                    AND (:reportingDate::date >= bsr.start_date
-                        AND :reportingDate::date <= bsr.end_date)
+                    AND :reportingDate::date <= p.created::date
+                    AND :reportingDate::date <= bsr.end_date
                     AND (bsr.status = 'Confirmed' OR bsr.status = 'Cancelled')
                 """.trimIndent()
             ).bind("reportingDate", reportingDate)
