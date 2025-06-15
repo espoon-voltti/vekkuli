@@ -68,4 +68,10 @@ SPDX-License-Identifier: LGPL-2.1-or-later
        ]]></notes>
         <cve>CVE-2025-22233</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        No fix available for vekkuli as of 15.6.2025
+       ]]></notes>
+        <cve>CVE-2025-41234</cve>
+    </suppress>
 </suppressions>
