@@ -47,7 +47,7 @@ data class StickerReportRow(
 
 fun getStickerReportRows(
     jdbi: Jdbi,
-    createdCutoffDate: LocalDate
+    reportingDate: LocalDate
 ): List<StickerReportRow> =
     jdbi.inTransactionUnchecked { tx ->
         tx
@@ -64,24 +64,23 @@ fun getStickerReportRows(
                     p.paid,
                     bsr.creation_type,
                     bsr.created,
-                    r.email, 
+                    r.email,
                     r.phone,
                     TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info
                 FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
                     JOIN location l ON l.id = bs.location_id
-                    JOIN payment p ON p.reservation_id = bsr.id
+                    JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
                     LEFT JOIN boat b ON b.id = bsr.boat_id
                     LEFT JOIN price ON price.id = bs.price_id
-                WHERE 
+                WHERE
                     bsr.reserver_id IS NOT NULL
-                    AND :minPaymentCreated::date <= p.created::date
-                    AND :minPaymentCreated::date <= bsr.end_date
-                    AND bsr.status = 'Confirmed'
-                    AND p.status = 'Success'
+                    AND :reportingDate::date <= p.created::date
+                    AND :reportingDate::date <= bsr.end_date
+                    AND (bsr.status = 'Confirmed' OR bsr.status = 'Cancelled')
                 """.trimIndent()
-            ).bind("minPaymentCreated", createdCutoffDate)
+            ).bind("reportingDate", reportingDate)
             .mapTo<StickerReportRow>()
             .list()
     }
@@ -132,7 +131,7 @@ fun getWarningsBoatSpaceReportRows(
                     SELECT
                         id,
                         reservation_id,
-                        boat_id, 
+                        boat_id,
                         trailer_id,
                         invoice_number,
                         key,
@@ -236,10 +235,10 @@ WITH places_with_active_reservations AS (
     SELECT bs.id
     FROM boat_space bs
          JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
-    WHERE                    
-    :reportDate::date >= bsr.start_date 
+    WHERE
+    :reportDate::date >= bsr.start_date
     AND :reportDate::date <= bsr.end_date
-    AND (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
+    AND (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced' OR bsr.status = 'Cancelled')
 )
 SELECT
     bs.id AS boat_space_id,
