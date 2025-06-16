@@ -92,11 +92,52 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
+        val terminatedBoatSpaceId = 4243
+
+        insertDevBoatSpace(
+            DevBoatSpace(
+                id = terminatedBoatSpaceId,
+                type = BoatSpaceType.Slip,
+                locationId = 1,
+                priceId = 1,
+                section = "A",
+                placeNumber = 2,
+                amenity = BoatSpaceAmenity.Beam,
+                widthCm = 100,
+                lengthCm = 200,
+                description = "Test boat space"
+            )
+        )
+
+        val terminatedResId = 3132
+
+        insertDevBoatSpaceReservation(
+            DevBoatSpaceReservation(
+                id = terminatedResId,
+                reserverId = citizenIdLeo,
+                boatSpaceId = terminatedBoatSpaceId,
+                startDate = today,
+                endDate = today.plusMonths(12),
+                boatId = boatId,
+                status = ReservationStatus.Cancelled,
+                terminationReason = ReservationTerminationReason.RuleViolation,
+            )
+        )
+
         val payment =
             insertDevPayment(
                 DevPayment(
                     reserverId = citizenIdLeo,
                     reservationId = resId,
+                    paid = today.atStartOfDay(),
+                )
+            )
+
+        val terminatedPayment =
+            insertDevPayment(
+                DevPayment(
+                    reserverId = citizenIdLeo,
+                    reservationId = terminatedResId,
                     paid = today.atStartOfDay(),
                 )
             )
@@ -116,6 +157,9 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
         assertEquals("Testi Venho", row?.boatName)
         assertEquals("leo@noreplytest.fi", row?.email)
+
+        val terminatedRow = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 002" }
+        assertEquals("leo@noreplytest.fi", terminatedRow?.email)
     }
 
     @Test
