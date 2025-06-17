@@ -238,8 +238,10 @@ const sv: Translations = {
         amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
-        additionalHarborPlaceInfo: 'Mer information om platserna och deras priser här',
-        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/avgifter-batplatser',
+        additionalHarborPlaceInfo:
+          'Mer information om platserna och deras priser här',
+        additionalHarborPlaceInfoLink:
+          'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/avgifter-batplatser',
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',
@@ -614,8 +616,8 @@ const sv: Translations = {
         goBackToReservation: 'Gå till bokningen',
         termination: {
           title: 'Du säger upp båtplatsreservationen',
-          moveBoatImmediately:
-            'Observera att du måste flytta din båt omedelbart från båtplatsen när du har sagt upp platsen.',
+          spaceInformation:
+            'Observera att du omedelbart måste flytta din båt från brygg- eller trailerplatsen när du har sagt upp platsen. Vinter- eller Käringbackens förvaringsplats kan användas till slutet av den pågående säsongen.',
           notEntitledToRefund:
             'Esbo stad beviljar ingen återbetalning för en betald båtplats.',
           confirm: 'Säg upp båtplatsen',
