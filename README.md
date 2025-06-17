@@ -2,7 +2,7 @@
 
 [![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/vekkuli)](https://api.reuse.software/info/github.com/espoon-voltti/vekkuli)
 
-A boat self reservation system.
+A boat space self reservation system.
 
 ## Technical overview
 
