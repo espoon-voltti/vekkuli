@@ -29,7 +29,7 @@ class HistoryNavigationTest : PlaywrightTest() {
 
     private fun invoicePageUrl(reservationId: Int) = "$baseUrl/virkailija/venepaikka/varaus/$reservationId/lasku"
 
-    private val defaultReservationId = 9
+    private val defaultReservationId = 10
 
     @Test
     fun `canceling new reservation should navigate back to reservation list`() {
