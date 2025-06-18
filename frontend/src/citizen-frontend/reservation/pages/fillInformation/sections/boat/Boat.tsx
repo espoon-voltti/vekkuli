@@ -24,7 +24,7 @@ export default React.memo(function Boat({
 
   return (
     <div data-testid="boat">
-      <div className="form-section">
+      <div className="form-section no-bottom-border">
         <h3 className="header">{i18n.reservation.formPage.boatInformation}</h3>
         <ExistingBoat bind={boatSelection} />
         <BoatInfo

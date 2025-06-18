@@ -1,3 +1,5 @@
+import { Column } from 'lib-components/dom'
+import Columns from 'lib-components/dom/Columns'
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import { NumberField } from 'lib-components/form/NumberField'
 import { SelectField } from 'lib-components/form/SelectField'
@@ -58,15 +60,15 @@ export default React.memo(function Boat({
   return (
     <>
       <div className="columns">
-        <div className="column is-one-quarter">
+        <Column isOneQuarter>
           <TextField
             id="boatName"
             label={i18n.boat.boatName}
             bind={name}
             required={true}
           />
-        </div>
-        <div className="column is-one-quarter">
+        </Column>
+        <Column isOneQuarter>
           <SelectField
             id="boat-type"
             name="boatType"
@@ -74,8 +76,8 @@ export default React.memo(function Boat({
             required={true}
             bind={type}
           />
-        </div>
-        <div className="column is-one-quarter">
+        </Column>
+        <Column isOneQuarter>
           <NumberField
             id="boat-width"
             label={i18n.common.unit.dimensions.widthInMeters}
@@ -87,8 +89,8 @@ export default React.memo(function Boat({
             required={true}
             precision={2}
           />
-        </div>
-        <div className="column is-one-quarter">
+        </Column>
+        <Column isOneQuarter>
           <NumberField
             id="boat-height"
             label={i18n.common.unit.dimensions.lengthInMeters}
@@ -100,11 +102,11 @@ export default React.memo(function Boat({
             required={true}
             precision={2}
           />
-        </div>
+        </Column>
       </div>
       {showSizeWarning && <BoatSizeWarning reservationId={reservationId} />}
-      <div className="columns is-vcentered">
-        <div className="column is-one-quarter">
+      <Columns isVCentered>
+        <Column isOneQuarter>
           <NumberField
             id="boat-depth"
             label={i18n.boat.boatDepthInMeters}
@@ -116,8 +118,8 @@ export default React.memo(function Boat({
             required={true}
             precision={2}
           />
-        </div>
-        <div className="column is-one-quarter">
+        </Column>
+        <Column isOneQuarter>
           <NumberField
             id="boat-weight"
             label={i18n.boat.boatWeightInKg}
@@ -128,46 +130,46 @@ export default React.memo(function Boat({
             max={9999999}
             required={true}
           />
-        </div>
-      </div>
-      {showWeightWarning && <BoatWeightWarning reservationId={reservationId} />}
-      <div className="columns is-vcentered">
+        </Column>
+        {showWeightWarning && (
+          <BoatWeightWarning reservationId={reservationId} />
+        )}
         {noRegisterNumber.state.domValues.length === 0 && (
-          <div className="column is-one-quarter">
+          <Column isOneQuarter>
             <TextField
               id="register-number"
               label={i18n.boat.registrationNumber}
               bind={registrationNumberValue}
               required={true}
             />
-          </div>
+          </Column>
         )}
-        <div className="column is-one-quarter">
+        <Column isOneQuarter>
           <CheckboxField
             id="no-register-number"
             name="noRegisterNumber"
             bind={noRegisterNumber}
             isFullWidth={true}
           />
-        </div>
-      </div>
-      <div className="columns is-vcentered">
-        <div className="column is-one-quarter">
+        </Column>
+      </Columns>
+      <Columns isVCentered>
+        <Column isOneQuarter>
           <TextField
             id="other-identifier"
             label={i18n.boat.otherIdentifier}
             bind={otherIdentification}
             required={true}
           />
-        </div>
-        <div className="column is-one-quarter">
+        </Column>
+        <Column isOneQuarter>
           <TextField
             id="additional-info"
             label={i18n.boat.additionalInfo}
             bind={extraInformation}
           />
-        </div>
-      </div>
+        </Column>
+      </Columns>
     </>
   )
 })
@@ -176,7 +178,7 @@ const BoatSizeWarning = ({ reservationId }: { reservationId: number }) => {
   const i18n = useTranslation()
 
   return (
-    <div className="columns is-vcentered">
+    <Columns isVCentered>
       <div className="warning" id="boatSize-warning">
         <p className="block">{i18n.boat.boatSizeWarning}</p>
         <p className="block">{i18n.boat.boatSizeWarningExplanation}</p>
@@ -184,14 +186,14 @@ const BoatSizeWarning = ({ reservationId }: { reservationId: number }) => {
           {i18n.reservation.goBack}
         </ReservationCancel>
       </div>
-    </div>
+    </Columns>
   )
 }
 
 const BoatWeightWarning = ({ reservationId }: { reservationId: number }) => {
   const i18n = useTranslation()
   return (
-    <div className="columns is-vcentered">
+    <Columns isVCentered>
       <div className="warning" id="boatWeight-warning">
         <p className="block">{i18n.boat.boatWeightWarning}</p>
         <p className="block">{i18n.boat.boatWeightWarning2}</p>
@@ -199,6 +201,6 @@ const BoatWeightWarning = ({ reservationId }: { reservationId: number }) => {
           {i18n.reservation.goBack}
         </ReservationCancel>
       </div>
-    </div>
+    </Columns>
   )
 }
