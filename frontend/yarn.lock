@@ -1989,15 +1989,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/compat@npm:1.2.4":
-  version: 1.2.4
-  resolution: "@eslint/compat@npm:1.2.4"
+"@eslint/compat@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@eslint/compat@npm:1.3.0"
   peerDependencies:
     eslint: ^9.10.0
   peerDependenciesMeta:
     eslint:
       optional: true
-  checksum: 10/872ac21e3f430575ba70916d83f5a4e7e9cc7fa953111c99ecef225d1ed05b66fbdb5034761dd9035f00c3f0d7ca7657f8cbfa4ff7ead3967f630c8c783d2beb
+  checksum: 10/f9f0697880468f2130eb5a96a232c32dca4abb08194ed4080f9947d7cdeff9e4b4f6f0e13402bdbf5708392de967ea867f459782d6a008c6aa3668a283e62b67
   languageName: node
   linkType: hard
 
@@ -11711,7 +11711,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:7.27.4"
     "@babel/preset-env": "npm:7.27.2"
-    "@eslint/compat": "npm:1.2.4"
+    "@eslint/compat": "npm:1.3.0"
     "@eslint/js": "npm:9.16.0"
     "@playwright/test": "npm:1.49.0"
     "@tanstack/react-query": "npm:5.80.7"
