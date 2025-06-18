@@ -92,7 +92,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:11.8.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.8.0")
     implementation("org.postgresql:postgresql:42.7.2")
-    implementation(platform("org.jdbi:jdbi3-bom:3.49.0"))
+    implementation(platform("org.jdbi:jdbi3-bom:3.49.5"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
     implementation("org.jdbi:jdbi3-kotlin")
