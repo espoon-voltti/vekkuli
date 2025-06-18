@@ -10088,20 +10088,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:7.5.2":
-  version: 7.5.2
-  resolution: "react-router@npm:7.5.2"
+"react-router@npm:7.6.2":
+  version: 7.6.2
+  resolution: "react-router@npm:7.6.2"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
-    turbo-stream: "npm:2.4.0"
   peerDependencies:
     react: ">=18"
     react-dom: ">=18"
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/7586ecb7fc17eaac70bf5fe838c94f9f3a2e18e6802a4eddf1ad10b0a51ca83c969f5b36b8e2be47fe46453fea7199f99f422d8554fd159a827c25c287ba5741
+  checksum: 10/38a8473c7358d873eb60cc6660deae16a629701b8867ee00e67871ff61009b90f73853235ef3b0f2e43ebedee697389afc7bf170df069823dc872be79798965b
   languageName: node
   linkType: hard
 
@@ -11389,13 +11388,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-stream@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-stream@npm:2.4.0"
-  checksum: 10/7079bbc82b58340f783144cd669cc7e598288523103a8d68bb8a4c6bb28c64eccb71d389b33aab07788d3a9030638b795709e15cb8486f722b1cdac59cb58afc
-  languageName: node
-  linkType: hard
-
 "type-check@npm:^0.4.0, type-check@npm:~0.4.0":
   version: 0.4.0
   resolution: "type-check@npm:0.4.0"
@@ -11790,7 +11782,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-focus-on: "npm:3.10.0"
-    react-router: "npm:7.5.2"
+    react-router: "npm:7.6.2"
     sass: "npm:1.89.2"
     sass-loader: "npm:16.0.4"
     seamless-scroll-polyfill: "npm:2.3.4"
