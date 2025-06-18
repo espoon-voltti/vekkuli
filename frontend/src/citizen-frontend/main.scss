@@ -561,6 +561,10 @@ body > .columns {
   }
 }
 
+.dropdown {
+  display: flex;
+}
+
 .dropdown-content {
   border: 1px solid #A9B0BB;
   border-top: 0;
@@ -596,6 +600,10 @@ body > .columns {
 }
 .nav-row > .columns {
   margin: 0;
+}
+
+.nav-row .column {
+  flex-basis: auto;
 }
 
 .link.active {
