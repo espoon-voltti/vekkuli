@@ -576,6 +576,51 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun `should be able to edit trailer information`() {
+        try {
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace8.click()
+            val citizenDetails = CitizenDetailsPage(page)
+
+            // Check that the trailer information is visible
+            assertThat(citizenDetails.trailerInformation(1)).isVisible()
+            citizenDetails.editTrailerButton(1).click()
+            assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
+            val newTrailerRegistrationCode = "XYZ-789"
+            citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
+            citizenDetails.trailerWidthInput.fill("2.5")
+            citizenDetails.trailerLengthInput.fill("5.0")
+
+            // Cancel the edit
+            citizenDetails.trailerEditCancelButton.click()
+            assertThat(citizenDetails.trailerInformation(1)).isVisible()
+            assertThat(citizenDetails.trailerRegistrationCode(1)).not().hasText(newTrailerRegistrationCode)
+            assertThat(citizenDetails.trailerWidth(1)).not().hasText("2.5")
+            assertThat(citizenDetails.trailerLength(1)).not().hasText("5.0")
+
+            // Edit the trailer again and submit
+            citizenDetails.editTrailerButton(1).click()
+            assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
+            citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
+            citizenDetails.trailerWidthInput.fill("2.5")
+            citizenDetails.trailerLengthInput.fill("5.0")
+            citizenDetails.trailerEditSubmitButton.click()
+
+            // Check that the trailer information is updated
+            assertThat(citizenDetails.trailerInformation(1)).isVisible()
+            assertThat(citizenDetails.trailerRegistrationCode(1)).hasText(newTrailerRegistrationCode)
+            assertThat(citizenDetails.trailerWidth(1)).hasText("2,50")
+            assertThat(citizenDetails.trailerLength(1)).hasText("5,00")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     private fun reservationListPage(): ReservationListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
