@@ -18,7 +18,7 @@
     "@tanstack/react-query": "5.80.7",
     "@types/axios": "0.14.4",
     "@types/date-fns": "2.6.3",
-    "axios": "1.9.0",
+    "axios": "1.10.0",
     "bulma": "1.0.3",
     "classnames": "2.5.1",
     "compute-scroll-into-view": "3.1.1",
