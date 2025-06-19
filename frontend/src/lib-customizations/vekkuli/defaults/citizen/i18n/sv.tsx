@@ -156,7 +156,7 @@ const sv: Translations = {
       contactInfo:
         'Om du inte kan identifiera dig elektroniskt eller bokar för första gången för en gemenskap (företag eller förening), kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 på måndagar och onsdagar kl. 12.30–15.00 och på torsdagar kl. 9.00–11.00.',
       preparations:
-        'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registernummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
+        'Det är möjligt att boka från kl. 09.00 på den första dagen av bokningsperioden. För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registernummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
         'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring <a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">här</a>.'
     },

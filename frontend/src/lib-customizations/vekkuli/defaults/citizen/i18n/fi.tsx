@@ -156,7 +156,7 @@ export default {
       contactInfo:
         'Jos et voi tunnistautua sähköisesti tai varaat ensimmäistä kertaa yhteisön (yritys tai seura) puolesta, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
       preparations:
-        'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
+        'Varaaminen on mahdollista varauskauden ensimmäisestä päivästä klo 09.00 alkaen. Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
         'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät <a target="_blank" aria-label="Espoon veneilyn etusivu (linkki aukeaa uuteen välilehteen)" href="https://www.espoo.fi/fi/liikunta-ja-luonto/veneily">täältä</a>.'
     },
