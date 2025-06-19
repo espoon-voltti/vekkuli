@@ -23,5 +23,6 @@ export const updateStorageTypeMutation = mutation({
   api: (params: {
     reservationId: ReservationId
     input: UpdateStorageTypeInput
-  }) => updateStorageType(params)
+  }) => updateStorageType(params),
+  invalidateQueryKeys: () => [queryKeys.citizenActiveReservations()]
 })
