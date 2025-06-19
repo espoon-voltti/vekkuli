@@ -1,3 +1,4 @@
+import { FormSection } from 'lib-components/form'
 import React from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
@@ -23,7 +24,7 @@ export default React.memo(function Boat({
   const { boatInfo, boatSelection, ownership } = useFormFields(bind)
 
   return (
-    <div data-testid="boat">
+    <FormSection data-testid="boat">
       <div className="form-section no-bottom-border">
         <h3 className="header">{i18n.reservation.formPage.boatInformation}</h3>
         <ExistingBoat bind={boatSelection} />
@@ -34,6 +35,6 @@ export default React.memo(function Boat({
         />
       </div>
       <BoatOwnershipStatus bind={ownership} />
-    </div>
+    </FormSection>
   )
 })
