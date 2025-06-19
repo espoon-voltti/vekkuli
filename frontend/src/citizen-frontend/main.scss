@@ -422,14 +422,29 @@ body > .columns {
   }
 }
 
+.reservation-price-info {
+  align-items: center;
+}
 
-.reservation-info, .reservation-price-info {
+.message-box {
   padding: $spacing-medium;
   border: 1px solid $bulma-primary;
   border-radius: 4px;
   display: flex;
   margin-bottom: $spacing-large;
+  align-items: center;
 
+  &.is-info {
+    border-color: $bulma-primary;
+  }
+
+  &.is-warning {
+    border-color: $warning;
+  }
+
+  &.is-error {
+    border-color: $warning;
+  }
 
   .info-icon {
     flex: 1;
@@ -443,29 +458,9 @@ body > .columns {
   p.column span {
     display: block;
   }
-}
 
-.reservation-price-info {
-  align-items: center;
-}
-
-.message-box {
-  padding: $spacing-medium;
-  border: 1px solid $bulma-primary;
-  border-radius: 4px;
-  display: flex;
-  margin-bottom: $spacing-large;
-
-  &.is-info {
-    border-color: $bulma-primary;
-  }
-
-  &.is-warning {
-    border-color: $warning;
-  }
-
-  &.is-error {
-    border-color: $warning;
+  .column.is-narrow {
+    flex: none;
   }
 }
 
