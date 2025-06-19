@@ -1,4 +1,3 @@
-import { Column } from 'lib-components/dom'
 import { RadioField } from 'lib-components/form/RadioField'
 import React from 'react'
 
