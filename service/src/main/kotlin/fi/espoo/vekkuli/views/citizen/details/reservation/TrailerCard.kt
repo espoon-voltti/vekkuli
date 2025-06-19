@@ -208,9 +208,10 @@ class TrailerCard(
                 id = "trailerLength",
                 required = true,
             )
+
         val buttons =
             formComponents.buttons(
-                "/kuntalainen/omat-tiedot",
+                "/virkailija/kayttaja/$reserverId",
                 "#reserver-details",
                 "#reserver-details",
                 "trailer-edit-cancel",

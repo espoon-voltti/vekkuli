@@ -1,4 +1,3 @@
-import { Column, Columns } from 'lib-components/dom'
 import { FormSection } from 'lib-components/form'
 import React from 'react'
 
@@ -21,12 +20,8 @@ export default React.memo(function WinterStorageType({
   return (
     <FormSection data-testid="winter-storage-type">
       <h3 className="header">{i18n.reservation.formPage.storageType}</h3>
-      <Columns>
-        <Column>
-          <StorageType bind={storageType} />
-          {branch === 'Trailer' && <TrailerInfo bind={form} />}
-        </Column>
-      </Columns>
+      <StorageType bind={storageType} />
+      {branch === 'Trailer' && <TrailerInfo bind={form} />}
     </FormSection>
   )
 })
