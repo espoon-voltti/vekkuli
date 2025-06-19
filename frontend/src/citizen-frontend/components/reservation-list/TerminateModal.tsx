@@ -83,7 +83,7 @@ export default React.memo(function TerminateModal({
         </Column>
         <Column isFull>
           <p>
-            {i18n.citizenPage.reservation.modal.termination.moveBoatImmediately}
+            {i18n.citizenPage.reservation.modal.termination.spaceInformation}
           </p>
         </Column>
         <Column isFull>
