@@ -1,3 +1,4 @@
+import { EditLink } from 'lib-components/links'
 import React, { useState } from 'react'
 
 import { BoundFormState } from 'lib-common/form/hooks'
@@ -8,7 +9,6 @@ import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
-import { EditLink } from 'lib-components/links'
 
 interface TextFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
@@ -48,7 +48,7 @@ export default React.memo(function TextField({
             htmlFor={id}
           >
             {label}
-            {required && ' *'}
+            {required && !readonly && ' *'}
           </label>
           {editAction && (
             <EditLink action={editAction} dataTestId={`edit-${dataTestId}`} />

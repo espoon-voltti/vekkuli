@@ -13,8 +13,6 @@ import { OpenInNew } from '../../../../lib-icons'
 
 import { StorageInfo } from './StorageInfo'
 import { SearchForm } from './formDefinitions'
-import { Link } from "react-router";
-import { OpenInNew } from "../../../../lib-icons";
 
 interface SearchFiltersProps {
   bind: BoundForm<SearchForm>
@@ -59,8 +57,17 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
         />
 
         <div className="is-primary-color ">
-          <Link to={i18n.reservation.searchPage.filters.additionalHarborPlaceInfoLink} className="link open-in-new-tab" aria-label={i18n.header.openInANewWindow} target="_blank">
-            <span>{i18n.reservation.searchPage.filters.additionalHarborPlaceInfo}</span>
+          <Link
+            to={
+              i18n.reservation.searchPage.filters.additionalHarborPlaceInfoLink
+            }
+            className="link open-in-new-tab"
+            aria-label={i18n.header.openInANewWindow}
+            target="_blank"
+          >
+            <span>
+              {i18n.reservation.searchPage.filters.additionalHarborPlaceInfo}
+            </span>
             <OpenInNew />
           </Link>
         </div>

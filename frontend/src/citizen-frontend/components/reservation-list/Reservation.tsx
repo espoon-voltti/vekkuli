@@ -77,7 +77,7 @@ export default React.memo(function Reservation({
     updateStorageTypeMutation
   )
 
-  const { form, branch } = useFormUnion(boatSpaceUnionForm)
+  const { form } = useFormUnion(boatSpaceUnionForm)
   const onRenew = () => {
     renewReservation(reservation.id)
       .then(() => {
