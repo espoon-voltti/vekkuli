@@ -272,6 +272,7 @@ class CitizenDetailsPage(
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
+    val trailerEditCancelButton = page.getByTestId("trailer-edit-cancel")
 
     // Exceptions
     val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
