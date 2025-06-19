@@ -142,6 +142,7 @@ function TrailerForm({
             label={i18n.reservation.formPage.trailerInfo.registrationNumber}
             bind={registrationNumber}
             readonly={!editMode}
+            required={true}
           />
         </Column>
         <Column isOneQuarter>
@@ -150,6 +151,7 @@ function TrailerForm({
             bind={width}
             readonly={!editMode}
             precision={2}
+            required={true}
           />
         </Column>
         <Column isOneQuarter>
@@ -158,6 +160,7 @@ function TrailerForm({
             bind={length}
             readonly={!editMode}
             precision={2}
+            required={true}
           />
         </Column>
       </Columns>

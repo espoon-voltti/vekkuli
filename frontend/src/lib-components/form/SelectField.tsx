@@ -43,7 +43,7 @@ function SelectField_<T>({
       <div className="control">
         <label className="label" htmlFor={id}>
           {label}
-          {required && ' *'}
+          {required && !readonly && ' *'}
         </label>
         {readonly ? (
           <ReadOnly value={getI18nLabel(readOnlyValue, i18n)} />
