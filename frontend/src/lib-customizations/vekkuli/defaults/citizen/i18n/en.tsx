@@ -155,7 +155,7 @@ const en: Translations = {
         'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
       contactInfo:
         'If you cannot authenticate electronically or are making a reservation for the first time on behalf of a community (company or club), please contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mondays and Wednesdays from 12:30 to 15:00 and on Thursdays from 9:00 to 11:00.',
-      preparations: `For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
+      preparations: `Booking is possible starting at 09:00 from the first day of the reservation period. For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
       readMore:
         'You can find more information about marinas, berth fees, and boat storage <a target="_blank" aria-label="Espoo boating homepage (link opens in a new tab)" href="https://www.espoo.fi/en/sports-and-nature/boating">here</a>.'
     },
