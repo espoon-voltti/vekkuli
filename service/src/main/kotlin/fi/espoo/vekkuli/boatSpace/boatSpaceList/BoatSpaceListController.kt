@@ -97,11 +97,23 @@ class BoatSpaceListController {
         }
 
         request.ensureEmployeeId()
+
+        return ResponseEntity.ok(
+            layout.render(
+                true,
+                request.requestURI,
+                getBoatSpaceList(params)
+            )
+        )
+    }
+
+    private fun getBoatSpaceList(
+        params: BoatSpaceListParams,
+        initialPageSize: Int = 100,
+        loadMorePageSize: Int = 100,
+    ): String {
         val harbors = reservationService.getHarbors()
         val boatSpaceTypes = BoatSpaceType.entries.toList()
-
-        val initialPageSize = 100
-        val loadMorePageSize = 100
 
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params, params.paginationStart, initialPageSize)
@@ -119,49 +131,54 @@ class BoatSpaceListController {
                 .getBoatLengthOptions(
                     params
                 ).map { FilterOption(it.toString(), formatDecimal(intToDecimal(it))) }
-        return ResponseEntity.ok(
-            layout.render(
-                true,
-                request.requestURI,
-                boatSpaceList.render(
-                    boatSpaces,
-                    params,
-                    harbors,
-                    priceClasses,
-                    boatSpaceTypes,
-                    actualAmenities,
-                    sectionOptions,
-                    boatWidthOptions,
-                    boatLengthOptions,
-                    loadMorePageSize
-                )
+        val bodyContent =
+            boatSpaceList.render(
+                boatSpaces,
+                params,
+                harbors,
+                priceClasses,
+                boatSpaceTypes,
+                actualAmenities,
+                sectionOptions,
+                boatWidthOptions,
+                boatLengthOptions,
+                loadMorePageSize
             )
-        )
+        return bodyContent
     }
 
     @PostMapping("/muokkaa")
     @ResponseBody
     fun boatSpaceEdit(
         request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceListEditParams
-    ) {
+        @ModelAttribute editParams: BoatSpaceListEditParams,
+        @ModelAttribute filterParams: BoatSpaceListParams,
+    ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_BOAT_SPACE_EDIT")
         }
 
         request.ensureEmployeeId()
         boatSpaceService.editBoatSpaces(
-            params.boatSpaceIds,
+            editParams.boatSpaceIds,
             EditBoatSpaceParams(
-                params.harbor,
-                params.boatSpaceType,
-                if (params.section.isNullOrEmpty()) null else params.section,
-                params.placeNumber,
-                params.boatSpaceAmenity,
-                decimalToInt(params.width),
-                decimalToInt(params.length),
-                params.payment,
-                if (params.boatSpaceState == null) null else params.boatSpaceState == BoatSpaceState.Active
+                editParams.harbor,
+                editParams.boatSpaceType,
+                if (editParams.section.isNullOrEmpty()) null else editParams.section,
+                editParams.placeNumber,
+                editParams.boatSpaceAmenity,
+                decimalToInt(editParams.width),
+                decimalToInt(editParams.length),
+                editParams.payment,
+                if (editParams.boatSpaceState == null) null else editParams.boatSpaceState == BoatSpaceState.Active
+            )
+        )
+
+        return ResponseEntity.ok(
+            layout.render(
+                true,
+                request.requestURI,
+                getBoatSpaceList(filterParams)
             )
         )
     }

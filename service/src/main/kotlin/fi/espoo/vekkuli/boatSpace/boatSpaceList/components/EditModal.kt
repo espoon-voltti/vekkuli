@@ -75,9 +75,12 @@ class EditModal(
                     <div class="container">
                         <form 
                             id="edit-form" class="is-1"
+                            hx-swap="outerHTML"
                             hx-post="/virkailija/venepaikat/muokkaa"
-                            hx-swap="none" 
-                            hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
+                            hx-target="#boat-spaces-table"
+                            hx-select="#boat-spaces-table"
+                            @htmx:after-request.camel="closeModal()"
+                            hx-include="#boat-space-filter-form">
                             <input type="hidden" name="boatSpaceIds" x-bind:value="editBoatSpaceIds.join(',')" />
                             <h2>Paikan tietojen muokkaus</h2>
                             <p ${addTestId("target-boat-space-count")} class='mb-m'

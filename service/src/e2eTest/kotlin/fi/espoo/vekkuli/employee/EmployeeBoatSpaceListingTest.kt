@@ -30,7 +30,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     fun `employee can filter boat spaces by width and length`() {
         val listingPage = boatSpaceListPage()
         listingPage.boatSpaceTypeFilter("Slip").click()
-        listingPage.amenityFilter("Beam").click()
+        listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
         listingPage.harborFilter("1").click()
 
         page.waitForCondition { listingPage.listItems.count() == 98 }
@@ -127,6 +127,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         try {
             val listingPage = boatSpaceListPage()
             listingPage.checkBox(1).click()
+            listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
             assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
             assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
             assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
@@ -146,6 +147,9 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
                 payment = "1"
             )
             editModal.submitButton.click()
+
+            assertThat(listingPage.amenityFilter(BoatSpaceAmenity.Beam)).isChecked()
+            listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
             listingPage.boatSpaceTypeFilter("Storage").click()
             assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
             assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
@@ -174,7 +178,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertThat(listingPage.listItems).hasCount(21)
 
         // Reset and filter by amenity
-        listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
+        listingPage.amenityFilter(BoatSpaceAmenity.Trailer).click()
         assertThat(listingPage.listItems).hasCount(10)
 
         // Filter by section

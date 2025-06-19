@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.pages.employee
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceState
 import fi.espoo.vekkuli.pages.BasePage
 import fi.espoo.vekkuli.pages.getByDataTestId
@@ -38,7 +39,7 @@ class BoatSpaceListPage(
     val lengthOption = { optionValue: String -> lengthSelectionFilter.locator("label:has-text('$optionValue')") }
     val expandingSelectionFilter = filterLocator("selection-selectedSections")
     val expandingSelectionFilterValue = { value: String -> filterLocator("selection-selectedSections").locator("input[value='$value']") }
-    val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
+    val amenityFilter = { amenity: BoatSpaceAmenity -> filterLocator("amenity-${amenity.name}") }
     val selectAllToggle = page.getByDataTestId("select-all-toggle")
     val showOnlyFreeSpaces = page.getByTestId("showOnlyFreeSpaces")
 
