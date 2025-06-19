@@ -16,7 +16,7 @@ export default React.memo(function StorageType({
   const i18n = useTranslation()
   const storageType = bind.state.domValue
   return (
-    <Column isFull>
+    <>
       <RadioField
         id="winter-storage-type"
         name="winterStorageType"
@@ -29,6 +29,6 @@ export default React.memo(function StorageType({
           text={i18n.reservation.formPage.storageInfo.buckWithTentInfo}
         />
       )}
-    </Column>
+    </>
   )
 })

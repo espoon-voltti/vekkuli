@@ -45,7 +45,7 @@ function NumberFieldR({
       <div className="control">
         <label className="label" htmlFor={id}>
           {label}
-          {required && ' *'}
+          {required && !readonly && ' *'}
         </label>
         {readonly ? (
           <ReadOnly value={formatNumber(readOnlyValue, precision) || '-'} />
