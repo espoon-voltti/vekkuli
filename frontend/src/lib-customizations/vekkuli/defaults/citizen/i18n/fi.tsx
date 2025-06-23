@@ -246,8 +246,10 @@ export default {
         amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
-        additionalHarborPlaceInfo: 'Lisätietoja paikoista ja niiden hinnoista tästä',
-        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
+        additionalHarborPlaceInfo:
+          'Lisätietoja paikoista ja niiden hinnoista tästä',
+        additionalHarborPlaceInfoLink:
+          'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',
@@ -616,8 +618,8 @@ export default {
         goBackToReservation: 'Siirry varaukseen',
         termination: {
           title: 'Olet irtisanomassa venepaikkaa:',
-          moveBoatImmediately:
-            'Huomioi, että sinun on siirrettävä veneesi välittömästi pois venepaikalta kun olet irtisanonut paikan.',
+          spaceInformation:
+            'Huomioithan, että laituri- tai traileripaikka tulee tyhjentää välittömästi, kun olet irtisanonut paikan. Talvi- tai Ämmäsmäen säilytyspaikka on käytettävissä kuluvan kauden loppuun asti.',
           notEntitledToRefund:
             'Espoon kaupunki ei myönnä hyvitystä maksetusta venepaikasta.',
           confirm: 'Irtisano venepaikka',

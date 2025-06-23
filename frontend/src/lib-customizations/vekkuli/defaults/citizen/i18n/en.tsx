@@ -245,8 +245,10 @@ const en: Translations = {
         amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
-        additionalHarborPlaceInfo: 'More information about the places and their prices here',
-        additionalHarborPlaceInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
+        additionalHarborPlaceInfo:
+          'More information about the places and their prices here',
+        additionalHarborPlaceInfoLink:
+          'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',
@@ -614,8 +616,8 @@ const en: Translations = {
         goBackToReservation: 'Go to the reservation',
         termination: {
           title: 'You are terminating the boat space reservation',
-          moveBoatImmediately:
-            'Please note that you must immediately move your boat from the berth once you have terminated the berth agreement.',
+          spaceInformation:
+            'Please note that if you have terminated your dock or trailer spot agreement, you must immediately move your boat and clear the space. Winter and Ämmäsmäki storage spaces may be used until the end of the current season.',
           notEntitledToRefund:
             'The City of Espoo does not grant a refund for a paid berth.',
           confirm: 'Terminate berth',
