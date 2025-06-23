@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.util.regex.Pattern
 
 plugins {
-    id("org.springframework.boot") version "3.5.0"
+    id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
@@ -19,7 +19,7 @@ plugins {
 }
 
 ktlint {
-    version.set("1.5.0")
+    version.set("1.6.0")
 }
 
 buildscript {
