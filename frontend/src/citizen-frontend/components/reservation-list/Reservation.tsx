@@ -33,6 +33,7 @@ import {
   startRenewReservationMutation,
   updateStorageTypeMutation
 } from './queries'
+import { updateStorageTypeDisabled } from './queries'
 
 export default React.memo(function Reservation({
   reservation,
@@ -238,6 +239,10 @@ export default React.memo(function Reservation({
           resetForm={resetForm}
           onSubmit={onStorageTypeSubmit}
           isPending={isPending}
+          editDisabled={
+            updateStorageTypeMutation === updateStorageTypeDisabled ||
+            reservation.active === false
+          }
         />
         {!editMode && canRenew && (
           <ErrorBox
