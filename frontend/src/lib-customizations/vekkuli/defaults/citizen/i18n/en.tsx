@@ -617,7 +617,7 @@ const en: Translations = {
         termination: {
           title: 'You are terminating the boat space reservation',
           spaceInformation:
-            'Please note that if you have terminated your dock or trailer spot agreement, you must immediately move your boat and clear the space. Winter and Ämmäsmäki storage spaces may be used until the end of the current season..',
+            'Please note that if you have terminated your dock or trailer spot agreement, you must immediately move your boat and clear the space. Winter and Ämmäsmäki storage spaces may be used until the end of the current season.',
           notEntitledToRefund:
             'The City of Espoo does not grant a refund for a paid berth.',
           confirm: 'Terminate berth',
