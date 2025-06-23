@@ -7,4 +7,11 @@ SPDX-License-Identifier: LGPL-2.1-or-later
 -->
 
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress>
+        <notes><![CDATA[
+        Misidentification for CVE-2019-9658, CVE-2019-10782. The checkstyle reporter for Ktlint version x.y is not the same as the actual checkstyle library version x.y.
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/com\.pinterest\.ktlint/ktlint\-cli\-reporter\-checkstyle@.*$</packageUrl>
+       <cpe>cpe:/a:checkstyle:checkstyle</cpe>
+    </suppress>
 </suppressions>
