@@ -83,8 +83,7 @@ class ListFilters : BaseView() {
                 )
             }>
                     <input type="checkbox" name="amenity" value="$amenity" class="is-hidden" ${
-                if (hasAmenity(amenity)
-                ) {
+                if (hasAmenity(amenity)) {
                     "checked"
                 } else {
                     ""
