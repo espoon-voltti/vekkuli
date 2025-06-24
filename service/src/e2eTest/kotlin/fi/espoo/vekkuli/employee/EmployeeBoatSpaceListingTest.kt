@@ -319,7 +319,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.listItems.count() == 4 }
 
         listingPage.checkBox(inactiveBoatSpaceId).click()
-
         assertSelectedBoatSpaceCount(1)
     }
 
@@ -360,6 +359,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         if (expectedCount > 0) {
             val modalPage = listingPage.editModalPage
             listingPage.editModalButton.click()
+            assertEquals("Muokataan $expectedCount paikkaa", modalPage.boatSpaceCount.textContent())
             assertThat(modalPage.boatSpaceCount).containsText("Muokataan $expectedCount paikkaa")
             modalPage.cancelButton.click()
         }
