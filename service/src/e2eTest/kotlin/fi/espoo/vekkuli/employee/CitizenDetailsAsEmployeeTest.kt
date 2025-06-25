@@ -460,7 +460,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun employeeCanSetAGeneralWarningToReservationAndAcknowledgeIt() {
+    fun `employee can set a general warning to reservation and acknowledge it`() {
         try {
             val infoText = "Some text relating to the reservation"
             val listingPage = reservationListPage()
@@ -475,6 +475,12 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             infoInput.fill(infoText)
             citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
             assertThat(citizenDetails.generalWarningModal).not().isVisible()
+
+            // check that the warning is shown in the reservations' list
+            listingPage.navigateTo()
+            assertThat(listingPage.warningIcon)
+                .hasAttribute("class", "with-asterisk")
+            listingPage.boatSpace1.click()
 
             // warning indicator should be visible, click the link and check the inserted text is still present
             citizenDetails.acknowledgeGeneralWarningLink.click()
