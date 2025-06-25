@@ -1209,3 +1209,12 @@ a {
   transition-duration: var(--bulma-duration);
   transition-property: background-color, border-color, color;
 }
+
+.with-asterisk {
+  display: flex;
+    &::after {
+        content: ' *';
+        color: $black;
+        margin-left: $spacing-extrasmall;
+    }
+}

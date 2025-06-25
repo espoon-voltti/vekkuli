@@ -129,6 +129,8 @@ data class BoatSpaceReservationItem(
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 
+    fun hasManualWarnings(): Boolean = warnings.any { it == ReservationWarningType.GeneralReservationWarning.name }
+
     private fun getAmenityForStorageType(): BoatSpaceAmenity =
         when (storageType) {
             null -> BoatSpaceAmenity.None
