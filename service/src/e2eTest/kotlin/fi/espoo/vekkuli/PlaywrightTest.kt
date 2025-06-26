@@ -81,7 +81,12 @@ abstract class PlaywrightTest {
         val testName = testMethod?.methodName ?: "unknown_test"
         val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
         val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
-        page.screenshot(Page.ScreenshotOptions().setPath(screenshotPath))
+        val playwrightOptions =
+            Page
+                .ScreenshotOptions()
+                .setFullPage(true)
+                .setPath(screenshotPath)
+        page.screenshot(playwrightOptions)
 
         throw e
     }
