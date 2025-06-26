@@ -196,7 +196,7 @@ class BoatSpaceList(
                 hx-params="not spaceId"
                 hx-indicator="#loader, .loaded-content"
                 hx-push-url="true"
-                @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
+                @htmx:after-settle.window="pruneFilteredBoatSpacesFromSelection()"
                 hx-trigger="change">
                 <div class="employee-filter-container">                        
                     <div class="filter-group">
@@ -275,7 +275,6 @@ class BoatSpaceList(
                                 hx-include="#boat-space-filter-form"
                                 hx-indicator="#loader, .loaded-content"
                                 hx-push-url="true"
-                                @htmx:after-settle="pruneFilteredBoatSpacesFromSelection()"
                                 hx-params="not spaceId"
                                 hx-trigger="change">
                             <tr class="table-borderless">
