@@ -14,8 +14,7 @@
   minimumReleaseAge: '3 days',
 
   // Update during weekends
-  //schedule: ['* * * * 0,6'],
-  schedule: ['* 8-16 * * *'],
+  schedule: ["* * * * 0,6"],
 
   // Allow most 20 PRs open concurrently
   prConcurrentLimit: 20,
