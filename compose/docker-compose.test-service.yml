@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   service-tests:
     image: ghcr.io/espoon-voltti/vekkuli/service-builder:${TAG:-master}
