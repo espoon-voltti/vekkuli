@@ -329,7 +329,7 @@ jobs:
           path: |
             compose/tests.log
             compose/tests-all.log
-            compose/service-build/failure-screenshot.png
+            compose/service-build/failure-screenshots/
             compose/service-build/test-results/
           retention-days: 2
 
