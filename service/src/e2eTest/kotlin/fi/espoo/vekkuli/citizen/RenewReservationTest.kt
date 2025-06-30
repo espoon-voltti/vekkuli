@@ -124,7 +124,7 @@ class RenewReservationTest : ReserveTest() {
             citizenDetailsPage.navigateToPage()
             page.getByText("Espoon Pursiseura").click()
             assertThat(reservationSection.renewButton).isHidden()
-            assertThat(citizenDetailsPage.reservationListCards).containsText("Laituripaikka: Haukilahti B 005")
+            assertThat(citizenDetailsPage.reservationListCards.nth(0)).containsText("Laituripaikka: Haukilahti B 005")
         } catch (e: AssertionError) {
             handleError(e)
         }
