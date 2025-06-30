@@ -10,6 +10,7 @@ const express = require('express')
 const proxy = require('express-http-proxy')
 const _ = require('lodash')
 const yargs = require('yargs')
+const { hideBin } = require("yargs/helpers")
 
 const projectPath = 'src/citizen-frontend'
 const customizationPath = 'src/lib-customizations'
@@ -19,7 +20,7 @@ const publicPath = '/'
 /* eslint-disable no-console */
 
 async function main() {
-  const args = yargs()
+  const args = await yargs()
     .option('--dev', {
       describe: 'Make a development build',
       type: 'boolean',
@@ -34,7 +35,9 @@ async function main() {
       describe: 'Serve the result at localhost:9099',
       type: 'boolean',
       default: false
-    }).argv
+    })
+    .parse(hideBin(process.argv))
+
 
   const config = {
     dev: args.dev,
