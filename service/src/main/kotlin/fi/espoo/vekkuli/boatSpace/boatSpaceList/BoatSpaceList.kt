@@ -191,6 +191,7 @@ class BoatSpaceList(
                 hx-get="/virkailija/venepaikat/selaa"
                 hx-target="#boat-spaces-table"
                 hx-select="#boat-spaces-table"
+                hx-select-oob='#boat-space-load-more-container, #totalrows'
                 hx-swap="outerHTML"
                 hx-include="#boat-space-filter-form"
                 hx-params="not spaceId"

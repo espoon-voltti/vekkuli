@@ -181,7 +181,6 @@ class EditBoat {
             <script>
                 validation.init({forms: ['form']})
             </script>
-            <div class="edit-buttons" hx-swap-oob="outerHTML:.edit-buttons"></div>
             """.trimIndent()
     }
 }

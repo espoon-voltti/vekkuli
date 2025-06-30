@@ -197,8 +197,10 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.listItems.count() == 100 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         assertThat(listingPage.listItems).hasCount(29)
-
+        assertThat(listingPage.totalRowsInfo).containsText("Spaces: 29, reserved: 1")
         listingPage.showOnlyFreeSpaces.click()
+        assertThat(listingPage.totalRowsInfo).containsText("Spaces: 28, reserved: 0")
+
         assertThat(listingPage.listItems).hasCount(28)
     }
 

@@ -128,7 +128,6 @@ class OrganizationContactDetailsEdit(
             <script>
                 validation.init({forms: ['edit-organization-form']})
             </script>
-            <div class="edit-buttons" hx-swap-oob="outerHTML:.edit-buttons"></div>
             """.trimIndent()
     }
 }

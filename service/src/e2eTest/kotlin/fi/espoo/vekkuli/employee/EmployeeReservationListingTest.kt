@@ -133,9 +133,16 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
         listingPage.navigateTo()
         assertThat(warningsFilter).containsText("(2 reservations)")
+        // Warnings should update based on the filters
+        listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.name).click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+        assertThat(warningsFilter.first()).containsText("(0 reservations)")
+        listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.name).click()
+        assertThat(warningsFilter).containsText("(2 reservations)")
+
+        // Jorma Pulkkinen should be on top since it has most recent warning
         listingPage.warningsFilterCheckbox.click()
         assertThat(listingPage.reservations).hasCount(2)
-        // Jorma Pulkkinen should be on top since it has most recent warning
         assertThat(listingPage.reservations.first()).containsText("Pulkkinen")
         assertThat(listingPage.reservations.last()).containsText("Korhonen")
     }
@@ -149,6 +156,19 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         listingPage.selectAllReservations.click()
         listingPage.reservations
         assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
+        listingPage.sendMassMessageLink.click()
+        assertThat(listingPage.sendMassMessageForm).isVisible()
+    }
+
+    @Test
+    fun `Mass email checks persist through filters`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 6 }
+        listingPage.selectAllReservations.click()
+        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
+        listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.toString()).click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+        assertThat(listingPage.sendMassMessageLink).containsText("(1 varausta)")
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
     }
