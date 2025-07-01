@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.Modal
@@ -15,7 +16,8 @@ import java.util.*
 @Component
 class ReservationCardInformation(
     private val trailerCard: TrailerCard,
-    private val modal: Modal
+    private val modal: Modal,
+    private val boatReservationService: BoatReservationService
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
@@ -114,6 +116,17 @@ class ReservationCardInformation(
                 .build()
 
         // language=HTML
+        val trailerContainer =
+            if (boatReservationService.canUpdateTrailerForType(reservation.id)) {
+                trailerCard.render(
+                    reservation.trailer,
+                    reserverId,
+                    reservation.id
+                )
+            } else {
+                ""
+            }
+
         return """
             <div class="columns">
                  <div class="column">
@@ -181,7 +194,7 @@ class ReservationCardInformation(
                  </div>
                  
              </div>
-            ${ trailerCard.render(reservation.trailer, userType, reserverId, reservation.id) }
+            $trailerContainer
 
             """.trimIndent()
     }

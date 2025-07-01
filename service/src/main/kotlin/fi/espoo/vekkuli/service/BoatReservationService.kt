@@ -643,6 +643,7 @@ class BoatReservationService(
     fun createTrailerForReservation(
         reservationId: Int,
         userId: UUID,
+        reserverId: UUID,
         trailerRegistrationCode: String,
         trailerWidth: BigDecimal,
         trailerLength: BigDecimal,
@@ -650,10 +651,26 @@ class BoatReservationService(
         if (!canUpdateTrailerForType(reservationId)) {
             throw IllegalArgumentException("Can't update trailer if amenity does not match")
         }
+        if (!permissionService.canEditTrailer(userId, reserverId)) {
+            throw UnauthorizedException()
+        }
+        val reservation =
+            boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+                ?: throw IllegalArgumentException("Reservation $reservationId not found")
+
+        if (reservation.trailerId != null) {
+            updateTrailer(
+                userId,
+                trailerId = reservation.trailerId,
+                trailerRegistrationCode,
+                trailerWidth,
+                trailerLength,
+            )
+        }
         val trailer =
             trailerRepository.insertTrailerAndAddToReservation(
                 reservationId = reservationId,
-                reserverId = userId,
+                reserverId = reserverId,
                 registrationCode = trailerRegistrationCode,
                 widthCm = decimalToInt(trailerWidth),
                 lengthCm = decimalToInt(trailerLength),
@@ -771,7 +788,7 @@ class BoatReservationService(
         return trailer
     }
 
-    private fun canUpdateTrailerForType(reservationId: Int): Boolean {
+    fun canUpdateTrailerForType(reservationId: Int): Boolean {
         val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
         return when {
             reservation?.type === BoatSpaceType.Trailer -> return true

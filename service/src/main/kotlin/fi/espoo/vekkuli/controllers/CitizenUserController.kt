@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
-import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -449,10 +448,9 @@ class CitizenUserController(
         )
     }
 
-    @GetMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/muokkaa")
+    @GetMapping("/virkailija/{citizenId}/traileri/{trailerId}/muokkaa")
     @ResponseBody
     fun trailerEditPage(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @PathVariable trailerId: Int,
         @RequestParam reservationId: Int,
@@ -468,16 +466,14 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
 
         val trailer = reservationService.getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
-        return trailerCard.renderEdit(trailer, userType, citizenId, reservationId)
+        return trailerCard.renderEdit(trailer, citizenId, reservationId)
     }
 
-    @GetMapping("/$USERTYPE/{citizenId}/traileri/uusi")
+    @GetMapping("/virkailija/{citizenId}/traileri/uusi")
     @ResponseBody
     fun trailerEditPageNew(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @RequestParam reservationId: Int,
         request: HttpServletRequest
@@ -491,14 +487,12 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
-        return trailerCard.renderEdit(null, userType, citizenId, reservationId)
+        return trailerCard.renderEdit(null, citizenId, reservationId)
     }
 
-    @PatchMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/tallenna")
+    @PatchMapping("/virkailija/{citizenId}/traileri/{trailerId}/tallenna")
     @ResponseBody
     fun trailerSavePage(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @PathVariable trailerId: Int,
         @RequestParam trailerRegistrationCode: String,
@@ -517,7 +511,6 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
             reservationService.updateTrailer(
@@ -527,13 +520,12 @@ class CitizenUserController(
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer, userType, citizenId, reservationId)
+        return trailerCard.render(trailer, citizenId, reservationId)
     }
 
-    @PatchMapping("/$USERTYPE/{citizenId}/traileri/uusi/tallenna")
+    @PatchMapping("/virkailija/{citizenId}/traileri/uusi/tallenna")
     @ResponseBody
     fun trailerSavePageNew(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @RequestParam trailerRegistrationCode: String,
         @RequestParam trailerWidth: BigDecimal,
@@ -551,17 +543,17 @@ class CitizenUserController(
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
             reservationService.createTrailerForReservation(
                 reservationId,
                 user.id,
+                citizenId,
                 trailerRegistrationCode,
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer, userType, citizenId, reservationId)
+        return trailerCard.render(trailer, citizenId, reservationId)
     }
 
     fun toBoatUpdateForm(
