@@ -672,6 +672,20 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText(newTrailerRegistrationCode)
             assertThat(citizenDetails.trailerWidth(reservationId)).hasText("2,50")
             assertThat(citizenDetails.trailerLength(reservationId)).hasText("5,00")
+
+            // Edit the trailer and submit the second time
+            citizenDetails.editTrailerButton(reservationId).click()
+            assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
+            citizenDetails.trailerRegistrationCodeInput.fill("ACV-456")
+            citizenDetails.trailerWidthInput.fill("3")
+            citizenDetails.trailerLengthInput.fill("4.0")
+            citizenDetails.trailerEditSubmitButton.click()
+
+            // Check that the trailer information is updated
+            assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
+            assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText("ACV-456")
+            assertThat(citizenDetails.trailerWidth(reservationId)).hasText("3,00")
+            assertThat(citizenDetails.trailerLength(reservationId)).hasText("4,00")
         } catch (e: AssertionError) {
             handleError(e)
         }
