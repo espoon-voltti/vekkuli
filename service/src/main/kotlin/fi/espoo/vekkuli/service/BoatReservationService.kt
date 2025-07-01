@@ -640,6 +640,28 @@ class BoatReservationService(
 
     fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
 
+    fun createTrailerForReservation(
+        reservationId: Int,
+        userId: UUID,
+        trailerRegistrationCode: String,
+        trailerWidth: BigDecimal,
+        trailerLength: BigDecimal,
+    ): Trailer {
+        if (!canUpdateTrailerForType(reservationId)) {
+            throw IllegalArgumentException("Can't update trailer if amenity does not match")
+        }
+        val trailer =
+            trailerRepository.insertTrailerAndAddToReservation(
+                reservationId = reservationId,
+                reserverId = userId,
+                registrationCode = trailerRegistrationCode,
+                widthCm = decimalToInt(trailerWidth),
+                lengthCm = decimalToInt(trailerLength),
+            )
+
+        return trailer
+    }
+
     fun updateTrailer(
         userId: UUID,
         trailerId: Int,

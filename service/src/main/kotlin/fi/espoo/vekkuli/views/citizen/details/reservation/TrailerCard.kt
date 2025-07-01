@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.domain.Trailer
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
@@ -127,44 +128,46 @@ class TrailerCard(
     }
 
     fun render(
-        trailer: Trailer,
+        trailer: Trailer?,
         userType: UserType,
         reserverId: UUID,
+        reservationId: Int
     ): String {
         val isEmployee = userType == UserType.EMPLOYEE
         val trailerRegNum =
             trailerValue(
                 "trailer-registration-code",
-                trailer.registrationCode ?: "",
+                trailer?.registrationCode ?: "-",
                 "citizenDetails.trailer.registrationNumber",
                 false
             )
         val trailerWidth =
             trailerValue(
                 "trailer-width",
-                formatInt(trailer.widthCm),
+                if (trailer?.widthCm != null) formatInt(trailer.widthCm) else "-",
                 "shared.label.widthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth)
+                isEmployee && trailer !== null && trailer.hasWarning(ReservationWarningType.TrailerWidth)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
-                formatInt(trailer.lengthCm),
+                if (trailer?.lengthCm != null) formatInt(trailer.lengthCm) else "-",
                 "shared.label.lengthInMeters",
-                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength)
+                isEmployee && trailer !== null && trailer.hasWarning(ReservationWarningType.TrailerLength)
             )
 
-        val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
-        val warningDialog = if (isEmployee)showWarningsDialog(trailer, reserverId) else ""
+        val warningText = if (isEmployee && trailer !== null) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
+        val warningDialog = if (isEmployee && trailer !== null)showWarningsDialog(trailer, reserverId) else ""
+        
         // language=HTML
         return """
-            <div id="trailer-${trailer.id}" class="pb-s" x-data="{ modalOpen: false }">
+            <div id="trailer-for-reservation-$reservationId" class="pb-s" x-data="{ modalOpen: false }">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
                     $warningText
-                    ${editTrailerButton(trailer.id, userType, reserverId)}
+                    ${editTrailerButton(trailer?.id, userType, reserverId, reservationId)}
                 </div>
                 <div class="columns pb-s">
                    <div class="column is-one-quarter">
@@ -183,28 +186,29 @@ class TrailerCard(
     }
 
     fun renderEdit(
-        trailer: Trailer,
+        trailer: Trailer?,
         userType: UserType,
-        reserverId: UUID
+        reserverId: UUID,
+        reservationId: Int
     ): String {
         val regNum =
             formComponents.textInput(
                 labelKey = "citizenDetails.trailer.registrationNumber",
-                value = trailer.registrationCode,
+                value = trailer?.registrationCode,
                 id = "trailerRegistrationCode",
                 required = true,
             )
         val width =
             formComponents.decimalInput(
                 labelKey = "shared.label.widthInMeters",
-                value = intToDecimal(trailer.widthCm),
+                value = intToDecimal(trailer?.widthCm),
                 id = "trailerWidth",
                 required = true,
             )
         val length =
             formComponents.decimalInput(
                 labelKey = "shared.label.lengthInMeters",
-                value = intToDecimal(trailer.lengthCm),
+                value = intToDecimal(trailer?.lengthCm),
                 id = "trailerLength",
                 required = true,
             )
@@ -217,16 +221,18 @@ class TrailerCard(
                 "trailer-edit-cancel",
                 "trailer-edit-submit"
             )
+
         // language=HTML
         return """ 
-            <div id="trailer-${trailer.id}" class="pb-s">
+            <div id="trailer-for-reservation-$reservationId" class="pb-s">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
 
                 </div>
-                <form hx-target="#trailer-${trailer.id}" hx-patch="${getSaveUrl(trailer.id, userType, reserverId)}">
+                <form hx-target="#trailer-for-reservation-$reservationId" hx-patch="${getSaveUrl(trailer?.id, userType, reserverId)}">
+                    <input hidden name='reservationId' value='$reservationId'/>
                     <div class="columns" class="pb-s">
                        <div class="column is-one-quarter">
                            <div class="field">
@@ -251,33 +257,43 @@ class TrailerCard(
     }
 
     private fun getEditUrl(
-        trailerId: Int,
+        trailerId: Int?,
         userType: UserType,
-        reserverId: UUID
-    ) = "/${userType.path}/$reserverId/traileri/$trailerId/muokkaa"
+        reserverId: UUID,
+        reservationId: Int
+    ) = if (trailerId != null) {
+        "/${userType.path}/$reserverId/traileri/$trailerId/muokkaa?reservationId=$reservationId"
+    } else {
+        "/${userType.path}/$reserverId/traileri/uusi?reservationId=$reservationId"
+    }
 
     private fun getSaveUrl(
-        trailerId: Int,
+        trailerId: Int?,
         userType: UserType,
         reserverId: UUID
-    ) = "/${userType.path}/$reserverId/traileri/$trailerId/tallenna"
+    ) = if (trailerId != null) {
+        "/${userType.path}/$reserverId/traileri/$trailerId/tallenna"
+    } else {
+        "/${userType.path}/$reserverId/traileri/uusi/tallenna"
+    }
 
     private fun editTrailerButton(
-        trailerId: Int,
+        trailerId: Int?,
         userType: UserType,
-        reserverId: UUID
+        reserverId: UUID,
+        reservationId: Int
     ): String {
         // language=HTML
         return """
             <div class="column is-narrow ml-auto">
                 <a class="is-icon-link is-link"
-                   hx-get="${getEditUrl(trailerId, userType, reserverId)}"
-                   hx-target="#trailer-$trailerId"
+                   hx-get="${getEditUrl(trailerId, userType, reserverId, reservationId)}"
+                   hx-target="#trailer-for-reservation-$reservationId"
                    hx-swap="outerHTML">
                     <span class="icon">
                         ${icons.edit}
                     </span>
-                    <span id="edit-trailer-$trailerId"> ${t("citizenDetails.trailer.editTrailerDetails")}</span>
+                    <span id="edit-trailer-$reservationId"> ${t("citizenDetails.trailer.editTrailerDetails")}</span>
                 </a>
             </div>
             """.trimIndent()

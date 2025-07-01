@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.math.BigDecimal
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -20,6 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 class BoatReservationServiceTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
+
+    @Autowired
+    lateinit var trailerRepository: TrailerRepository
 
     @BeforeEach
     override fun resetDatabase() {
@@ -99,5 +104,41 @@ class BoatReservationServiceTests : IntegrationTestBase() {
         assertEquals(8, harbors.size, "Correct number of harbors are fetched")
         assertEquals("Mellstenintie 6, 02170 Espoo", harbors[0].address, "Correct address for first harbor")
         assertEquals("Haukilahti", harbors[0].name, "Correct name for first harbor")
+    }
+
+    @Test
+    fun `should be able to update trailer`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenId = citizenIdOlivia,
+                )
+            )
+
+        val trailer =
+            trailerRepository
+                .insertTrailerAndAddToReservation(reservation.id, citizenIdOlivia, "XYZ-789", 200, 400)
+
+        val updatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
+
+        assertEquals(trailer.id, updatedReservation?.trailer?.id, "Reservation has a trailer attached")
+        assertEquals(trailer.reserverId, updatedReservation?.trailer?.reserverId, "Trailer belongs to the reserver")
+        assertEquals(trailer.widthCm, updatedReservation?.trailer?.widthCm, "Trailer width has been set")
+        assertEquals(trailer.lengthCm, updatedReservation?.trailer?.lengthCm, "Trailer length has been set")
+
+        reservationService
+            .updateTrailer(
+                citizenIdOlivia,
+                trailer.id,
+                trailerRegistrationCode = "ABC-123",
+                trailerWidth = BigDecimal(2.5),
+                trailerLength = BigDecimal(5.0)
+            )
+
+        val updatedTrailer = reservationService.getTrailer(trailer.id)
+        assertEquals("ABC-123", updatedTrailer?.registrationCode, "Trailer registration number is updated")
+        assertEquals(250, updatedTrailer?.widthCm, "Trailer width is updated")
+        assertEquals(500, updatedTrailer?.lengthCm, "Trailer length is updated")
     }
 }
