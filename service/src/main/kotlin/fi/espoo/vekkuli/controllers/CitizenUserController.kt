@@ -455,6 +455,7 @@ class CitizenUserController(
         @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
         @PathVariable trailerId: Int,
+        @RequestParam reservationId: Int,
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -468,11 +469,30 @@ class CitizenUserController(
             )
         }
         val userType = UserType.fromPath(usertype)
-        val trailer = reservationService.getTrailer(trailerId)
-        if (trailer == null) {
-            throw IllegalArgumentException("Trailer not found")
+
+        val trailer = reservationService.getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
+        return trailerCard.renderEdit(trailer, userType, citizenId, reservationId)
+    }
+
+    @GetMapping("/$USERTYPE/{citizenId}/traileri/uusi")
+    @ResponseBody
+    fun trailerEditPageNew(
+        @PathVariable usertype: String,
+        @PathVariable citizenId: UUID,
+        @RequestParam reservationId: Int,
+        request: HttpServletRequest
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CITIZEN_PROFILE_EDIT_TRAILER_FORM",
+                mapOf(
+                    "targetId" to citizenId.toString()
+                )
+            )
         }
-        return trailerCard.renderEdit(trailer, userType, citizenId)
+        val userType = UserType.fromPath(usertype)
+        return trailerCard.renderEdit(null, userType, citizenId, reservationId)
     }
 
     @PatchMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/tallenna")
@@ -484,6 +504,7 @@ class CitizenUserController(
         @RequestParam trailerRegistrationCode: String,
         @RequestParam trailerWidth: BigDecimal,
         @RequestParam trailerLength: BigDecimal,
+        @RequestParam reservationId: Int,
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -506,7 +527,41 @@ class CitizenUserController(
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer, userType, citizenId)
+        return trailerCard.render(trailer, userType, citizenId, reservationId)
+    }
+
+    @PatchMapping("/$USERTYPE/{citizenId}/traileri/uusi/tallenna")
+    @ResponseBody
+    fun trailerSavePageNew(
+        @PathVariable usertype: String,
+        @PathVariable citizenId: UUID,
+        @RequestParam trailerRegistrationCode: String,
+        @RequestParam trailerWidth: BigDecimal,
+        @RequestParam trailerLength: BigDecimal,
+        @RequestParam reservationId: Int,
+        request: HttpServletRequest
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CITIZEN_PROFILE_EDIT_TRAILER_SAVE_NEW",
+                mapOf(
+                    "targetId" to citizenId.toString(),
+                    "reservationId" to reservationId.toString()
+                )
+            )
+        }
+        val userType = UserType.fromPath(usertype)
+        val user = request.getAuthenticatedUser() ?: throw Unauthorized()
+        val trailer =
+            reservationService.createTrailerForReservation(
+                reservationId,
+                user.id,
+                trailerRegistrationCode,
+                trailerWidth,
+                trailerLength
+            )
+        return trailerCard.render(trailer, userType, citizenId, reservationId)
     }
 
     fun toBoatUpdateForm(

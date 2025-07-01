@@ -181,7 +181,7 @@ class ReservationCardInformation(
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId) } ?: ""}
+            ${ trailerCard.render(reservation.trailer, userType, reserverId, reservation.id) }
 
             """.trimIndent()
     }
