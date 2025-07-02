@@ -24,7 +24,7 @@ class CitizenTrailerService(
     ) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         if (!permissionService.canEditTrailer(citizenId, trailerId)) throw Unauthorized()
-        boatReservationService.updateTrailer(
+        boatReservationService.updateTrailerAndAddWarnings(
             citizenId,
             trailerId,
             input.registrationNumber,

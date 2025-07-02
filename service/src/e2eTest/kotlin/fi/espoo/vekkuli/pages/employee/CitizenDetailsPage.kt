@@ -153,6 +153,15 @@ class CitizenDetailsPage(
 
     val reservationList = getByDataTestId("reservation-list")
     val reservationListCards = getByDataTestId("reservation-list-card", reservationList)
+
+    fun getReservation(name: String): Locator =
+        reservationListCards
+            .filter(
+                Locator
+                    .FilterOptions()
+                    .setHasText(name)
+            ).first()
+
     val firstBoatSpaceReservationCard = reservationListCards.first()
     val locationNameInFirstBoatSpaceReservationCard =
         getByDataTestId(
@@ -254,19 +263,20 @@ class CitizenDetailsPage(
 
     fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
 
-    fun trailerAckWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-$id"))
+    fun trailerAckWarningButton(reservationId: Int) =
+        getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-for-reservation-$reservationId"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 
-    fun trailerInformation(id: Int) = page.getByTestId("trailer-$id")
+    fun trailerInformation(reservationId: Int) = page.getByTestId("trailer-for-reservation-$reservationId")
 
-    fun trailerRegistrationCode(id: Int) = getByDataTestId("trailer-registration-code", trailerInformation(id))
+    fun trailerRegistrationCode(reservationId: Int) = getByDataTestId("trailer-registration-code", trailerInformation(reservationId))
 
-    fun trailerWidth(id: Int) = getByDataTestId("trailer-width", trailerInformation(id))
+    fun trailerWidth(reservationId: Int) = getByDataTestId("trailer-width", trailerInformation(reservationId))
 
-    fun trailerLength(id: Int) = getByDataTestId("trailer-length", trailerInformation(id))
+    fun trailerLength(reservationId: Int) = getByDataTestId("trailer-length", trailerInformation(reservationId))
 
-    fun editTrailerButton(id: Int) = page.getByTestId("edit-trailer-$id")
+    fun editTrailerButton(reservationId: Int) = page.getByTestId("edit-trailer-$reservationId")
 
     val trailerRegistrationCodeInput = page.getByTestId("trailerRegistrationCode")
     val trailerWidthInput = page.getByTestId("trailerWidth")
