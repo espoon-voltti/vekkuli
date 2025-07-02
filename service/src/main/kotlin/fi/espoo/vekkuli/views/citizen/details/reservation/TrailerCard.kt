@@ -153,7 +153,7 @@ class TrailerCard(
             )
 
         val warningText = if (trailer !== null) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
-        val warningDialog = if (trailer !== null)showWarningsDialog(trailer, reserverId) else ""
+        val warningDialog = if (trailer !== null) showWarningsDialog(trailer, reserverId) else ""
 
         // language=HTML
         return """
@@ -163,7 +163,7 @@ class TrailerCard(
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
                     $warningText
-                    ${editTrailerButton(trailer?.id, reserverId, reservationId)}
+                    ${editTrailerButton(reserverId, reservationId)}
                 </div>
                 <div class="columns pb-s">
                    <div class="column is-one-quarter">
@@ -227,8 +227,7 @@ class TrailerCard(
 
                 </div>
                 <form hx-target="#trailer-for-reservation-$reservationId" 
-                    hx-patch="${getSaveUrl(trailer?.id, reserverId)}" hx-swap="outerHTML">
-                    <input hidden name='reservationId' value='$reservationId'/>
+                    hx-patch="${getSaveUrl(reservationId, reserverId)}" hx-swap="outerHTML">
                     <div class="columns" class="pb-s">
                        <div class="column is-one-quarter">
                            <div class="field">
@@ -253,26 +252,16 @@ class TrailerCard(
     }
 
     private fun getEditUrl(
-        trailerId: Int?,
         reserverId: UUID,
         reservationId: Int
-    ) = if (trailerId != null) {
-        "/virkailija/$reserverId/traileri/$trailerId/muokkaa?reservationId=$reservationId"
-    } else {
-        "/virkailija/$reserverId/traileri/uusi?reservationId=$reservationId"
-    }
+    ) = "/virkailija/$reserverId/varaus/$reservationId/traileri/muokkaa"
 
     private fun getSaveUrl(
-        trailerId: Int?,
+        reservationId: Int,
         reserverId: UUID
-    ) = if (trailerId != null) {
-        "/virkailija/$reserverId/traileri/$trailerId/tallenna"
-    } else {
-        "/virkailija/$reserverId/traileri/uusi/tallenna"
-    }
+    ) = "/virkailija/$reserverId/varaus/$reservationId/traileri/tallenna"
 
     private fun editTrailerButton(
-        trailerId: Int?,
         reserverId: UUID,
         reservationId: Int
     ): String {
@@ -280,7 +269,7 @@ class TrailerCard(
         return """
             <div class="column is-narrow ml-auto">
                 <a class="is-icon-link is-link"
-                   hx-get="${getEditUrl(trailerId, reserverId, reservationId)}"
+                   hx-get="${getEditUrl(reserverId, reservationId)}"
                    hx-target="#trailer-for-reservation-$reservationId"
                    hx-swap="outerHTML">
                     <span class="icon">

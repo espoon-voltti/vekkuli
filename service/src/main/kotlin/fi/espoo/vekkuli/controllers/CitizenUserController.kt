@@ -448,12 +448,11 @@ class CitizenUserController(
         )
     }
 
-    @GetMapping("/virkailija/{citizenId}/traileri/{trailerId}/muokkaa")
+    @GetMapping("/virkailija/{citizenId}/varaus/{reservationId}/traileri/muokkaa")
     @ResponseBody
     fun trailerEditPage(
         @PathVariable citizenId: UUID,
-        @PathVariable trailerId: Int,
-        @RequestParam reservationId: Int,
+        @PathVariable reservationId: Int,
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -462,43 +461,26 @@ class CitizenUserController(
                 "CITIZEN_PROFILE_EDIT_TRAILER_FORM",
                 mapOf(
                     "targetId" to citizenId.toString(),
-                    "trailerId" to trailerId.toString()
+                    "reservationId" to reservationId.toString()
                 )
             )
         }
+        val reservation =
+            reservationService.getReservationWithDependencies(reservationId)
+                ?: throw NotFound("Reservation not found: $reservationId")
 
-        val trailer = reservationService.getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
+        val trailer = if (reservation.trailerId != null) reservationService.getTrailer(reservation.trailerId) else null
         return trailerCard.renderEdit(trailer, citizenId, reservationId)
     }
 
-    @GetMapping("/virkailija/{citizenId}/traileri/uusi")
+    @PatchMapping("/virkailija/{citizenId}/varaus/{reservationId}/traileri/tallenna")
     @ResponseBody
-    fun trailerEditPageNew(
+    fun trailerSavePageNew(
         @PathVariable citizenId: UUID,
-        @RequestParam reservationId: Int,
-        request: HttpServletRequest
-    ): String {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "CITIZEN_PROFILE_EDIT_TRAILER_FORM",
-                mapOf(
-                    "targetId" to citizenId.toString()
-                )
-            )
-        }
-        return trailerCard.renderEdit(null, citizenId, reservationId)
-    }
-
-    @PatchMapping("/virkailija/{citizenId}/traileri/{trailerId}/tallenna")
-    @ResponseBody
-    fun trailerSavePage(
-        @PathVariable citizenId: UUID,
-        @PathVariable trailerId: Int,
+        @PathVariable reservationId: Int,
         @RequestParam trailerRegistrationCode: String,
         @RequestParam trailerWidth: BigDecimal,
         @RequestParam trailerLength: BigDecimal,
-        @RequestParam reservationId: Int,
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -507,45 +489,13 @@ class CitizenUserController(
                 "CITIZEN_PROFILE_EDIT_TRAILER_SAVE",
                 mapOf(
                     "targetId" to citizenId.toString(),
-                    "trailerId" to trailerId.toString()
-                )
-            )
-        }
-        val user = request.getAuthenticatedUser() ?: throw Unauthorized()
-        val trailer =
-            reservationService.updateTrailer(
-                user.id,
-                trailerId,
-                trailerRegistrationCode,
-                trailerWidth,
-                trailerLength
-            )
-        return trailerCard.render(trailer, citizenId, reservationId)
-    }
-
-    @PatchMapping("/virkailija/{citizenId}/traileri/uusi/tallenna")
-    @ResponseBody
-    fun trailerSavePageNew(
-        @PathVariable citizenId: UUID,
-        @RequestParam trailerRegistrationCode: String,
-        @RequestParam trailerWidth: BigDecimal,
-        @RequestParam trailerLength: BigDecimal,
-        @RequestParam reservationId: Int,
-        request: HttpServletRequest
-    ): String {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "CITIZEN_PROFILE_EDIT_TRAILER_SAVE_NEW",
-                mapOf(
-                    "targetId" to citizenId.toString(),
                     "reservationId" to reservationId.toString()
                 )
             )
         }
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
-            reservationService.createTrailerForReservation(
+            reservationService.createOrUpdateTrailerForReservationEmployee(
                 reservationId,
                 user.id,
                 citizenId,

@@ -640,7 +640,7 @@ class BoatReservationService(
 
     fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
 
-    fun createTrailerForReservation(
+    fun createOrUpdateTrailerForReservationEmployee(
         reservationId: Int,
         userId: UUID,
         reserverId: UUID,
@@ -679,6 +679,18 @@ class BoatReservationService(
         return trailer
     }
 
+    fun updateTrailerAndAddWarnings(
+        userId: UUID,
+        trailerId: Int,
+        trailerRegistrationCode: String,
+        trailerWidth: BigDecimal,
+        trailerLength: BigDecimal,
+    ): Trailer {
+        val updatedTrailer = updateTrailer(userId, trailerId, trailerRegistrationCode, trailerWidth, trailerLength)
+        addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
+        return updatedTrailer
+    }
+
     fun updateTrailer(
         userId: UUID,
         trailerId: Int,
@@ -701,7 +713,6 @@ class BoatReservationService(
             )
 
         val result = trailerRepository.updateTrailer(updatedTrailer)
-        addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
         return result
     }
 
