@@ -128,7 +128,7 @@ class BoatReservationServiceTests : IntegrationTestBase() {
         assertEquals(trailer.lengthCm, updatedReservation?.trailer?.lengthCm, "Trailer length has been set")
 
         reservationService
-            .updateTrailer(
+            .updateTrailerAndAddWarnings(
                 citizenIdOlivia,
                 trailer.id,
                 trailerRegistrationCode = "ABC-123",

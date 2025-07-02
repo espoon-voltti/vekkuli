@@ -593,7 +593,6 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             listingPage.navigateTo()
             listingPage.boatSpace8.click()
             val citizenDetails = CitizenDetailsPage(page)
-            page.pause()
             // Check that the trailer information is visible
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
             citizenDetails.editTrailerButton(reservationId).click()
@@ -607,8 +606,8 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.trailerEditCancelButton.click()
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
             assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText(newTrailerRegistrationCode)
-            assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2.5")
-            assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5.0")
+            assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2,50")
+            assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5,00")
 
             // Edit the trailer again and submit
             citizenDetails.editTrailerButton(reservationId).click()
@@ -641,7 +640,6 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val citizenDetails = CitizenDetailsPage(page)
             // Check that the trailer information is visible
             assertThat(citizenDetails.getReservation("Haukilahti B 009")).isVisible()
-            page.pause()
             val trailerInformation = citizenDetails.trailerInformation(reservationId)
             assertThat(trailerInformation).isVisible()
 
@@ -656,8 +654,8 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.trailerEditCancelButton.click()
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
             assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText(newTrailerRegistrationCode)
-            assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2.5")
-            assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5.0")
+            assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2,50")
+            assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5,00")
 
             // Edit the trailer again and submit
             citizenDetails.editTrailerButton(reservationId).click()
