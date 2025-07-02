@@ -66,7 +66,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
 
-            employeeCitizenDetails.trailerAckWarningButton(1).click()
+            employeeCitizenDetails.trailerAckWarningButton(6).click()
 
             assertThat(employeeCitizenDetails.trailerWarningModalLengthInput).isVisible()
             assertThat(employeeCitizenDetails.trailerWarningModalWidthInput).isVisible()

@@ -263,7 +263,8 @@ class CitizenDetailsPage(
 
     fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
 
-    fun trailerAckWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-$id"))
+    fun trailerAckWarningButton(reservationId: Int) =
+        getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-for-reservation-$reservationId"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 
