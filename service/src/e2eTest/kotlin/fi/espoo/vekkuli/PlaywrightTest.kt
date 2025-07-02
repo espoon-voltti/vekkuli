@@ -74,7 +74,19 @@ abstract class PlaywrightTest {
     }
 
     fun handleError(e: AssertionError) {
-        page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
+        val testMethod =
+            e
+                .stackTrace
+                .firstOrNull { it.className.contains("Test") || it.methodName.startsWith("test") }
+        val testName = testMethod?.methodName ?: "unknown_test"
+        val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+        val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
+        val playwrightOptions =
+            Page
+                .ScreenshotOptions()
+                .setFullPage(true)
+                .setPath(screenshotPath)
+        page.screenshot(playwrightOptions)
 
         throw e
     }

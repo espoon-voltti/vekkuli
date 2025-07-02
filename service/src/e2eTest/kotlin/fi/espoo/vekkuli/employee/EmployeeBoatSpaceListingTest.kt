@@ -10,12 +10,12 @@ import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.context.ActiveProfiles
-import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class EmployeeBoatSpaceListingTest : PlaywrightTest() {
@@ -197,8 +197,10 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.listItems.count() == 100 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         assertThat(listingPage.listItems).hasCount(29)
-
+        assertThat(listingPage.totalRowsInfo).containsText("Spaces: 29, reserved: 1")
         listingPage.showOnlyFreeSpaces.click()
+        assertThat(listingPage.totalRowsInfo).containsText("Spaces: 28, reserved: 0")
+
         assertThat(listingPage.listItems).hasCount(28)
     }
 
@@ -319,7 +321,6 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         page.waitForCondition { listingPage.listItems.count() == 4 }
 
         listingPage.checkBox(inactiveBoatSpaceId).click()
-
         assertSelectedBoatSpaceCount(1)
     }
 
@@ -360,6 +361,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         if (expectedCount > 0) {
             val modalPage = listingPage.editModalPage
             listingPage.editModalButton.click()
+            assertEquals("Muokataan $expectedCount paikkaa", modalPage.boatSpaceCount.textContent())
             assertThat(modalPage.boatSpaceCount).containsText("Muokataan $expectedCount paikkaa")
             modalPage.cancelButton.click()
         }

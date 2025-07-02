@@ -203,6 +203,12 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.editBoatButton(3).click()
             assertThat(page.getByTestId("form")).isVisible()
 
+            // canceling the edit should not change the boat details
+            citizenDetails.nameInput.fill("New Boat Name")
+            citizenDetails.cancelButton.click()
+            assertThat(citizenDetails.nameText(3)).hasText("Leon toinen liian iso vene")
+
+            citizenDetails.editBoatButton(3).click()
             citizenDetails.nameInput.fill("New Boat Name")
             citizenDetails.weightInput.fill("2000")
             citizenDetails.typeSelect.selectOption("Sailboat")

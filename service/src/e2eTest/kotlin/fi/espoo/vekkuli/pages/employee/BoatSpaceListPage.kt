@@ -42,6 +42,7 @@ class BoatSpaceListPage(
     val amenityFilter = { amenity: BoatSpaceAmenity -> filterLocator("amenity-${amenity.name}") }
     val selectAllToggle = page.getByDataTestId("select-all-toggle")
     val showOnlyFreeSpaces = page.getByTestId("showOnlyFreeSpaces")
+    val totalRowsInfo = page.getByTestId("totalrows")
 
     fun boatSpaceRow(boatSpaceId: Int) = page.getByDataTestId("boat-space-$boatSpaceId")
 

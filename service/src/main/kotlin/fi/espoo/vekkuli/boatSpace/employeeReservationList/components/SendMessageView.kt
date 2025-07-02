@@ -19,12 +19,15 @@ class SendMessageView(
     fun renderSendMassMessageLink(totalRows: Int): String {
         val messageText =
             """
-            ${t("employee.sendMassMessage.title")} 
-            <span x-show="selectAll" class="has-text-weight-semibold">
-                ${t("employee.sendMassMessageCount.title", listOf(totalRows.toString()))}
-             </span>
-            <span x-show="!selectAll" x-text="'(' + reservationIds.length + ' varausta)'"></span>
-            
+            ${t("employee.sendMassMessage.title")}
+            <template x-if="selectAll">
+                 <span class="has-text-weight-semibold">
+                    ${t("employee.sendMassMessageCount.title", listOf(totalRows.toString()))}
+                 </span>
+             </template>
+            <template x-if="!selectAll">
+                <span x-text="'(' + reservationIds.length + ' varausta)'"></span>
+            </template>     
             """.trimIndent()
 
         //language=HTML

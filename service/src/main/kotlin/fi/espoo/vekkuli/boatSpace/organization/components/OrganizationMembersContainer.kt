@@ -112,7 +112,7 @@ class OrganizationMembersContainer : BaseView() {
                                id="delete-modal-confirm-$organizationId-$userId" 
                                hx-delete="/virkailija/yhteiso/$organizationId/poista-henkilo/$userId"
                                hx-swap="none" 
-                               hx-on="htmx:afterRequest: window.location.reload()">
+                               @htmx:after-request="window.location.reload()">
                                 ${t("organizationDetails.button.confirmDeletion")}
                             </a>
                         </div>
