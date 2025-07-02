@@ -286,8 +286,9 @@ class OrganizationDetailsViewTest : ReserveTest() {
             organizationDetails.navigateToEspoonPursiseura()
             assertThat(organizationDetails.organizationDetailsSection).isVisible()
             organizationDetails.removeOliviaButton.click()
+            assertThat(organizationDetails.confirmOliviaRemove).isVisible()
             organizationDetails.confirmOliviaRemove.click()
-            assertThat(organizationDetails.removeOliviaButton).not().isVisible()
+            assertThat(organizationDetails.removeOliviaButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

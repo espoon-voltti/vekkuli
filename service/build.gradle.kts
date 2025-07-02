@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.7")
-        classpath("org.flywaydb:flyway-database-postgresql:11.9.2")
+        classpath("org.flywaydb:flyway-database-postgresql:11.10.0")
     }
 }
 
@@ -89,8 +89,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.zaxxer:HikariCP:6.3.0")
-    implementation("org.flywaydb:flyway-core:11.9.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.9.2")
+    implementation("org.flywaydb:flyway-core:11.10.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.10.0")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation(platform("org.jdbi:jdbi3-bom:3.49.5"))
     implementation("org.jdbi:jdbi3-core")
@@ -110,22 +110,22 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    implementation(platform("org.junit:junit-bom:5.13.1"))
+    implementation(platform("org.junit:junit-bom:5.13.2"))
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.52.0")
+    testImplementation("com.microsoft.playwright:playwright:1.53.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.2.0")
     implementation("io.ktor:ktor-client-cio:3.2.0") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:3.2.0") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.0") // kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.0-0.6.x-compat")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.31.68"))
+    implementation(platform("software.amazon.awssdk:bom:2.31.71"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
 
