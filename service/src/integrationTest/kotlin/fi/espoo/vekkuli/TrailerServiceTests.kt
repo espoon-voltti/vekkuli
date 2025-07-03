@@ -57,7 +57,7 @@ class TrailerServiceTests : IntegrationTestBase() {
                 length = BigDecimal(5.0)
             )
 
-        boatReservationService.updateStorageTypeAndTrailerForCitizen(
+        boatReservationService.updateStorageTypeAndTrailer(
             this.citizenIdLeo,
             reservationId,
             storageType = StorageType.Trailer,
@@ -91,7 +91,7 @@ class TrailerServiceTests : IntegrationTestBase() {
                 ).id
 
         assertThrows<IllegalArgumentException> {
-            boatReservationService.updateStorageTypeAndTrailerForCitizen(
+            boatReservationService.updateStorageTypeAndTrailer(
                 this.citizenIdLeo,
                 reservationId,
                 storageType = StorageType.Trailer,
@@ -111,7 +111,7 @@ class TrailerServiceTests : IntegrationTestBase() {
                         boatSpaceIdForWinter
                     )
                 ).id
-        boatReservationService.updateStorageTypeAndTrailerForCitizen(
+        boatReservationService.updateStorageTypeAndTrailer(
             this.citizenIdLeo,
             reservationId,
             StorageType.Trailer,
@@ -121,7 +121,7 @@ class TrailerServiceTests : IntegrationTestBase() {
 
         assertEquals(StorageType.Trailer, originalReservation?.storageType, "Reservation should originally be trailer storage type")
 
-        boatReservationService.updateStorageTypeAndTrailerForCitizen(
+        boatReservationService.updateStorageTypeAndTrailer(
             this.citizenIdLeo,
             reservationId,
             StorageType.Buck
@@ -147,7 +147,7 @@ class TrailerServiceTests : IntegrationTestBase() {
 
         val expection =
             assertThrows<IllegalArgumentException> {
-                boatReservationService.updateStorageTypeAndTrailerForCitizen(
+                boatReservationService.updateStorageTypeAndTrailer(
                     this.citizenIdLeo,
                     reservationId,
                     StorageType.Trailer,
@@ -171,7 +171,7 @@ class TrailerServiceTests : IntegrationTestBase() {
 
         val expection =
             assertThrows<IllegalArgumentException> {
-                boatReservationService.updateStorageTypeAndTrailerForCitizen(
+                boatReservationService.updateStorageTypeAndTrailer(
                     this.citizenIdLeo,
                     reservationId,
                     StorageType.Trailer,
