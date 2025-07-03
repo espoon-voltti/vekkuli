@@ -607,7 +607,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
             citizenDetails.trailerWidthInput.fill("2.5")
             citizenDetails.trailerLengthInput.fill("5.0")
-
+            page.pause()
             // Cancel the edit
             citizenDetails.trailerEditCancelButton.click()
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
@@ -690,6 +690,31 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText("ACV-456")
             assertThat(citizenDetails.trailerWidth(reservationId)).hasText("3,00")
             assertThat(citizenDetails.trailerLength(reservationId)).hasText("4,00")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee should be able to edit storage type information`() {
+        try {
+            val reservationId = 6
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace8.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            // Check that the trailer information is visible
+            assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
+            citizenDetails.editStorageTypeButton(6).click()
+
+            assertThat(citizenDetails.editStorageTypeForm).isVisible()
+            citizenDetails.storageTypeCheckboxBuck.click()
+
+            citizenDetails.storageTypeCheckboxTrailer.click()
+            assertThat(citizenDetails.trailerInputs).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
