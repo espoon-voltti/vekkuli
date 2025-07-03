@@ -23,13 +23,14 @@ class StorageTypeContainer(
                     ${trailerEdit(
             trailerRegistrationNumber,
             trailerWidth,
-            trailerLength,
+            trailerLength
         )}"""
 
     fun trailerEdit(
         trailerRegistrationNumber: String?,
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
+        fullWidth: Boolean = false,
     ): String {
         val trailerRegistrationNumberInput =
             formComponents.textInput(
@@ -56,13 +57,13 @@ class StorageTypeContainer(
         return (
             """ <template x-if="storageType === '${StorageType.Trailer.name}'">
                 <div data-testid="trailer-information-inputs" class='columns'>
-                    <div class='column is-one-quarter'>
+                    <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
                         $trailerRegistrationNumberInput
                     </div>
-                     <div class='column is-one-quarter'>
+                     <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
                         $trailerWidthInput
                      </div>
-                     <div class='column is-one-quarter'>
+                     <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
                         $trailerLengthInput
                     </div>
                 </div>
@@ -107,14 +108,15 @@ class StorageTypeContainer(
         trailerRegistrationNumber: String?,
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
-        storageType: StorageType? = StorageType.Trailer
+        storageType: StorageType? = StorageType.Trailer,
+        fullWidth: Boolean = false,
     ): String {
         val radioButtons =
             storageTypeRadioButtons(storageType)
 
         return """<div data-testid="storage-type-selector" >
             $radioButtons
-            ${trailerEdit(trailerRegistrationNumber, trailerWidth, trailerLength)}
+            ${trailerEdit(trailerRegistrationNumber, trailerWidth, trailerLength, fullWidth)}
             </div>
             """
     }

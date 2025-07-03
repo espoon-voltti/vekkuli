@@ -230,6 +230,6 @@ class ReservationController(
                 ),
             )
         }
-        reservationService.updateStorageTypeAndTrailer(reservationId, input)
+        reservationService.updateStorageTypeAndTrailerForCitizen(reservationId, input)
     }
 }

@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
-import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -449,12 +448,11 @@ class CitizenUserController(
         )
     }
 
-    @GetMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/muokkaa")
+    @GetMapping("/virkailija/{citizenId}/varaus/{reservationId}/traileri/muokkaa")
     @ResponseBody
     fun trailerEditPage(
-        @PathVariable usertype: String,
         @PathVariable citizenId: UUID,
-        @PathVariable trailerId: Int,
+        @PathVariable reservationId: Int,
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
@@ -463,24 +461,23 @@ class CitizenUserController(
                 "CITIZEN_PROFILE_EDIT_TRAILER_FORM",
                 mapOf(
                     "targetId" to citizenId.toString(),
-                    "trailerId" to trailerId.toString()
+                    "reservationId" to reservationId.toString()
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
-        val trailer = reservationService.getTrailer(trailerId)
-        if (trailer == null) {
-            throw IllegalArgumentException("Trailer not found")
-        }
-        return trailerCard.renderEdit(trailer, userType, citizenId)
+        val reservation =
+            reservationService.getReservationWithDependencies(reservationId)
+                ?: throw NotFound("Reservation not found: $reservationId")
+
+        val trailer = if (reservation.trailerId != null) reservationService.getTrailer(reservation.trailerId) else null
+        return trailerCard.renderEdit(trailer, citizenId, reservationId)
     }
 
-    @PatchMapping("/$USERTYPE/{citizenId}/traileri/{trailerId}/tallenna")
+    @PatchMapping("/virkailija/{citizenId}/varaus/{reservationId}/traileri/tallenna")
     @ResponseBody
-    fun trailerSavePage(
-        @PathVariable usertype: String,
+    fun trailerSavePageNew(
         @PathVariable citizenId: UUID,
-        @PathVariable trailerId: Int,
+        @PathVariable reservationId: Int,
         @RequestParam trailerRegistrationCode: String,
         @RequestParam trailerWidth: BigDecimal,
         @RequestParam trailerLength: BigDecimal,
@@ -492,21 +489,21 @@ class CitizenUserController(
                 "CITIZEN_PROFILE_EDIT_TRAILER_SAVE",
                 mapOf(
                     "targetId" to citizenId.toString(),
-                    "trailerId" to trailerId.toString()
+                    "reservationId" to reservationId.toString()
                 )
             )
         }
-        val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
-            reservationService.updateTrailer(
+            reservationService.createOrUpdateTrailerForReservationEmployee(
+                reservationId,
                 user.id,
-                trailerId,
+                citizenId,
                 trailerRegistrationCode,
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer, userType, citizenId)
+        return trailerCard.render(trailer, citizenId, reservationId)
     }
 
     fun toBoatUpdateForm(
@@ -1097,6 +1094,40 @@ class CitizenUserController(
         )}, loppupäivä (${endDate.format(fullDateFormat)})"
 
         memoService.insertMemo(reserverId, user.id, memoContent)
+        return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
+    }
+
+    @PostMapping("/virkailija/venepaikat/varaukset/varustetyyppi")
+    fun updateStorageType(
+        @RequestParam reservationId: Int,
+        @RequestParam storageType: StorageType,
+        @RequestParam reserverId: UUID,
+        @RequestParam trailerRegistrationNumber: String?,
+        @RequestParam trailerWidth: BigDecimal?,
+        @RequestParam trailerLength: BigDecimal?,
+        request: HttpServletRequest
+    ): ResponseEntity<String> {
+        val user = request.getAuthenticatedEmployee()
+        logger.audit(
+            user,
+            "CITIZEN_PROFILE_UPDATE_STORAGE_TYPE",
+            mapOf(
+                "targetId" to reservationId.toString(),
+                "storageType" to storageType.toString(),
+                "reserverId" to reserverId.toString()
+            )
+        )
+
+        reservationService.updateStorageTypeAndTrailerForEmployee(
+            reservationId,
+            user.id,
+            storageType,
+            trailerRegistrationNumber,
+            trailerWidth,
+            trailerLength
+        )
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }
 
