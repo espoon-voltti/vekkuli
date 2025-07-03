@@ -607,7 +607,6 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
             citizenDetails.trailerWidthInput.fill("2.5")
             citizenDetails.trailerLengthInput.fill("5.0")
-            page.pause()
             // Cancel the edit
             citizenDetails.trailerEditCancelButton.click()
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
@@ -708,13 +707,36 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val citizenDetails = CitizenDetailsPage(page)
             // Check that the trailer information is visible
             assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-            citizenDetails.editStorageTypeButton(6).click()
+            citizenDetails.editStorageTypeButton(reservationId).click()
 
+            // cancel the edit and check that modal is closed
             assertThat(citizenDetails.editStorageTypeForm).isVisible()
+            citizenDetails.trailerRegistrationNumberInput.fill("XYZ-789")
+            citizenDetails.editStorageTypeCancelButton.click()
+            assertThat(citizenDetails.editStorageTypeForm).not().isVisible()
+            assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText("XYZ-789")
+
+            // open the edit form again
+            citizenDetails.editStorageTypeButton(reservationId).click()
             citizenDetails.storageTypeCheckboxBuck.click()
 
             citizenDetails.storageTypeCheckboxTrailer.click()
             assertThat(citizenDetails.trailerInputs).isVisible()
+
+            // check that the validation works
+            citizenDetails.trailerRegistrationNumberInput.fill("")
+            citizenDetails.editStorageTypeConfirmButton.click()
+            assertThat(citizenDetails.trailerRegistrationNumberError).isVisible()
+
+            citizenDetails.trailerRegistrationNumberInput.fill("XYZ-789")
+            citizenDetails.trailerWidthInput.fill("2.5")
+            citizenDetails.trailerLengthInput.fill("5.0")
+
+            citizenDetails.editStorageTypeConfirmButton.click()
+
+            assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText("XYZ-789")
+            assertThat(citizenDetails.trailerWidth(reservationId)).hasText("2,50")
+            assertThat(citizenDetails.trailerLength(reservationId)).hasText("5,00")
         } catch (e: AssertionError) {
             handleError(e)
         }

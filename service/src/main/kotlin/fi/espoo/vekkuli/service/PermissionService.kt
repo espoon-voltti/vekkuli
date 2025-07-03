@@ -61,10 +61,9 @@ class PermissionService(
         reserverId: UUID,
         reservationId: Int
     ): Boolean {
-        return when {
-            hasAccessToReservation(reserverId, reservationId) -> return true
-            else -> false
-        }
+        val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        return hasAccessToReservation(reserverId, reservationId) &&
+            reservation?.type == BoatSpaceType.Winter
     }
 
     fun canTerminateBoatSpaceReservationForOtherUser(

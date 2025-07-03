@@ -41,7 +41,7 @@ class ReservationStorageTypeUpdateModal : BaseView() {
                         >
                         <input hidden name="reservationId" value="$reservationId" />
                         <input hidden name="reserverId" value="$reserverId" />
-                            <div class='form-section' x-data="{ storageType: '${if (storageType?.name !== null) storageType.name else StorageType.Trailer.name}' }">
+                            <div class='form-section no-bottom-border' x-data="{ storageType: '${if (storageType?.name !== null) storageType.name else StorageType.Trailer.name}' }">
                                 ${storageTypeContainer.render(
                     trailer?.registrationCode,
                     intToDecimal(trailer?.widthCm),
@@ -50,19 +50,20 @@ class ReservationStorageTypeUpdateModal : BaseView() {
                     true
                 )}
                             </div>
+                            <div class="buttons">
+                                <button class="button" type="button" x-on:click="isOpen = false" id="reservation-validity-modal-cancel">
+                                    ${t("cancel")}
+                                </button>
+                                <button class="button is-primary" type="submit" id="reservation-validity-modal-confirm" form="reservation-storage-type-modal-form">
+                                     ${t("citizenDetails.saveChanges")}
+                                </button>
+                            </div>
+                        <script>
+                            validation.init({forms: ['$formId']});
+                        </script>
                     </form>
                 """.trimIndent()
-            ).addButton {
-                setText(t("cancel"))
-                setType(ModalButtonType.Cancel)
-                addAttribute("id", "reservation-validity-modal-cancel")
-            }.addButton {
-                addAttribute("id", "reservation-validity-modal-confirm")
-                setText(t("citizenDetails.saveChanges"))
-                setType(ModalButtonType.Submit)
-                setStyle(ModalButtonStyle.Primary)
-                setTargetForm(formId)
-            }.setIsWide(true)
+            ).setIsWide(true)
             .build()
     }
 }

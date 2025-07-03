@@ -267,18 +267,16 @@ open class ReservationService(
     }
 
     @Transactional
-    fun updateStorageTypeAndTrailer(
+    fun updateStorageTypeAndTrailerForCitizen(
         reservationId: Int,
         input: UpdateStorageTypeInput
     ) {
         val (citizenId) = citizenAccessControl.requireCitizen()
 
         val (storageType, trailer) = input
-        // Check if the citizen has permission to update the reservation
-        if (!permissionService.canUpdateStorageType(citizenId, reservationId)) throw Unauthorized()
 
         // Try to update the storage type and trailer
-        boatReservationService.updateStorageTypeAndTrailer(reservationId, storageType, trailer)
+        boatReservationService.updateStorageTypeAndTrailerForCitizen(citizenId, reservationId, storageType, trailer, false)
     }
 
     @Transactional

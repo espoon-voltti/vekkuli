@@ -717,10 +717,12 @@ class BoatReservationService(
     }
 
     @Transactional
-    fun updateStorageTypeAndTrailer(
+    fun updateStorageTypeAndTrailerForCitizen(
+        reserverId: UUID,
         reservationId: Int,
         storageType: StorageType,
-        trailerInput: UpdateTrailerInput? = null
+        trailerInput: UpdateTrailerInput? = null,
+        isEmployee: Boolean = false
     ) {
         val reservation =
             boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
@@ -728,24 +730,20 @@ class BoatReservationService(
 
         if (reservation.reserverId == null) throw Unauthorized()
 
-        if (!canUpdateTrailerForType(reservationId)) {
-            throw IllegalArgumentException("Can't update trailer if amenity does not match")
-        }
-
-        if (storageType == StorageType.Trailer && trailerInput == null) {
+        if (canUpdateTrailerForType(reservation.type, reservation.amenity, storageType) && trailerInput == null) {
             throw IllegalArgumentException("Trailer information must be provided when storage type is Trailer")
         }
 
         // If storage type is Trailer, update or create it
         val trailer: Trailer? =
-            if (storageType == StorageType.Trailer) {
-                createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId)
+            if (canUpdateTrailerForType(reservation.type, reservation.amenity, storageType)) {
+                createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId, !isEmployee)
             } else {
                 null
             }
 
         // Update storage type only if boat space type is Winter
-        if (reservation.type === BoatSpaceType.Winter) {
+        if (permissionService.canUpdateStorageType(reserverId, reservationId)) {
             boatSpaceReservationRepo.updateStorageType(
                 reservationId,
                 storageType,
@@ -763,14 +761,37 @@ class BoatReservationService(
         }
     }
 
+    @Transactional
+    fun updateStorageTypeAndTrailerForEmployee(
+        reservationId: Int,
+        userId: UUID,
+        storageType: StorageType,
+        trailerRegistrationCode: String?,
+        trailerWidth: BigDecimal?,
+        trailerLength: BigDecimal?
+    ) {
+        var trailer: UpdateTrailerInput? = null
+        if (trailerRegistrationCode != null && trailerWidth != null && trailerLength != null) {
+            trailer =
+                UpdateTrailerInput(
+                    registrationNumber = trailerRegistrationCode,
+                    width = trailerWidth,
+                    length = trailerLength
+                )
+        }
+        // Try to update the storage type and trailer
+        updateStorageTypeAndTrailerForCitizen(userId, reservationId, storageType, trailer, true)
+    }
+
     private fun createOrUpdateTrailerAndAddWarnings(
         trailerInput: UpdateTrailerInput?,
         reservationId: Int,
         trailerId: Int?,
-        reserverId: UUID
+        reserverId: UUID,
+        addWarnings: Boolean = true
     ): Trailer? {
         if (trailerInput == null) return null
-        var trailer: Trailer
+        val trailer: Trailer
         // If trailer does not exist, create it
         if (trailerId != null) {
             // If trailer already exists, update it
@@ -795,16 +816,33 @@ class BoatReservationService(
                     decimalToInt(trailerInput.length)
                 )
         }
-        addTrailerWarningsToReservations(trailer.id)
+        if (addWarnings) addTrailerWarningsToReservations(trailer.id)
         return trailer
     }
 
     fun canUpdateTrailerForType(reservationId: Int): Boolean {
         val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        return trailerCanBeUpdated(reservation)
+    }
+
+    private fun trailerCanBeUpdated(reservation: ReservationWithDependencies?): Boolean {
         return when {
             reservation?.type === BoatSpaceType.Trailer -> return true
             reservation?.type === BoatSpaceType.Storage && reservation.amenity === BoatSpaceAmenity.Trailer -> return true
-            reservation?.type === BoatSpaceType.Winter -> return true
+            reservation?.type === BoatSpaceType.Winter && reservation.storageType == StorageType.Trailer -> return true
+            else -> false
+        }
+    }
+
+    fun canUpdateTrailerForType(
+        type: BoatSpaceType,
+        amenity: BoatSpaceAmenity,
+        storageType: StorageType
+    ): Boolean {
+        return when {
+            type === BoatSpaceType.Trailer -> return true
+            type === BoatSpaceType.Storage && amenity === BoatSpaceAmenity.Trailer -> return true
+            type === BoatSpaceType.Winter && storageType == StorageType.Trailer -> return true
             else -> false
         }
     }

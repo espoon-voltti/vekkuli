@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.Modal
@@ -18,6 +19,7 @@ class ReservationCardInformation(
     private val trailerCard: TrailerCard,
     private val modal: Modal,
     private val boatReservationService: BoatReservationService,
+    private val permissionService: PermissionService,
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
@@ -53,7 +55,7 @@ class ReservationCardInformation(
              <div class="field">
                 <div class="edit-label">
                     <label class="label">$amenityLabel</label>
-                    <div>${if (reservation.type == BoatSpaceType.Winter) storageSpaceEdit else ""}</div>
+                    <div>${if (permissionService.canUpdateStorageType(reserverId, reservation.id)) storageSpaceEdit else ""}</div>
                 </div>
                 <p>$amenity</p>
             </div>
@@ -95,7 +97,7 @@ class ReservationCardInformation(
                 <a class="is-link is-icon-link edit-link"
                     id="update-payment-status-link"
                     data-testid="update-payment-status-link"
-                    hx-get="/reservation/modal/update-storage-type/${reservation.id}/$reserverId"
+                    hx-get="/reservation/modal/update-payment-status/${reservation.id}/$reserverId"
                     hx-target="#modal-container"
                     hx-swap="innerHTML">
                     <span class="icon">

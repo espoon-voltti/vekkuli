@@ -1102,6 +1102,9 @@ class CitizenUserController(
         @RequestParam reservationId: Int,
         @RequestParam storageType: StorageType,
         @RequestParam reserverId: UUID,
+        @RequestParam trailerRegistrationNumber: String?,
+        @RequestParam trailerWidth: BigDecimal?,
+        @RequestParam trailerLength: BigDecimal?,
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val user = request.getAuthenticatedEmployee()
@@ -1115,8 +1118,14 @@ class CitizenUserController(
             )
         )
 
-        val reservation = reservationService.getReservationWithDependencies(reservationId) ?: throw NotFound("Reservation missing")
-
+        reservationService.updateStorageTypeAndTrailerForEmployee(
+            reservationId,
+            user.id,
+            storageType,
+            trailerRegistrationNumber,
+            trailerWidth,
+            trailerLength
+        )
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
