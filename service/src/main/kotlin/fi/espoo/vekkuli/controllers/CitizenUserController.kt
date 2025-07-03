@@ -1097,6 +1097,31 @@ class CitizenUserController(
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }
 
+    @PostMapping("/virkailija/venepaikat/varaukset/varustetyyppi")
+    fun updateStorageType(
+        @RequestParam reservationId: Int,
+        @RequestParam storageType: StorageType,
+        @RequestParam reserverId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<String> {
+        val user = request.getAuthenticatedEmployee()
+        logger.audit(
+            user,
+            "CITIZEN_PROFILE_UPDATE_STORAGE_TYPE",
+            mapOf(
+                "targetId" to reservationId.toString(),
+                "storageType" to storageType.toString(),
+                "reserverId" to reserverId.toString()
+            )
+        )
+
+        val reservation = reservationService.getReservationWithDependencies(reservationId) ?: throw NotFound("Reservation missing")
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+        return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
+    }
+
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
         @RequestParam("boatId") boatId: Int,
