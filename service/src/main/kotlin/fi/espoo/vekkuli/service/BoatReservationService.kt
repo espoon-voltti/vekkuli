@@ -717,7 +717,7 @@ class BoatReservationService(
     }
 
     @Transactional
-    fun updateStorageTypeAndTrailerForCitizen(
+    fun updateStorageTypeAndTrailer(
         reserverId: UUID,
         reservationId: Int,
         storageType: StorageType,
@@ -730,13 +730,17 @@ class BoatReservationService(
 
         if (reservation.reserverId == null) throw Unauthorized()
 
-        if (canUpdateTrailerForType(reservation.type, reservation.amenity, storageType) && trailerInput == null) {
+        if (storageType == StorageType.Trailer && !canUpdateTrailerForType(reservation.type, reservation.amenity, storageType)) {
+            throw IllegalArgumentException("Can't update trailer if amenity does not match")
+        }
+
+        if (storageType == StorageType.Trailer && trailerInput == null) {
             throw IllegalArgumentException("Trailer information must be provided when storage type is Trailer")
         }
 
         // If storage type is Trailer, update or create it
         val trailer: Trailer? =
-            if (canUpdateTrailerForType(reservation.type, reservation.amenity, storageType)) {
+            if (storageType == StorageType.Trailer) {
                 createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId, !isEmployee)
             } else {
                 null
@@ -780,7 +784,7 @@ class BoatReservationService(
                 )
         }
         // Try to update the storage type and trailer
-        updateStorageTypeAndTrailerForCitizen(userId, reservationId, storageType, trailer, true)
+        updateStorageTypeAndTrailer(userId, reservationId, storageType, trailer, true)
     }
 
     private fun createOrUpdateTrailerAndAddWarnings(
@@ -822,22 +826,13 @@ class BoatReservationService(
 
     fun canUpdateTrailerForType(reservationId: Int): Boolean {
         val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
-        return trailerCanBeUpdated(reservation)
+        return canUpdateTrailerForType(reservation?.type, reservation?.amenity, reservation?.storageType)
     }
 
-    private fun trailerCanBeUpdated(reservation: ReservationWithDependencies?): Boolean {
-        return when {
-            reservation?.type === BoatSpaceType.Trailer -> return true
-            reservation?.type === BoatSpaceType.Storage && reservation.amenity === BoatSpaceAmenity.Trailer -> return true
-            reservation?.type === BoatSpaceType.Winter && reservation.storageType == StorageType.Trailer -> return true
-            else -> false
-        }
-    }
-
-    fun canUpdateTrailerForType(
-        type: BoatSpaceType,
-        amenity: BoatSpaceAmenity,
-        storageType: StorageType
+    private fun canUpdateTrailerForType(
+        type: BoatSpaceType?,
+        amenity: BoatSpaceAmenity?,
+        storageType: StorageType?
     ): Boolean {
         return when {
             type === BoatSpaceType.Trailer -> return true
