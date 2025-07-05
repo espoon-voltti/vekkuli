@@ -15,7 +15,7 @@
     "build:serve": "node build.js --dev --watch --serve"
   },
   "dependencies": {
-    "@tanstack/react-query": "5.81.2",
+    "@tanstack/react-query": "5.81.5",
     "@types/axios": "0.14.4",
     "@types/date-fns": "2.6.3",
     "axios": "1.10.0",
