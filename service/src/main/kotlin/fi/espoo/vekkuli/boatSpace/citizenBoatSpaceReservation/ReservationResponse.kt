@@ -170,16 +170,8 @@ class ReservationResponseMapper(
     ): ReservationResponse {
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
-        val citizen =
-            if (reservationWithDependencies.reserverType ==
-                ReserverType.Citizen ||
-                reservationWithDependencies.creationType == CreationType.Switch ||
-                reservationWithDependencies.creationType == CreationType.Renewal
-            ) {
-                getCitizen(actingCitizenId, reserverId)
-            } else {
-                null
-            }
+        val citizen = getCitizen(actingCitizenId, reserverId)
+
         val organization =
             if (reservationWithDependencies.reserverType ==
                 ReserverType.Organization
@@ -194,12 +186,7 @@ class ReservationResponseMapper(
         val (minWidth, maxWidth) = BoatSpaceConfig.getWidthLimitsForBoat(boatSpace.widthCm, boatSpace.amenity)
 
         val trailer = getTrailer(reservationWithDependencies)
-        val canReserveNew =
-            if (citizen != null) {
-                seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success
-            } else {
-                false
-            }
+        val canReserveNew = seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success
 
         return ReservationResponse(
             id = reservationId,

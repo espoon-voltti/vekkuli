@@ -5,9 +5,9 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Citizen } from 'citizen-frontend/shared/types'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
+import createAddress from 'lib-common/utils/createAddress'
 
 import { ReserverForm } from '../formDefinitions/reserver'
-import createAddress from 'lib-common/utils/createAddress'
 
 export default React.memo(function Reserver({
   reserver,
