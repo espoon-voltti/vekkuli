@@ -129,6 +129,19 @@ fun getTerminatedBoatSpaceReport(
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> = getBoatSpaceReportRows(jdbi, reportDate).filter { it.terminationTimestamp != null }
 
+fun getAllBoatSpacesReport(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRow> {
+    val unorderedRows = (
+        getFreeBoatSpaceReportRows(jdbi, reportDate) +
+            getReservedBoatSpaceReport(jdbi, reportDate) +
+            getTerminatedBoatSpaceReport(jdbi, reportDate)
+    )
+    val orderedRows = unorderedRows.sortedBy { it.harbor + it.pier + it.place }
+    return orderedRows
+}
+
 fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     val csvHeader =
         listOf(
