@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.util.regex.Pattern
 
 plugins {
-    id("org.springframework.boot") version "3.5.3"
+    id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.20"
