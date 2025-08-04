@@ -618,11 +618,23 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `Should add a warning if the boat has registration that is not unique`() {
         val registrationCode = "A12345"
-        insertBoat(citizenIdLeo, registrationCode = registrationCode)
+        loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
 
+        // Set a discount to 100% to ensure that the reservation is completed
+        reserverRepository.updateDiscount(citizenIdOlivia, 100)
+
+        val originalBoatSpaceId = insertBoatSpace()
+
+        // Start reservation for the original boat space
+        val (originalReservationId) = reservationService.startReservation(originalBoatSpaceId)
+
+        // Fill the original reservation with a boat that has a specific registration code
         loginAs(citizenIdMarko)
         allowReservation(eq(citizenIdMarko))
-        val boatSpaceId = insertBoatSpace()
+        reserverRepository.updateDiscount(citizenIdMarko, 100)
+
+        val boatSpaceId = insertBoatSpace(123, 2)
         val information =
             createReservationInformation(
                 boat =
@@ -645,7 +657,33 @@ class ReservationServiceTests : IntegrationTestBase() {
 
         reservationService.fillReservationInformation(reservationId, information)
 
-        val warnings = warningsRepository.getWarningsForReservation(reservationId)
+        var warnings = warningsRepository.getWarningsForReservation(reservationId)
+
+        assertEquals(0, warnings.size)
+
+        // Now fill the original reservation with a boat that has the same registration code
+        val originalSpaceInformation =
+            createReservationInformation(
+                boat =
+                    ReservationInformation.Boat(
+                        id = null,
+                        name = "original boat",
+                        type = BoatType.OutboardMotor,
+                        width = BigDecimal(1),
+                        length = BigDecimal(1),
+                        depth = BigDecimal(1),
+                        weight = 1000,
+                        registrationNumber = registrationCode.lowercase(),
+                        otherIdentification = "",
+                        extraInformation = "",
+                        ownership = OwnershipStatus.Owner,
+                    )
+            )
+
+        loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
+        reservationService.fillReservationInformation(originalReservationId, originalSpaceInformation)
+        warnings = warningsRepository.getWarningsForReservation(originalReservationId)
 
         assertEquals(1, warnings.size)
         val warning = warnings.first()
@@ -672,8 +710,10 @@ class ReservationServiceTests : IntegrationTestBase() {
                 OwnershipStatus.Owner
             ).id
 
-    private fun insertBoatSpace(): Int {
-        val boatSpaceId = 1234
+    private fun insertBoatSpace(
+        boatSpaceId: Int = 1234,
+        placeNumber: Int = 1
+    ): Int {
         insertDevBoatSpace(
             DevBoatSpace(
                 id = boatSpaceId,
@@ -681,7 +721,7 @@ class ReservationServiceTests : IntegrationTestBase() {
                 locationId = 1,
                 priceId = 1,
                 section = "A",
-                placeNumber = 1,
+                placeNumber = placeNumber,
                 amenity = BoatSpaceAmenity.None,
                 widthCm = 100,
                 lengthCm = 200,

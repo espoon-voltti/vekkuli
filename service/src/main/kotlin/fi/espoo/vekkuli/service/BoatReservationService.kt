@@ -992,7 +992,7 @@ class BoatReservationService(
         val reservationForBoat = boatSpaceReservationRepo.changeReservationBoat(reservationId, boatId)
         reservationWarningRepo.deleteReservationWarningsForReservation(
             reservationId,
-            ReservationWarningType.values().filter { it.category != ReservationWarningType.Category.General }
+            ReservationWarningType.entries.filter { it.category != ReservationWarningType.Category.General }
         )
         return reservationForBoat
     }
