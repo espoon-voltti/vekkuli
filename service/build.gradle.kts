@@ -7,7 +7,7 @@ import java.util.regex.Pattern
 plugins {
     id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.2.0"
     kotlin("plugin.spring") version "2.1.20"
     id("org.flywaydb.flyway") version "11.9.1"
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
