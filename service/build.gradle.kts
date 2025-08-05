@@ -125,7 +125,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.31.78"))
+    implementation(platform("software.amazon.awssdk:bom:2.32.14"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
 
