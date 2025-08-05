@@ -10,7 +10,6 @@ import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import fi.espoo.vekkuli.utils.startOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -93,6 +92,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.navigateToPage()
 
             val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+            assertThat(reservationSection.startDate).hasText("01.02.2024")
             reservationSection.renewButton.click()
 
             val formPage = BoatSpaceFormPage(page)
@@ -105,6 +105,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             paymentPage.nordeaSuccessButton.click()
 
             citizenDetails.navigateToPage()
+            assertThat(reservationSection.startDate).hasText("07.01.2025")
             assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
@@ -112,7 +113,6 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled
     fun `citizen can renew winter storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
@@ -122,6 +122,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.navigateToPage()
 
             val reservationSection = citizenDetails.getReservationSection("Haukilahti B 015")
+            assertThat(reservationSection.startDate).hasText("01.02.2024")
             reservationSection.renewButton.click()
 
             val formPage = BoatSpaceFormPage(page)
@@ -134,6 +135,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             paymentPage.nordeaSuccessButton.click()
 
             citizenDetails.navigateToPage()
+
+            assertThat(reservationSection.startDate).hasText("15.08.2025")
             assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
