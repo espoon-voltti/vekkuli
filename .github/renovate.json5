@@ -67,7 +67,7 @@
       "packageNames": [
         "@types/jsonwebtoken"
       ],
-      "allowedVersions": "9.0.2"
+      "allowedVersions": "9.0.7"
     }
   ],
 }
