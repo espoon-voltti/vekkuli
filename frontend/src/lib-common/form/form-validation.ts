@@ -11,7 +11,7 @@ export const SSN_REGEXP =
 
 export const TIME_REGEXP = /^(?:[0-1][0-9]|2[0-3]):[0-5][0-9]$/
 
-export const PHONE_REGEXP = /^[0-9 \-+()]{6,20}$/
+export const PHONE_REGEXP = /^[+]?[\d\s]{6,20}$/
 
 export const EMAIL_REGEXP = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
@@ -81,13 +81,13 @@ export const ssn = (
   return undefined
 }
 
-export const phone = (
+export const validPhone = (
   val: string,
   err: ErrorKey = 'phone'
 ): ErrorKey | undefined =>
   val.length > 0 && !PHONE_REGEXP.test(val) ? err : undefined
 
-export const email = (
+export const validEmail = (
   val: string,
   err: ErrorKey = 'email'
 ): ErrorKey | undefined =>
