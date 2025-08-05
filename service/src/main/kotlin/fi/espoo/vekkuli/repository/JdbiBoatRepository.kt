@@ -198,8 +198,16 @@ class JdbiBoatRepository(
                     SELECT * FROM boat
                     WHERE lower(registration_code) = :registrationCode
                     AND deleted_at IS NULL
+                    AND EXISTS (
+                        SELECT 1
+                        FROM boat_space_reservation bsr
+                        WHERE bsr.boat_id = boat.id
+                          AND bsr.status IN ('Confirmed', 'Invoiced')
+                          AND bsr.end_date >= :currentDateTime
+                    )
                     """.trimIndent()
                 )
+            query.bind("currentDateTime", timeProvider.getCurrentDateTime())
             query.bind("registrationCode", registrationCode.lowercase())
             query.mapTo<Boat>().list()
         }
