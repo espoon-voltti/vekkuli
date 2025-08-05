@@ -29,7 +29,7 @@ class ReservationListRow : BaseView() {
         val startDateText = formatAsShortYearDate(reservation.startDate)
         val endDateText = getEndDateText(reservation)
         val reserverUrl = getReserverPageUrl(reservation.reserverId, reservation.reserverType)
-        val warningIcon = getWarningIcon(reservation.hasAnyWarnings())
+        val warningIcon = getWarningIcon(reservation.hasAnyWarnings(), reservation.hasManualWarnings())
 
         //language=HTML
         return """
@@ -107,10 +107,18 @@ class ReservationListRow : BaseView() {
         reserverType: ReserverType
     ): String = """/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId"""
 
-    private fun getWarningIcon(hasWarnings: Boolean) =
-        if (hasWarnings) {
-            "<div ${addTestId("warning-icon")}>${icons.warningExclamation(false)}</div>"
+    private fun getWarningIcon(
+        hasWarnings: Boolean,
+        hasManualWarnings: Boolean
+    ): String {
+        val title = if (hasManualWarnings) t("boatSpaceReservation.warningIcon.info") else ""
+
+        return if (hasWarnings) {
+            """<div title="$title" class="${if (hasManualWarnings) "with-asterisk" else ""}" ${addTestId(
+                "warning-icon"
+            )}>${icons.warningExclamation(false)}</div>"""
         } else {
             ""
         }
+    }
 }
