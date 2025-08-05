@@ -278,6 +278,17 @@ class CitizenDetailsPage(
 
     fun editTrailerButton(reservationId: Int) = page.getByTestId("edit-trailer-$reservationId")
 
+    fun editStorageTypeButton(reservationId: Int) = getByDataTestId("open-change-storage-type-modal-$reservationId")
+
+    val editStorageTypeForm: Locator = page.getByTestId("reservation-storage-type-modal-form")
+    val storageTypeCheckboxTrailer: Locator = page.getByTestId("storageType-Trailer")
+    val storageTypeCheckboxBuck: Locator = page.getByTestId("storageType-Buck")
+    val trailerInputs: Locator = getByDataTestId("trailer-information-inputs")
+    val editStorageTypeConfirmButton = page.getByTestId("reservation-validity-modal-confirm")
+    val editStorageTypeCancelButton = page.getByTestId("reservation-validity-modal-cancel")
+    val trailerRegistrationNumberInput = page.getByTestId("trailerRegistrationNumber")
+    val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
+
     val trailerRegistrationCodeInput = page.getByTestId("trailerRegistrationCode")
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")

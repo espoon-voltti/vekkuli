@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.Modal
@@ -17,7 +18,8 @@ import java.util.*
 class ReservationCardInformation(
     private val trailerCard: TrailerCard,
     private val modal: Modal,
-    private val boatReservationService: BoatReservationService
+    private val boatReservationService: BoatReservationService,
+    private val permissionService: PermissionService,
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
@@ -38,10 +40,25 @@ class ReservationCardInformation(
                 t("boatSpaces.storageTypeHeader")
             }
 
+        val storageSpaceEdit =
+            modal
+                .createOpenModalBuilder()
+                .setType(OpenModalButtonType.Link)
+                .setText("""<span class="icon">${icons.edit}</span>""")
+                .setPath("/reservation/modal/update-storage-type/${reservation.id}/$reserverId")
+                .setStyle(ModalButtonStyle.EditIcon)
+                .setTestId("open-change-storage-type-modal-${reservation.id}")
+                .build()
+
         val amenityWrapper =
             """ 
-            <label class="label">$amenityLabel</label>
-            <p>$amenity</p>
+             <div class="field">
+                <div class="edit-label">
+                    <label class="label">$amenityLabel</label>
+                    <div>${if (permissionService.canUpdateStorageType(reserverId, reservation.id)) storageSpaceEdit else ""}</div>
+                </div>
+                <p>$amenity</p>
+            </div>
             """.trimIndent()
 
         val paymentStatus =
@@ -127,6 +144,7 @@ class ReservationCardInformation(
                 ""
             }
 
+        // language=HTML
         return """
             <div class="columns">
                  <div class="column">
@@ -171,10 +189,10 @@ class ReservationCardInformation(
                          <p>${reservation.priceInEuro}</p>
                      </div>
                      <div class="field">
-                     <div class="edit-label">
-                         <label class="label">${t("boatSpaceReservation.title.boatPresent")}</label>
-                         <div>$boatChangeLink</div>
-                     </div>
+                         <div class="edit-label">
+                             <label class="label">${t("boatSpaceReservation.title.boatPresent")}</label>
+                             <div>$boatChangeLink</div>
+                         </div>
                          <p ${addTestId("reservation-list-card-boat")}>${reservation.boat?.name ?: ""}</p>
                      </div>
                  </div>
