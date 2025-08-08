@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.domain.StorageType
 import fi.espoo.vekkuli.repository.PaginatedResult
@@ -70,15 +71,16 @@ data class BoatSpaceReservationItemWithWarningRow(
     val validity: ReservationValidity
 )
 
-fun getFilteredBoatSpaceReservationWarningCount(
+fun getFilteredBoatSpaceReservationWarnings(
     jdbi: Jdbi,
     filter: SqlExpr
-): Int =
+): List<ReservationWarning> =
     jdbi.withHandleUnchecked { handle ->
         val sqlParts = mutableListOf<String>()
+
         sqlParts.add(
             """
-            SELECT COUNT(distinct(bsr.id)) as count
+            SELECT rw.id, rw.reservation_id, rw.boat_id, rw.trailer_id, rw.invoice_number, rw.key, rw.info_text
             FROM boat_space_reservation bsr
             JOIN reserver r ON bsr.reserver_id = r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
@@ -94,7 +96,7 @@ fun getFilteredBoatSpaceReservationWarningCount(
                 filter.bind(this)
             }
 
-        query.mapTo<Int>().findOne().orElse(0)
+        query.mapTo<ReservationWarning>().list()
     }
 
 fun getFilteredAndPaginatedBoatSpaceReservationIds(

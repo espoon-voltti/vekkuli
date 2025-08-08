@@ -6,3 +6,8 @@ class HasWarningExpr :
     ExecuteExpr(
         "rw.key IS NOT NULL"
     )
+
+class HasGeneralWarningExpr :
+    ExecuteExpr(
+        "rw.key = 'GeneralReservationWarning'"
+    )
