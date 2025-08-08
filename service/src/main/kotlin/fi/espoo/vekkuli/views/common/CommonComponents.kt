@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
+import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Component
 
@@ -251,7 +252,8 @@ class CommonComponents(
                     </div>
                     $addressField
                     
-                </div>"""
+                </div>
+                 """
         )
     }
 
@@ -274,8 +276,26 @@ class CommonComponents(
             formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
         val cityField =
             formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.postOffice)
-        val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
-        val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
+        val emailInput =
+            formComponents.textInput(
+                "boatApplication.email",
+                "email",
+                citizen.email,
+                true,
+                pattern = Pair(".+@.+\\..+", "validation.email")
+            )
+        val phoneInput =
+            formComponents.textInput(
+                "boatApplication.phone",
+                "phone",
+                citizen.phone,
+                true,
+                pattern =
+                    Pair(
+                        PHONE_NUMBER_REGEX,
+                        "validation.phoneNumber"
+                    )
+            )
         val municipalityInput =
             formComponents.select(
                 "boatSpaceReservation.title.municipality",

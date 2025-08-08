@@ -29,8 +29,13 @@ export type FieldType<F extends () => AnyForm> = Form<
 >
 
 export const string = () => mapped(value<string>(), (s) => s.trim())
+
 export const whitespaceTrimmedString = () =>
-  mapped(value<string>(), (s) => s.replace(/\s+/g, ''))
+  mapped(value<string>(), (s: string) => s.replace(/\s+/g, ''))
+
+export const phoneNumberTrimmedString = () =>
+  mapped(value<string>(), (s) => s.replace(/[\s-]+/g, ''))
+
 export const boolean = () => value<boolean>()
 export const number = () => value<number>()
 
