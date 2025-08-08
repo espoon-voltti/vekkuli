@@ -130,7 +130,7 @@ dependencies {
     implementation("software.amazon.awssdk:regions")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.commonmark:commonmark:0.25.0")
+    implementation("org.commonmark:commonmark:0.25.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
