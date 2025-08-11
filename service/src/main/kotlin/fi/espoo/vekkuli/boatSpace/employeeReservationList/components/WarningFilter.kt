@@ -2,8 +2,6 @@ package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
 import fi.espoo.vekkuli.domain.ReservationWarning
-import fi.espoo.vekkuli.domain.ReservationWarningType
-import fi.espoo.vekkuli.domain.WarningFilterType
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component

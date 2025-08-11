@@ -1,9 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
-import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
 import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.domain.ReservationWarningType
-import fi.espoo.vekkuli.domain.WarningFilterType
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
@@ -23,10 +21,10 @@ class GeneralWarningFilter : BaseView() {
              <label class="checkbox">
                 <input type="checkbox" 
                     name="generalWarningFilter"
-                    ${addTestId("filter-warnings")}
+                    ${addTestId("filter-generalWarnings")}
                     :checked="$active"
                 >
-                <span>$label</span>
+                <span ${addTestId("filter-label-generalWarnings")}>$label</span>
             </label>
             <span class="ml-s with-asterisk">${icons.warningExclamation(false)}</span>
             """.trimIndent()
