@@ -148,6 +148,38 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `should only show general warnings when filter is select`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 6 }
+        assertThat(listingPage.generalWarningsFilterCheckbox).not().isChecked()
+        assertThat(listingPage.generalWarningsFilterLabel).containsText("(0 reservations)")
+        listingPage.boatSpaceLeoKorhonen.click()
+        val citizenDetails = CitizenDetailsPage(page)
+        // click the link to add general warning
+        citizenDetails.addNewGeneralWarningLink.clickAndWaitForHtmxSettle()
+        assertThat(citizenDetails.generalWarningModal).isVisible()
+        citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
+        listingPage.navigateTo()
+        assertThat(listingPage.generalWarningsFilterLabel).containsText("(1 reservations)")
+        listingPage.boatSpaceJormaPulkkinen.click()
+        // click the link to add general warning
+        citizenDetails.addNewGeneralWarningLink.clickAndWaitForHtmxSettle()
+        assertThat(citizenDetails.generalWarningModal).isVisible()
+        citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
+        listingPage.navigateTo()
+
+        // Selecting the general warnings filter should show only reservations with general warnings
+        assertThat(listingPage.generalWarningsFilterLabel).containsText("(2 reservations)")
+        listingPage.generalWarningsFilterCheckbox.click()
+        page.waitForCondition { listingPage.reservations.count() == 2 }
+
+        // Toggling the filter should show all reservations again
+        listingPage.generalWarningsFilterCheckbox.click()
+        assertThat(listingPage.generalWarningsFilterCheckbox).not().isChecked()
+        page.waitForCondition { listingPage.reservations.count() == 6 }
+    }
+
+    @Test
     fun `Send mass email link is enabled and opens a send message modal when reservation list is not empty`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 6 }

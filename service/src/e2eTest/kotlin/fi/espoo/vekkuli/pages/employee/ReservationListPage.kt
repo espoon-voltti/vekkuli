@@ -61,6 +61,8 @@ class ReservationListPage(
     val sendMassMessageModalSubmit = getByDataTestId("send-mass-email-modal-confirm")
     val sendMassMessageModalSuccess = getByDataTestId("message-sent-success-modal")
     val warningsFilterCheckbox = filterLocator("warnings")
+    val generalWarningsFilterCheckbox = filterLocator("generalWarnings")
+    val generalWarningsFilterLabel = getByDataTestId("filter-label-generalWarnings")
 
     fun boatSpace(customer: String) =
         getByDataTestId("reserver-name")
