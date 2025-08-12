@@ -114,7 +114,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.53.0")
+    testImplementation("com.microsoft.playwright:playwright:1.54.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.2.3")
     implementation("io.ktor:ktor-client-cio:3.2.3") // CIO engine
@@ -136,9 +136,9 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("ch.qos.logback:logback-core:1.5.18")
-    implementation("commons-codec:commons-codec:1.18.0")
+    implementation("commons-codec:commons-codec:1.19.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.51.2")
+    downloadOnly("com.datadoghq:dd-java-agent:1.52.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

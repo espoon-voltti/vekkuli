@@ -22,7 +22,7 @@
     "bulma": "1.0.3",
     "classnames": "2.5.1",
     "compute-scroll-into-view": "3.1.1",
-    "core-js": "3.44.0",
+    "core-js": "3.45.0",
     "date-fns": "4.1.0",
     "date-fns-tz": "3.2.0",
     "esbuild-sass-plugin": "3.3.1",
@@ -32,7 +32,7 @@
     "react-dom": "18.3.1",
     "react-focus-on": "3.10.0",
     "react-router": "7.7.1",
-    "sass": "1.89.2",
+    "sass": "1.90.0",
     "sass-loader": "16.0.5",
     "seamless-scroll-polyfill": "2.3.4"
   },
