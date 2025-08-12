@@ -401,7 +401,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             citizenSection.emailInput.fill(" test @example.com")
             assertThat(citizenSection.emailError).isHidden()
 
-            citizenSection.phoneInput.fill("045 123456")
+            citizenSection.phoneInput.fill("045 - 123456")
             assertThat(citizenSection.phoneError).isHidden()
 
             userAgreementSection.certifyInfoCheckbox.check()

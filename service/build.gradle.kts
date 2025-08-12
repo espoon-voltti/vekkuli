@@ -9,7 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.0"
     kotlin("plugin.spring") version "2.2.0"
-    id("org.flywaydb.flyway") version "11.9.1"
+    id("org.flywaydb.flyway") version "11.10.5"
     id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.2.0"
@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.7")
-        classpath("org.flywaydb:flyway-database-postgresql:11.10.0")
+        classpath("org.flywaydb:flyway-database-postgresql:11.10.5")
     }
 }
 
@@ -88,9 +88,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.zaxxer:HikariCP:6.3.0")
-    implementation("org.flywaydb:flyway-core:11.10.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.10.0")
+    implementation("com.zaxxer:HikariCP:7.0.1")
+    implementation("org.flywaydb:flyway-core:11.10.5")
+    implementation("org.flywaydb:flyway-database-postgresql:11.10.5")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation(platform("org.jdbi:jdbi3-bom:3.49.5"))
     implementation("org.jdbi:jdbi3-core")
@@ -98,7 +98,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin")
     implementation("org.jdbi:jdbi3-postgres")
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.19.1"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.19.2"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("com.auth0:java-jwt:4.5.0")
@@ -106,39 +106,39 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.7")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.12")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    implementation(platform("org.junit:junit-bom:5.13.3"))
+    implementation(platform("org.junit:junit-bom:5.13.4"))
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.53.0")
+    testImplementation("com.microsoft.playwright:playwright:1.54.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:3.2.2")
-    implementation("io.ktor:ktor-client-cio:3.2.2") // CIO engine
-    implementation("io.ktor:ktor-client-content-negotiation:3.2.2") // Content negotiation
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.2") // kotlinx serialization
+    implementation("io.ktor:ktor-client-core:3.2.3")
+    implementation("io.ktor:ktor-client-cio:3.2.3") // CIO engine
+    implementation("io.ktor:ktor-client-content-negotiation:3.2.3") // Content negotiation
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1-0.6.x-compat")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.32.14"))
+    implementation(platform("software.amazon.awssdk:bom:2.32.16"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.commonmark:commonmark:0.25.0")
+    implementation("org.commonmark:commonmark:0.25.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("ch.qos.logback:logback-core:1.5.18")
-    implementation("commons-codec:commons-codec:1.18.0")
+    implementation("commons-codec:commons-codec:1.19.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.51.2")
+    downloadOnly("com.datadoghq:dd-java-agent:1.52.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
