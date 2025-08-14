@@ -20,7 +20,7 @@ class EditModal(
         val harborDropdown =
             formComponents.select(
                 "boatSpaceList.label.harbor",
-                "harbor",
+                "harborEdit",
                 "",
                 listOf(Pair("", "Ei valittu")) + harborOptions,
                 placeholder = ""
@@ -32,7 +32,7 @@ class EditModal(
         val boatSpaceTypeInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceType",
-                "boatSpaceType",
+                "boatSpaceTypeEdit",
                 "",
                 listOf(Pair("", "Ei valittu")) +
                     BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
@@ -58,7 +58,7 @@ class EditModal(
         val isActiveInput =
             formComponents.radioButtons(
                 "boatSpaceList.label.state",
-                "boatSpaceState",
+                "boatSpaceStateEdit",
                 defaultValue = "",
                 options =
                     listOf(RadioOption("", "Ei valittu")) +

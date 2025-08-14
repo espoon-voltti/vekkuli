@@ -83,8 +83,12 @@ class EmployeeReservationListService(
             filters.add(EndDatePassedExpr(timeProvider.getCurrentDate()))
         }
 
-        if (params.warningFilter == true) {
+        if (params.warningFilter) {
             filters.add(HasWarningExpr())
+        }
+
+        if (params.generalWarningFilter) {
+            filters.add(HasGeneralWarningExpr())
         }
 
         if (params.exceptionsFilter == true) {
@@ -143,7 +147,7 @@ class EmployeeReservationListService(
                 paginatedIds.items,
                 sortBy
             )
-        val warningCount = getFilteredBoatSpaceReservationWarningCount(jdbi, filters)
-        return PaginatedReservationsResult(reservations, paginatedIds.totalRows, paginatedIds.start, paginatedIds.end, warningCount)
+        val warnings = getFilteredBoatSpaceReservationWarnings(jdbi, filters)
+        return PaginatedReservationsResult(reservations, paginatedIds.totalRows, paginatedIds.start, paginatedIds.end, warnings)
     }
 }

@@ -19,7 +19,8 @@ class EmployeeReservationListView(
     private val dateFilter: DateFilter,
     private val amenityFilter: AmenityFilter,
     private val sectionFilter: SectionFilter,
-    private val sendMessageView: SendMessageView
+    private val sendMessageView: SendMessageView,
+    private val generalWarningFilter: GeneralWarningFilter
 ) : BaseView() {
     fun render(
         harbors: List<Location>,
@@ -146,10 +147,9 @@ class EmployeeReservationListView(
                             </div>
                         </div>
                         <div class="employee-warning-filter">
-                            <div 
-                                id="employee-reservation-list-warnings-filter" 
-                                hx-swap-oob="true">
-                                ${warningFilter.render(params.warningFilter == true, reservations.totalWarnings)}
+                            <div id="employee-reservation-list-warnings-filter" hx-swap-oob="true">
+                                <div>${warningFilter.render(params.warningFilter,reservations.warnings)}</div>
+                                <div>${generalWarningFilter.render(params.generalWarningFilter, reservations.warnings)}</div>
                             </div>
                             <div>${exceptionsFilter.render(params.exceptionsFilter == true)}</div>
                             <div>${dateFilter.render(params.exceptionsFilter == true)}</div>

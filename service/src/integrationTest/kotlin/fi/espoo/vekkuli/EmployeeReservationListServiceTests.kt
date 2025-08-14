@@ -362,4 +362,56 @@ class EmployeeReservationListServiceTests : IntegrationTestBase() {
 
         assertEquals(2, reservations.size, "Only slip reservations are returned")
     }
+
+    @Test
+    fun `should return reservations with warnings`() {
+        testUtils.createReservationInConfirmedStateWithWarning(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForSlip,
+                1,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            ),
+            false
+        )
+        testUtils.createReservationInConfirmedStateWithWarning(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForSlip2,
+                2,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            ),
+            false
+        )
+        testUtils.createReservationInConfirmedStateWithWarning(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceIdForSlip3,
+                3,
+                startDate = timeProvider.getCurrentDate().minusDays(10),
+                endDate = timeProvider.getCurrentDate().plusDays(10),
+            ),
+            true
+        )
+        var reservations =
+            employeeReservationListService.getAllBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    warningFilter = true
+                )
+            )
+        assertEquals(3, reservations.size, "Reservation with warnings are returned")
+
+        reservations =
+            employeeReservationListService.getAllBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    generalWarningFilter = true
+                )
+            )
+        assertEquals(1, reservations.size, "Only reservations with general warnings are returned")
+    }
 }

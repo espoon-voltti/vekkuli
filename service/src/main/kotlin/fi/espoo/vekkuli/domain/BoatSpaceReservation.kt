@@ -189,6 +189,11 @@ enum class BoatSpaceState {
     Inactive
 }
 
+enum class WarningFilterType {
+    Any,
+    General
+}
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
     val ascending: Boolean = true,
@@ -198,7 +203,8 @@ data class BoatSpaceReservationFilter(
     val nameSearch: String? = null,
     val phoneSearch: String? = null,
     val emailSearch: String? = null,
-    val warningFilter: Boolean? = null,
+    val warningFilter: Boolean = false,
+    val generalWarningFilter: Boolean = false,
     val exceptionsFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),
     val expiration: ReservationExpiration = ReservationExpiration.Active,

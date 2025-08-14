@@ -1065,156 +1065,167 @@ ul {
 .employee-warning-filter {
   display: block;
 
-  div {
+  >div {
     display: flex;
     margin-bottom: $spacing-medium;
   }
 }
 
-.reports-container {
+#employee-reservation-list-warnings-filter {
   display: flex;
   flex-direction: column;
-  gap: $spacing-small;
+  gap: $spacing-medium;
 
-  .reports-info {
-    margin-bottom: $spacing-medium;
+  div {
+    display: flex;
+    flex-direction: row;
   }
 }
 
-.employee-page .exceptions-container {
-  .label {
-    padding-bottom: 16px;
-  }
-
-  div.espoo-rules-applied {
+  .reports-container {
     display: flex;
-    align-items: flex-start;
-    justify-content: normal;
-    gap: 16px;
+    flex-direction: column;
+    gap: $spacing-small;
 
-    span {
-      max-width: 600px;
+    .reports-info {
+      margin-bottom: $spacing-medium;
     }
   }
-}
 
-.attention {
-  display: none;
-  height: 16px;
-  width: 16px;
-  background-color: #70C673;
-  border-radius: 50%;
-  margin-left: 10px;
-  &.on {
-    display: inline-block;
+  .employee-page .exceptions-container {
+    .label {
+      padding-bottom: 16px;
+    }
+
+    div.espoo-rules-applied {
+      display: flex;
+      align-items: flex-start;
+      justify-content: normal;
+      gap: 16px;
+
+      span {
+        max-width: 600px;
+      }
+    }
   }
-}
 
-.warning-attention {
-  display: none;
-  height: 16px;
-  width: 16px;
-  background-color: $warning;
-  border-radius: 50%;
-  margin-left: 10px;
-  &.on {
-    display: inline-block;
-  }
-}
-
-.discount-info {
-  font-size: 13px;
-}
-
-#send-message-to-reserver {
-  display: flex;
-  row-gap: $block-spacing;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-}
-
-#send-mass-message, #send-message-to-reserver {
-  align-items: center;
-  column-gap: 8px;
-}
-#send-mass-email, #send-email {
-  .recipients {
-    cursor: help;
-    font-size: 13px;
-  }
-  #recipient-emails {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    background: black;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 13px;
-    white-space: nowrap;
-    z-index: 1000;
+  .attention {
     display: none;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-    overflow: scroll;
-    max-height: 400px;
-  }
-}
-
-#sent-message-form {
-  .close-modal {
-    display: flex;
-    position: sticky;
-    top: 0;
-    background-color: white;
-    z-index: 10;
-    padding: 20px 10px 10px;
-    justify-content: right;
-    transform: translateY(-20px);
-
-  }
-  .meta-content {
-    padding-top: $spacing-small;
-    padding-bottom: $spacing-xl;
-  }
-  .message-content {
-    white-space: pre-line;
-  }
-}
-
-#status-ball {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  &.active {
-    background-color: $green;
-  }
-  &.inactive {
-    background-color: $red;
-  }
-}
-
-a {
-  &.disabled,
-  &:disabled {
-    pointer-events: none;
-    color: $grey;
-  }
-}
-
-.link {
-  color: var(--bulma-link-text);
-  cursor: pointer;
-  text-decoration: none;
-  transition-duration: var(--bulma-duration);
-  transition-property: background-color, border-color, color;
-}
-
-.with-asterisk {
-  display: flex;
-    &::after {
-        content: ' *';
-        color: $black;
-        margin-left: $spacing-extrasmall;
+    height: 16px;
+    width: 16px;
+    background-color: #70C673;
+    border-radius: 50%;
+    margin-left: 10px;
+    &.on {
+      display: inline-block;
     }
+  }
+
+  .warning-attention {
+    display: none;
+    height: 16px;
+    width: 16px;
+    background-color: $warning;
+    border-radius: 50%;
+    margin-left: 10px;
+    &.on {
+      display: inline-block;
+    }
+  }
+
+  .discount-info {
+    font-size: 13px;
+  }
+
+  #send-message-to-reserver {
+    display: flex;
+    row-gap: $block-spacing;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  #send-mass-message, #send-message-to-reserver {
+    align-items: center;
+    column-gap: 8px;
+  }
+  #send-mass-email, #send-email {
+    .recipients {
+      cursor: help;
+      font-size: 13px;
+    }
+    #recipient-emails {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background: black;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      white-space: nowrap;
+      z-index: 1000;
+      display: none;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      overflow: scroll;
+      max-height: 400px;
+    }
+  }
+
+  #sent-message-form {
+    .close-modal {
+      display: flex;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 10;
+      padding: 20px 10px 10px;
+      justify-content: right;
+      transform: translateY(-20px);
+
+    }
+    .meta-content {
+      padding-top: $spacing-small;
+      padding-bottom: $spacing-xl;
+    }
+    .message-content {
+      white-space: pre-line;
+    }
+  }
+
+  #status-ball {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    &.active {
+      background-color: $green;
+    }
+    &.inactive {
+      background-color: $red;
+    }
+  }
+
+  a {
+    &.disabled,
+    &:disabled {
+      pointer-events: none;
+      color: $grey;
+    }
+  }
+
+  .link {
+    color: var(--bulma-link-text);
+    cursor: pointer;
+    text-decoration: none;
+    transition-duration: var(--bulma-duration);
+    transition-property: background-color, border-color, color;
+  }
+
+  .with-asterisk {
+    display: flex;
+    &::after {
+      content: ' *';
+      color: $black;
+      margin-left: $spacing-extrasmall;
+  }
 }

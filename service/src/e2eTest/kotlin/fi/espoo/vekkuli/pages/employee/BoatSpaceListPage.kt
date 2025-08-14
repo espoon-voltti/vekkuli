@@ -66,17 +66,17 @@ class BoatSpaceListPage(
 class BoatSpaceEditModalPage(
     page: Page
 ) : BasePage(page) {
-    val harborEdit = page.getByTestId("harbor")
+    val harborEdit = page.getByTestId("harborEdit")
     val sectionEdit = page.getByTestId("section")
     val placeNumberEdit = page.getByTestId("placeNumber")
-    val boatSpaceTypeEdit = page.getByTestId("boatSpaceType")
+    val boatSpaceTypeEdit = page.getByTestId("boatSpaceTypeEdit")
     val boatSpaceAmenityEdit = page.getByTestId("boatSpaceAmenity")
     val widthEdit = page.getByTestId("width")
     val lengthEdit = page.getByTestId("length")
     val paymentEdit = page.getByTestId("payment")
     val boatSpaceCount = getByDataTestId("target-boat-space-count")
 
-    fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceState-$state")
+    fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceStateEdit-$state")
 
     val submitButton = page.getByDataTestId("edit-modal-confirm")
     val cancelButton = page.getByDataTestId("edit-modal-cancel")

@@ -226,7 +226,7 @@ class TrailerCard(
                     </div>
 
                 </div>
-                <form hx-target="#trailer-for-reservation-$reservationId" 
+                <form id="trailer-reservation-form" hx-target="#trailer-for-reservation-$reservationId" 
                     hx-patch="${getSaveUrl(reservationId, reserverId)}" hx-swap="outerHTML">
                     <div class="columns" class="pb-s">
                        <div class="column is-one-quarter">
@@ -247,6 +247,7 @@ class TrailerCard(
                     </div>
                     $buttons
                 </form>
+                <script>validation.init({forms: ['trailer-reservation-form']})</script>
             </div>
             """.trimIndent()
     }

@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.repository.JdbiReservationWarningRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.LocalDateRange
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -94,7 +95,8 @@ data class CreateReservationParams(
 class TestUtils(
     private val reservationService: BoatReservationService,
     private val timeProvider: TimeProvider,
-    private var seasonalService: SeasonalService
+    private var seasonalService: SeasonalService,
+    private val reservationWarningRepository: JdbiReservationWarningRepository
 ) {
     fun createReservationInConfirmedState(params: CreateReservationParams): BoatSpaceReservationDetails {
         var madeReservation =
@@ -124,6 +126,42 @@ class TestUtils(
             )
         reservationService.handlePaymentResult(payment.id, true)
         return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
+    }
+
+    fun createReservationInConfirmedStateWithWarning(
+        params: CreateReservationParams,
+        generalWarning: Boolean = false
+    ) {
+        val reservation = createReservationInConfirmedState(params)
+        if (!generalWarning) {
+            reservationWarningRepository.addReservationWarnings(
+                listOf(
+                    ReservationWarning(
+                        id = UUID.randomUUID(),
+                        reservationId = reservation.id,
+                        boatId = reservation.boat?.id,
+                        key = ReservationWarningType.BoatWidth,
+                        infoText = null,
+                        invoiceNumber = null,
+                        trailerId = null
+                    )
+                )
+            )
+        } else {
+            reservationWarningRepository.addReservationWarnings(
+                listOf(
+                    ReservationWarning(
+                        id = UUID.randomUUID(),
+                        reservationId = reservation.id,
+                        boatId = null,
+                        key = ReservationWarningType.GeneralReservationWarning,
+                        infoText = null,
+                        invoiceNumber = null,
+                        trailerId = null
+                    )
+                )
+            )
+        }
     }
 
     fun createReservationInPaymentState(

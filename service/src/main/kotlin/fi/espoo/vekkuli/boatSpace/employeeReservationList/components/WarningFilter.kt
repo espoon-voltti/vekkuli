@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
+import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
@@ -9,29 +10,28 @@ import org.springframework.stereotype.Component
 class WarningFilter : BaseView() {
     fun render(
         active: Boolean,
-        warningCount: Int
+        warnings: List<ReservationWarning>
     ): String {
-        val label = t("boatSpaceReservation.showReservationsWithWarnings", listOf(warningCount.toString()))
+        val warningCount = warnings.distinctBy { it.reservationId }.size.toString()
+        val label = t("boatSpaceReservation.showReservationsWithWarnings", listOf(warningCount))
 
         //language=HTML
-        return """
-            <label class="checkbox">
-                <input type="checkbox" 
-                    name="warningFilter"
-                    ${addTestId("filter-warnings")}
-                    :checked="$active"
-                    @change="
-                        if (event.target.checked) {
+        val onChange = """if (event.target.checked) {
                           sortColumn = '${BoatSpaceReservationFilterColumn.WARNING_CREATED}';
                           sortDirection = 'false';
                           document.getElementById('sortColumn').value = sortColumn;
                           document.getElementById('sortDirection').value = sortDirection;
-                          nextTick(() => {
-                            document.getElementById('reservation-table-header')
-                              .dispatchEvent(new Event('change', { bubbles: true }));
-                          });
-                        }
-                    ">
+                        }"""
+
+        //language=HTML
+        return """
+            <label class="checkbox mr-s">
+                <input type="checkbox" 
+                    name="warningFilter"
+                    ${addTestId("filter-warnings")}
+                    :checked="$active"
+                    @change="$onChange"
+                >
                 <span>$label</span>
             </label>
             <span class="ml-s">${icons.warningExclamation(false)}</span>

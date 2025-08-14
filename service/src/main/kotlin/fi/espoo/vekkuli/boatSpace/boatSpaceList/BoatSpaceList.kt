@@ -33,13 +33,13 @@ data class BoatSpaceListEditParams(
     val boatSpaceIds: List<Int> = emptyList(),
     val section: String? = null,
     val placeNumber: Int? = null,
-    val harbor: Int? = null,
-    val boatSpaceType: BoatSpaceType?,
+    val harborEdit: Int? = null,
+    val boatSpaceTypeEdit: BoatSpaceType?,
     val boatSpaceAmenity: BoatSpaceAmenity?,
     val width: BigDecimal?,
     val length: BigDecimal?,
     val payment: Int?,
-    val boatSpaceState: BoatSpaceState?
+    val boatSpaceStateEdit: BoatSpaceState?
 )
 
 data class BoatSpaceListAddParams(

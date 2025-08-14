@@ -162,15 +162,15 @@ class BoatSpaceListController {
         boatSpaceService.editBoatSpaces(
             editParams.boatSpaceIds,
             EditBoatSpaceParams(
-                editParams.harbor,
-                editParams.boatSpaceType,
+                editParams.harborEdit,
+                editParams.boatSpaceTypeEdit,
                 if (editParams.section.isNullOrEmpty()) null else editParams.section,
                 editParams.placeNumber,
                 editParams.boatSpaceAmenity,
                 decimalToInt(editParams.width),
                 decimalToInt(editParams.length),
                 editParams.payment,
-                if (editParams.boatSpaceState == null) null else editParams.boatSpaceState == BoatSpaceState.Active
+                if (editParams.boatSpaceStateEdit == null) null else editParams.boatSpaceStateEdit == BoatSpaceState.Active
             )
         )
 
