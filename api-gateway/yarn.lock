@@ -630,7 +630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.23":
+"@types/express@npm:*, @types/express@npm:^4.17.23, @types/express@npm:^4.7.23":
   version: 4.17.23
   resolution: "@types/express@npm:4.17.23"
   dependencies:
@@ -4461,6 +4461,7 @@ __metadata:
     "@node-saml/passport-saml": "npm:5.1.0"
     "@types/cookie-parser": "npm:1.4.9"
     "@types/csurf": "npm:1.11.5"
+    "@types/express": "npm:^4.7.23"
     "@types/express-http-proxy": "npm:1.6.7"
     "@types/express-session": "npm:1.18.2"
     "@types/jsonwebtoken": "npm:9.0.7"
