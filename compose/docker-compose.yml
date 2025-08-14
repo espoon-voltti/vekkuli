@@ -21,6 +21,20 @@ services:
       timeout: 5s
       retries: 5
 
+  s3mock:
+    image: adobe/s3mock:latest
+    ports:
+      - "9191:9191"
+    environment:
+      debug: "true"
+    volumes:
+      - ./s3-data:/opt/s3mock/data
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
 volumes:
   vekkuli-db-data:
     driver: local
