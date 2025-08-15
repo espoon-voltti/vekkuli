@@ -17,12 +17,14 @@ import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.utils.AttributeMap
 import java.net.URI
 
+object AwsConstants {
+    const val BUCKET_NAME = "vekkuli-attachments"
+}
+
 @Configuration
 class AwsConfig {
-    val bucketName = "vekkuli-attachments"
-
     @Bean
-    @Profile("local")
+    @Profile("local || test")
     fun credentialsProviderLocal(): AwsCredentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create("foo", "bar"))
 
     @Bean
@@ -41,7 +43,7 @@ class AwsConfig {
             .build()
 
     @Bean
-    @Profile("local")
+    @Profile("local || test")
     fun amazonS3Local(credentialsProvider: AwsCredentialsProvider): S3Client {
         val attrs =
             AttributeMap
@@ -60,8 +62,8 @@ class AwsConfig {
                 .build()
 
         val existingBuckets = client.listBuckets().buckets().map { it.name()!! }
-        if (!existingBuckets.contains(bucketName)) {
-            val request = CreateBucketRequest.builder().bucket(bucketName).build()
+        if (!existingBuckets.contains(AwsConstants.BUCKET_NAME)) {
+            val request = CreateBucketRequest.builder().bucket(AwsConstants.BUCKET_NAME).build()
             client.createBucket(request)
         }
         return client
