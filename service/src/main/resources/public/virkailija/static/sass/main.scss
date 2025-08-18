@@ -1229,3 +1229,18 @@ ul {
       margin-left: $spacing-extrasmall;
   }
 }
+
+  #attachment-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-medium;
+    margin: $spacing-medium 0 $spacing-medium 0;
+
+    .attachment-view {
+      display: flex;
+      padding: $spacing-medium;
+      gap: $spacing-small;
+      align-items: center;
+      background-color: $light-gray;
+    }
+  }

@@ -12,7 +12,13 @@ import java.io.InputStream
 import java.util.UUID
 
 interface AttachmentServiceInterface {
-    fun addAttachment(
+    fun uploadAttachment(
+        contentType: String?,
+        input: InputStream,
+        size: Long
+    ): String?
+
+    fun addAttachmentToMessage(
         messageId: UUID,
         contentType: String,
         input: InputStream,
@@ -27,7 +33,16 @@ interface AttachmentServiceInterface {
 class AttachmentServiceMock(
     private val attachmentRepository: AttachmentRepository
 ) : AttachmentServiceInterface {
-    override fun addAttachment(
+    override fun uploadAttachment(
+        contentType: String?,
+        input: InputStream,
+        size: Long,
+    ): String? {
+        val key = UUID.randomUUID().toString()
+        return key
+    }
+
+    override fun addAttachmentToMessage(
         messageId: UUID,
         contentType: String,
         input: InputStream,
@@ -75,7 +90,34 @@ class AttachmentService(
 ) : AttachmentServiceInterface {
     private val logger = LoggerFactory.getLogger(CitizenUserController::class.java)
 
-    override fun addAttachment(
+    override fun uploadAttachment(
+        contentType: String?,
+        input: InputStream,
+        size: Long,
+    ): String {
+        val key = "attachment-${System.currentTimeMillis()}.txt"
+        if (contentType == null) throw IllegalArgumentException("Content type must not be null")
+
+        // TODO: Validate content type from a list of allowed types
+        if (!(
+                contentType == "application/pdf" || contentType == "image/jpeg" ||
+                    contentType == "image/png"
+            )
+        ) {
+            throw IllegalArgumentException("Content type must be application/pdf or image/jpeg or image/png")
+        }
+        if (size < 0) throw IllegalArgumentException("Size must not be negative")
+        if (size > AwsConstants.MAX_FILE_SIZE) throw IllegalArgumentException("File size exceeds maximum allowed size")
+        upload(
+            key = key,
+            contentType = contentType,
+            inputStream = input,
+            size = size
+        )
+        return key
+    }
+
+    override fun addAttachmentToMessage(
         messageId: UUID,
         contentType: String,
         input: InputStream,
