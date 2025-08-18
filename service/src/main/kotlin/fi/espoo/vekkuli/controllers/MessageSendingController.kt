@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
+import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
+import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AttachmentView
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.AuthenticatedUser
@@ -14,10 +16,13 @@ import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
+import kotlin.collections.joinToString
 
 @Controller
 @RequestMapping("/virkailija/viestit")
@@ -29,6 +34,8 @@ class MessageSendingController(
     private val emailEnv: EmailEnv,
     private val reservationService: ReservationService,
     private val reservationListService: EmployeeReservationListService,
+    private val attachmentService: AttachmentService,
+    private val attachmentView: AttachmentView,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -67,6 +74,45 @@ class MessageSendingController(
             return reservationListService.getAllBoatSpaceReservations(params).map { it.id }
         }
         return spaceId
+    }
+
+    @PostMapping("/add-attachment", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @ResponseBody
+    fun addAttachment(
+        request: HttpServletRequest,
+        @RequestParam spaceId: List<Int>?,
+        @RequestParam file: MultipartFile?,
+    ): ResponseEntity<String> {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+
+//        authenticatedUser.let {
+//            logger.audit(
+//                it,
+//                "ADD_ATTACHMENT",
+//                mapOf(
+//                    "reservationIds" to spaceId?.joinToString(", ")
+//                )
+//            )
+//        }
+        if (!authenticatedUser.isEmployee()) {
+            throw Unauthorized()
+        }
+
+        try {
+            if (file != null) {
+                val key = attachmentService.uploadAttachment(file.contentType, file.inputStream, file.size)
+                return ResponseEntity.ok(
+                    attachmentView.renderAttachmentListItem(
+                        key,
+                        file.originalFilename ?: "unknown"
+                    )
+                )
+            } else {
+                return ResponseEntity.noContent().build()
+            }
+        } catch (e: Exception) {
+            return ResponseEntity.ok("Failed to upload attachment: ${e.message}")
+        }
     }
 
     @PostMapping("/massa/laheta")
