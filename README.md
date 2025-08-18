@@ -1,23 +1,21 @@
 # Vekkuli
 
-[![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/vekkuli)](https://api.reuse.software/info/github.com/espoon-voltti/vekkuli)
-
 A boat space self reservation system.
 
 ## Technical overview
 
 The application consists of
+
 - Frontend (React, TypeScript)
-  - Citizen UI
-  - nginx for proxying requests to API-Gateway and Service
+    - Citizen UI
+    - nginx for proxying requests to API-Gateway and Service
 - API-Gateway (Node.js, TypeScript, Express)
-  - handles AD SAML authentication and stores the session in a cookie and in redis
-  - proxies other API requests to the service, passing the valid user session as a signed JWT token
+    - handles AD SAML authentication and stores the session in a cookie and in redis
+    - proxies other API requests to the service, passing the valid user session as a signed JWT token
 - Service (Spring Boot, Kotlin)
-  - implements the business logic and persists the data in a Postgresql database
+    - implements the business logic and persists the data in a Postgresql database
 
-![Entiry diagram](./docs/vekkuli_entity.png)
-
+![Entity diagram](./docs/vekkuli_entity.png)
 
 ## Local environment and development
 
@@ -32,50 +30,63 @@ The application consists of
 ### Compose
 
 To start database and redis
+
 - `cd compose`
 - `docker-compose up -d`
 
+Next, start the service to run database migrations (see below).
+
 To populate the database with some test data you can use the seed.sql file
+
 - `psql -h localhost -U vekkuli -d vekkuli -f ./service/src/e2eTest/resources/seed.sql`
-
-password is postgres
-
-The actual boat spaces are in a separate file, which you can insert to the database using psql
-- `\copy boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) from 'boat_space.csv' DELIMITER ',' CSV;`
+  (password: `postgres`)
 
 ### Service
 
 To start service in http://localhost:8080
+
 - `cd service`
 - `./gradlew bootRun`
 
 To run unit/integration tests (requires DB running through compose)
+
 - `./gradlew test`
 
-To run E2E tests (requires DB and api-gateway)
+To run E2E tests. Requires compose (see above), api-gateway (see below) and frontend (see below).
+
 - `./gradlew e2eTest`
 
 To format code
+
 - `./gradlew ktlintFormat`
 
 ### API-gateway
 
 To start API-gateway in http://localhost:3000
+
 - `cd api-gateway`
 - `yarn`
 - `yarn dev`
 
 To lint and format code
+
 - `yarn lint --fix`
 
-The default config uses dev login with hard coded users, but it is also possible to configure the local development environment to use some real SAML IDP.
+The default config uses dev login with hard coded users, but it is also possible to configure the local development
+environment to use some real SAML IDP.
 
 ### Frontend
 
-To start dev server in http://localhost:9000
+To start dev server:
+
 - `cd frontend`
 - `yarn`
 - `yarn dev`
+
+Vekkuli actually has two frontends:
+
+- Citizen (React): http://localhost:9000
+- Employee (HTMX): http://localhost:9000/virkailija
 
 ### Version updates
 
@@ -83,7 +94,8 @@ Dependabot runs in Github and creates PRs of new dependency versions.
 
 ### Deployment
 
-After merging a PR go to the Github action and approve the deployments after build succeeds. It is recommended to do a quick manual smoke test in staging before deploying to production.
+After merging a PR go to the Github action and approve the deployments after build succeeds. It is recommended to do a
+quick manual smoke test in staging before deploying to production.
 
 ## License
 
