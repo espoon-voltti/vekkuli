@@ -19,6 +19,7 @@ import java.net.URI
 
 object AwsConstants {
     const val BUCKET_NAME = "vekkuli-attachments"
+    const val MAX_FILE_SIZE = 10 * 1000 * 1000
 }
 
 @Configuration

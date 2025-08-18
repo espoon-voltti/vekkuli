@@ -28,7 +28,7 @@ class AttachmentServiceTests : IntegrationTestBase() {
         val messages = messageService.sendEmails(null, "sender@gmail.com", recipients, "Subject", "Email body")
 
         val key =
-            attachmentService.addAttachment(
+            attachmentService.addAttachmentToMessage(
                 messageId = messages.first().id,
                 contentType = "image/png",
                 input = "test-input".byteInputStream(),

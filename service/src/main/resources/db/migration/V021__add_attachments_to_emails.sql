@@ -1,6 +1,8 @@
 CREATE TABLE attachment (
-    key TEXT PRIMARY KEY,
-    message_id UUID NOT NULL
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    key TEXT,
+    name TEXT NOT NULL,
+    message_id UUID
         REFERENCES sent_message(id)
             ON DELETE CASCADE,
     created TIMESTAMP DEFAULT NOW()
