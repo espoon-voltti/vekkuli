@@ -8,7 +8,7 @@ plugins {
     id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.10"
-    kotlin("plugin.spring") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.10"
     id("org.flywaydb.flyway") version "11.10.5"
     id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
     id("com.github.node-gradle.node") version "7.1.0"
@@ -125,7 +125,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.32.21"))
+    implementation(platform("software.amazon.awssdk:bom:2.32.24"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
 
@@ -138,7 +138,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.18")
     implementation("commons-codec:commons-codec:1.19.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.52.0")
+    downloadOnly("com.datadoghq:dd-java-agent:1.52.1")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
