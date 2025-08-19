@@ -82,6 +82,13 @@ abstract class PlaywrightTest {
     fun createContextAndPage() {
         createAndSeedDatabase(jdbi)
         context = browser.newContext()
+        context.tracing().start(
+            Tracing
+                .StartOptions()
+                .setScreenshots(true)
+                .setSnapshots(true)
+                .setSources(true)
+        )
         page = context.newPage()
         // Mock the behavior to return a specific date-time
         mockTimeProvider(timeProvider)
@@ -102,6 +109,10 @@ abstract class PlaywrightTest {
                     .firstOrNull { it.className.contains("Test") || it.methodName.startsWith("test") }
             val testName = testMethod?.methodName ?: "unknown_test"
             val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+
+            val tracePath = Path("build/failure-traces/$safeTestName.zip")
+            context.tracing().stop(Tracing.StopOptions().setPath(tracePath))
+
             val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
             page.screenshot(
                 Page
@@ -109,6 +120,9 @@ abstract class PlaywrightTest {
                     .setFullPage(true)
                     .setPath(screenshotPath)
             )
+        } else {
+            // Don't save trace
+            context.tracing().stop()
         }
 
         page.waitForLoadState(LoadState.NETWORKIDLE)

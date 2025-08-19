@@ -56,6 +56,12 @@ To run E2E tests. Requires compose (see above), api-gateway (see below) and fron
 
 - `./gradlew e2eTest`
 
+If any tests fail, screenshots and Playwright traces of the failures are saved to
+`build/failure-screenshots` and `build/failure-traces`. To show a trace in the
+Playwright Trace Viewer, run:
+
+- `npx playwright show-trace build/failure-traces/test-name.zip`
+
 To format code
 
 - `./gradlew ktlintFormat`
