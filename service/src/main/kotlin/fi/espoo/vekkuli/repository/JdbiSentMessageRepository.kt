@@ -10,6 +10,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Repository
@@ -23,9 +24,10 @@ class JdbiSentMessageRepository(
         recipients: List<Recipient>,
         subject: String,
         body: String,
+        attachmentIds: List<UUID>
     ): List<QueuedMessage> =
-        jdbi.withHandleUnchecked { handle ->
-            val batch =
+        jdbi.inTransaction<List<QueuedMessage>, Exception> { handle ->
+            val messageBatch =
                 handle.prepareBatch(
                     """
             INSERT INTO sent_message (status, sender_id, sender_address, recipient_id, recipient_address, type, subject, body)
@@ -34,7 +36,7 @@ class JdbiSentMessageRepository(
                 )
 
             recipients.forEach { recipient ->
-                batch
+                messageBatch
                     .bind("senderId", senderId)
                     .bind("senderAddress", senderAddress)
                     .bind("recipientId", recipient.id)
@@ -44,10 +46,45 @@ class JdbiSentMessageRepository(
                     .add()
             }
 
-            batch
-                .executePreparedBatch()
-                .mapTo<QueuedMessage>()
-                .list()
+            val messages =
+                messageBatch
+                    .executePreparedBatch()
+                    .mapTo<QueuedMessage>()
+                    .list()
+
+            if (attachmentIds.isNotEmpty()) {
+                val attachmentBatch =
+                    handle.prepareBatch(
+                        """
+                        INSERT INTO attachment (key, name, message_id)
+                        SELECT key, name, :messageId
+                        FROM attachment
+                        WHERE id = :attachmentId AND message_id IS NULL
+                        """.trimIndent()
+                    )
+
+                messages.forEach { message ->
+                    attachmentIds.forEach { attachmentId ->
+                        attachmentBatch
+                            .bind(
+                                "messageId",
+                                message.id
+                            ).bind("attachmentId", attachmentId)
+                            .add()
+                    }
+                }
+
+                attachmentBatch.execute()
+                handle
+                    .createUpdate(
+                        """
+                        DELETE FROM attachment
+                        WHERE id IN (<attachmentIds>) AND message_id IS NULL
+                        """.trimIndent()
+                    ).bindList("attachmentIds", attachmentIds)
+                    .execute()
+            }
+            messages
         }
 
     override fun setMessagesSent(messageIds: List<Pair<UUID, String>>): List<QueuedMessage> =

@@ -14,6 +14,7 @@ interface SentMessageRepository {
         recipients: List<Recipient>,
         subject: String,
         body: String,
+        attachmentIds: List<UUID>
     ): List<QueuedMessage>
 
     fun setMessagesSent(messageIds: List<Pair<UUID, String>>): List<QueuedMessage>

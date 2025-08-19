@@ -5,9 +5,12 @@ CREATE TABLE attachment (
     message_id UUID
         REFERENCES sent_message(id)
             ON DELETE CASCADE,
-    created TIMESTAMP DEFAULT NOW()
+    created TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_attachments_message_id
     ON attachment (message_id);
 
+CREATE UNIQUE INDEX attachment_key_unique_when_message_id_null
+    ON attachment (key)
+    WHERE message_id IS NULL;
