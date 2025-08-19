@@ -27,7 +27,10 @@ class PlaywrightTestWatcher : TestWatcher {
         }
     }
 
-    override fun testFailed(context: ExtensionContext, cause: Throwable) {
+    override fun testFailed(
+        context: ExtensionContext,
+        cause: Throwable
+    ) {
         val testInstance = context.testInstance.orElse(null)
         if (testInstance is PlaywrightTest) {
             testInstance.closeContext(cause)
@@ -92,7 +95,6 @@ abstract class PlaywrightTest {
      * close the page and context here instead of in @AfterEach because TestWatcher is called after @AfterEach.
      */
     fun closeContext(error: Throwable?) {
-        println("Closing context after test: $error")
         if (error != null) {
             val testMethod =
                 error
@@ -101,23 +103,17 @@ abstract class PlaywrightTest {
             val testName = testMethod?.methodName ?: "unknown_test"
             val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
             val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
-            println("Capturing screenshot to: $screenshotPath")
             page.screenshot(
                 Page
                     .ScreenshotOptions()
                     .setFullPage(true)
                     .setPath(screenshotPath)
             )
-            println("Screenshot saved to: $screenshotPath")
         }
 
         page.waitForLoadState(LoadState.NETWORKIDLE)
         page.close()
         context.close()
-    }
-
-    fun handleError(e: AssertionError) {
-        // Do nothing
     }
 
     fun typeText(
