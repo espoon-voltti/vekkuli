@@ -11,15 +11,35 @@ import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.extension.TestWatcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import kotlin.io.path.Path
 
+class PlaywrightTestWatcher : TestWatcher {
+    override fun testSuccessful(context: ExtensionContext) {
+        val testInstance = context.testInstance.orElse(null)
+        if (testInstance is PlaywrightTest) {
+            testInstance.closeContext(null)
+        }
+    }
+
+    override fun testFailed(context: ExtensionContext, cause: Throwable) {
+        val testInstance = context.testInstance.orElse(null)
+        if (testInstance is PlaywrightTest) {
+            testInstance.closeContext(cause)
+        }
+    }
+}
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
+@ExtendWith(PlaywrightTestWatcher::class)
 abstract class PlaywrightTest {
     @Autowired
     protected lateinit var jdbi: Jdbi
@@ -66,29 +86,38 @@ abstract class PlaywrightTest {
         PaytrailMock.paytrailPayments.clear()
     }
 
-    @AfterEach
-    fun closeContext() {
+    /** Called from PlaywrightTestWatcher after each test
+     *
+     * This cannot be done in @AfterEach because it doesn't know whether the test was successful or failed. We also must
+     * close the page and context here instead of in @AfterEach because TestWatcher is called after @AfterEach.
+     */
+    fun closeContext(error: Throwable?) {
+        println("Closing context after test: $error")
+        if (error != null) {
+            val testMethod =
+                error
+                    .stackTrace
+                    .firstOrNull { it.className.contains("Test") || it.methodName.startsWith("test") }
+            val testName = testMethod?.methodName ?: "unknown_test"
+            val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
+            val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
+            println("Capturing screenshot to: $screenshotPath")
+            page.screenshot(
+                Page
+                    .ScreenshotOptions()
+                    .setFullPage(true)
+                    .setPath(screenshotPath)
+            )
+            println("Screenshot saved to: $screenshotPath")
+        }
+
         page.waitForLoadState(LoadState.NETWORKIDLE)
         page.close()
         context.close()
     }
 
     fun handleError(e: AssertionError) {
-        val testMethod =
-            e
-                .stackTrace
-                .firstOrNull { it.className.contains("Test") || it.methodName.startsWith("test") }
-        val testName = testMethod?.methodName ?: "unknown_test"
-        val safeTestName = testName.replace(Regex("[^a-zA-Z0-9_-]"), "_")
-        val screenshotPath = Path("build/failure-screenshots/$safeTestName.png")
-        val playwrightOptions =
-            Page
-                .ScreenshotOptions()
-                .setFullPage(true)
-                .setPath(screenshotPath)
-        page.screenshot(playwrightOptions)
-
-        throw e
+        // Do nothing
     }
 
     fun typeText(
