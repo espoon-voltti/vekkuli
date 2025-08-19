@@ -11,91 +11,20 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.InputStream
 import java.util.UUID
 
-interface AttachmentServiceInterface {
-    fun uploadAttachment(
-        contentType: String?,
-        input: InputStream,
-        size: Long
-    ): String?
-
-    fun addAttachmentToMessage(
-        messageId: UUID,
-        contentType: String,
-        input: InputStream,
-        size: Long
-    ): String?
-
-    fun getAttachmentsForMessage(messageId: UUID): List<AttachmentData>?
-}
-
 @Service
-@Profile("test")
-class AttachmentServiceMock(
-    private val attachmentRepository: AttachmentRepository
-) : AttachmentServiceInterface {
-    override fun uploadAttachment(
-        contentType: String?,
-        input: InputStream,
-        size: Long,
-    ): String? {
-        val key = UUID.randomUUID().toString()
-        return key
-    }
-
-    override fun addAttachmentToMessage(
-        messageId: UUID,
-        contentType: String,
-        input: InputStream,
-        size: Long
-    ): String? {
-        val key = UUID.randomUUID().toString()
-        attachmentRepository.addAttachment(messageId, key)
-        return key
-    }
-
-    override fun getAttachmentsForMessage(messageId: UUID): List<AttachmentData>? {
-        val keys = attachmentRepository.getAttachmentKeys(messageId)
-
-        return keys.map { key ->
-            AttachmentData(
-                key = key,
-                contentType = "text/plain",
-                size = 0L,
-                data = ByteArray(0) // Mock data, as we don't have actual files in the mock
-            )
-        }
-    }
-
-    data class SentEmail(
-        val senderAddress: String,
-        val recipientAddress: String,
-        val subject: String,
-        val body: String
-    )
-
-    companion object {
-        val emails = mutableListOf<SentEmail>()
-
-        fun resetEmails() {
-            emails.clear()
-        }
-    }
-}
-
-@Service
-@Profile("!test")
 class AttachmentService(
     private val s3Client: S3Client,
     private val attachmentRepository: AttachmentRepository
-) : AttachmentServiceInterface {
+) {
     private val logger = LoggerFactory.getLogger(CitizenUserController::class.java)
 
-    override fun uploadAttachment(
+    fun uploadAttachment(
         contentType: String?,
         input: InputStream,
         size: Long,
-    ): String {
-        val key = "attachment-${System.currentTimeMillis()}.txt"
+        name: String
+    ): UUID {
+        val key = "attachment-${System.currentTimeMillis()}"
         if (contentType == null) throw IllegalArgumentException("Content type must not be null")
 
         // TODO: Validate content type from a list of allowed types
@@ -108,37 +37,30 @@ class AttachmentService(
         }
         if (size < 0) throw IllegalArgumentException("Size must not be negative")
         if (size > AwsConstants.MAX_FILE_SIZE) throw IllegalArgumentException("File size exceeds maximum allowed size")
-        upload(
+        storeAttachmentToS3(
             key = key,
             contentType = contentType,
             inputStream = input,
             size = size
         )
-        return key
+        val id =
+            attachmentRepository.addAttachment(
+                key,
+                name
+            )
+
+        return UUID.fromString(id)
     }
 
-    override fun addAttachmentToMessage(
-        messageId: UUID,
-        contentType: String,
-        input: InputStream,
-        size: Long
-    ): String? {
-        logger.info("Adding attachment for message $messageId")
-        val key = "attachment-${System.currentTimeMillis()}.txt"
-        upload(
-            key = key,
-            contentType = contentType,
-            inputStream = input,
-            size = size
-        )
-        attachmentRepository.addAttachment(
-            messageId = messageId,
-            key = key
-        )
-        return key
+    fun addAttachmentsToMessage(
+        ids: List<UUID>?,
+        messageId: List<UUID>
+    ) {
+        if (ids == null) return
+        attachmentRepository.addAttachmentsToMessages(ids, messageId)
     }
 
-    override fun getAttachmentsForMessage(messageId: UUID): List<AttachmentData>? {
+    fun getAttachmentsForMessage(messageId: UUID): List<AttachmentData>? {
         val keys = attachmentRepository.getAttachmentKeys(messageId)
         if (keys.isEmpty()) {
             return null
@@ -155,7 +77,7 @@ class AttachmentService(
         }
     }
 
-    fun upload(
+    fun storeAttachmentToS3(
         key: String,
         contentType: String,
         inputStream: InputStream,

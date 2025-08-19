@@ -21,6 +21,7 @@ interface MessageServiceInterface {
         recipients: List<Recipient>,
         subject: String,
         body: String,
+        attachmentIds: List<UUID> = emptyList()
     ): List<QueuedMessage>
 
     fun getAndInsertUnsentEmails(
@@ -61,9 +62,10 @@ class MessageService(
         subject: String,
         // Email message body
         body: String,
+        attachmentIds: List<UUID>
     ): List<QueuedMessage> {
-        val msg = messageRepository.addSentEmails(userId, senderAddress, recipients, subject, body)
-        return msg
+        val msgs = messageRepository.addSentEmails(userId, senderAddress, recipients, subject, body, attachmentIds)
+        return msgs
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
