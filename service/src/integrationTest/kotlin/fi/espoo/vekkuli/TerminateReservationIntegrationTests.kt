@@ -35,9 +35,6 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     }
 
     @Autowired
-    private lateinit var messageService: MessageService
-
-    @Autowired
     lateinit var reservationService: BoatReservationService
 
     @Autowired lateinit var formReservationService: ReservationFormService

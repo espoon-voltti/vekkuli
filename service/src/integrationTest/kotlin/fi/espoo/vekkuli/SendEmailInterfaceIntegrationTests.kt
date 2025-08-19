@@ -75,7 +75,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         Mockito.`when`(sendEmailServiceMock.sendEmail(any(), eq(recipients[0].email), any(), any())).thenReturn("providerId")
         Mockito.`when`(sendEmailServiceMock.sendEmail(any(), eq(recipients[1].email), any(), any())).thenReturn(null)
 
-        messageService.sendEmails(null, "sender@gmail.com", recipients, "Subject", "Email body")
+        messageService.sendEmails(null, "sender@gmail.com", recipients, "Subject", "Email body", listOf())
         messageService.sendScheduledEmails()
         val recipientCaptor = argumentCaptor<String>()
 

@@ -34,8 +34,6 @@ class MessageSendingController(
     private val emailEnv: EmailEnv,
     private val reservationService: ReservationService,
     private val reservationListService: EmployeeReservationListService,
-    private val attachmentService: AttachmentService,
-    private val attachmentView: AttachmentView,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -76,45 +74,6 @@ class MessageSendingController(
         return spaceId
     }
 
-    @PostMapping("/add-attachment", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @ResponseBody
-    fun addAttachment(
-        request: HttpServletRequest,
-        @RequestParam spaceId: List<Int>?,
-        @RequestParam file: MultipartFile?,
-    ): ResponseEntity<String> {
-        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
-
-//        authenticatedUser.let {
-//            logger.audit(
-//                it,
-//                "ADD_ATTACHMENT",
-//                mapOf(
-//                    "reservationIds" to spaceId?.joinToString(", ")
-//                )
-//            )
-//        }
-        if (!authenticatedUser.isEmployee()) {
-            throw Unauthorized()
-        }
-
-        try {
-            if (file != null) {
-                val key = attachmentService.uploadAttachment(file.contentType, file.inputStream, file.size)
-                return ResponseEntity.ok(
-                    attachmentView.renderAttachmentListItem(
-                        key,
-                        file.originalFilename ?: "unknown"
-                    )
-                )
-            } else {
-                return ResponseEntity.noContent().build()
-            }
-        } catch (e: Exception) {
-            return ResponseEntity.ok("Failed to upload attachment: ${e.message}")
-        }
-    }
-
     @PostMapping("/massa/laheta")
     @ResponseBody
     fun sendMassEmailMessage(
@@ -123,6 +82,7 @@ class MessageSendingController(
         @ModelAttribute params: BoatSpaceReservationFilter,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
+        @RequestParam("attachmentId") attachmentIds: List<UUID>? = null,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
@@ -143,8 +103,7 @@ class MessageSendingController(
         try {
             val reservationsToSendEmails: List<Int> = getReservationsToSendEmailsTo(spaceId, params)
             val recipients = reservationService.getReservationRecipients(reservationsToSendEmails)
-
-            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
         } catch (e: Exception) {
@@ -184,6 +143,7 @@ class MessageSendingController(
         @PathVariable reserverId: UUID,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
+        @RequestParam("attachmentId") attachmentIds: List<UUID>? = null,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
@@ -203,7 +163,7 @@ class MessageSendingController(
         try {
             val recipients = getRecipientsByReserverId(reserverId)
 
-            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
         } catch (e: Exception) {
@@ -234,16 +194,18 @@ class MessageSendingController(
         recipients: List<Recipient>,
         user: AuthenticatedUser,
         messageTitle: String,
-        messageContent: String
-    ) {
+        messageContent: String,
+        attachmentIds: List<UUID>
+    ): List<QueuedMessage> {
         logger.info { "Sending message to ${recipients.size} recipients" }
 
-        messageService.sendEmails(
+        return messageService.sendEmails(
             userId = user.id,
             senderAddress = emailEnv.senderAddress,
             recipients = recipients,
             subject = messageTitle,
-            body = messageContent
+            body = messageContent,
+            attachmentIds = attachmentIds
         )
     }
 }
