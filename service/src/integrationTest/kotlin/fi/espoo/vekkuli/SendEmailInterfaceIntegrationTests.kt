@@ -86,7 +86,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         assertTrue(capturedRecipients.containsAll(listOf(recipients[0].email, recipients[1].email)))
 
         val sentEmail = messageRepository.getMessagesSentToUser(this.citizenIdLeo)[0]
-        assertEquals(MessageStatus.Sent, sentEmail.status, "One email successfully sent to user")
+        assertEquals(MessageStatus.Sent, sentEmail.message.status, "One email successfully sent to user")
 
         val emails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertEquals(1, emails.size, "One email left to send")

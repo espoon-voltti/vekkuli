@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.MessageServiceInterface
+import fi.espoo.vekkuli.service.ReserverService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,6 +17,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class AttachmentServiceTests : IntegrationTestBase() {
+    @Autowired private lateinit var reserverService: ReserverService
+
     @Autowired
     private lateinit var attachmentService: AttachmentService
 
@@ -26,13 +29,13 @@ class AttachmentServiceTests : IntegrationTestBase() {
     fun `should add attachment`() {
         val bytes = "test-input".toByteArray()
         val size = bytes.size.toLong()
-
+        val name = "test-name"
         val id =
             attachmentService.uploadAttachment(
                 contentType = "image/png",
                 input = bytes.inputStream(), // fresh stream
                 size = size,
-                name = "test-name"
+                name = name
             )
         val id2 =
             attachmentService.uploadAttachment(
@@ -56,9 +59,18 @@ class AttachmentServiceTests : IntegrationTestBase() {
                 listOf(id, id2)
             )
 
-        val attachments = attachmentService.getAttachmentsForMessage(messages.first().id)
+        val message = reserverService.getMessage(messages.first().id)
 
-        assertEquals(attachments?.size, 2)
-        assertArrayEquals(bytes, attachments!!.first().data, "Attachment data should be the same")
+        assertEquals(message.attachments.size, 2)
+        assertEquals(name, message.attachments.first().name)
+
+        val userMessages = reserverService.getMessages(citizenIdOlivia)
+        assertEquals(userMessages.size, 1, "There should be one message")
+        val userMessage = userMessages.first()
+        assertEquals(userMessage.attachments.size, 2, "There should be two attachments")
+        assertEquals(
+            userMessage.attachments.first().name,
+            message.attachments.first().name
+        )
     }
 }

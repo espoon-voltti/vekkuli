@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentData
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -16,4 +17,15 @@ data class QueuedMessage(
     val recipientAddress: String,
     val subject: String,
     val body: String,
+)
+
+data class Attachment(
+    val key: String,
+    val id: UUID,
+    val name: String,
+)
+
+data class MessageWithAttachments(
+    val message: QueuedMessage,
+    val attachments: List<Attachment> = emptyList()
 )
