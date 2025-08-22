@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.boatSpace.emailAttachments
 
 import fi.espoo.vekkuli.config.AwsConstants
 import fi.espoo.vekkuli.controllers.CitizenUserController
+import fi.espoo.vekkuli.domain.Attachment
 import org.slf4j.LoggerFactory
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
@@ -41,7 +41,8 @@ class AttachmentService(
             key = key,
             contentType = contentType,
             inputStream = input,
-            size = size
+            size = size,
+            name = name,
         )
         val id =
             attachmentRepository.addAttachment(
@@ -51,6 +52,15 @@ class AttachmentService(
 
         return UUID.fromString(id)
     }
+
+    fun deleteAttachment(id: UUID) {
+        val key =
+            attachmentRepository.getAttachments(listOf(id)).firstOrNull()?.key
+                ?: throw IllegalArgumentException("Attachment not found")
+        deleteAttachmentFromS3(key)
+    }
+
+    fun getAttachments(ids: List<UUID>): List<Attachment> = attachmentRepository.getAttachments(ids)
 
     fun addAttachmentsToMessage(
         ids: List<UUID>?,
@@ -72,16 +82,30 @@ class AttachmentService(
                 key = key,
                 contentType = response.response().contentType(),
                 size = response.response().contentLength(),
-                data = response.readAllBytes()
+                data = response.readAllBytes(),
+                name = response.response().metadata()["name"] ?: "unknown"
             )
         }
     }
 
-    fun storeAttachmentToS3(
+    fun getAttachment(id: UUID): AttachmentData? {
+        val attachment = attachmentRepository.getAttachment(id) ?: return null
+        val response = s3Client.getObject { it.bucket(AwsConstants.BUCKET_NAME).key(attachment.key) }
+        return AttachmentData(
+            key = attachment.key,
+            contentType = response.response().contentType(),
+            size = response.response().contentLength(),
+            data = response.readAllBytes(),
+            name = attachment.name
+        )
+    }
+
+    private fun storeAttachmentToS3(
         key: String,
         contentType: String,
         inputStream: InputStream,
         size: Long,
+        name: String,
     ) {
         val request =
             PutObjectRequest
@@ -89,9 +113,14 @@ class AttachmentService(
                 .bucket("vekkuli-attachments")
                 .key(key)
                 .contentType(contentType)
+                .metadata(mapOf("name" to name))
                 .build()
 
         val body = RequestBody.fromInputStream(inputStream, size)
         s3Client.putObject(request, body)
+    }
+
+    private fun deleteAttachmentFromS3(key: String) {
+        s3Client.deleteObject { it.bucket("vekkuli-attachments").key(key) }
     }
 }
