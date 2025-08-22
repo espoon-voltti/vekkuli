@@ -17,204 +17,180 @@ import kotlin.test.assertEquals
 class SwitchReservationTest : ReserveTest() {
     @Test
     fun `should be able to switch slip reservation when the price is higher`() {
-        try {
-            mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-            val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "3", "6", 3, false)
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "3", "6", 3, false)
 
-            // switch form
-            val form = BoatSpaceFormPage(page)
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
+        // switch form
+        val form = BoatSpaceFormPage(page)
+        // Make sure that citizen is redirected to unfinished reservation switch form
+        reservationPage.navigateToPage()
 
-            val userAgreementSection = form.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            form.submitButton.click()
+        val userAgreementSection = form.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        form.submitButton.click()
 
-            val paymentPage = PaymentPage(page)
-            paymentPage.assertOnPaymentPage()
-            assertZeroEmailsSent()
-            paymentPage.nordeaSuccessButton.click()
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val paymentPage = PaymentPage(page)
+        paymentPage.assertOnPaymentPage()
+        assertZeroEmailsSent()
+        paymentPage.nordeaSuccessButton.click()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            assertCorrectPaymentForReserver(
-                "korhonen",
-                PaymentStatus.Success,
-                "Haukilahti D 013",
-                "150,81",
-                "Paikan vaihto. Maksettu vain erotus."
-            )
+        assertCorrectPaymentForReserver(
+            "korhonen",
+            PaymentStatus.Success,
+            "Haukilahti D 013",
+            "150,81",
+            "Paikan vaihto. Maksettu vain erotus."
+        )
 
-            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
-            val citizenDetails = citizenPageInEmployeeView("korhonen", false)
-            citizenDetails.memoNavi.click()
-            assertThat(citizenDetails.userMemo(2))
-                .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
+        assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
+        val citizenDetails = citizenPageInEmployeeView("korhonen", false)
+        citizenDetails.memoNavi.click()
+        assertThat(citizenDetails.userMemo(2))
+            .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
 
-            assertEquals(
-                "Vaihto Venepaikka 2025 Haukilahti D 013",
-                PaytrailMock.paytrailPayments
-                    .first()
-                    .items
-                    ?.first()
-                    ?.description
-            )
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertEquals(
+            "Vaihto Venepaikka 2025 Haukilahti D 013",
+            PaytrailMock.paytrailPayments
+                .first()
+                .items
+                ?.first()
+                ?.description
+        )
     }
 
     @Test
     fun `should be able to switch slip reservation when the price is the same`() {
-        try {
-            mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-            val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "2", "4", 5, false)
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "2", "4", 5, false)
 
-            // switch form
-            val switchSpaceFormPage = SwitchSpaceFormPage(page)
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
+        // switch form
+        val switchSpaceFormPage = SwitchSpaceFormPage(page)
+        // Make sure that citizen is redirected to unfinished reservation switch form
+        reservationPage.navigateToPage()
 
-            val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            switchSpaceFormPage.reserveButton.click()
+        val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        switchSpaceFormPage.reserveButton.click()
 
-            // asserting that email is sent when there is no payment
-            assertZeroEmailsSent()
-            val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
+        // asserting that email is sent when there is no payment
+        assertZeroEmailsSent()
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
 
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            assertCorrectPaymentForReserver(
-                "korhonen",
-                PaymentStatus.Success,
-                "Haukilahti B 003",
-                "0,00",
-                "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
-            )
-            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertCorrectPaymentForReserver(
+            "korhonen",
+            PaymentStatus.Success,
+            "Haukilahti B 003",
+            "0,00",
+            "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
+        )
+        assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
     }
 
     @Test
     fun `should be able to switch slip reservation for organization when the price is the same`() {
-        try {
-            mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
-            page.navigate(baseUrlWithFinnishLangParam)
-            val citizenHomePage = CitizenHomePage(page)
-            citizenHomePage.loginAsOliviaVirtanen()
-            citizenHomePage.navigateToPage()
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
+        page.navigate(baseUrlWithFinnishLangParam)
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.loginAsOliviaVirtanen()
+        citizenHomePage.navigateToPage()
 
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
 
-            val filterSection = reservationPage.getFilterSection()
-            filterSection.slipRadio.click()
+        val filterSection = reservationPage.getFilterSection()
+        filterSection.slipRadio.click()
 
-            reservationPage.startReservingBoatSpaceB059()
+        reservationPage.startReservingBoatSpaceB059()
 
-            val searchResultsSection = reservationPage.getSearchResultsSection()
+        val searchResultsSection = reservationPage.getSearchResultsSection()
 
-            searchResultsSection.firstReserveButton.click()
-            val reserveModal = reservationPage.getReserveModal()
+        searchResultsSection.firstReserveButton.click()
+        val reserveModal = reservationPage.getReserveModal()
 
-            val expectedBoatSpaceSection = "B"
-            val expectedPlaceNumber = "059"
-            assertThat(reserveModal.root).isVisible()
-            assertThat(reserveModal.secondSwitchReservationButton).isVisible()
-            reserveModal.secondSwitchReservationButton.click()
+        val expectedBoatSpaceSection = "B"
+        val expectedPlaceNumber = "059"
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.secondSwitchReservationButton).isVisible()
+        reserveModal.secondSwitchReservationButton.click()
 
-            val form = BoatSpaceFormPage(page)
-            val userAgreementSection = form.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            form.confirmButton.click()
+        val form = BoatSpaceFormPage(page)
+        val userAgreementSection = form.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        form.confirmButton.click()
 
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.navigateToPage()
-            citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
 
-            val organizationDetailsSection = OrganizationDetailsPage(page).getFirstReservationSection()
-            assertThat(organizationDetailsSection.locationName).containsText("Haukilahti")
-            assertThat(organizationDetailsSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val organizationDetailsSection = OrganizationDetailsPage(page).getFirstReservationSection()
+        assertThat(organizationDetailsSection.locationName).containsText("Haukilahti")
+        assertThat(organizationDetailsSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
     }
 
     @Test
     fun `should be able to switch slip reservation for organization`() {
-        try {
-            mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
-            page.navigate(baseUrlWithFinnishLangParam)
-            val citizenHomePage = CitizenHomePage(page)
-            citizenHomePage.loginAsOliviaVirtanen()
-            citizenHomePage.navigateToPage()
+        mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
+        page.navigate(baseUrlWithFinnishLangParam)
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.loginAsOliviaVirtanen()
+        citizenHomePage.navigateToPage()
 
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-            reservationPage.startReservingBoatSpaceB314()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-            val reserveModal = reservationPage.getReserveModal()
-            assertThat(reserveModal.reserveANewSpace).isVisible()
-            reserveModal.reserveANewSpace.click()
+        val reserveModal = reservationPage.getReserveModal()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
 
-            val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit()
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit()
 
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaSuccessButton.click()
 
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            reservationPage.navigateToPage()
-            reservationPage.startReservingBoatSpaceB059()
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB059()
 
-            assertThat(reserveModal.root).isVisible()
-            assertThat(reserveModal.reserveANewSpace).isVisible()
-            assertThat(reserveModal.reserveANewSpace).isVisible()
-            reserveModal.reserveANewSpace.click()
-            form.fillFormAndSubmit()
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
+        form.fillFormAndSubmit()
 
-            paymentPage.nordeaSuccessButton.click()
+        paymentPage.nordeaSuccessButton.click()
 
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            reservationPage.navigateToPage()
-            reservationPage.filterForSlipBoatSpace()
-            reservationPage.getSearchResultsSection().firstReserveButton.click()
-            assertThat(reserveModal.reserveANewSpace).isHidden()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        reservationPage.navigateToPage()
+        reservationPage.filterForSlipBoatSpace()
+        reservationPage.getSearchResultsSection().firstReserveButton.click()
+        assertThat(reserveModal.reserveANewSpace).isHidden()
     }
 
     @Test
     fun `should be able to switch an indefinite trailer space`() {
-        try {
-            verifySuccesfullTrailerSwitch(true)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        verifySuccesfullTrailerSwitch(true)
     }
 
     @Test
     fun `should be able to switch a fixed term trailer space`() {
-        try {
-            verifySuccesfullTrailerSwitch(false)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        verifySuccesfullTrailerSwitch(false)
     }
 
     private fun verifySuccesfullTrailerSwitch(forEspooCitizen: Boolean) {
@@ -291,62 +267,54 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should be able to switch a winter space as Espoo citizen that is the same price`() {
-        try {
-            val reservationPage = ReserveBoatSpacePage(page)
-            val filterSection = reservationPage.getFilterSection()
-            val winterFilterSection = filterSection.getWinterFilterSection()
-            CitizenHomePage(page).loginAsLeoKorhonen()
-            mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-            reservationPage.reserveWinterBoatSpace()
-            assertEmailIsSentOfCitizensWinterSpaceReservation()
-            SendEmailServiceMock.resetEmails()
+        val reservationPage = ReserveBoatSpacePage(page)
+        val filterSection = reservationPage.getFilterSection()
+        val winterFilterSection = filterSection.getWinterFilterSection()
+        CitizenHomePage(page).loginAsLeoKorhonen()
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        reservationPage.reserveWinterBoatSpace()
+        assertEmailIsSentOfCitizensWinterSpaceReservation()
+        SendEmailServiceMock.resetEmails()
 
-            val expectedBoatSpaceSection = "B"
-            val expectedPlaceNumber = "017"
-            switchWinterSpace(
-                reservationPage,
-                filterSection,
-                winterFilterSection,
-                "1",
-                "3",
-                2,
-                expectedHarbor = "Haukilahti",
-                expectedBoatSpaceSection,
-                expectedPlaceNumber
-            )
-            assertEmailIsSentOfCitizensWinterSpaceSwitch()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val expectedBoatSpaceSection = "B"
+        val expectedPlaceNumber = "017"
+        switchWinterSpace(
+            reservationPage,
+            filterSection,
+            winterFilterSection,
+            "1",
+            "3",
+            2,
+            expectedHarbor = "Haukilahti",
+            expectedBoatSpaceSection,
+            expectedPlaceNumber
+        )
+        assertEmailIsSentOfCitizensWinterSpaceSwitch()
     }
 
     @Test
     fun `should be able to switch a winter space as Espoo citizen that is more expensive`() {
-        try {
-            val reservationPage = ReserveBoatSpacePage(page)
-            val filterSection = reservationPage.getFilterSection()
-            val winterFilterSection = filterSection.getWinterFilterSection()
-            CitizenHomePage(page).loginAsLeoKorhonen()
-            mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-            reservationPage.reserveWinterBoatSpace()
-            assertEmailIsSentOfCitizensWinterSpaceReservation()
-            SendEmailServiceMock.resetEmails()
-            switchWinterSpace(
-                reservationPage,
-                filterSection,
-                winterFilterSection,
-                "3",
-                "5",
-                1,
-                "Suomenoja",
-                "B",
-                "087",
-                paymentFlow = true
-            )
-            assertEmailIsSentOfCitizensWinterSpaceSwitch()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val reservationPage = ReserveBoatSpacePage(page)
+        val filterSection = reservationPage.getFilterSection()
+        val winterFilterSection = filterSection.getWinterFilterSection()
+        CitizenHomePage(page).loginAsLeoKorhonen()
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        reservationPage.reserveWinterBoatSpace()
+        assertEmailIsSentOfCitizensWinterSpaceReservation()
+        SendEmailServiceMock.resetEmails()
+        switchWinterSpace(
+            reservationPage,
+            filterSection,
+            winterFilterSection,
+            "3",
+            "5",
+            1,
+            "Suomenoja",
+            "B",
+            "087",
+            paymentFlow = true
+        )
+        assertEmailIsSentOfCitizensWinterSpaceSwitch()
     }
 
     private fun switchWinterSpace(
@@ -396,7 +364,8 @@ class SwitchReservationTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
 
-        val firstReservationSection = citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
+        val firstReservationSection =
+            citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
         assertThat(firstReservationSection.locationName).containsText(expectedHarbor)
         assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
         assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
@@ -406,61 +375,58 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should be able to switch a storage space`() {
-        try {
-            mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
 
-            val reservationPage = ReserveBoatSpacePage(page)
-            val filterSection = reservationPage.getFilterSection()
-            val storageFilterSection = filterSection.getStorageFilterSection()
-            reservationPage.navigateToPage()
+        val reservationPage = ReserveBoatSpacePage(page)
+        val filterSection = reservationPage.getFilterSection()
+        val storageFilterSection = filterSection.getStorageFilterSection()
+        reservationPage.navigateToPage()
 
-            reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
-            assertEmailIsSentOfCitizensStorageSpaceReservation()
-            SendEmailServiceMock.resetEmails()
+        reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
+        assertEmailIsSentOfCitizensStorageSpaceReservation()
+        SendEmailServiceMock.resetEmails()
 
-            mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
 
-            reservationPage.navigateToPage()
+        reservationPage.navigateToPage()
 
-            filterSection.storageRadio.click()
+        filterSection.storageRadio.click()
 
-            storageFilterSection.trailerRadio.click()
-            storageFilterSection.widthInput.fill("1")
-            storageFilterSection.lengthInput.fill("3")
-            val expectedBoatSpaceSection = "B"
-            val expectedPlaceNumber = "009"
-            selectBoatSpaceForSwitch(reservationPage, 4, expectedBoatSpaceSection, expectedPlaceNumber)
-            // switch form
-            val switchSpaceFormPage = SwitchSpaceFormPage(page)
+        storageFilterSection.trailerRadio.click()
+        storageFilterSection.widthInput.fill("1")
+        storageFilterSection.lengthInput.fill("3")
+        val expectedBoatSpaceSection = "B"
+        val expectedPlaceNumber = "009"
+        selectBoatSpaceForSwitch(reservationPage, 4, expectedBoatSpaceSection, expectedPlaceNumber)
+        // switch form
+        val switchSpaceFormPage = SwitchSpaceFormPage(page)
 
-            val trailerRegistrationNumber = "ABC-123"
-            switchSpaceFormPage.getWinterStorageTypeSection().trailerRegistrationNumberInput.fill(
-                trailerRegistrationNumber
-            )
-            switchSpaceFormPage.getWinterStorageTypeSection().trailerWidthInput.fill("1")
-            switchSpaceFormPage.getWinterStorageTypeSection().trailerLengthInput.fill("3")
-            val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            switchSpaceFormPage.reserveButton.click()
+        val trailerRegistrationNumber = "ABC-123"
+        switchSpaceFormPage.getWinterStorageTypeSection().trailerRegistrationNumberInput.fill(
+            trailerRegistrationNumber
+        )
+        switchSpaceFormPage.getWinterStorageTypeSection().trailerWidthInput.fill("1")
+        switchSpaceFormPage.getWinterStorageTypeSection().trailerLengthInput.fill("3")
+        val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        switchSpaceFormPage.reserveButton.click()
 
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            // Check that the renewed reservation is visible
-            val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.navigateToPage()
-            assertEmailIsSentOfCitizensStorageSpaceSwitch()
+        // Check that the renewed reservation is visible
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        assertEmailIsSentOfCitizensStorageSpaceSwitch()
 
-            val firstReservationSection = citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(firstReservationSection.locationName).containsText("Haukilahti")
-            assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
-                trailerRegistrationNumber
-            )
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val firstReservationSection =
+            citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
+        assertThat(firstReservationSection.locationName).containsText("Haukilahti")
+        assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+        assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
+            trailerRegistrationNumber
+        )
     }
 
     @Test
@@ -468,45 +434,41 @@ class SwitchReservationTest : ReserveTest() {
         val discount = 50
         val expectedDifference = "150,81"
         val expectedPrice = "75,41"
-        try {
-            mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
+        mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
 
-            setDiscountForReserver(page, "Virtanen", discount)
-            val reservationPage = switchSlipBoatSpace(CitizenHomePage.oliviaVirtanenSsn, "3", "6", 3, false)
+        setDiscountForReserver(page, "Virtanen", discount)
+        val reservationPage = switchSlipBoatSpace(CitizenHomePage.oliviaVirtanenSsn, "3", "6", 3, false)
 
-            // switch form
-            val form = BoatSpaceFormPage(page)
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
+        // switch form
+        val form = BoatSpaceFormPage(page)
+        // Make sure that citizen is redirected to unfinished reservation switch form
+        reservationPage.navigateToPage()
 
-            val userAgreementSection = form.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
+        val userAgreementSection = form.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
 
-            val reservedSpaceSection = form.getReservedSpaceSection()
-            assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: 418,00 €")
+        val reservedSpaceSection = form.getReservedSpaceSection()
+        assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: 418,00 €")
 
-            form.submitButton.click()
-            assertZeroEmailsSent()
+        form.submitButton.click()
+        assertZeroEmailsSent()
 
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaSuccessButton.click()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            assertCorrectPaymentForReserver(
-                "virtanen",
-                PaymentStatus.Success,
-                "Haukilahti D 013",
-                expectedPrice,
-                "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus.",
-                doLogin = false
-            )
-            // switched place was fixed term so the new place should be as well
-            assertEmailIsSentOfCitizensFixedTermSlipSwitch("olivia@noreplytest.fi")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertCorrectPaymentForReserver(
+            "virtanen",
+            PaymentStatus.Success,
+            "Haukilahti D 013",
+            expectedPrice,
+            "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus.",
+            doLogin = false
+        )
+        // switched place was fixed term so the new place should be as well
+        assertEmailIsSentOfCitizensFixedTermSlipSwitch("olivia@noreplytest.fi")
     }
 
     @Test

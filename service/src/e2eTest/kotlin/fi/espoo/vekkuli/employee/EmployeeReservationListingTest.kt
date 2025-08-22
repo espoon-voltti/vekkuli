@@ -252,42 +252,34 @@ class EmployeeReservationListingTest : PlaywrightTest() {
 
     @Test
     fun `reservations list should shield against XSS scripts from citizen information`() {
-        try {
-            EmployeeHomePage(page).employeeLogin()
-            val listingPage = ReservationListPage(page)
+        EmployeeHomePage(page).employeeLogin()
+        val listingPage = ReservationListPage(page)
 
-            // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
+        // Inject XSS scripts to citizen information from citizen details page and return assertions
+        val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
 
-            listingPage.navigateTo()
-            // For some reason the page doesn't automatically reload the updated data
-            page.reload()
-            page.waitForCondition { listingPage.reservations.count() >= 5 }
+        listingPage.navigateTo()
+        // For some reason the page doesn't automatically reload the updated data
+        page.reload()
+        page.waitForCondition { listingPage.reservations.count() >= 5 }
 
-            assertions()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertions()
     }
 
     @Test
     fun `reservations list should shield against XSS scripts from organization information`() {
-        try {
-            EmployeeHomePage(page).employeeLogin()
-            val listingPage = ReservationListPage(page)
+        EmployeeHomePage(page).employeeLogin()
+        val listingPage = ReservationListPage(page)
 
-            // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
+        // Inject XSS scripts to citizen information from citizen details page and return assertions
+        val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
 
-            listingPage.navigateTo()
-            // For some reason the page doesn't automatically reload the updated data
-            page.reload()
-            page.waitForCondition { listingPage.reservations.count() >= 5 }
+        listingPage.navigateTo()
+        // For some reason the page doesn't automatically reload the updated data
+        page.reload()
+        page.waitForCondition { listingPage.reservations.count() >= 5 }
 
-            assertions()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertions()
     }
 
     @ParameterizedTest
@@ -310,22 +302,21 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         parameter: String,
         maliciousValue: String
     ) {
-        try {
-            EmployeeHomePage(page).employeeLogin()
-            val listingPage = ReservationListPage(page)
+        EmployeeHomePage(page).employeeLogin()
+        val listingPage = ReservationListPage(page)
 
-            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
+        fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
 
-            val params =
-                mapOf(
-                    parameter to maliciousCode(maliciousValue),
-                )
-            listingPage.navigateToWithParams(params)
+        val params =
+            mapOf(
+                parameter to maliciousCode(maliciousValue),
+            )
+        listingPage.navigateToWithParams(params)
 
-            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on $parameter")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean,
+            "XSS script was executed on $parameter"
+        )
     }
 
     private fun reservationListPage(): ReservationListPage {

@@ -50,44 +50,36 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
 
     @Test
     fun `reservations list should shield against XSS scripts from citizen information`() {
-        try {
-            EmployeeHomePage(page).employeeLogin()
+        EmployeeHomePage(page).employeeLogin()
 
-            val listingPage = BoatSpaceListPage(page)
+        val listingPage = BoatSpaceListPage(page)
 
-            // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
+        // Inject XSS scripts to citizen information from citizen details page and return assertions
+        val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
 
-            listingPage.navigateTo()
-            // For some reason the page doesn't automatically reload the updated data
-            page.reload()
-            page.waitForCondition { listingPage.listItems.count() >= 5 }
+        listingPage.navigateTo()
+        // For some reason the page doesn't automatically reload the updated data
+        page.reload()
+        page.waitForCondition { listingPage.listItems.count() >= 5 }
 
-            assertions()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertions()
     }
 
     @Test
     fun `reservations list should shield against XSS scripts from organization information`() {
-        try {
-            EmployeeHomePage(page).employeeLogin()
+        EmployeeHomePage(page).employeeLogin()
 
-            val listingPage = BoatSpaceListPage(page)
+        val listingPage = BoatSpaceListPage(page)
 
-            // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
+        // Inject XSS scripts to citizen information from citizen details page and return assertions
+        val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
 
-            listingPage.navigateTo()
-            // For some reason the page doesn't automatically reload the updated data
-            page.reload()
-            page.waitForCondition { listingPage.listItems.count() >= 5 }
+        listingPage.navigateTo()
+        // For some reason the page doesn't automatically reload the updated data
+        page.reload()
+        page.waitForCondition { listingPage.listItems.count() >= 5 }
 
-            assertions()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertions()
     }
 
     @ParameterizedTest
@@ -104,62 +96,57 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         parameter: String,
         maliciousValue: String
     ) {
-        try {
-            EmployeeHomePage(page).employeeLogin()
-            val listingPage = BoatSpaceListPage(page)
+        EmployeeHomePage(page).employeeLogin()
+        val listingPage = BoatSpaceListPage(page)
 
-            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
+        fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
 
-            val params =
-                mapOf(
-                    parameter to maliciousCode(maliciousValue),
-                )
-            listingPage.navigateToWithParams(params)
+        val params =
+            mapOf(
+                parameter to maliciousCode(maliciousValue),
+            )
+        listingPage.navigateToWithParams(params)
 
-            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on $parameter")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean,
+            "XSS script was executed on $parameter"
+        )
     }
 
     @Test
     fun `should be able to edit boat space`() {
-        try {
-            val listingPage = boatSpaceListPage()
-            listingPage.checkBox(1).click()
-            listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("Storage")
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("RearBuoy")
-            assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
-            listingPage.editModalButton.click()
-            val editModal = listingPage.editModalPage
-            editModal.fillForm(
-                "1.5",
-                "3.5",
-                harbor = "3",
-                section = "C",
-                placeNumber = "1",
-                boatSpaceType = "Storage",
-                boatSpaceAmenity = "RearBuoy",
-                payment = "1"
-            )
-            editModal.submitButton.click()
+        val listingPage = boatSpaceListPage()
+        listingPage.checkBox(1).click()
+        listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Storage")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("RearBuoy")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
+        listingPage.editModalButton.click()
+        val editModal = listingPage.editModalPage
+        editModal.fillForm(
+            "1.5",
+            "3.5",
+            harbor = "3",
+            section = "C",
+            placeNumber = "1",
+            boatSpaceType = "Storage",
+            boatSpaceAmenity = "RearBuoy",
+            payment = "1"
+        )
+        editModal.submitButton.click()
 
-            assertThat(listingPage.amenityFilter(BoatSpaceAmenity.Beam)).isChecked()
-            listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
-            listingPage.boatSpaceTypeFilter("Storage").click()
-            assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
-            assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
-            assertThat(listingPage.boatSpaceRow(1)).containsText("Laajalahti")
-            assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
-            assertThat(listingPage.boatSpaceRow(1)).containsText("Rear buoy")
-            assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertThat(listingPage.amenityFilter(BoatSpaceAmenity.Beam)).isChecked()
+        listingPage.amenityFilter(BoatSpaceAmenity.Beam).click()
+        listingPage.boatSpaceTypeFilter("Storage").click()
+        assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Laajalahti")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Rear buoy")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
     }
 
     @Test
@@ -206,60 +193,52 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
 
     @Test
     fun `should be able to load more boat spaces`() {
-        try {
-            val startingCount = 100
-            val itemsShownOnClick = 100
-            val listingPage = boatSpaceListPage()
-            assertThat(listingPage.listItems).hasCount(startingCount)
+        val startingCount = 100
+        val itemsShownOnClick = 100
+        val listingPage = boatSpaceListPage()
+        assertThat(listingPage.listItems).hasCount(startingCount)
 
-            listingPage.showMoreButton().click()
-            assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick)
-            listingPage.showMoreButton().click()
-            assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick + itemsShownOnClick)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        listingPage.showMoreButton().click()
+        assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick)
+        listingPage.showMoreButton().click()
+        assertThat(listingPage.listItems).hasCount(startingCount + itemsShownOnClick + itemsShownOnClick)
     }
 
     @Test
     fun `should be able to add and delete a boat space`() {
-        try {
-            val listingPage = boatSpaceListPage()
-            // Add a new boat space
-            listingPage.addBoatSpaceButton.click()
-            val createModal = listingPage.createModal
-            val harborParam = "8"
+        val listingPage = boatSpaceListPage()
+        // Add a new boat space
+        listingPage.addBoatSpaceButton.click()
+        val createModal = listingPage.createModal
+        val harborParam = "8"
 
-            createModal.fillForm(
-                "1.5",
-                "3.5",
-                harbor = harborParam,
-                section = "A",
-                placeNumber = "111",
-                boatSpaceType = "Storage",
-                boatSpaceAmenity = "RearBuoy",
-                payment = "2",
-                boatSpaceState = BoatSpaceState.Inactive
-            )
-            createModal.submitButton.click()
-            assertThat(createModal.successModal).isVisible()
+        createModal.fillForm(
+            "1.5",
+            "3.5",
+            harbor = harborParam,
+            section = "A",
+            placeNumber = "111",
+            boatSpaceType = "Storage",
+            boatSpaceAmenity = "RearBuoy",
+            payment = "2",
+            boatSpaceState = BoatSpaceState.Inactive
+        )
+        createModal.submitButton.click()
+        assertThat(createModal.successModal).isVisible()
 
-            listingPage.harborFilter(harborParam).click()
-            assertThat(listingPage.getBoatSpaceRowByIndex(0)).containsText("A 111")
-            assertThat(listingPage.listItems).hasCount(2)
-            listingPage.checkBox(listingPage.getBoatSpaceRowByIndex(0)).click()
-            listingPage.editModalButton.click()
-            // Remove the boat space
+        listingPage.harborFilter(harborParam).click()
+        assertThat(listingPage.getBoatSpaceRowByIndex(0)).containsText("A 111")
+        assertThat(listingPage.listItems).hasCount(2)
+        listingPage.checkBox(listingPage.getBoatSpaceRowByIndex(0)).click()
+        listingPage.editModalButton.click()
+        // Remove the boat space
 
-            val editModal = listingPage.editModalPage
-            editModal.deleteButton.click()
-            editModal.confirmButton.click()
-            assertThat(editModal.deletionSuccessModal).isVisible()
-            assertThat(listingPage.getBoatSpaceRowByIndex(0)).not().containsText("A 111")
-            assertThat(listingPage.listItems).hasCount(1)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val editModal = listingPage.editModalPage
+        editModal.deleteButton.click()
+        editModal.confirmButton.click()
+        assertThat(editModal.deletionSuccessModal).isVisible()
+        assertThat(listingPage.getBoatSpaceRowByIndex(0)).not().containsText("A 111")
+        assertThat(listingPage.listItems).hasCount(1)
     }
 
     @Test

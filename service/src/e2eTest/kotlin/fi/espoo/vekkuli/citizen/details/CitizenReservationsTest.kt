@@ -16,52 +16,44 @@ import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDeta
 class CitizenReservationsTest : PlaywrightTest() {
     @Test
     fun `citizen can see their active reservations`() {
-        try {
-            CitizenHomePage(page).loginAsOliviaVirtanen()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.navigateToPage()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
 
-            val firstReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 003")
-            assertThat(firstReservationSection.locationName).hasText("Haukilahti")
-            assertThat(firstReservationSection.place).hasText("B 003")
+        val firstReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 003")
+        assertThat(firstReservationSection.locationName).hasText("Haukilahti")
+        assertThat(firstReservationSection.place).hasText("B 003")
 
-            assertThat(firstReservationSection.validity).hasText("31.12.2024 asti")
+        assertThat(firstReservationSection.validity).hasText("31.12.2024 asti")
 
-            val secondReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
-            assertThat(secondReservationSection.place).hasText("B 015")
-            assertThat(secondReservationSection.validity).hasText("Toistaiseksi, jatko vuosittain")
+        val secondReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
+        assertThat(secondReservationSection.place).hasText("B 015")
+        assertThat(secondReservationSection.validity).hasText("Toistaiseksi, jatko vuosittain")
 
-            // Seed user has 3 active reservations
-            assertThat(citizenDetailsPage.reservationListCards).hasCount(3)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        // Seed user has 3 active reservations
+        assertThat(citizenDetailsPage.reservationListCards).hasCount(3)
     }
 
     @Test
     fun `citizen can see their expired reservations`() {
-        try {
-            CitizenHomePage(page).loginAsOliviaVirtanen()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.navigateToPage()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
 
-            citizenDetailsPage.showExpiredReservationsToggle.click()
+        citizenDetailsPage.showExpiredReservationsToggle.click()
 
-            val firstExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2023 asti")
-            assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
-            assertThat(firstExpiredReservationSection.place).hasText("B 003")
-            assertThat(firstExpiredReservationSection.validity).hasText("31.12.2023 asti")
+        val firstExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2023 asti")
+        assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
+        assertThat(firstExpiredReservationSection.place).hasText("B 003")
+        assertThat(firstExpiredReservationSection.validity).hasText("31.12.2023 asti")
 
-            val secondExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2022 asti")
-            assertThat(secondExpiredReservationSection.place).hasText("B 003")
-            assertThat(secondExpiredReservationSection.validity).hasText("31.12.2022 asti")
-            // Seed user has 2 expired reservations
-            assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val secondExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2022 asti")
+        assertThat(secondExpiredReservationSection.place).hasText("B 003")
+        assertThat(secondExpiredReservationSection.validity).hasText("31.12.2022 asti")
+        // Seed user has 2 expired reservations
+        assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)
     }
 
     @Test

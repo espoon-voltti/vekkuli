@@ -34,174 +34,154 @@ class CitizenDetailsTest : PlaywrightTest() {
 
     @Test
     fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
-        try {
-            CitizenHomePage(page).loginAsOliviaVirtanen()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val firstReservationSection = citizenDetails.getReservationSection("Talvipaikka: Haukilahti B 015")
-            val trailerSection = firstReservationSection.getTrailerSection()
+        val firstReservationSection = citizenDetails.getReservationSection("Talvipaikka: Haukilahti B 015")
+        val trailerSection = firstReservationSection.getTrailerSection()
 
-            trailerSection.editButton.click()
-            trailerSection.registrationCodeInput.fill("FOO-123")
-            trailerSection.widthInput.fill("3")
-            trailerSection.lengthInput.fill("5")
-            trailerSection.saveButton.click()
+        trailerSection.editButton.click()
+        trailerSection.registrationCodeInput.fill("FOO-123")
+        trailerSection.widthInput.fill("3")
+        trailerSection.lengthInput.fill("5")
+        trailerSection.saveButton.click()
 
-            assertThat(trailerSection.registrationCodeField).hasText("FOO-123")
-            assertThat(trailerSection.widthField).hasText("3,00")
-            assertThat(trailerSection.lengthField).hasText("5,00")
+        assertThat(trailerSection.registrationCodeField).hasText("FOO-123")
+        assertThat(trailerSection.widthField).hasText("3,00")
+        assertThat(trailerSection.lengthField).hasText("5,00")
 
-            val employeeHomePage = EmployeeHomePage(page)
-            employeeHomePage.employeeLogin()
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
 
-            assertThat(listingPage.warningIcon8).isVisible()
+        assertThat(listingPage.warningIcon8).isVisible()
 
-            listingPage.boatSpace8.click()
+        listingPage.boatSpace8.click()
 
-            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+        val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
 
-            employeeCitizenDetails.trailerAckWarningButton(6).click()
+        employeeCitizenDetails.trailerAckWarningButton(6).click()
 
-            assertThat(employeeCitizenDetails.trailerWarningModalLengthInput).isVisible()
-            assertThat(employeeCitizenDetails.trailerWarningModalWidthInput).isVisible()
-            employeeCitizenDetails.trailerWarningModalLengthInput.click()
+        assertThat(employeeCitizenDetails.trailerWarningModalLengthInput).isVisible()
+        assertThat(employeeCitizenDetails.trailerWarningModalWidthInput).isVisible()
+        employeeCitizenDetails.trailerWarningModalLengthInput.click()
 
-            val infoText = "Length and width ok"
-            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
-            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+        val infoText = "Length and width ok"
+        employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+        employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            employeeCitizenDetails.memoNavi.click()
-            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        employeeCitizenDetails.memoNavi.click()
+        assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
     }
 
     @Test
     fun `citizen can renew slip reservation`() {
-        try {
-            mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
-            assertThat(reservationSection.startDate).hasText("01.02.2024")
-            reservationSection.renewButton.click()
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+        assertThat(reservationSection.startDate).hasText("01.02.2024")
+        reservationSection.renewButton.click()
 
-            val formPage = BoatSpaceFormPage(page)
-            val userAgreementSection = formPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            formPage.submitButton.click()
+        val formPage = BoatSpaceFormPage(page)
+        val userAgreementSection = formPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        formPage.submitButton.click()
 
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaSuccessButton.click()
 
-            citizenDetails.navigateToPage()
-            assertThat(reservationSection.startDate).hasText("07.01.2025")
-            assertThat(reservationSection.renewButton).isHidden()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        citizenDetails.navigateToPage()
+        assertThat(reservationSection.startDate).hasText("07.01.2025")
+        assertThat(reservationSection.renewButton).isHidden()
     }
 
     @Test
     fun `citizen can renew winter storage reservation`() {
-        try {
-            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
-            CitizenHomePage(page).loginAsOliviaVirtanen()
+        mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 015")
-            assertThat(reservationSection.startDate).hasText("01.02.2024")
-            reservationSection.renewButton.click()
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 015")
+        assertThat(reservationSection.startDate).hasText("01.02.2024")
+        reservationSection.renewButton.click()
 
-            val formPage = BoatSpaceFormPage(page)
-            val userAgreementSection = formPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            formPage.submitButton.click()
+        val formPage = BoatSpaceFormPage(page)
+        val userAgreementSection = formPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        formPage.submitButton.click()
 
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaSuccessButton.click()
 
-            citizenDetails.navigateToPage()
+        citizenDetails.navigateToPage()
 
-            assertThat(reservationSection.startDate).hasText("15.08.2025")
-            assertThat(reservationSection.renewButton).isHidden()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertThat(reservationSection.startDate).hasText("15.08.2025")
+        assertThat(reservationSection.renewButton).isHidden()
     }
 
     @Test
     fun `citizen cannot renew reservation if it is not time to renew`() {
-        try {
-            // Set time over month before the reservation ends. Renewal should not be possible.
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 12, 30, 12, 0, 0))
+        // Set time over month before the reservation ends. Renewal should not be possible.
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 12, 30, 12, 0, 0))
 
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
-            assertThat(reservationSection.renewButton).not().isVisible()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+        assertThat(reservationSection.renewButton).not().isVisible()
     }
 
     @Test
     fun `citizen can edit their own information`() {
-        try {
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val citizenSection = citizenDetails.getCitizenSection()
-            citizenSection.editButton.click()
+        val citizenSection = citizenDetails.getCitizenSection()
+        citizenSection.editButton.click()
 
-            val citizenPhone = "0405839281"
-            val citizenEmail = "test2@email.com"
+        val citizenPhone = "0405839281"
+        val citizenEmail = "test2@email.com"
 
-            citizenSection.emailInput.fill("")
-            citizenSection.phoneInput.fill("")
-            citizenSection.saveButton.click()
+        citizenSection.emailInput.fill("")
+        citizenSection.phoneInput.fill("")
+        citizenSection.saveButton.click()
 
-            // assert that email and phone can not be empty
-            assertThat(citizenSection.emailError).isVisible()
-            assertThat(citizenSection.phoneError).isVisible()
-            citizenSection.emailInput.fill("asd")
-            citizenSection.phoneInput.fill("asd")
-            citizenSection.saveButton.click()
+        // assert that email and phone can not be empty
+        assertThat(citizenSection.emailError).isVisible()
+        assertThat(citizenSection.phoneError).isVisible()
+        citizenSection.emailInput.fill("asd")
+        citizenSection.phoneInput.fill("asd")
+        citizenSection.saveButton.click()
 
-            // assert that email and phone have to be valid
-            assertThat(citizenSection.emailError).isVisible()
-            assertThat(citizenSection.emailError).hasText("Virheellinen sähköpostiosoite")
-            assertThat(citizenSection.phoneError).isVisible()
-            assertThat(citizenSection.phoneError).hasText("Virheellinen numero")
-            citizenSection.emailInput.fill(citizenEmail)
-            citizenSection.phoneInput.fill(citizenPhone)
-            citizenSection.saveButton.click()
+        // assert that email and phone have to be valid
+        assertThat(citizenSection.emailError).isVisible()
+        assertThat(citizenSection.emailError).hasText("Virheellinen sähköpostiosoite")
+        assertThat(citizenSection.phoneError).isVisible()
+        assertThat(citizenSection.phoneError).hasText("Virheellinen numero")
+        citizenSection.emailInput.fill(citizenEmail)
+        citizenSection.phoneInput.fill(citizenPhone)
+        citizenSection.saveButton.click()
 
-            // assert that the values are updated
-            assertThat(citizenSection.phoneField).hasText(citizenPhone)
-            assertThat(citizenSection.emailField).hasText(citizenEmail)
-            assertThat(citizenSection.municipalityField).hasText("Espoo")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        // assert that the values are updated
+        assertThat(citizenSection.phoneField).hasText(citizenPhone)
+        assertThat(citizenSection.emailField).hasText(citizenEmail)
+        assertThat(citizenSection.municipalityField).hasText("Espoo")
     }
 
     @Test
@@ -232,44 +212,40 @@ class CitizenDetailsTest : PlaywrightTest() {
 
     @Test
     fun `citizen can edit their own boat`() {
-        try {
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            citizenDetails.showAllBoatsButton.click()
+        citizenDetails.showAllBoatsButton.click()
 
-            var boat = citizenDetails.getBoatSection("Leon vene")
-            boat.editButton.click()
+        var boat = citizenDetails.getBoatSection("Leon vene")
+        boat.editButton.click()
 
-            boat.nameInput.fill("New Boat Name")
-            boat.weightInput.fill("2000")
-            boat.typeSelect.selectOption("Sailboat")
-            boat.depthInput.fill("1.5")
-            boat.widthInput.fill("3")
-            boat.registrationNumberInput.fill("ABC123")
-            boat.lengthInput.fill("6")
-            boat.ownershipSelect.selectOption("Owner")
-            boat.otherIdentifierInput.fill("ID12345")
-            boat.extraInformationInput.fill("Extra info")
+        boat.nameInput.fill("New Boat Name")
+        boat.weightInput.fill("2000")
+        boat.typeSelect.selectOption("Sailboat")
+        boat.depthInput.fill("1.5")
+        boat.widthInput.fill("3")
+        boat.registrationNumberInput.fill("ABC123")
+        boat.lengthInput.fill("6")
+        boat.ownershipSelect.selectOption("Owner")
+        boat.otherIdentifierInput.fill("ID12345")
+        boat.extraInformationInput.fill("Extra info")
 
-            boat.saveButton.click()
+        boat.saveButton.click()
 
-            boat = citizenDetails.getBoatSection("New Boat Name")
-            assertThat(boat.nameField).hasText("New Boat Name")
-            assertThat(boat.weightField).hasText("2000")
-            assertThat(boat.typeField).hasText("Purjevene")
-            assertThat(boat.depthField).hasText("1,50")
-            assertThat(boat.widthField).hasText("3,00")
-            assertThat(boat.registrationNumberField).hasText("ABC123")
-            assertThat(boat.lengthField).hasText("6,00")
-            assertThat(boat.ownershipField).hasText("Omistan veneen")
-            assertThat(boat.otherIdentifierField).hasText("ID12345")
-            assertThat(boat.extraInformationField).hasText("Extra info")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        boat = citizenDetails.getBoatSection("New Boat Name")
+        assertThat(boat.nameField).hasText("New Boat Name")
+        assertThat(boat.weightField).hasText("2000")
+        assertThat(boat.typeField).hasText("Purjevene")
+        assertThat(boat.depthField).hasText("1,50")
+        assertThat(boat.widthField).hasText("3,00")
+        assertThat(boat.registrationNumberField).hasText("ABC123")
+        assertThat(boat.lengthField).hasText("6,00")
+        assertThat(boat.ownershipField).hasText("Omistan veneen")
+        assertThat(boat.otherIdentifierField).hasText("ID12345")
+        assertThat(boat.extraInformationField).hasText("Extra info")
     }
 
     @Test
@@ -311,134 +287,118 @@ class CitizenDetailsTest : PlaywrightTest() {
 
     @Test
     fun `should add warning when citizen edits boat to be too heavy`() {
-        try {
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val boat = citizenDetails.getBoatSection("Leon vene")
-            boat.editButton.click()
-            boat.weightInput.fill("16000")
-            boat.saveButton.click()
+        val boat = citizenDetails.getBoatSection("Leon vene")
+        boat.editButton.click()
+        boat.weightInput.fill("16000")
+        boat.saveButton.click()
 
-            val employeeHomePage = EmployeeHomePage(page)
-            employeeHomePage.employeeLogin()
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            assertThat(listingPage.warningIcon).isVisible()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        assertThat(listingPage.warningIcon).isVisible()
 
-            listingPage.boatSpace1.click()
+        listingPage.boatSpace1.click()
 
-            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
-            employeeCitizenDetails.acknowledgeWarningButton(1).click()
-            assertThat(employeeCitizenDetails.boatWarningModalWeightInput).isVisible()
-            employeeCitizenDetails.boatWarningModalWeightInput.click()
-            val infoText = "Test info"
-            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
-            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+        val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+        employeeCitizenDetails.acknowledgeWarningButton(1).click()
+        assertThat(employeeCitizenDetails.boatWarningModalWeightInput).isVisible()
+        employeeCitizenDetails.boatWarningModalWeightInput.click()
+        val infoText = "Test info"
+        employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+        employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            employeeCitizenDetails.memoNavi.click()
-            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        employeeCitizenDetails.memoNavi.click()
+        assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
     }
 
     @Test
     fun `should add warning when citizen edits boat registration code`() {
-        try {
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val boat = citizenDetails.getBoatSection("Leon vene")
-            boat.editButton.click()
-            boat.registrationNumberInput.fill("A66778")
-            boat.saveButton.click()
+        val boat = citizenDetails.getBoatSection("Leon vene")
+        boat.editButton.click()
+        boat.registrationNumberInput.fill("A66778")
+        boat.saveButton.click()
 
-            val employeeHomePage = EmployeeHomePage(page)
-            employeeHomePage.employeeLogin()
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            assertThat(listingPage.warningIcon).isVisible()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        assertThat(listingPage.warningIcon).isVisible()
 
-            listingPage.boatSpace1.click()
+        listingPage.boatSpace1.click()
 
-            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
-            employeeCitizenDetails.acknowledgeWarningButton(1).click()
-            assertThat(employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput).isVisible()
-            employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput.click()
-            val infoText = "Test info"
-            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
-            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+        val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+        employeeCitizenDetails.acknowledgeWarningButton(1).click()
+        assertThat(employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput).isVisible()
+        employeeCitizenDetails.boatWarningModalBoatRegistrationCodeChangeInput.click()
+        val infoText = "Test info"
+        employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+        employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            employeeCitizenDetails.memoNavi.click()
-            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        employeeCitizenDetails.memoNavi.click()
+        assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
     }
 
     @Test
     fun `should add warning when citizen edits boat ownership`() {
-        try {
-            CitizenHomePage(page).loginAsLeoKorhonen()
+        CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val boat = citizenDetails.getBoatSection("Leon vene")
-            boat.editButton.click()
-            boat.ownershipSelect.selectOption("CoOwner")
-            boat.saveButton.click()
+        val boat = citizenDetails.getBoatSection("Leon vene")
+        boat.editButton.click()
+        boat.ownershipSelect.selectOption("CoOwner")
+        boat.saveButton.click()
 
-            val employeeHomePage = EmployeeHomePage(page)
-            employeeHomePage.employeeLogin()
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            assertThat(listingPage.warningIcon).isVisible()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        assertThat(listingPage.warningIcon).isVisible()
 
-            listingPage.boatSpace1.click()
+        listingPage.boatSpace1.click()
 
-            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
-            employeeCitizenDetails.acknowledgeWarningButton(1).click()
-            assertThat(employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput).isVisible()
-            employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput.click()
-            val infoText = "Test info"
-            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
-            employeeCitizenDetails.boatWarningModalConfirmButton.click()
+        val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
+        employeeCitizenDetails.acknowledgeWarningButton(1).click()
+        assertThat(employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput).isVisible()
+        employeeCitizenDetails.boatWarningModalBoatOwnershipChangeInput.click()
+        val infoText = "Test info"
+        employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+        employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            employeeCitizenDetails.memoNavi.click()
-            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        employeeCitizenDetails.memoNavi.click()
+        assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
     }
 
     @Test
     fun `citizen can see switch button on slip reservation`() {
-        try {
-            mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-            CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToPage()
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
 
-            val firstReservationSection = citizenDetails.getFirstReservationSection()
-            assertThat(firstReservationSection.switchSpace).isVisible()
+        val firstReservationSection = citizenDetails.getFirstReservationSection()
+        assertThat(firstReservationSection.switchSpace).isVisible()
 
-            // move to after the switch period has ended
-            mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.plusDays(1))
-            citizenDetails.navigateToPage()
+        // move to after the switch period has ended
+        mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.plusDays(1))
+        citizenDetails.navigateToPage()
 
-            assertThat(firstReservationSection.switchSpace).not().isVisible()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
+        assertThat(firstReservationSection.switchSpace).not().isVisible()
     }
 }
