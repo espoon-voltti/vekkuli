@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.collections.isNotEmpty
 
 @Component
@@ -19,26 +20,25 @@ class ReserverDetailsMessagesContainer(
 
     fun messageTabContent(
         reserver: ReserverWithDetails,
-        messages: List<QueuedMessage>,
+        messagesWithAttachments: List<MessageWithAttachments>,
     ): String {
         val messageHtml =
-            messages.joinToString("\n") { message ->
+            messagesWithAttachments.joinToString("\n") { messageWithAttachments ->
                 // language=HTML
                 """
-                <tr 
-                    hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${message.id}"
+                <tr>
+                    <td><a hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
                     hx-target="#modal-container"
-                    hx-swap="innerHTML">
-                    <td><a>${message.subject}</a></td>
-                    <td>${message.recipientAddress}</td>
-                    <td>${message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
-                    <td>${message.senderAddress ?: ""}</td>
+                    hx-swap="innerHTML">${messageWithAttachments.message.subject}</a></td>
+                    <td>${messageWithAttachments.message.recipientAddress}</td>
+                    <td>${messageWithAttachments.message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
+                    <td>${messageWithAttachments.message.senderAddress ?: ""}</td>
                 </tr>
                 """.trimIndent()
             }
 
         val messagesHtml =
-            if (messages.isNotEmpty()) {
+            if (messagesWithAttachments.isNotEmpty()) {
                 // language=HTML
                 """
                 <div class="message-list">

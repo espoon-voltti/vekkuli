@@ -1,7 +1,10 @@
 package fi.espoo.vekkuli.employee
 
+import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
@@ -18,6 +21,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.util.regex.Pattern
+import kotlin.io.path.Path
 import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
@@ -240,6 +244,18 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         listingPage.sendMassMessageContentInput.fill(emailBody)
         listingPage.sendMassMessageContentInput.blur()
 
+        val chooser =
+            page.waitForFileChooser(
+                Runnable {
+                    listingPage.attachmentInput.click()
+                }
+            )
+
+        chooser.setFiles(Path("src/e2eTest/resources/test-attachment.pdf"))
+        page.waitForCondition { listingPage.messageAttachmentNames.count() == 1 }
+
+        assertThat(listingPage.messageAttachmentNames.first()).containsText("test-attachment.pdf")
+
         listingPage.sendMassMessageModalSubmit.click()
         assertThat(listingPage.sendMassMessageModalSuccess).isVisible()
 
@@ -248,6 +264,17 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         val email = SendEmailServiceMock.emails[0]
         assertEquals(email.subject, emailSubject)
         assertEquals(email.body, emailBody)
+
+        // should see message in email list
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToUserPage(CitizenIds.olivia)
+        citizenDetails.messagesNavi.click()
+
+        assertThat(citizenDetails.messages).containsText(emailSubject)
+        citizenDetails.openEmailDetailsLinks.first().click()
+        assertThat(citizenDetails.messageContent).containsText(emailBody)
+        assertThat(citizenDetails.messageAttachments).hasCount(1)
+        assertThat(citizenDetails.messageAttachments.first()).containsText("test-attachment.pdf")
     }
 
     @Test
@@ -300,7 +327,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     )
     fun `reservations list should shield against XSS reflection scripts from parameters`(
         parameter: String,
-        maliciousValue: String
+        maliciousValue: String,
     ) {
         EmployeeHomePage(page).employeeLogin()
         val listingPage = ReservationListPage(page)

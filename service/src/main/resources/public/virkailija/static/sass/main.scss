@@ -823,6 +823,9 @@ label.filter-button:has(input:checked) .icon {
   thead th {
     color: $darkGray;
   }
+  table {
+    width: 100%;
+  }
 }
 
 .payment-list {
@@ -1176,12 +1179,11 @@ ul {
       display: flex;
       position: sticky;
       top: 0;
-      background-color: white;
       z-index: 10;
-      padding: 20px 10px 10px;
       justify-content: right;
-      transform: translateY(-20px);
-
+      .icon {
+        background-color: white;
+      }
     }
     .meta-content {
       padding-top: $spacing-small;
@@ -1239,8 +1241,15 @@ ul {
     .attachment-view {
       display: flex;
       padding: $spacing-medium;
-      gap: $spacing-small;
+      justify-content: space-between;
       align-items: center;
       background-color: $light-gray;
+      color: $bulma-primary;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: $spacing-small;
+      }
     }
   }

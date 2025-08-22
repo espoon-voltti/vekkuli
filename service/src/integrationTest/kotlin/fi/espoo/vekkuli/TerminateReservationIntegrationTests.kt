@@ -283,8 +283,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertEquals(oliviaTerminationReason, terminatedOliviaReservation?.terminationReason, "Olivia termination reason is set")
         assertEquals(oliviaTerminationComment, terminatedOliviaReservation?.terminationComment, "Olivia termination comment is set")
 
-        assertEquals(oliviaMessageTitle, sentMessage?.subject, "Olivia message title is set right")
-        assertEquals(oliviaMessageContent, sentMessage?.body, "Olivia message body is set right")
+        assertEquals(oliviaMessageTitle, sentMessage?.message?.subject, "Olivia message title is set right")
+        assertEquals(oliviaMessageContent, sentMessage?.message?.body, "Olivia message body is set right")
 
         // Leo's reservation - same as Olivia's but without comment and with a different end date and reason
         assertEquals(ReservationStatus.Confirmed, originalLeoReservation?.status, "Leo reservation starts as Confirmed")

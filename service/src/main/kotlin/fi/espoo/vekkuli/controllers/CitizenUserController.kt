@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -28,10 +29,13 @@ import fi.espoo.vekkuli.views.employee.components.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
@@ -60,7 +64,8 @@ class CitizenUserController(
     private val sentMessageModalView: SentMessageModalView,
     private val reservationWarningRepository: ReservationWarningRepository,
     private val seasonalService: SeasonalService,
-    private val boatSpaceReservationRepository: BoatSpaceReservationRepository
+    private val boatSpaceReservationRepository: BoatSpaceReservationRepository,
+    private val attachmentService: AttachmentService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -162,6 +167,26 @@ class CitizenUserController(
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val messages = reserverService.getMessages(citizenId)
         return reserverDetailsMessagesContainer.messageTabContent(reserver, messages)
+    }
+
+    @GetMapping("/virkailija/attachments/{attachmentId}/content")
+    @ResponseBody
+    fun content(
+        request: HttpServletRequest,
+        @PathVariable attachmentId: UUID
+    ): ResponseEntity<ByteArray?> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "OPEN_ATTACHMENT", mapOf("targetId" to attachmentId.toString()))
+        }
+        val attachment = attachmentService.getAttachment(attachmentId) ?: throw NotFound("Attachment not found for id: $attachmentId")
+        return ResponseEntity
+            .ok()
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                """inline; filename="${attachment.name}""""
+            ).contentType(MediaType.parseMediaType(attachment.contentType ?: "image/jpeg"))
+            .contentLength(attachment.size ?: 10L)
+            .body(attachment.data)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/viestit/{messageId}")
