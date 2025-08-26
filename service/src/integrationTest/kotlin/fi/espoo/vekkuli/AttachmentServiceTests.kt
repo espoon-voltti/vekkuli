@@ -2,7 +2,6 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.MessageServiceInterface
 import fi.espoo.vekkuli.service.ReserverService
 import org.junit.jupiter.api.Assertions.*

@@ -35,7 +35,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
@@ -169,16 +168,18 @@ class CitizenUserController(
         return reserverDetailsMessagesContainer.messageTabContent(reserver, messages)
     }
 
-    @GetMapping("/virkailija/attachments/{attachmentId}/content")
+    @GetMapping("/virkailija/viestit/liite/{attachmentId}")
     @ResponseBody
     fun content(
         request: HttpServletRequest,
-        @PathVariable attachmentId: UUID
+        @PathVariable attachmentId: UUID,
     ): ResponseEntity<ByteArray?> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "OPEN_ATTACHMENT", mapOf("targetId" to attachmentId.toString()))
         }
+
         val attachment = attachmentService.getAttachment(attachmentId) ?: throw NotFound("Attachment not found for id: $attachmentId")
+
         return ResponseEntity
             .ok()
             .header(

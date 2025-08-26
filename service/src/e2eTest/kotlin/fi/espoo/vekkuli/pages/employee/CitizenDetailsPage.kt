@@ -125,7 +125,9 @@ class CitizenDetailsPage(
 
     val messagesNavi: Locator = getByDataTestId("messages-tab-navi")
     val sendMessageLink: Locator = getByDataTestId("send-email-link")
-    val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
+
+    fun messages(subject: String): Locator = page.getByTestId("messages-table").locator("tbody tr a:has-text('$subject')")
+
     val messageAttachments: Locator = page.getByTestId("attachment-list").locator(".attachment-view")
     val messageContent: Locator = getByDataTestId("message-content")
     val sendReserverMessageForm = getByDataTestId("send-email")
@@ -134,8 +136,6 @@ class CitizenDetailsPage(
     val sendReserverMessageContentInput = getByDataTestId("message-content")
     val sendReserverMessageModalSubmit = getByDataTestId("send-email-modal-confirm")
     val sendReserverMessageModalSuccess = getByDataTestId("message-sent-success-modal")
-
-    val openEmailDetailsLinks: Locator = page.getByTestId("messages-table").locator("tbody tr a")
 
     val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
     val noPaymentsIndicator: Locator = getByDataTestId("no-payments-indicator")

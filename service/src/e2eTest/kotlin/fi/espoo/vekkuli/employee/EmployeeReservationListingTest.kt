@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.employee
 
-import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
@@ -270,8 +267,8 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         citizenDetails.navigateToUserPage(CitizenIds.olivia)
         citizenDetails.messagesNavi.click()
 
-        assertThat(citizenDetails.messages).containsText(emailSubject)
-        citizenDetails.openEmailDetailsLinks.first().click()
+        assertThat(citizenDetails.messages(emailSubject)).isVisible()
+        citizenDetails.messages(emailSubject).click()
         assertThat(citizenDetails.messageContent).containsText(emailBody)
         assertThat(citizenDetails.messageAttachments).hasCount(1)
         assertThat(citizenDetails.messageAttachments.first()).containsText("test-attachment.pdf")
@@ -327,7 +324,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     )
     fun `reservations list should shield against XSS reflection scripts from parameters`(
         parameter: String,
-        maliciousValue: String,
+        maliciousValue: String
     ) {
         EmployeeHomePage(page).employeeLogin()
         val listingPage = ReservationListPage(page)

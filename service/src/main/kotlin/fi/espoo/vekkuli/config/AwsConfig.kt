@@ -18,7 +18,7 @@ import software.amazon.awssdk.utils.AttributeMap
 import java.net.URI
 
 object AwsConstants {
-    const val BUCKET_NAME = "vekkuli-attachments"
+    const val ATTACHMENT_BUCKET_NAME = "vekkuli-attachments"
     const val MAX_FILE_SIZE = 10 * 1000 * 1000
 }
 
@@ -63,8 +63,8 @@ class AwsConfig {
                 .build()
 
         val existingBuckets = client.listBuckets().buckets().map { it.name()!! }
-        if (!existingBuckets.contains(AwsConstants.BUCKET_NAME)) {
-            val request = CreateBucketRequest.builder().bucket(AwsConstants.BUCKET_NAME).build()
+        if (!existingBuckets.contains(AwsConstants.ATTACHMENT_BUCKET_NAME)) {
+            val request = CreateBucketRequest.builder().bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).build()
             client.createBucket(request)
         }
         return client

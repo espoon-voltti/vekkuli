@@ -13,7 +13,7 @@ class AttachmentView : BaseView() {
         //language=HTML
         """
         <form
-          hx-post="/virkailija/viestit/add-attachment"
+          hx-post="/virkailija/viestit/lisaa-liite"
           hx-encoding="multipart/form-data"
           hx-target="#attachment-list"  
           hx-swap="beforeend"          
@@ -42,22 +42,23 @@ class AttachmentView : BaseView() {
 
     fun renderAttachmentListItemWithDelete(
         id: UUID,
-        @SanitizeInput name: String
+        name: String
     ): String {
         //language=HTML
-        val deleteSection = """<span class="icon" hx-post='/virkailija/delete-attachment/$id'>${icons.cross}</span>"""
+        val deleteSection = """<a class="icon" hx-delete='/virkailija/viestit/poista-liite/$id' hx-target="closest li"
+      hx-swap="outerHTML">${icons.cross}</a>"""
         return renderAttachmentListItem(id, name, deleteSection)
     }
 
     fun renderAttachmentListItem(
         id: UUID,
-        name: String,
+        @SanitizeInput name: String,
         children: String = "",
     ): String {
         //language=HTML
         return """    
             <li class="attachment-view">
-                <a href="/virkailija/attachments/$id/content" target="_blank" rel="noopener">
+                <a href="/virkailija/viestit/liite/$id" target="_blank" rel="noopener">
                     <span class="icon">${icons.file}</span>
                     <span>$name</span>
                 </a>
