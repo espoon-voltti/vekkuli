@@ -1058,11 +1058,11 @@ class BoatReservationService(
             getBoatSpaceReservation(reservation.originalReservationId ?: -1)
                 ?: throw BadRequest("Reservation ${reservation.originalReservationId} not found")
 
-        val placeName = "${reservation.locationName} ${reservation.place}"
-        val newPlaceName = "${originalReservation.locationName} ${originalReservation.place}"
+        val placeName = "${originalReservation.locationName} ${originalReservation.place}"
+        val newPlaceName = "${reservation.locationName} ${reservation.place}"
 
         val infoText =
-            "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikan. Vanha paikka: $placeName. Uusi paikka: $newPlaceName."
+            "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikasta $placeName paikkaan $newPlaceName."
 
         memoService.insertSystemMemo(userId, infoText)
     }

@@ -49,7 +49,7 @@ class SwitchReservationTest : ReserveTest() {
         val citizenDetails = citizenPageInEmployeeView("korhonen", false)
         citizenDetails.memoNavi.click()
         assertThat(citizenDetails.userMemo(2))
-            .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
+            .containsText("Leo Korhonen vaihtoi paikasta Haukilahti B 001 paikkaan Haukilahti D 013.")
 
         assertEquals(
             "Vaihto Venepaikka 2025 Haukilahti D 013",
