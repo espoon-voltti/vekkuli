@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentData
 import fi.espoo.vekkuli.config.DomainConstants
 import fi.espoo.vekkuli.domain.Attachment
 import fi.espoo.vekkuli.domain.MessageWithAttachments
@@ -66,6 +65,7 @@ class JdbiSentMessageRepository(
                         """.trimIndent()
                     )
 
+                // Create attachments for each message and connect with message_id
                 messages.forEach { message ->
                     attachmentIds.forEach { attachmentId ->
                         attachmentBatch
@@ -76,8 +76,9 @@ class JdbiSentMessageRepository(
                             .add()
                     }
                 }
-
                 attachmentBatch.execute()
+
+                // Delete stub attachments that are not connected to any message
                 handle
                     .createUpdate(
                         """
@@ -140,7 +141,7 @@ class JdbiSentMessageRepository(
         }
 
     override fun getMessagesSentToUser(citizenId: UUID): List<MessageWithAttachments> =
-        jdbi.inTransactionUnchecked { handle ->
+        jdbi.withHandleUnchecked { handle ->
             val messages =
                 handle
                     .createQuery(
@@ -154,25 +155,29 @@ class JdbiSentMessageRepository(
                     .mapTo<QueuedMessage>()
                     .list()
 
-            if (messages.isEmpty()) return@inTransactionUnchecked emptyList()
+            if (messages.isNotEmpty()) {
+                // Fetch attachments for each message
+                val attachmentQuery =
+                    """
+                    SELECT key, name, id
+                    FROM attachment
+                    WHERE message_id = :id
+                    ORDER BY created
+                    """.trimIndent()
 
-            val attachmentQuery =
-                """
-                SELECT key, name, id
-                FROM attachment
-                WHERE message_id = :id
-                ORDER BY created
-                """.trimIndent()
+                // Return messages with attachments
+                messages.map { m ->
+                    val attachments =
+                        handle
+                            .createQuery(attachmentQuery)
+                            .bind("id", m.id)
+                            .mapTo<Attachment>()
+                            .list()
 
-            messages.map { m ->
-                val attachments =
-                    handle
-                        .createQuery(attachmentQuery)
-                        .bind("id", m.id)
-                        .mapTo<Attachment>()
-                        .list()
-
-                MessageWithAttachments(m, attachments)
+                    MessageWithAttachments(m, attachments)
+                }
+            } else {
+                emptyList()
             }
         }
 

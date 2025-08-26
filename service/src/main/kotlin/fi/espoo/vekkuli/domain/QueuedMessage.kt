@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentData
 import java.time.LocalDateTime
 import java.util.UUID
 

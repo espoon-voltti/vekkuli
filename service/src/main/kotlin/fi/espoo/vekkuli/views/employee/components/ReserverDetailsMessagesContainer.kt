@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
-import java.util.UUID
 import kotlin.collections.isNotEmpty
 
 @Component

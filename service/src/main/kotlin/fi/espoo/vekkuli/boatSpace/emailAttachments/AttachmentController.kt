@@ -21,24 +21,24 @@ class AttachmentController(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @PostMapping("/add-attachment", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("/lisaa-liite", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseBody
     fun addAttachment(
         request: HttpServletRequest,
-        @RequestParam spaceId: List<Int>?,
+        @RequestParam spaceId: List<Int> = emptyList(),
         @RequestParam file: MultipartFile?,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
-//        authenticatedUser.let {
-//            logger.audit(
-//                it,
-//                "ADD_ATTACHMENT",
-//                mapOf(
-//                    "reservationIds" to spaceId?.joinToString(", ")
-//                )
-//            )
-//        }
+        authenticatedUser.let {
+            logger.audit(
+                it,
+                "ADD_ATTACHMENT_STUB",
+                mapOf(
+                    "reservationIds" to (spaceId.joinToString(", "))
+                )
+            )
+        }
         if (!authenticatedUser.isEmployee()) {
             throw Unauthorized()
         }
@@ -69,7 +69,7 @@ class AttachmentController(
         }
     }
 
-    @PostMapping("/delete-attachment/{attachmentId}")
+    @DeleteMapping("/poista-liite/{attachmentId}")
     @ResponseBody
     fun deleteAttachment(
         request: HttpServletRequest,
@@ -90,10 +90,10 @@ class AttachmentController(
         }
         try {
             attachmentService.deleteAttachment(attachmentId)
-            return ResponseEntity.noContent().build()
+            return ResponseEntity.ok("")
         } catch (e: Exception) {
             // TODO: handle exceptions
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.badRequest().body("Error deleting attachment")
         }
     }
 }

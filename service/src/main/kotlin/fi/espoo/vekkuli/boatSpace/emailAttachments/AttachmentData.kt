@@ -1,7 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.emailAttachments
 
-import java.util.UUID
-
 data class AttachmentData(
     val key: String,
     val name: String,
@@ -9,3 +7,5 @@ data class AttachmentData(
     val size: Long?,
     val data: ByteArray
 )
+
+val allowedContentTypes = listOf("application/pdf", "image/jpeg", "image/png")

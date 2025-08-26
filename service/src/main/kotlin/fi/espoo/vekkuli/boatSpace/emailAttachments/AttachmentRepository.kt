@@ -14,7 +14,7 @@ class AttachmentRepository(
     fun addAttachment(
         key: String,
         name: String
-    ): String {
+    ): UUID {
         val id =
             jdbi.withHandleUnchecked { handle ->
                 handle
@@ -22,7 +22,7 @@ class AttachmentRepository(
                     .bind("key", key)
                     .bind("name", name)
                     .executeAndReturnGeneratedKeys("id")
-                    .mapTo<String>()
+                    .mapTo<UUID>()
                     .one()
             }
         return id

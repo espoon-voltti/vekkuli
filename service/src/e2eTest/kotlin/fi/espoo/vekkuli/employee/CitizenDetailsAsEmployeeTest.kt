@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.io.path.Path
 import kotlin.test.assertEquals
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
@@ -120,8 +121,9 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         listingPage.boatSpace1.click()
         val citizenDetails = CitizenDetailsPage(page)
         citizenDetails.messagesNavi.click()
-        assertThat(citizenDetails.messages).containsText("Käyttöveden katko")
-        citizenDetails.messages.click()
+        val subject = "Käyttöveden katko"
+            assertThat(citizenDetails.messages(subject)).isVisible()
+        citizenDetails.messages(subject).click()
         assertThat(
             citizenDetails.messageContent
         ).hasText("Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.")
@@ -141,10 +143,24 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         )
         val emailSubject = "Email message title"
         val emailBody = "Email message content"
+
         citizenDetails.sendReserverMessageTitleInput.fill(emailSubject)
         citizenDetails.sendReserverMessageTitleInput.blur()
         citizenDetails.sendReserverMessageContentInput.fill(emailBody)
         citizenDetails.sendReserverMessageContentInput.blur()
+
+        // Add attachment
+        val chooser =
+            page.waitForFileChooser(
+                Runnable {
+                    listingPage.attachmentInput.click()
+                }
+            )
+
+        chooser.setFiles(Path("src/e2eTest/resources/test-attachment.pdf"))
+        page.waitForCondition { listingPage.messageAttachmentNames.count() == 1 }
+
+        assertThat(listingPage.messageAttachmentNames.first()).containsText("test-attachment.pdf")
 
         citizenDetails.sendReserverMessageModalSubmit.click()
         assertThat(citizenDetails.sendReserverMessageModalSuccess).isVisible()
@@ -156,11 +172,15 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         assertEquals(email.body, emailBody)
 
         citizenDetails.messagesNavi.click()
-        assertThat(citizenDetails.messages.first()).containsText(emailSubject)
-        citizenDetails.messages.first().click()
+
+        assertThat(citizenDetails.messages(emailSubject)).isVisible()
+        citizenDetails.messages(emailSubject).click()
+
         assertThat(
             citizenDetails.messageContent
         ).hasText(emailBody)
+        assertThat(citizenDetails.messageAttachments).hasCount(1)
+        assertThat(citizenDetails.messageAttachments.first()).containsText("test-attachment.pdf")
     }
 
     @Test
