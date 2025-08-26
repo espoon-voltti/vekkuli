@@ -122,7 +122,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         val citizenDetails = CitizenDetailsPage(page)
         citizenDetails.messagesNavi.click()
         val subject = "Käyttöveden katko"
-            assertThat(citizenDetails.messages(subject)).isVisible()
+        assertThat(citizenDetails.messages(subject)).isVisible()
         citizenDetails.messages(subject).click()
         assertThat(
             citizenDetails.messageContent

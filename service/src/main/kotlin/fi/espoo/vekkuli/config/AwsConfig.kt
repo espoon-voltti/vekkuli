@@ -9,7 +9,6 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.core.internal.http.loader.DefaultSdkHttpClientBuilder
 import software.amazon.awssdk.http.SdkHttpConfigurationOption
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.S3Configuration
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
@@ -45,7 +44,10 @@ class AwsConfig {
 
     @Bean
     @Profile("local || test")
-    fun amazonS3Local(credentialsProvider: AwsCredentialsProvider): S3Client {
+    fun amazonS3Local(
+        env: EmailEnv,
+        credentialsProvider: AwsCredentialsProvider
+    ): S3Client {
         val attrs =
             AttributeMap
                 .builder()
@@ -55,18 +57,37 @@ class AwsConfig {
             S3Client
                 .builder()
                 .httpClient(DefaultSdkHttpClientBuilder().buildWithDefaults(attrs))
-                .region(Region.US_EAST_1)
+                .region(env.region)
                 .serviceConfiguration(
                     S3Configuration.builder().pathStyleAccessEnabled(true).build()
                 ).endpointOverride(URI("https://localhost:9191"))
                 .credentialsProvider(credentialsProvider)
                 .build()
 
-        val existingBuckets = client.listBuckets().buckets().map { it.name()!! }
+        return client.addAttachmentBucket()
+    }
+
+    private fun S3Client.addAttachmentBucket(): S3Client {
+        val existingBuckets = this.listBuckets().buckets().map { it.name() }
         if (!existingBuckets.contains(AwsConstants.ATTACHMENT_BUCKET_NAME)) {
             val request = CreateBucketRequest.builder().bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).build()
-            client.createBucket(request)
+            this.createBucket(request)
         }
-        return client
+        return this
+    }
+
+    @Bean
+    @Profile("production")
+    fun amazonS3Prod(
+        env: EmailEnv,
+        credentialsProvider: AwsCredentialsProvider
+    ): S3Client {
+        val client =
+            S3Client
+                .builder()
+                .credentialsProvider(credentialsProvider)
+                .region(env.region)
+                .build()
+        return client.addAttachmentBucket()
     }
 }

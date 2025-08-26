@@ -25,10 +25,10 @@ class ReserverDetailsMessagesContainer(
             messagesWithAttachments.joinToString("\n") { messageWithAttachments ->
                 // language=HTML
                 """
-                <tr>
-                    <td><a hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
+                <tr hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
                     hx-target="#modal-container"
-                    hx-swap="innerHTML">${messageWithAttachments.message.subject}</a></td>
+                    hx-swap="innerHTML">
+                    <td>${messageWithAttachments.message.subject}</td>
                     <td>${messageWithAttachments.message.recipientAddress}</td>
                     <td>${messageWithAttachments.message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
                     <td>${messageWithAttachments.message.senderAddress ?: ""}</td>
