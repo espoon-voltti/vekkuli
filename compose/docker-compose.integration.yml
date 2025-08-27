@@ -31,7 +31,7 @@ services:
   s3mock:
     image: adobe/s3mock:latest
     ports:
-      - "9191:9091"
+      - "9191:9191"
     environment:
       debug: "true"
     volumes:
