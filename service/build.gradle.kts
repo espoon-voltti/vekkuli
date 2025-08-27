@@ -5,12 +5,12 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.util.regex.Pattern
 
 plugins {
-    id("org.springframework.boot") version "3.5.4"
+    id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.10"
     kotlin("plugin.spring") version "2.2.10"
-    id("org.flywaydb.flyway") version "11.11.1"
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    id("org.flywaydb.flyway") version "11.11.2"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.2.10"
     id("org.owasp.dependencycheck") version "12.1.3"
@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.7")
-        classpath("org.flywaydb:flyway-database-postgresql:11.11.1")
+        classpath("org.flywaydb:flyway-database-postgresql:11.11.2")
     }
 }
 
@@ -88,9 +88,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.zaxxer:HikariCP:7.0.1")
-    implementation("org.flywaydb:flyway-core:11.11.1")
-    implementation("org.flywaydb:flyway-database-postgresql:11.11.1")
+    implementation("com.zaxxer:HikariCP:7.0.2")
+    implementation("org.flywaydb:flyway-core:11.11.2")
+    implementation("org.flywaydb:flyway-database-postgresql:11.11.2")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation(platform("org.jdbi:jdbi3-bom:3.49.5"))
     implementation("org.jdbi:jdbi3-core")
@@ -106,7 +106,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.12")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.13")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
@@ -125,7 +125,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.32.24"))
+    implementation(platform("software.amazon.awssdk:bom:2.32.27"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
 
