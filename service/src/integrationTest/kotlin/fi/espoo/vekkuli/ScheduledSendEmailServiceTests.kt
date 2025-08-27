@@ -1,16 +1,23 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -30,11 +37,33 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
 
+    @MockitoBean
+    lateinit var renewalPolicyService: RenewalPolicyService
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllEmails(jdbi)
         deleteAllReservations(jdbi)
         SendEmailServiceMock.resetEmails()
+        mockCanRenew()
+    }
+
+    private fun mockCanRenew() {
+        Mockito
+            .`when`(
+                renewalPolicyService.citizenCanRenewReservation(
+                    any(),
+                    any()
+                )
+            ).thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startOfSlipReservationPeriod.toLocalDate(),
+                        startOfSlipReservationPeriod.toLocalDate(),
+                        ReservationValidity.Indefinite
+                    )
+                )
+            )
     }
 
     data class TestUser(
@@ -51,7 +80,8 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             TestUser(this.citizenIdLeo, "Korhonen Leo", "leo@noreplytest.fi", BoatSpaceType.Slip),
             storagePlaceUser,
             TestUser(this.citizenIdOlivia, "Espoon Pursiseura", "olivia@noreplytest.fi", BoatSpaceType.Slip),
-            TestUser(this.organizationId, "Espoon Pursiseura", "eps@noreplytest.fi", BoatSpaceType.Slip)
+            TestUser(this.organizationId, "Espoon Pursiseura", "eps@noreplytest.fi", BoatSpaceType.Slip),
+            TestUser(this.citizenIdMarko, "Kuusinen Marko", "marko@noreplytest.fi", BoatSpaceType.Slip)
         ).sortedBy { e -> e.email }
 
     private val now = LocalDateTime.of(2024, 12, 10, 12, 12, 12)
@@ -63,22 +93,33 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
         functionToTest: () -> Unit
     ): List<SendEmailServiceMock.SentEmail> {
         mockTimeProvider(timeProvider, now)
-
+        Mockito
+            .`when`(
+                renewalPolicyService.citizenCanRenewReservation(
+                    any(),
+                    eq(nonEspooCitizenWithoutReservationsId)
+                )
+            ).thenReturn(
+                ReservationResult.Failure(
+                    errorCode = ReservationResultErrorCode.NotEspooCitizen
+                )
+            )
+        // slip space reservation
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
-                this.citizenIdLeo,
+                citizenIdLeo,
                 1,
                 1,
                 validity,
                 endDate = endDate
             )
         )
-        // storage space
+        // storage space reservation
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
-                this.citizenIdJorma,
+                citizenIdJorma,
                 346,
                 3,
                 validity,
@@ -90,35 +131,44 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             CreateReservationParams(
                 timeProvider,
                 citizenIdOlivia,
-                3,
+                2,
                 6,
                 validity,
                 reserverId = this.organizationId,
                 endDate = endDate
             )
         )
-
-        // this reservation should not get the email
+        // this reservation should not get the email as it not expiring soon enough
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
-                this.citizenIdMikko,
-                6,
+                citizenIdMikko,
+                30,
                 2,
                 validity,
-                endDate = LocalDate.of(2025, 1, 31),
+                endDate = endDate.plusDays(BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong() + 1)
             )
         )
-
         // this reservation should not get the email as it is too old
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
-                this.citizenIdMikko,
-                7,
+                citizenIdMikko,
+                31,
                 3,
                 validity,
                 endDate = LocalDate.of(2024, 12, 1),
+            )
+        )
+        // this reservation should not get the email as the citizen is not from Espoo
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                nonEspooCitizenWithoutReservationsId,
+                3,
+                4,
+                validity,
+                endDate = endDate
             )
         )
 
@@ -144,12 +194,14 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     @Test
     fun `should send reservation expiring notification emails`() {
         val sentEmails =
-            setupTest(ReservationValidity.FixedTerm) {
+            setupTest(ReservationValidity.FixedTerm, 5) {
                 sendMassEmailService.sendReservationExpiryReminderEmails()
             }
 
-        expectedEmailRecipients.forEachIndexed { i, reserver ->
-            val sentEmail = sentEmails[i]
+        sentEmails.forEach { sentEmail ->
+            val reserver =
+                expectedEmailRecipients.find { e -> e.email == sentEmail.recipientAddress }
+                    ?: throw IllegalStateException("No reserver for email ${sentEmail.recipientAddress}")
             assertEquals(reserver.email, sentEmail.recipientAddress)
             val spacePhrase =
                 when (reserver.boatSpaceType) {
@@ -165,11 +217,14 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     @Test
     fun `should send reservation renew reminder emails`() {
         val sentEmails =
-            setupTest(ReservationValidity.Indefinite) {
+            setupTest(ReservationValidity.Indefinite, 4) {
                 sendMassEmailService.sendReservationRenewReminderEmails()
             }
-        expectedEmailRecipients.forEachIndexed { i, reserver ->
-            val sentEmail = sentEmails[i]
+
+        sentEmails.forEach { sentEmail ->
+            val reserver =
+                expectedEmailRecipients.find { e -> e.email == sentEmail.recipientAddress }
+                    ?: throw IllegalStateException("No reserver for email ${sentEmail.recipientAddress}")
             val spacePhrase =
                 when (reserver.boatSpaceType) {
                     BoatSpaceType.Slip -> "laituripaikkasi"
@@ -186,7 +241,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     @Test
     fun `should send email when a reservation ends to reservers and do not send it again, for storage space, send email to employee also`() {
         val sentEmails =
-            setupTest(ReservationValidity.FixedTerm, 5) {
+            setupTest(ReservationValidity.FixedTerm, 6) {
                 mockTimeProvider(
                     timeProvider,
                     endDate.plusDays(1).atStartOfDay()
