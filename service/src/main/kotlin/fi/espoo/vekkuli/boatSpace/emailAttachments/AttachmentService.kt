@@ -10,7 +10,7 @@ import java.util.UUID
 
 @Service
 class AttachmentService(
-    private val s3Client: S3Client,
+    private val s3Client: S3Client?,
     private val attachmentRepository: AttachmentRepository
 ) {
     fun uploadAttachment(
@@ -50,7 +50,10 @@ class AttachmentService(
 
     fun getAttachment(id: UUID): AttachmentData? {
         val attachment = attachmentRepository.getAttachment(id) ?: return null
-        val response = s3Client.getObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(attachment.key) }
+        val response = s3Client?.getObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(attachment.key) }
+        if (response == null) {
+            return null
+        }
         return AttachmentData(
             key = attachment.key,
             contentType = response.response().contentType(),
@@ -77,12 +80,12 @@ class AttachmentService(
                 .build()
 
         val body = RequestBody.fromInputStream(inputStream, size)
-        s3Client.putObject(request, body)
+        s3Client?.putObject(request, body)
     }
 
     private fun deleteAttachmentFromS3(key: String) {
-        val deleted = s3Client.deleteObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(key) }
-        if (!deleted.sdkHttpResponse().isSuccessful) {
+        val deleted = s3Client?.deleteObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(key) }
+        if (deleted === null || !deleted.sdkHttpResponse().isSuccessful) {
             throw RuntimeException("Failed to delete attachment from S3")
         }
     }
