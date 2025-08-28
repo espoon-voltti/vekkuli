@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.emailAttachments
 
 import fi.espoo.vekkuli.config.AwsConstants
+import fi.espoo.vekkuli.config.EmailEnv
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
@@ -11,7 +12,8 @@ import java.util.UUID
 @Service
 class AttachmentService(
     private val s3Client: S3Client?,
-    private val attachmentRepository: AttachmentRepository
+    private val attachmentRepository: AttachmentRepository,
+    private val emailEnv: EmailEnv
 ) {
     fun uploadAttachment(
         contentType: String?,
@@ -33,7 +35,7 @@ class AttachmentService(
             contentType = contentType,
             inputStream = input,
             size = size,
-            name = name,
+            name = name
         )
         return attachmentRepository.addAttachment(
             key,
@@ -50,7 +52,7 @@ class AttachmentService(
 
     fun getAttachment(id: UUID): AttachmentData? {
         val attachment = attachmentRepository.getAttachment(id) ?: return null
-        val response = s3Client?.getObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(attachment.key) }
+        val response = s3Client?.getObject { it.bucket(emailEnv.s3BucketName).key(attachment.key) }
         if (response == null) {
             return null
         }
@@ -68,12 +70,12 @@ class AttachmentService(
         contentType: String,
         inputStream: InputStream,
         size: Long,
-        name: String,
+        name: String
     ) {
         val request =
             PutObjectRequest
                 .builder()
-                .bucket(AwsConstants.ATTACHMENT_BUCKET_NAME)
+                .bucket(emailEnv.s3BucketName)
                 .key(key)
                 .contentType(contentType)
                 .metadata(mapOf("name" to name))
@@ -84,7 +86,7 @@ class AttachmentService(
     }
 
     private fun deleteAttachmentFromS3(key: String) {
-        val deleted = s3Client?.deleteObject { it.bucket(AwsConstants.ATTACHMENT_BUCKET_NAME).key(key) }
+        val deleted = s3Client?.deleteObject { it.bucket(emailEnv.s3BucketName).key(key) }
         if (deleted === null || !deleted.sdkHttpResponse().isSuccessful) {
             throw RuntimeException("Failed to delete attachment from S3")
         }
