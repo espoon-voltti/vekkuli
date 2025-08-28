@@ -60,7 +60,7 @@ class AwsConfig {
                 .region(env.region)
                 .serviceConfiguration(
                     S3Configuration.builder().pathStyleAccessEnabled(true).build()
-                ).endpointOverride(URI("https://localhost:9191"))
+                ).endpointOverride(URI(env.s3MockUrl))
                 .credentialsProvider(credentialsProvider)
                 .build()
 
