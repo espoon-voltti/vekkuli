@@ -63,6 +63,12 @@ class AttachmentServiceTests : IntegrationTestBase() {
         assertEquals(message.attachments.size, 2)
         assertEquals(name, message.attachments.first().name)
 
+        val attachment = attachmentService.getAttachment(message.attachments.first().id)
+        assertNotNull(attachment)
+        assertEquals(attachment?.name, name)
+        assertEquals(attachment?.size, size)
+        assertEquals(attachment?.contentType, "image/png")
+
         val userMessages = reserverService.getMessages(citizenIdOlivia)
         assertEquals(userMessages.size, 1, "There should be one message")
         val userMessage = userMessages.first()

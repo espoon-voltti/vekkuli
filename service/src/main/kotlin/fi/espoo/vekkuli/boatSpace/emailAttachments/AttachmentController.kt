@@ -1,11 +1,13 @@
 package fi.espoo.vekkuli.boatSpace.emailAttachments
 
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AttachmentView
+import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -66,6 +68,34 @@ class AttachmentController(
         } catch (e: Exception) {
             // TODO: handle exceptions
             return ResponseEntity.badRequest().build()
+        }
+    }
+
+    @GetMapping("/liite/{attachmentId}")
+    @ResponseBody
+    fun content(
+        request: HttpServletRequest,
+        @PathVariable attachmentId: UUID,
+    ): ResponseEntity<ByteArray?> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "OPEN_ATTACHMENT", mapOf("targetId" to attachmentId.toString()))
+        }
+        try {
+            val attachment =
+                attachmentService.getAttachment(attachmentId)
+                    ?: throw NotFound("Attachment not found for id: $attachmentId")
+
+            return ResponseEntity
+                .ok()
+                .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    """inline; filename="${attachment.name}""""
+                ).contentType(MediaType.parseMediaType(attachment.contentType ?: "image/jpeg"))
+                .contentLength(attachment.size ?: 10L)
+                .body(attachment.data)
+        } catch (e: Exception) {
+            // TODO: handle exceptions
+            return ResponseEntity.badRequest().body(null)
         }
     }
 
