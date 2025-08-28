@@ -9,6 +9,7 @@ data class EmailEnv(
     val senderArn: String,
     val senderAddress: String,
     val employeeAddress: String,
+    val s3MockUrl: String,
 ) {
     companion object {
         fun fromEnvironment(env: Environment) =
@@ -34,7 +35,8 @@ data class EmailEnv(
                 employeeAddress =
                     env.getProperty(
                         "vekkuli.email.employee_address",
-                    ) ?: "venepaikat@espoo.fi"
+                    ) ?: "venepaikat@espoo.fi",
+                s3MockUrl = env.getProperty("vekkuli.email.s3mock_url") ?: "https://localhost:9191"
             )
     }
 }
