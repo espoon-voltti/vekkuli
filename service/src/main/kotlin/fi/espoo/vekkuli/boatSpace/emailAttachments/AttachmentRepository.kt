@@ -36,19 +36,17 @@ class AttachmentRepository(
                         "SELECT id, key, name FROM attachment WHERE id = :id"
                 ).bind("id", id)
                 .mapTo<Attachment>()
-                .one()
+                .singleOrNull()
         }
 
-    fun getAttachments(ids: List<UUID>): List<Attachment> =
+    fun deleteAttachment(id: UUID) {
         jdbi.withHandleUnchecked { handle ->
             handle
-                .createQuery(
-                    "" +
-                        "SELECT id, key, name FROM attachment WHERE id IN(<ids>)"
-                ).bindList("ids", ids)
-                .mapTo<Attachment>()
-                .list()
+                .createUpdate("DELETE FROM attachment WHERE id = :id")
+                .bind("id", id)
+                .execute()
         }
+    }
 
     fun addAttachmentsToMessages(
         ids: List<UUID>,

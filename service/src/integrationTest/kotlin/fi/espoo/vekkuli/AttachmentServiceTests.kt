@@ -78,4 +78,24 @@ class AttachmentServiceTests : IntegrationTestBase() {
             message.attachments.first().name
         )
     }
+
+    @Test
+    fun `should delete attachment`() {
+        val bytes = "test-input".toByteArray()
+        val size = bytes.size.toLong()
+        val name = "test-name"
+        val id =
+            attachmentService.uploadAttachment(
+                contentType = "image/png",
+                input = bytes.inputStream(), // fresh stream
+                size = size,
+                name = name
+            )
+
+        val attachment = attachmentService.getAttachment(id)
+        assertNotNull(attachment)
+        attachmentService.deleteAttachment(id)
+        val deletedAttachment = attachmentService.getAttachment(id)
+        assertNull(deletedAttachment)
+    }
 }
