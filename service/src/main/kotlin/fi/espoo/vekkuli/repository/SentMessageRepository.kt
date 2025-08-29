@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.DomainConstants
+import fi.espoo.vekkuli.domain.MessageWithAttachments
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
@@ -14,15 +15,16 @@ interface SentMessageRepository {
         recipients: List<Recipient>,
         subject: String,
         body: String,
+        attachmentIds: List<UUID>
     ): List<QueuedMessage>
 
     fun setMessagesSent(messageIds: List<Pair<UUID, String>>): List<QueuedMessage>
 
     fun setMessagesFailed(messageIds: List<UUID>): List<QueuedMessage>
 
-    fun getMessagesSentToUser(citizenId: UUID): List<QueuedMessage>
+    fun getMessagesSentToUser(citizenId: UUID): List<MessageWithAttachments>
 
-    fun getMessage(messageId: UUID): QueuedMessage
+    fun getMessage(messageId: UUID): MessageWithAttachments
 
     /** Get all unsent messages in batches and set their status to processing **/
     fun getUnsentEmailsAndSetToProcessing(batchSize: Int = DomainConstants.DEFAULT_EMAIL_BATCH_SIZE): List<QueuedMessage>

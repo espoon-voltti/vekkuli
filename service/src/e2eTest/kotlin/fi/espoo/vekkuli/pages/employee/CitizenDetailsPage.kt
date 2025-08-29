@@ -125,7 +125,10 @@ class CitizenDetailsPage(
 
     val messagesNavi: Locator = getByDataTestId("messages-tab-navi")
     val sendMessageLink: Locator = getByDataTestId("send-email-link")
-    val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
+
+    fun messages(subject: String): Locator = page.getByTestId("messages-table").locator("tbody tr:has-text('$subject')")
+
+    val messageAttachments: Locator = page.getByTestId("attachment-list").locator(".attachment-view")
     val messageContent: Locator = getByDataTestId("message-content")
     val sendReserverMessageForm = getByDataTestId("send-email")
     val sendReserverMessageModalSubtitle = getByDataTestId("send-email-modal-subtitle")

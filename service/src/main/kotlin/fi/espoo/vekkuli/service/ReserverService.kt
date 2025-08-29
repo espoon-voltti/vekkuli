@@ -61,9 +61,9 @@ class ReserverService(
             dataProtection,
         )
 
-    fun getMessages(citizenId: UUID): List<QueuedMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
+    fun getMessages(citizenId: UUID): List<MessageWithAttachments> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
-    fun getMessage(messageId: UUID): QueuedMessage = sentMessagesRepository.getMessage(messageId)
+    fun getMessage(messageId: UUID): MessageWithAttachments = sentMessagesRepository.getMessage(messageId)
 
     fun getMunicipalities(): List<Municipality> = reserverRepository.getMunicipalities()
 

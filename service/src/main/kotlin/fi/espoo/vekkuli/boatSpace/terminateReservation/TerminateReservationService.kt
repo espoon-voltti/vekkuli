@@ -221,7 +221,7 @@ class TerminateReservationService(
             senderAddress = emailEnv.senderAddress,
             recipients = listOf(reserverRecipient),
             subject = subject,
-            body = content
+            body = content,
         )
     }
 }

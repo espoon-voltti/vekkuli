@@ -17,3 +17,14 @@ data class QueuedMessage(
     val subject: String,
     val body: String,
 )
+
+data class Attachment(
+    val key: String,
+    val id: UUID,
+    val name: String,
+)
+
+data class MessageWithAttachments(
+    val message: QueuedMessage,
+    val attachments: List<Attachment> = emptyList()
+)

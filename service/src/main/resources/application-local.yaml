@@ -8,6 +8,10 @@ spring:
     url: "jdbc:postgresql://localhost:5432/vekkuli"
     username: "vekkuli"
     password: "postgres"
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   web:
     resources:
       static-locations: classpath:/public/

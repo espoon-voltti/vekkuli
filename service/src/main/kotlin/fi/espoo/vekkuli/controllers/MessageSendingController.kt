@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.collections.joinToString
 
 @Controller
 @RequestMapping("/virkailija/viestit")
@@ -77,6 +78,7 @@ class MessageSendingController(
         @ModelAttribute params: BoatSpaceReservationFilter,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
+        @RequestParam("attachmentId") attachmentIds: List<UUID>? = null,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
@@ -97,8 +99,7 @@ class MessageSendingController(
         try {
             val reservationsToSendEmails: List<Int> = getReservationsToSendEmailsTo(spaceId, params)
             val recipients = reservationService.getReservationRecipients(reservationsToSendEmails)
-
-            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
         } catch (e: Exception) {
@@ -138,6 +139,7 @@ class MessageSendingController(
         @PathVariable reserverId: UUID,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
+        @RequestParam("attachmentId") attachmentIds: List<UUID>? = null,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
@@ -157,7 +159,7 @@ class MessageSendingController(
         try {
             val recipients = getRecipientsByReserverId(reserverId)
 
-            sendMessage(recipients, authenticatedUser, messageTitle, messageContent)
+            sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
         } catch (e: Exception) {
@@ -188,16 +190,18 @@ class MessageSendingController(
         recipients: List<Recipient>,
         user: AuthenticatedUser,
         messageTitle: String,
-        messageContent: String
-    ) {
+        messageContent: String,
+        attachmentIds: List<UUID>
+    ): List<QueuedMessage> {
         logger.info { "Sending message to ${recipients.size} recipients" }
 
-        messageService.sendEmails(
+        return messageService.sendEmails(
             userId = user.id,
             senderAddress = emailEnv.senderAddress,
             recipients = recipients,
             subject = messageTitle,
-            body = messageContent
+            body = messageContent,
+            attachmentIds = attachmentIds
         )
     }
 }

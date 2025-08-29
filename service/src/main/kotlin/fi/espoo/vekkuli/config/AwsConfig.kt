@@ -7,16 +7,27 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.core.internal.http.loader.DefaultSdkHttpClientBuilder
+import software.amazon.awssdk.http.SdkHttpConfigurationOption
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.S3Configuration
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.ses.SesClient
+import software.amazon.awssdk.utils.AttributeMap
+import java.net.URI
+
+object AwsConstants {
+    const val MAX_FILE_SIZE = 10 * 1000 * 1000
+}
 
 @Configuration
 class AwsConfig {
     @Bean
-    @Profile("local")
+    @Profile("local | test")
     fun credentialsProviderLocal(): AwsCredentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create("foo", "bar"))
 
     @Bean
-    @Profile("production")
+    @Profile("production | staging")
     fun credentialsProviderProd(): AwsCredentialsProvider = DefaultCredentialsProvider.create()
 
     @Bean
@@ -28,5 +39,43 @@ class AwsConfig {
             .builder()
             .credentialsProvider(awsCredentialsProvider)
             .region(env.region)
+            .build()
+
+    @Bean
+    @Profile("local | test")
+    fun amazonS3Local(
+        env: EmailEnv,
+        credentialsProvider: AwsCredentialsProvider
+    ): S3Client {
+        val attrs =
+            AttributeMap
+                .builder()
+                .put(SdkHttpConfigurationOption.TRUST_ALL_CERTIFICATES, true)
+                .build()
+        val client =
+            S3Client
+                .builder()
+                .httpClient(DefaultSdkHttpClientBuilder().buildWithDefaults(attrs))
+                .region(env.region)
+                .serviceConfiguration(
+                    S3Configuration.builder().pathStyleAccessEnabled(true).build()
+                ).endpointOverride(URI(env.s3MockUrl))
+                .credentialsProvider(credentialsProvider)
+                .build()
+
+        val existingBuckets = client.listBuckets().buckets().map { it.name() }
+        if (!existingBuckets.contains(env.s3BucketName)) {
+            val request = CreateBucketRequest.builder().bucket(env.s3BucketName).build()
+            client.createBucket(request)
+        }
+        return client
+    }
+
+    @Bean
+    @Profile("production | staging")
+    fun amazonS3Prod(credentialsProvider: AwsCredentialsProvider): S3Client =
+        S3Client
+            .builder()
+            .credentialsProvider(credentialsProvider)
             .build()
 }

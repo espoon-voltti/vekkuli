@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -60,7 +61,8 @@ class CitizenUserController(
     private val sentMessageModalView: SentMessageModalView,
     private val reservationWarningRepository: ReservationWarningRepository,
     private val seasonalService: SeasonalService,
-    private val boatSpaceReservationRepository: BoatSpaceReservationRepository
+    private val boatSpaceReservationRepository: BoatSpaceReservationRepository,
+    private val attachmentService: AttachmentService
 ) {
     private val logger = KotlinLogging.logger {}
 

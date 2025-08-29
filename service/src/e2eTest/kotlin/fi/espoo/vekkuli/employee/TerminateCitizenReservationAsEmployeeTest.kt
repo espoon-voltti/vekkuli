@@ -71,7 +71,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
         val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.paymentViolation")
         val defaultEmailTemplate =
             templateEmailService.getTemplate("marine_employee_reservation_termination_custom_message")
-        val defaultMessageTitle = defaultEmailTemplate?.subject
+        val defaultMessageTitle = defaultEmailTemplate?.subject ?: ""
         val defaultMessageContent = defaultEmailTemplate?.body
 
         val employeeHome = EmployeeHomePage(page)
@@ -143,7 +143,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
         citizenDetailsPage.messagesNavi.click()
 
         // Check that the message is sent
-        assertThat(citizenDetailsPage.messages.first()).containsText(defaultMessageTitle)
+        assertThat(citizenDetailsPage.messages(defaultMessageTitle)).isVisible()
 
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
