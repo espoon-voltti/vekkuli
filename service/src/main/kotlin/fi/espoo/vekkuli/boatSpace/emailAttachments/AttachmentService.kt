@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.emailAttachments
 import fi.espoo.vekkuli.config.AwsConstants
 import fi.espoo.vekkuli.config.EmailEnv
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
@@ -43,11 +44,13 @@ class AttachmentService(
         )
     }
 
+    @Transactional
     fun deleteAttachment(id: UUID) {
         val key =
             attachmentRepository.getAttachment(id)?.key
                 ?: throw IllegalArgumentException("Attachment not found")
         deleteAttachmentFromS3(key)
+        attachmentRepository.deleteAttachment(id)
     }
 
     fun getAttachment(id: UUID): AttachmentData? {

@@ -17,7 +17,7 @@ class AttachmentView : BaseView() {
           hx-encoding="multipart/form-data"
           hx-target="#attachment-list"  
           hx-swap="beforeend"          
-          hx-trigger="input changed"
+          hx-trigger="change from:#attachment-input"
           @htmx:after-request="document.getElementById('attachment-input').value=null"  
         >
           <input
