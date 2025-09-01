@@ -67,6 +67,7 @@ class AttachmentController(
             }
         } catch (e: Exception) {
             // TODO: handle exceptions
+            logger.error(e) { "Error uploading attachment" }
             return ResponseEntity.badRequest().build()
         }
     }
@@ -95,6 +96,7 @@ class AttachmentController(
                 .body(attachment.data)
         } catch (e: Exception) {
             // TODO: handle exceptions
+            logger.error(e) { "Error opening attachment" }
             return ResponseEntity.badRequest().body(null)
         }
     }
@@ -123,6 +125,7 @@ class AttachmentController(
             return ResponseEntity.ok("")
         } catch (e: Exception) {
             // TODO: handle exceptions
+            logger.error(e) { "Error deleting attachment" }
             return ResponseEntity.badRequest().body("Error deleting attachment")
         }
     }
