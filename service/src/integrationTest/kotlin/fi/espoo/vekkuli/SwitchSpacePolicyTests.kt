@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
