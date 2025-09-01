@@ -25,9 +25,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ActiveProfiles("test")
 class SwitchSpacePolicyTests : IntegrationTestBase() {
     @Autowired
-    lateinit var boatSpaceSwitchService: BoatSpaceSwitchService
-
-    @Autowired
     lateinit var switchPolicyService: SwitchPolicyService
 
     @BeforeEach

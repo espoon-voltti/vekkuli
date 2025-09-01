@@ -60,6 +60,9 @@ class ReservationListPage(
     val sendMassMessageContentInput = getByDataTestId("message-content")
     val attachmentInput = page.getByTestId("attachment-input")
     val messageAttachmentNames = page.getByTestId("attachment-list").locator(".attachment-view")
+
+    fun deleteAttachmentButton(name: String) = getByDataTestId("delete-attachment-$name")
+
     val sendMassMessageModalSubmit = getByDataTestId("send-mass-email-modal-confirm")
     val sendMassMessageModalSuccess = getByDataTestId("message-sent-success-modal")
     val warningsFilterCheckbox = filterLocator("warnings")

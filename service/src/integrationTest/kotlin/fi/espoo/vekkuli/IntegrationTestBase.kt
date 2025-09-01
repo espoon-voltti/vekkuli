@@ -26,8 +26,8 @@ import org.jdbi.v3.core.kotlin.bindKotlin
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -73,7 +73,7 @@ abstract class IntegrationTestBase {
     val boatSpaceIdForWinter2 = 9
     val boatSpaceIdForTrailer = 2203
 
-    @MockBean
+    @MockitoBean
     lateinit var timeProvider: TimeProvider
 
     @BeforeEach

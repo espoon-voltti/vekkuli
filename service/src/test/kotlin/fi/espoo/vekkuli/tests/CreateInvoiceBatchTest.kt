@@ -7,13 +7,13 @@ import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @SpringBootTest
 class CreateInvoiceBatchTest {
-    @MockBean
+    @MockitoBean
     lateinit var timeProvider: TimeProvider
 
     @Test

@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.employeeReservationList.components
 
 import fi.espoo.vekkuli.domain.Attachment
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
@@ -45,7 +46,9 @@ class AttachmentView : BaseView() {
         name: String
     ): String {
         //language=HTML
-        val deleteSection = """<a class="icon" hx-delete='/virkailija/viestit/poista-liite/$id' hx-target="closest li"
+        val deleteSection = """<a ${addTestId(
+            "delete-attachment-$name"
+        )} class="icon" hx-delete='/virkailija/viestit/poista-liite/$id' hx-target="closest li"
       hx-swap="outerHTML">${icons.cross}</a>"""
         return renderAttachmentListItem(id, name, deleteSection)
     }

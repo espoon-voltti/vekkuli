@@ -149,18 +149,20 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         citizenDetails.sendReserverMessageContentInput.fill(emailBody)
         citizenDetails.sendReserverMessageContentInput.blur()
 
-        // Add attachment
-        val chooser =
-            page.waitForFileChooser(
-                Runnable {
-                    listingPage.attachmentInput.click()
-                }
-            )
+        // Select a file to attach
+        val name = "test-attachment.pdf"
+        selectFileFromResource(name)
 
-        chooser.setFiles(Path("src/e2eTest/resources/test-attachment.pdf"))
-        page.waitForCondition { listingPage.messageAttachmentNames.count() == 1 }
+        assertThat(listingPage.messageAttachmentNames.first()).containsText(name)
 
-        assertThat(listingPage.messageAttachmentNames.first()).containsText("test-attachment.pdf")
+        // Delete the file
+        assertThat(listingPage.deleteAttachmentButton(name)).isVisible()
+        listingPage.deleteAttachmentButton(name).click()
+        assertThat(listingPage.messageAttachmentNames).hasCount(0)
+
+        // Select the file again
+        selectFileFromResource(name)
+        assertThat(listingPage.messageAttachmentNames.first()).containsText(name)
 
         citizenDetails.sendReserverMessageModalSubmit.click()
         assertThat(citizenDetails.sendReserverMessageModalSuccess).isVisible()
@@ -180,7 +182,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.messageContent
         ).hasText(emailBody)
         assertThat(citizenDetails.messageAttachments).hasCount(1)
-        assertThat(citizenDetails.messageAttachments.first()).containsText("test-attachment.pdf")
+        assertThat(citizenDetails.messageAttachments.first()).containsText(name)
     }
 
     @Test
@@ -747,5 +749,16 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         boat.saveButton.click()
 
         return boatId
+    }
+
+    private fun selectFileFromResource(name: String) {
+        val listingPage = ReservationListPage(page)
+        val chooser =
+            page.waitForFileChooser {
+                listingPage.attachmentInput.click()
+            }
+
+        chooser.setFiles(Path("src/e2eTest/resources/$name"))
+        page.waitForCondition { listingPage.messageAttachmentNames.count() == 1 }
     }
 }
