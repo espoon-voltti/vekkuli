@@ -8,4 +8,4 @@ data class AttachmentData(
     val data: ByteArray
 )
 
-val allowedContentTypes = listOf("application/pdf", "image/jpeg", "image/png")
+val allowedContentTypes = listOf("application/pdf", "image/jpeg", "image/jpg", "image/png")

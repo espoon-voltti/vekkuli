@@ -19,15 +19,26 @@ class AttachmentView : BaseView() {
           hx-target="#attachment-list"  
           hx-swap="beforeend"          
           hx-trigger="change from:#attachment-input"
-          @htmx:after-request="document.getElementById('attachment-input').value=null"  
+          @htmx:after-request="if (event.detail.successful) {
+              document.getElementById('error-box').hidden = true;
+          } else {
+            document.getElementById('error-box').hidden = false;
+          };
+            document.getElementById('attachment-input').value=null;"  
+          hx-indicator="#upload-indicator"
         >
           <input
             id="attachment-input"
             type="file"
             name="file"
+            accept="image/*, application/pdf"
           >
+         <div id="error-box" hidden class="is-centered is-vcentered is-error-text">Liitteen lisäämisessä tapahtui virhe.</div>
+          
         </form>
-        <ul id="attachment-list"></ul>
+        <ul id="attachment-list">
+         <div id="upload-indicator" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
+        </ul>
         
         """.trimIndent()
 
