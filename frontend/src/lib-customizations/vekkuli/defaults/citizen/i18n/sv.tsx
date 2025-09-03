@@ -196,7 +196,7 @@ const sv: Translations = {
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} nuvarande hyrestagare kan förnya sin förvaringsplats`,
+            `${period} nuvarande hyrestagare som är esbobor kan förnya sin förvaringsplats`,
           (period: string) => `${period} alla kan boka förvaringsplats`
         ]
       },

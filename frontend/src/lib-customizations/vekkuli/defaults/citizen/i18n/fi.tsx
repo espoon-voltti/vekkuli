@@ -197,7 +197,7 @@ export default {
         season: (season: string) => `Säilytyskausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
+            `${period} espoolaiset säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
           (period: string) => `${period} kaikki voivat varata säilytyspaikkoja`
         ]
       },

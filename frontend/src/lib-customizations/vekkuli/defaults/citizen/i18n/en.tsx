@@ -196,7 +196,7 @@ const en: Translations = {
         season: (season: string) => `Storage season ${season}`,
         periods: [
           (period: string) =>
-            `${period} current renters can renew their storage spot rental`,
+            `${period} current renters who are Espoo residents can renew their storage spot rental`,
           (period: string) => `${period} everyone can book storage spots`
         ]
       },
