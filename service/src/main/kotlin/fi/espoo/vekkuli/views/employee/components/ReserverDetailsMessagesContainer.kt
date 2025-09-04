@@ -27,7 +27,7 @@ class ReserverDetailsMessagesContainer(
                 """
                 <tr hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
                     hx-target="#modal-container"
-                    hx-swap="innerHTML">
+                    hx-swap="innerHTML" class='is-with-pointer'>
                     <td>${messageWithAttachments.message.subject}</td>
                     <td>${messageWithAttachments.message.recipientAddress}</td>
                     <td>${messageWithAttachments.message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>

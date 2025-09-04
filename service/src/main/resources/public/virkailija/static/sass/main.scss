@@ -820,12 +820,22 @@ label.filter-button:has(input:checked) .icon {
   align-items: center;
 }
 
-.message-list {
+#messages-table {
   thead th {
     color: $darkGray;
   }
-  table {
+  &{
     width: 100%;
+    border-collapse: initial;
+  }
+  th, td {
+    padding: $spacing-medium 0;
+  }
+  td {
+    border-top: 1px solid $gainsboro;
+  }
+  tr:hover {
+    background-color: $light-gray;
   }
 }
 
@@ -1259,4 +1269,8 @@ a {
 .is-error-text {
   color: $deep-red;
   font-size: small;
+}
+
+.is-with-pointer {
+  cursor: pointer;
 }
