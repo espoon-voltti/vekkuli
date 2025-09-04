@@ -85,15 +85,16 @@ class MessageService(
             // Send email
             val providerId =
                 sendEmailService.sendEmail(
-                    it.senderAddress,
-                    it.recipientAddress,
-                    it.subject,
-                    it.body
+                    it.message.senderAddress,
+                    it.message.recipientAddress,
+                    it.message.subject,
+                    it.message.body,
+                    it.attachments
                 )
             if (providerId == null) {
-                failedMessageIds.add(it.id)
+                failedMessageIds.add(it.message.id)
             } else {
-                sentMessageIds.add(Pair(it.id, providerId))
+                sentMessageIds.add(Pair(it.message.id, providerId))
             }
 
             messageRepository.setMessagesFailed(failedMessageIds)

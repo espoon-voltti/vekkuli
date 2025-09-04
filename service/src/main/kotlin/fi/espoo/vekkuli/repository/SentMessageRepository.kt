@@ -27,7 +27,7 @@ interface SentMessageRepository {
     fun getMessage(messageId: UUID): MessageWithAttachments
 
     /** Get all unsent messages in batches and set their status to processing **/
-    fun getUnsentEmailsAndSetToProcessing(batchSize: Int = DomainConstants.DEFAULT_EMAIL_BATCH_SIZE): List<QueuedMessage>
+    fun getUnsentEmailsAndSetToProcessing(batchSize: Int = DomainConstants.DEFAULT_EMAIL_BATCH_SIZE): List<MessageWithAttachments>
 
     fun getAndInsertUnsentEmails(
         reservationType: ReservationType,

@@ -131,6 +131,8 @@ dependencies {
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:s3")
 
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
+
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.25.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")

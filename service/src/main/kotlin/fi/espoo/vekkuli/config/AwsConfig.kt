@@ -28,7 +28,10 @@ class AwsConfig {
 
     @Bean
     @Profile("production | staging")
-    fun credentialsProviderProd(): AwsCredentialsProvider = DefaultCredentialsProvider.create()
+    fun credentialsProviderProd(): AwsCredentialsProvider =
+        DefaultCredentialsProvider
+            .builder()
+            .build()
 
     @Bean
     fun amazonSES(
