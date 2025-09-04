@@ -148,11 +148,11 @@ const en: Translations = {
     title: 'Boat spaces',
     info: {
       locations:
-        'Available berth places can be found at the following marinas: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja, and Svinö. Winter storage places are available at Laajalahti, Otsolahti, and Suomenoja, as well as year-round storage places at Ämmäsmäki.',
+        'Available berth spaces can be found at the following marinas: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja, and Svinö. Winter storage spaces are available at Laajalahti, Otsolahti, and Suomenoja, as well as year-round storage spaces at Ämmäsmäki.',
       authenticationRequired:
-        'Reserving a place requires strong authentication, and the berth is paid for at the time of reservation. The reservation system works best with Google Chrome and Edge browsers.',
+        'Reserving a space requires strong authentication, and the berth is paid for at the time of reservation. The reservation system works best with Google Chrome and Edge browsers.',
       boatRequired:
-        'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
+        'Only the owner or holder of a boat can reserve berth, winter, or storage spaces. Ensure that the information is correct in Traficom’s boat register.',
       contactInfo:
         'If you cannot authenticate electronically or are making a reservation for the first time on behalf of a community (company or club), please contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mondays and Wednesdays from 12:30 to 15:00 and on Thursdays from 9:00 to 11:00.',
       preparations: `Booking is possible starting at 09:00 from the first day of the reservation period. For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
@@ -165,43 +165,43 @@ const en: Translations = {
         season: (season: string) => `Boating season ${season}`,
         periods: [
           (period: string) =>
-            `${period} only Espoo residents* with an indefinite rental agreement can continue renting their boat place.`,
+            `${period} only Espoo residents* with an indefinite rental agreement can continue renting their boat space.`,
           (period: string) =>
-            `${period} only Espoo residents* can book boat places.`,
+            `${period} only Espoo residents* can book boat spaces.`,
           (period: string) => `${period} everyone can book berths`
         ]
       },
       Trailer: {
-        title: 'Booking trailer parking spots at Suomenoja 2025',
+        title: 'Booking trailer parking spaces at Suomenoja 2025',
         season: (season: string) =>
           `Rental season ${season}. Boat on a trailer, launch from the ramp.`,
         periods: [
           (period: string) =>
-            `${period} only Espoo residents* with a current rental agreement for a trailer spot can renew their rental`,
-          (period: string) => `${period} everyone can book trailer spots`
+            `${period} only Espoo residents* with a current rental agreement for a trailer space can renew their rental`,
+          (period: string) => `${period} everyone can book trailer spaces`
         ]
       },
       Winter: {
-        title: 'Booking winter storage spots 2025',
+        title: 'Booking winter storage spaces 2025',
         season: (season: string) => `Winter storage season ${season}`,
         periods: [
           (period: string) =>
-            `${period} only Espoo residents* with a current rental agreement for a winter storage spot can renew their rental`,
+            `${period} only Espoo residents* with a current rental agreement for a winter storage space can renew their rental`,
           (period: string) =>
-            `${period} only Espoo residents* can book winter storage spots`
+            `${period} only Espoo residents* can book winter storage spaces`
         ]
       },
       Storage: {
-        title: 'Booking storage spots at Ämmässuo 2025 **',
+        title: 'Booking storage spaces at Ämmässuo 2025 **',
         season: (season: string) => `Storage season ${season}`,
         periods: [
           (period: string) =>
-            `${period} current renters who are Espoo residents can renew their storage spot rental`,
-          (period: string) => `${period} everyone can book storage spots`
+            `${period} current renters who are Espoo residents can renew their storage space rental`,
+          (period: string) => `${period} everyone can book storage spaces`
         ]
       },
       footNote:
-        '* If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spots as an Espoo resident. In this case, an Espoo resident must make the reservation.',
+        '* If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spaces as an Espoo resident. In this case, an Espoo resident must make the reservation.',
       footNote2:
         '** Until 14.9.2025, everyone can book storage spaces for the current season.'
     },
@@ -231,11 +231,11 @@ const en: Translations = {
       },
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
-      freeSpaceCount: 'Number of places available according to search criteria',
+      freeSpaceCount: 'Number of spaces available according to search criteria',
       size: 'Size',
       amenityLabel: 'Amenity',
       price: 'Price/Season',
-      place: 'Place',
+      space: 'space',
       filters: {
         title: 'Boat space reservation',
         boatSpaceType: 'Space type',
@@ -245,9 +245,9 @@ const en: Translations = {
         amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
-        additionalHarborPlaceInfo:
-          'More information about the places and their prices here',
-        additionalHarborPlaceInfoLink:
+        additionalHarborspaceInfo:
+          'More information about the spaces and their prices here',
+        additionalHarborspaceInfoLink:
           'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
@@ -258,7 +258,7 @@ const en: Translations = {
           Trailer: {
             width: 'Trailer width (m)',
             length: 'Trailer length (m)',
-            harborInfo: 'You can only reserve a trailer spot from Suomenoja.'
+            harborInfo: 'You can only reserve a trailer space from Suomenoja.'
           },
           Winter: {
             width: 'Winter space width (m)',
@@ -274,10 +274,10 @@ const en: Translations = {
           }
         },
         storageInfo:
-          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
+          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats spaced in unnecessarily large spaces may be moved to smaller spaces.'
       },
       switchInfoText:
-        'You are changing your boat spot. The spot can only be changed to another spot of the same type.',
+        'You are changing your boat space. The space can only be changed to another space of the same type.',
       infoText: {
         title: 'Booking Boat Spaces 2025',
         periods: {
@@ -296,11 +296,11 @@ const en: Translations = {
       modal: {
         reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
-        cannotReserveNewPlace:
+        cannotReserveNewspace:
           'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
-        currentPlaces: 'Your current spaces:',
-        switchCurrentPlace: 'Switch this space',
-        organizationCurrentPlaces: (organizationName: string) =>
+        currentspaces: 'Your current spaces:',
+        switchCurrentspace: 'Switch this space',
+        organizationCurrentspaces: (organizationName: string) =>
           `Your organization's ${organizationName} spaces:`
       }
     },
@@ -314,7 +314,7 @@ const en: Translations = {
       },
       info: {
         switch:
-          'You are switching your boat place. The reservation period for your boat place remains unchanged. At the same time, your old place will be canceled and made available for others to reserve.'
+          'You are switching your boat space. The reservation period for your boat space remains unchanged. At the same time, your old space will be canceled and made available for others to reserve.'
       },
       submit: {
         continueToPayment: 'Continue to payment',
@@ -343,7 +343,7 @@ const en: Translations = {
       boatInformation: 'Boat information',
       boatSpaceInformation: 'Boat space to be reserved',
       harbor: 'Harbor',
-      place: 'Place',
+      space: 'space',
       boatSpaceType: 'Boat space type',
       boatSpaceDimensions: 'Boat space dimensions',
       boatSpaceAmenity: 'Amenity',
@@ -377,11 +377,11 @@ const en: Translations = {
       `${totalPrice} € (incl. vat ${vatValue} €)`,
     paymentInfo: {
       moreExpensive: (amount: string) =>
-        `Note that the new place is more expensive than your current place. The price already accounts for the payment you have made, and you only need to pay the difference of ${amount} €.`,
+        `Note that the new space is more expensive than your current space. The price already accounts for the payment you have made, and you only need to pay the difference of ${amount} €.`,
       lessExpensive:
-        'Note that the new place is cheaper than your current place. No refund will be issued.',
+        'Note that the new space is cheaper than your current space. No refund will be issued.',
       equal:
-        'The place costs the same as your previous one. You do not need to pay again.'
+        'The space costs the same as your previous one. You do not need to pay again.'
     },
     validity: (
       endDate: LocalDate,
@@ -445,12 +445,12 @@ const en: Translations = {
         title: 'Reserving failed',
         type: {
           boatSpaceNotAvailable: [
-            'Unfortunately, you did not confirm the reservation in time, and the place has already been reserved by someone else.',
+            'Unfortunately, you did not confirm the reservation in time, and the space has already been reserved by someone else.',
             'Your payment may have been processed, so please check the situation by contacting our customer service for further instructions and a possible refund.',
             'You can find the customer service contact details on the homepage.'
           ],
           unknown: [
-            'Unknown error, the place could not be reserved.',
+            'Unknown error, the space could not be reserved.',
             'Your payment may have been processed, so please check the situation by contacting our customer service for further instructions and a possible refund.',
             'You can find the customer service contact details on the homepage.'
           ]
@@ -458,7 +458,7 @@ const en: Translations = {
       }
     },
     auth: {
-      reservingBoatSpace: 'You are reserving a spot:',
+      reservingBoatSpace: 'You are reserving a space:',
       reservingRequiresAuth:
         'Reserving a boat space requires strong authentication.',
       continue: 'Continue to authentication'
@@ -502,7 +502,7 @@ const en: Translations = {
     ownership: 'Ownership',
     boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
     boatSizeWarningExplanation:
-      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
+      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat spaced in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
     boatWeightWarning: `The maximum allowed weight for a boat moored in the City of Espoo's harbors is 15,000 kg.`,
     boatWeightWarning2:
       'A boat that is too heavy may be relocated by the city, and the berth holder is responsible for the costs.'
@@ -608,16 +608,16 @@ const en: Translations = {
       title: 'Reservations',
       noReservations: 'No Reservations',
       actions: {
-        terminate: 'Cancel Place',
-        renew: 'Renew Place',
-        change: 'Change Place'
+        terminate: 'Cancel space',
+        renew: 'Renew space',
+        change: 'Change space'
       },
       modal: {
         goBackToReservation: 'Go to the reservation',
         termination: {
           title: 'You are terminating the boat space reservation',
           spaceInformation:
-            'Please note that if you have terminated your dock or trailer spot agreement, you must immediately move your boat and clear the space. Winter and Ämmäsmäki storage spaces may be used until the end of the current season.',
+            'Please note that if you have terminated your dock or trailer space agreement, you must immediately move your boat and clear the space. Winter and Ämmäsmäki storage spaces may be used until the end of the current season.',
           notEntitledToRefund:
             'The City of Espoo does not grant a refund for a paid berth.',
           confirm: 'Terminate berth',
@@ -628,19 +628,19 @@ const en: Translations = {
       },
       showAllBoats: 'Also show boats that are not linked to a reservation',
       renewNotification: (date: LocalDate) =>
-        `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`,
+        `The contract period is ending. Secure the same space for next season by paying the season fee by ${date.format()}, or switch to a new space.`,
       harbor: 'Harbor',
       reservationDate: 'Reservation start date',
-      place: 'Place',
+      space: 'space',
       reservationValidity: 'Reservation validity',
-      placeType: 'Type of Place',
+      spaceType: 'Type of space',
       price: 'Price',
       boatPresent: 'Boat Present',
       equipment: 'Equipment',
       paymentStatus: 'Payment status',
       storageType: 'Storage type'
     },
-    placeReservations: 'Place reservations',
+    spaceReservations: 'space reservations',
     expired: 'Expired',
     expiredReservations: 'Expired reservations'
   },

@@ -236,7 +236,7 @@ export default {
       size: 'Paikan koko',
       amenityLabel: 'Varuste',
       price: 'Hinta/Kausi',
-      place: 'Paikka',
+      space: 'Paikka',
       filters: {
         title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
@@ -246,9 +246,9 @@ export default {
         amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
-        additionalHarborPlaceInfo:
+        additionalHarborSpaceInfo:
           'Lisätietoja paikoista ja niiden hinnoista tästä',
-        additionalHarborPlaceInfoLink:
+        additionalHarborSpaceInfoLink:
           'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
@@ -344,7 +344,7 @@ export default {
       boatInformation: 'Veneen tiedot',
       boatSpaceInformation: 'Varattava paikka',
       harbor: 'Satama',
-      place: 'Paikka',
+      space: 'Paikka',
       boatSpaceType: 'Venepaikkatyyppi',
       boatSpaceDimensions: 'Paikan koko',
       boatSpaceAmenity: 'Varuste',
@@ -633,16 +633,16 @@ export default {
         `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
       harbor: 'Satama',
       reservationDate: 'Varauksen alkupäivä',
-      place: 'Paikka',
+      space: 'Paikka',
       reservationValidity: 'Varaus voimassa',
-      placeType: 'Paikan tyyppi',
+      spaceType: 'Paikan tyyppi',
       price: 'Hinta',
       boatPresent: 'Paikalla oleva vene',
       equipment: 'Varuste',
       paymentStatus: 'Maksun tila',
       storageType: 'Säilytystapa'
     },
-    placeReservations: 'Paikkavaraukset',
+    spaceReservations: 'Paikkavaraukset',
     expired: 'Päättyneet',
     expiredReservations: 'Päättyneet varaukset'
   },
