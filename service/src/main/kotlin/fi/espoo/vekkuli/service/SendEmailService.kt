@@ -3,8 +3,8 @@ package fi.espoo.vekkuli.service
 import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentData
 import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
 import fi.espoo.vekkuli.config.EmailEnv
-import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.domain.Attachment
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.activation.DataHandler
 import jakarta.mail.Part
 import jakarta.mail.Session
@@ -13,7 +13,6 @@ import jakarta.mail.internet.MimeBodyPart
 import jakarta.mail.internet.MimeMessage
 import jakarta.mail.internet.MimeMultipart
 import jakarta.mail.util.ByteArrayDataSource
-import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.SdkBytes
@@ -75,7 +74,7 @@ class SendEmailService(
     private val emailEnv: EmailEnv,
     private val attachmentService: AttachmentService,
 ) : SendEmailInterface {
-    private val logger = LoggerFactory.getLogger(CitizenUserController::class.java)
+    private val logger = KotlinLogging.logger {}
 
     override fun sendEmail(
         senderAddress: String?,
@@ -91,28 +90,30 @@ class SendEmailService(
             )
             return "Test-${UUID.randomUUID()}"
         }
-        val attachmentsContent = attachments.map { it -> attachmentService.getAttachment(it.key) }
-        if (attachmentsContent.any { it == null }) {
-            logger.error("Failed to send email: one or more attachments could not be found")
-            throw IllegalStateException(
-                "Failed to send email: one or more attachments could not be found"
-            )
-        }
-
-        val mimeMessage = createMimeMessageRaw(senderAddress, emailAddress, subject, body, attachmentsContent.filterNotNull())
-
-        val emailRequest =
-            SendRawEmailRequest
-                .builder()
-                .rawMessage {
-                    it.data(mimeMessage)
-                }.build()
-
         try {
+            val attachmentsContent = attachments.map { it -> attachmentService.getAttachment(it.key) }
+            if (attachments.isNotEmpty() && attachmentsContent.any { it == null }) {
+                throw IllegalStateException(
+                    "Failed to send email: one or more attachments could not be found"
+                )
+            }
+
+            val mimeMessage = createMimeMessageRaw(senderAddress, emailAddress, subject, body, attachmentsContent.filterNotNull())
+
+            val emailRequest =
+                SendRawEmailRequest
+                    .builder()
+                    .rawMessage {
+                        it.data(mimeMessage)
+                    }.build()
+
             val response = sesClient.sendRawEmail(emailRequest)
             return response.messageId()
         } catch (ex: SesException) {
-            logger.error("Failed to send email to $emailAddress: ${ex.awsErrorDetails().errorMessage()}")
+            logger.error(ex) { "Failed to send email to $emailAddress: ${ex.awsErrorDetails().errorMessage()}" }
+            return null
+        } catch (e: Exception) {
+            logger.error { "Failed to send email to $emailAddress: ${e.message}" }
             return null
         }
     }
