@@ -31,7 +31,7 @@ class AttachmentView : BaseView() {
             id="attachment-input"
             type="file"
             name="file"
-            accept="image/*, application/pdf"
+            accept="image/png, image/jpeg, image/jpg, application/pdf"
           >
          <div id="error-box" hidden class="is-centered is-vcentered is-error-text">Liitteen lisäämisessä tapahtui virhe.</div>
           

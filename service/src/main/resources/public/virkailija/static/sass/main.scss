@@ -834,7 +834,7 @@ label.filter-button:has(input:checked) .icon {
   td {
     border-top: 1px solid $gainsboro;
   }
-  tr:hover {
+  tbody tr:hover {
     background-color: $light-gray;
   }
 }

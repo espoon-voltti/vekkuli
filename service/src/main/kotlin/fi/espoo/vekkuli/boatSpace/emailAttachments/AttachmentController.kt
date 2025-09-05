@@ -66,8 +66,7 @@ class AttachmentController(
                 return ResponseEntity.noContent().build()
             }
         } catch (e: Exception) {
-            // TODO: handle exceptions
-            logger.error(e) { "Error uploading attachment" }
+            logger.error(e) { "Error uploading an attachment" }
             return ResponseEntity.badRequest().build()
         }
     }
@@ -95,8 +94,7 @@ class AttachmentController(
                 .contentLength(attachment.size ?: 10L)
                 .body(attachment.data)
         } catch (e: Exception) {
-            // TODO: handle exceptions
-            logger.error(e) { "Error opening attachment" }
+            logger.error(e) { "Error opening an attachment" }
             return ResponseEntity.badRequest().body(null)
         }
     }
@@ -124,8 +122,7 @@ class AttachmentController(
             attachmentService.deleteAttachment(attachmentId)
             return ResponseEntity.ok("")
         } catch (e: Exception) {
-            // TODO: handle exceptions
-            logger.error(e) { "Error deleting attachment" }
+            logger.error(e) { "Error deleting the attachment" }
             return ResponseEntity.badRequest().body("Error deleting attachment")
         }
     }

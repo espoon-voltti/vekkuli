@@ -166,6 +166,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
 
         citizenDetails.sendReserverMessageModalSubmit.click()
         assertThat(citizenDetails.sendReserverMessageModalSuccess).isVisible()
+        page.waitForCondition { citizenDetails.sendReserverMessageModalSuccess.isHidden }
 
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
