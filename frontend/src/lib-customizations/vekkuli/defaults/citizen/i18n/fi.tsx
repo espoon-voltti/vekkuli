@@ -314,8 +314,15 @@ export default {
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       },
       info: {
+        renew:
+          'Olet uusimassa paikkaa. Huomioithan nämä: \n' +
+          'Jos tarvitset ensi kaudeksi pienemmän paikan, vaihda ensin paikka ja maksa kausimaksu vasta vaihdon jälkeen. \n' +
+          'Jos tarvitset ensi kaudeksi suuremman paikan, maksa ensin kausimaksu ja vaihda paikkaa sen jälkeen ja maksa lisämaksu suuremmasta paikasta.',
         switch:
-          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+          'Olet vaihtamassa paikkaa. Huomioithan nämä: \n' +
+          'Jos vaihdat paikan ensi kaudeksi pienempään, maksa kausimaksu vaihdon jälkeen. \n' +
+          'Jos vaihdat paikan ensi kaudeksi suurempaan, maksa ensin kausimaksu ja vaihda paikka vasta sen jälkeen. \n' +
+          'Jos vaihdat paikan ensi kaudeksi samankokoiseen paikkaan, muista silti maksaa kausimaksu.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -630,7 +637,7 @@ export default {
       },
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>
-        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä.`,
       harbor: 'Satama',
       reservationDate: 'Varauksen alkupäivä',
       place: 'Paikka',
