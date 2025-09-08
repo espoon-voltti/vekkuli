@@ -196,7 +196,7 @@ const sv: Translations = {
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
-            `${period} nuvarande hyrestagare kan förnya sin förvaringsplats`,
+            `${period} nuvarande hyrestagare som är esbobor kan förnya sin förvaringsplats`,
           (period: string) => `${period} alla kan boka förvaringsplats`
         ]
       },
@@ -228,7 +228,7 @@ const sv: Translations = {
       size: 'Storlek',
       amenityLabel: 'Förtöjningssätt',
       price: 'Pris/Period',
-      place: 'Plats',
+      space: 'Plats',
       filters: {
         title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',
@@ -238,9 +238,9 @@ const sv: Translations = {
         amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
-        additionalHarborPlaceInfo:
+        additionalHarborSpaceInfo:
           'Mer information om platserna och deras priser här',
-        additionalHarborPlaceInfoLink:
+        additionalHarborSpaceInfoLink:
           'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/avgifter-batplatser',
         branchSpecific: {
           Slip: {
@@ -342,7 +342,7 @@ const sv: Translations = {
       boatInformation: 'Båtinformation',
       boatSpaceInformation: 'Båtplats att reservera',
       harbor: 'Hamn',
-      place: 'Plats',
+      space: 'Plats',
       boatSpaceType: 'Båtplatstyp',
       boatSpaceDimensions: 'Båtplatsens dimensioner',
       boatSpaceAmenity: 'Förtöjningssätt',
@@ -638,9 +638,9 @@ const sv: Translations = {
         `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()}.`,
       harbor: 'Hamn',
       reservationDate: 'Reservationens startdatum',
-      place: 'Plats',
+      space: 'Plats',
       reservationValidity: 'Reservationens giltighet',
-      placeType: 'Platstyp',
+      spaceType: 'Platstyp',
       price: 'Pris',
       boatPresent: 'Båt på platsen',
       equipment: 'Utrustning',
