@@ -107,7 +107,6 @@ class SendEmailService(
                         it.data(rawMimeMessage)
                     }.sourceArn(emailEnv.senderArn)
                     .fromArn(emailEnv.senderArn)
-                    .returnPathArn(emailEnv.senderArn)
                     .source(senderAddress)
                     .build()
 
