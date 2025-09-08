@@ -164,6 +164,9 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           {reservation.reservation.creationType === 'Switch' && (
             <InfoBox text={i18n.reservation.formPage.info.switch} />
           )}
+          {reservation.reservation.creationType === 'Renewal' && (
+            <InfoBox text={i18n.reservation.formPage.info.renew} />
+          )}
           <ReserverSection
             reserver={updatedReservation.citizen}
             bind={reserver}
