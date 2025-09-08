@@ -98,14 +98,18 @@ class SendEmailService(
                 )
             }
 
-            val mimeMessage = createMimeMessageRaw(senderAddress, emailAddress, subject, body, attachmentsContent.filterNotNull())
+            val rawMimeMessage = createMimeMessageRaw(senderAddress, emailAddress, subject, body, attachmentsContent.filterNotNull())
 
             val emailRequest =
                 SendRawEmailRequest
                     .builder()
                     .rawMessage {
-                        it.data(mimeMessage)
-                    }.build()
+                        it.data(rawMimeMessage)
+                    }.sourceArn(emailEnv.senderArn)
+                    .fromArn(emailEnv.senderArn)
+                    .returnPathArn(emailEnv.senderArn)
+                    .source(senderAddress)
+                    .build()
 
             val response = sesClient.sendRawEmail(emailRequest)
             return response.messageId()
@@ -124,7 +128,7 @@ class SendEmailService(
         subject: String,
         body: String,
         attachments: List<AttachmentData>
-    ): SdkBytes? {
+    ): SdkBytes {
         val session = Session.getDefaultInstance(Properties())
         val message = MimeMessage(session)
 
@@ -152,7 +156,6 @@ class SendEmailService(
             }
 
         message.setContent(multipart)
-
         val outputStream = ByteArrayOutputStream()
         message.writeTo(outputStream)
         return SdkBytes.fromByteBuffer(ByteBuffer.wrap(outputStream.toByteArray()))
