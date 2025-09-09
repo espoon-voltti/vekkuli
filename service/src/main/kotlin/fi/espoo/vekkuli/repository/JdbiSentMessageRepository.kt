@@ -1,12 +1,15 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.DomainConstants
+import fi.espoo.vekkuli.domain.Attachment
+import fi.espoo.vekkuli.domain.MessageWithAttachments
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.service.EmailType
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
@@ -23,9 +26,10 @@ class JdbiSentMessageRepository(
         recipients: List<Recipient>,
         subject: String,
         body: String,
+        attachmentIds: List<UUID>
     ): List<QueuedMessage> =
-        jdbi.withHandleUnchecked { handle ->
-            val batch =
+        jdbi.inTransactionUnchecked { handle ->
+            val messageBatch =
                 handle.prepareBatch(
                     """
             INSERT INTO sent_message (status, sender_id, sender_address, recipient_id, recipient_address, type, subject, body)
@@ -34,7 +38,7 @@ class JdbiSentMessageRepository(
                 )
 
             recipients.forEach { recipient ->
-                batch
+                messageBatch
                     .bind("senderId", senderId)
                     .bind("senderAddress", senderAddress)
                     .bind("recipientId", recipient.id)
@@ -44,10 +48,47 @@ class JdbiSentMessageRepository(
                     .add()
             }
 
-            batch
-                .executePreparedBatch()
-                .mapTo<QueuedMessage>()
-                .list()
+            val messages =
+                messageBatch
+                    .executePreparedBatch()
+                    .mapTo<QueuedMessage>()
+                    .list()
+
+            if (attachmentIds.isNotEmpty()) {
+                val attachmentBatch =
+                    handle.prepareBatch(
+                        """
+                        INSERT INTO attachment (key, name, message_id)
+                        SELECT key, name, :messageId
+                        FROM attachment
+                        WHERE id = :attachmentId AND message_id IS NULL
+                        """.trimIndent()
+                    )
+
+                // Create attachments for each message and connect with message_id
+                messages.forEach { message ->
+                    attachmentIds.forEach { attachmentId ->
+                        attachmentBatch
+                            .bind(
+                                "messageId",
+                                message.id
+                            ).bind("attachmentId", attachmentId)
+                            .add()
+                    }
+                }
+                attachmentBatch.execute()
+
+                // Delete stub attachments that are not connected to any message
+                handle
+                    .createUpdate(
+                        """
+                        DELETE FROM attachment
+                        WHERE id IN (<attachmentIds>) AND message_id IS NULL
+                        """.trimIndent()
+                    ).bindList("attachmentIds", attachmentIds)
+                    .execute()
+            }
+            messages
         }
 
     override fun setMessagesSent(messageIds: List<Pair<UUID, String>>): List<QueuedMessage> =
@@ -99,33 +140,75 @@ class JdbiSentMessageRepository(
                 .list()
         }
 
-    override fun getMessagesSentToUser(citizenId: UUID): List<QueuedMessage> =
+    override fun getMessagesSentToUser(citizenId: UUID): List<MessageWithAttachments> =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
+            val messages =
+                handle
+                    .createQuery(
+                        """
                     SELECT *
                     FROM sent_message
                     WHERE recipient_id = :citizenId
                     ORDER BY created DESC
                     """
-                ).bind("citizenId", citizenId)
-                .mapTo<QueuedMessage>()
-                .list()
+                    ).bind("citizenId", citizenId)
+                    .mapTo<QueuedMessage>()
+                    .list()
+
+            if (messages.isNotEmpty()) {
+                // Fetch attachments for each message
+                val attachmentQuery =
+                    """
+                    SELECT key, name, id
+                    FROM attachment
+                    WHERE message_id = :id
+                    ORDER BY created
+                    """.trimIndent()
+
+                // Return messages with attachments
+                messages.map { m ->
+                    val attachments =
+                        handle
+                            .createQuery(attachmentQuery)
+                            .bind("id", m.id)
+                            .mapTo<Attachment>()
+                            .list()
+
+                    MessageWithAttachments(m, attachments)
+                }
+            } else {
+                emptyList()
+            }
         }
 
-    override fun getMessage(messageId: UUID): QueuedMessage =
+    override fun getMessage(messageId: UUID): MessageWithAttachments =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT *
-                    FROM sent_message
-                    WHERE id = :messageId
-                    """.trimIndent()
-                ).bind("messageId", messageId)
-                .mapTo<QueuedMessage>()
-                .one()
+            val message =
+                handle
+                    .createQuery(
+                        """
+                        SELECT *
+                        FROM sent_message
+                        WHERE id = :messageId
+                        """.trimIndent()
+                    ).bind("messageId", messageId)
+                    .mapTo<QueuedMessage>()
+                    .one()
+
+            val attachments =
+                handle
+                    .createQuery(
+                        """
+                        SELECT key, name, id
+                        FROM attachment
+                        WHERE message_id = :messageId
+                        ORDER BY created
+                        """.trimIndent()
+                    ).bind("messageId", messageId)
+                    .mapTo<Attachment>()
+                    .list()
+
+            MessageWithAttachments(message, attachments)
         }
 
     override fun getUnsentEmailsAndSetToProcessing(batchSize: Int): List<QueuedMessage> =
