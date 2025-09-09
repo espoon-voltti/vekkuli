@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.service.EmailType
 import fi.espoo.vekkuli.utils.TimeProvider
+import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
@@ -156,26 +157,7 @@ class JdbiSentMessageRepository(
                     .list()
 
             if (messages.isNotEmpty()) {
-                // Fetch attachments for each message
-                val attachmentQuery =
-                    """
-                    SELECT key, name, id
-                    FROM attachment
-                    WHERE message_id = :id
-                    ORDER BY created
-                    """.trimIndent()
-
-                // Return messages with attachments
-                messages.map { m ->
-                    val attachments =
-                        handle
-                            .createQuery(attachmentQuery)
-                            .bind("id", m.id)
-                            .mapTo<Attachment>()
-                            .list()
-
-                    MessageWithAttachments(m, attachments)
-                }
+                handle.getAttachmentForMessages(messages)
             } else {
                 emptyList()
             }
@@ -195,25 +177,14 @@ class JdbiSentMessageRepository(
                     .mapTo<QueuedMessage>()
                     .one()
 
-            val attachments =
-                handle
-                    .createQuery(
-                        """
-                        SELECT key, name, id
-                        FROM attachment
-                        WHERE message_id = :messageId
-                        ORDER BY created
-                        """.trimIndent()
-                    ).bind("messageId", messageId)
-                    .mapTo<Attachment>()
-                    .list()
+            val attachments = handle.getAttachments(messageId)
 
             MessageWithAttachments(message, attachments)
         }
 
-    override fun getUnsentEmailsAndSetToProcessing(batchSize: Int): List<QueuedMessage> =
+    override fun getUnsentEmailsAndSetToProcessing(batchSize: Int): List<MessageWithAttachments> =
         jdbi.withHandleUnchecked { handle ->
-            val query =
+            val messages =
                 handle
                     .createQuery(
                         """
@@ -230,14 +201,38 @@ class JdbiSentMessageRepository(
                         WHERE id IN (SELECT id FROM first_ten)
                         RETURNING *;
                         """.trimIndent()
-                    )
-            query.bind("batchSize", batchSize)
-            query.bind("currentDateTime", timeProvider.getCurrentDateTime())
-            query.bind("failedMessageRetryLimit", DomainConstants.FAILED_MESSAGE_RETRY_LIMIT)
-            query
-                .mapTo<QueuedMessage>()
-                .list()
+                    ).bind("batchSize", batchSize)
+                    .bind("currentDateTime", timeProvider.getCurrentDateTime())
+                    .bind("failedMessageRetryLimit", DomainConstants.FAILED_MESSAGE_RETRY_LIMIT)
+                    .mapTo<QueuedMessage>()
+                    .list()
+
+            handle.getAttachmentForMessages(messages)
         }
+
+    private fun Handle.getAttachmentForMessages(messages: List<QueuedMessage>): List<MessageWithAttachments> =
+        if (messages.isNotEmpty()) {
+            // Return messages with attachments
+            messages.map { m ->
+                val attachments = this.getAttachments(m.id)
+                MessageWithAttachments(m, attachments)
+            }
+        } else {
+            emptyList()
+        }
+
+    private fun Handle.getAttachments(messageId: UUID): List<Attachment> =
+        this
+            .createQuery(
+                """
+                SELECT key, name, id
+                FROM attachment
+                WHERE message_id = :messageId
+                ORDER BY created
+                """.trimIndent()
+            ).bind("messageId", messageId)
+            .mapTo<Attachment>()
+            .list()
 
     override fun getAndInsertUnsentEmails(
         reservationType: ReservationType,

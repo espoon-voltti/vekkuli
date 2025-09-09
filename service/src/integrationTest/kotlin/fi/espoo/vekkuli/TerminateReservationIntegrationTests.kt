@@ -158,7 +158,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         terminateService.terminateBoatSpaceReservationAsOwner(reservation.id, citizen.id)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertTrue(
-            sentEmails.any { it.recipientAddress == citizen.email },
+            sentEmails.any { it.message.recipientAddress == citizen.email },
             "Email is set to be sent to the citizen"
         )
     }
@@ -170,7 +170,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         terminateService.terminateBoatSpaceReservationAsOwner(reservation.id, citizenIdOlivia)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertTrue(
-            sentEmails.any { it.recipientAddress == emailEnv.employeeAddress },
+            sentEmails.any { it.message.recipientAddress == emailEnv.employeeAddress },
             "Email is set to be sent to the employee address"
         )
     }

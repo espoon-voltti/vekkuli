@@ -55,16 +55,25 @@ class AttachmentService(
 
     fun getAttachment(id: UUID): AttachmentData? {
         val attachment = attachmentRepository.getAttachment(id) ?: return null
-        val response = s3Client?.getObject { it.bucket(emailEnv.s3BucketName).key(attachment.key) }
+        return getAttachmentFromS3(attachment.key, attachment.name)
+    }
+
+    fun getAttachment(key: String): AttachmentData? = getAttachmentFromS3(key)
+
+    private fun getAttachmentFromS3(
+        key: String,
+        name: String? = null
+    ): AttachmentData? {
+        val response = s3Client?.getObject { it.bucket(emailEnv.s3BucketName).key(key) }
         if (response == null) {
             return null
         }
         return AttachmentData(
-            key = attachment.key,
+            key = key,
             contentType = response.response().contentType(),
             size = response.response().contentLength(),
             data = response.readAllBytes(),
-            name = attachment.name
+            name = name ?: response.response().metadata()["name"] ?: "attachment"
         )
     }
 

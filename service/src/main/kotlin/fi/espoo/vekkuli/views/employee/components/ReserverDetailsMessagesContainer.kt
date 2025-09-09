@@ -23,6 +23,12 @@ class ReserverDetailsMessagesContainer(
     ): String {
         val messageHtml =
             messagesWithAttachments.joinToString("\n") { messageWithAttachments ->
+                val timeSent =
+                    when (messageWithAttachments.message.status) {
+                        MessageStatus.Sent -> messageWithAttachments.message.sentAt?.let { formatDate(it) }
+                        MessageStatus.Failed -> "Epäonnistunut"
+                        else -> "Ei lähetetty"
+                    }
                 // language=HTML
                 """
                 <tr hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
@@ -30,7 +36,7 @@ class ReserverDetailsMessagesContainer(
                     hx-swap="innerHTML" class='is-with-pointer'>
                     <td>${messageWithAttachments.message.subject}</td>
                     <td>${messageWithAttachments.message.recipientAddress}</td>
-                    <td>${messageWithAttachments.message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
+                    <td>$timeSent</td>
                     <td>${messageWithAttachments.message.senderAddress ?: ""}</td>
                 </tr>
                 """.trimIndent()
