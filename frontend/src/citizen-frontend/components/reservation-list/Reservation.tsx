@@ -155,7 +155,7 @@ export default React.memo(function Reservation({
           </Column>
           <Column>
             <TextField
-              label={i18n.citizenPage.reservation.place}
+              label={i18n.citizenPage.reservation.space}
               value={formatPlaceIdentifier(
                 reservation.boatSpace.section,
                 reservation.boatSpace.placeNumber
@@ -189,7 +189,7 @@ export default React.memo(function Reservation({
           </Column>
           <Column>
             <TextField
-              label={i18n.citizenPage.reservation.placeType}
+              label={i18n.citizenPage.reservation.spaceType}
               value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
               readonly={true}
             />

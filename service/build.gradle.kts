@@ -81,7 +81,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // cve fixes
-    implementation("org.yaml:snakeyaml:2.4")
+    implementation("org.yaml:snakeyaml:2.5")
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -98,7 +98,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin")
     implementation("org.jdbi:jdbi3-postgres")
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.19.2"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.20.0"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("com.auth0:java-jwt:4.5.0")
@@ -125,9 +125,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.32.32"))
+    // AWS dependencies
+    implementation(platform("software.amazon.awssdk:bom:2.33.4"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
+    implementation("software.amazon.awssdk:s3")
+
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.25.1")
@@ -138,7 +142,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.18")
     implementation("commons-codec:commons-codec:1.19.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.52.1")
+    downloadOnly("com.datadoghq:dd-java-agent:1.53.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
