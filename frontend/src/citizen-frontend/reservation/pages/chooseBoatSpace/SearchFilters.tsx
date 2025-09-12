@@ -59,14 +59,14 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
         <div className="is-primary-color ">
           <Link
             to={
-              i18n.reservation.searchPage.filters.additionalHarborPlaceInfoLink
+              i18n.reservation.searchPage.filters.additionalHarborSpaceInfoLink
             }
             className="link open-in-new-tab"
             aria-label={i18n.header.openInANewWindow}
             target="_blank"
           >
             <span>
-              {i18n.reservation.searchPage.filters.additionalHarborPlaceInfo}
+              {i18n.reservation.searchPage.filters.additionalHarborSpaceInfo}
             </span>
             <OpenInNew />
           </Link>

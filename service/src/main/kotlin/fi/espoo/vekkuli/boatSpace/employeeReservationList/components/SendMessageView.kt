@@ -14,7 +14,8 @@ import java.util.UUID
 @Component
 class SendMessageView(
     private var modal: Modal,
-    private var formComponents: FormComponents
+    private var formComponents: FormComponents,
+    private val attachmentView: AttachmentView
 ) : BaseView() {
     fun renderSendMassMessageLink(totalRows: Int): String {
         val messageText =
@@ -164,6 +165,9 @@ class SendMessageView(
                     <div class="column is-full">
                         $messageTitleField                        
                         $messageContentField
+                    </div>
+                    <div class='column'>
+                       ${attachmentView.render()}
                     </div>
                  </div>                 
                 """.trimIndent()

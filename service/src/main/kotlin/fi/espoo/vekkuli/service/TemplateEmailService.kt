@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.service
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
-import org.slf4j.LoggerFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -22,7 +22,7 @@ class TemplateEmailService(
     private val messageService: MessageService,
     private val templateRepo: EmailTemplateRepository
 ) {
-    private val logger = LoggerFactory.getLogger(TemplateEmailService::class.java)
+    private val logger = KotlinLogging.logger {}
 
     fun sendEmail(
         template: String,
