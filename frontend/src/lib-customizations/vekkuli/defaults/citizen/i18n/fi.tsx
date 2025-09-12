@@ -197,7 +197,7 @@ export default {
         season: (season: string) => `Säilytyskausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
+            `${period} espoolaiset säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
           (period: string) => `${period} kaikki voivat varata säilytyspaikkoja`
         ]
       },
@@ -236,7 +236,7 @@ export default {
       size: 'Paikan koko',
       amenityLabel: 'Varuste',
       price: 'Hinta/Kausi',
-      place: 'Paikka',
+      space: 'Paikka',
       filters: {
         title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
@@ -246,9 +246,9 @@ export default {
         amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
-        additionalHarborPlaceInfo:
+        additionalHarborSpaceInfo:
           'Lisätietoja paikoista ja niiden hinnoista tästä',
-        additionalHarborPlaceInfoLink:
+        additionalHarborSpaceInfoLink:
           'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
@@ -314,8 +314,15 @@ export default {
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       },
       info: {
+        renew:
+          'Olet uusimassa paikkaa. Huomioithan nämä: \n' +
+          'Jos tarvitset ensi kaudeksi pienemmän paikan, vaihda ensin paikka ja maksa kausimaksu vasta vaihdon jälkeen. \n' +
+          'Jos tarvitset ensi kaudeksi suuremman paikan, maksa ensin kausimaksu ja vaihda paikkaa sen jälkeen ja maksa lisämaksu suuremmasta paikasta.',
         switch:
-          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+          'Olet vaihtamassa paikkaa. Huomioithan nämä: \n' +
+          'Jos vaihdat paikan ensi kaudeksi pienempään, maksa kausimaksu vaihdon jälkeen. \n' +
+          'Jos vaihdat paikan ensi kaudeksi suurempaan, maksa ensin kausimaksu ja vaihda paikka vasta sen jälkeen. \n' +
+          'Jos vaihdat paikan ensi kaudeksi samankokoiseen paikkaan, muista silti maksaa kausimaksu.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -344,7 +351,7 @@ export default {
       boatInformation: 'Veneen tiedot',
       boatSpaceInformation: 'Varattava paikka',
       harbor: 'Satama',
-      place: 'Paikka',
+      space: 'Paikka',
       boatSpaceType: 'Venepaikkatyyppi',
       boatSpaceDimensions: 'Paikan koko',
       boatSpaceAmenity: 'Varuste',
@@ -630,19 +637,19 @@ export default {
       },
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>
-        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä.`,
       harbor: 'Satama',
       reservationDate: 'Varauksen alkupäivä',
-      place: 'Paikka',
+      space: 'Paikka',
       reservationValidity: 'Varaus voimassa',
-      placeType: 'Paikan tyyppi',
+      spaceType: 'Paikan tyyppi',
       price: 'Hinta',
       boatPresent: 'Paikalla oleva vene',
       equipment: 'Varuste',
       paymentStatus: 'Maksun tila',
       storageType: 'Säilytystapa'
     },
-    placeReservations: 'Paikkavaraukset',
+    spaceReservations: 'Paikkavaraukset',
     expired: 'Päättyneet',
     expiredReservations: 'Päättyneet varaukset'
   },

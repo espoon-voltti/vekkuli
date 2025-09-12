@@ -97,6 +97,7 @@ html, body {
   height: 100%;
   background: $light-gray;
   margin: 0;
+  white-space: preserve-breaks wrap;
 }
 
 #app {
@@ -1081,4 +1082,8 @@ ul {
 .search-results-table-container {
   overflow-x: auto;
   max-width: 100%;
+}
+
+#timer {
+  white-space: initial;
 }

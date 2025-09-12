@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
@@ -45,11 +46,15 @@ class SendMassEmailService(
     private val boatSpaceRepository: BoatSpaceRepository,
     private val emailEnv: EmailEnv,
     private val messageUtil: MessageUtil,
+    private val renewalPolicyService: RenewalPolicyService,
 ) {
     fun sendReservationRenewReminderEmails() {
         val expiringIndefiniteReservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
 
         expiringIndefiniteReservations.forEach { reservation ->
+            if (!renewalPolicyService.citizenCanRenewReservation(reservation.id, reservation.reserverId).success) {
+                return@forEach
+            }
             val recipients = getRecipients(reservation)
             val boatSpace =
                 boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)

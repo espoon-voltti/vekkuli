@@ -19,26 +19,31 @@ class ReserverDetailsMessagesContainer(
 
     fun messageTabContent(
         reserver: ReserverWithDetails,
-        messages: List<QueuedMessage>,
+        messagesWithAttachments: List<MessageWithAttachments>,
     ): String {
         val messageHtml =
-            messages.joinToString("\n") { message ->
+            messagesWithAttachments.joinToString("\n") { messageWithAttachments ->
+                val timeSent =
+                    when (messageWithAttachments.message.status) {
+                        MessageStatus.Sent -> messageWithAttachments.message.sentAt?.let { formatDate(it) }
+                        MessageStatus.Failed -> "Epäonnistunut"
+                        else -> "Ei lähetetty"
+                    }
                 // language=HTML
                 """
-                <tr 
-                    hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${message.id}"
+                <tr hx-get="/virkailija/kayttaja/${reserver.id}/viestit/${messageWithAttachments.message.id}"
                     hx-target="#modal-container"
-                    hx-swap="innerHTML">
-                    <td><a>${message.subject}</a></td>
-                    <td>${message.recipientAddress}</td>
-                    <td>${message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
-                    <td>${message.senderAddress ?: ""}</td>
+                    hx-swap="innerHTML" class='is-with-pointer'>
+                    <td>${messageWithAttachments.message.subject}</td>
+                    <td>${messageWithAttachments.message.recipientAddress}</td>
+                    <td>$timeSent</td>
+                    <td>${messageWithAttachments.message.senderAddress ?: ""}</td>
                 </tr>
                 """.trimIndent()
             }
 
         val messagesHtml =
-            if (messages.isNotEmpty()) {
+            if (messagesWithAttachments.isNotEmpty()) {
                 // language=HTML
                 """
                 <div class="message-list">

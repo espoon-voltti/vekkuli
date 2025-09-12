@@ -35,7 +35,7 @@ export default React.memo(function Reservations({
     <>
       {reservations && reservations.length > 0 && (
         <Container isBlock data-testid="reservation-list">
-          <h3>{i18n.citizenPage.placeReservations}</h3>
+          <h3>{i18n.citizenPage.spaceReservations}</h3>
           <div className="reservation-list form-section">
             {reservations.map((reservation) => (
               <Reservation

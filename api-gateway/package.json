@@ -46,19 +46,19 @@
     "@types/express-session": "1.18.2",
     "@types/jsonwebtoken": "9.0.7",
     "@types/lodash": "4.17.20",
-    "@types/node": "22.17.2",
+    "@types/node": "22.18.1",
     "@types/passport": "1.0.17",
     "@types/passport-strategy": "0.2.38",
     "@types/source-map-support": "0.5.10",
-    "concurrently": "9.2.0",
-    "eslint": "9.33.0",
+    "concurrently": "9.2.1",
+    "eslint": "9.34.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "nodemon": "3.1.10",
     "prettier": "3.6.2",
     "ts-node": "10.9.2",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.40.0"
+    "typescript-eslint": "8.42.0"
   },
   "resolutions": {
     "@node-saml/passport-saml/@types/express": "5.0.3"
@@ -102,5 +102,5 @@
   "engines": {
     "node": ">= 22.14.0"
   },
-  "packageManager": "yarn@4.9.3"
+  "packageManager": "yarn@4.9.4"
 }
