@@ -1,6 +1,6 @@
 services:
   vekkuli-db:
-    image: postgres:17.5-alpine3.21
+    image: postgres:17.6-alpine3.21
     ports:
       - "5432:5432"
     volumes:
@@ -17,6 +17,20 @@ services:
       - "6379:6379"
     healthcheck:
       test: '[ "$$(redis-cli -h 127.0.0.1 ping)" == "PONG" ]'
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  s3mock:
+    image: adobe/s3mock:latest
+    ports:
+      - "9191:9191"
+    environment:
+      debug: "true"
+    volumes:
+      - ./s3-data:/opt/s3mock/data
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090" ]
       interval: 1s
       timeout: 5s
       retries: 5

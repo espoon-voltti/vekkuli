@@ -49,9 +49,11 @@ services:
       SPRING_DATASOURCE_USERNAME: vekkuli
       SPRING_DATASOURCE_PASSWORD: postgres
       ENVIRONMENT: local-docker
+      VEKKULI_EMAIL_S3MOCK_URL: https://s3mock:9191
     entrypoint: ./e2e-test-entrypoint.sh
     depends_on:
       - vekkuli-db
       - api-gateway
       - frontend
       - redis
+      - s3mock
