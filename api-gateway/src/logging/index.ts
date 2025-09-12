@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import _ from 'lodash'
-import { pino } from 'pino'
+import pino from 'pino'
 import { pinoHttp } from 'pino-http'
 import queryString from 'query-string'
 import {

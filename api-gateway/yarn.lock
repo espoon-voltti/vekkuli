@@ -692,12 +692,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:22.17.2, @types/node@npm:>=13.7.0":
-  version: 22.17.2
-  resolution: "@types/node@npm:22.17.2"
+"@types/node@npm:*, @types/node@npm:22.18.1, @types/node@npm:>=13.7.0":
+  version: 22.18.1
+  resolution: "@types/node@npm:22.18.1"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10/b830746c65e014d7d47102ab2f24ec74bdb60156b9b75af42e75d81375f211904347125c00543b5fd7119223b3157726bc9814619205571c0a0afd6ce3c43abb
+  checksum: 10/da67f3c3fa4107fbca704e7a71fee36c27f3b6f44af1c466cd5c71eab76a9ffcd6a16f3b97d1e757b9763f1fa1085eebb60cb648c272e36794aca7305b2a15d9
   languageName: node
   linkType: hard
 
@@ -1492,9 +1492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.63.3":
-  version: 5.63.3
-  resolution: "dd-trace@npm:5.63.3"
+"dd-trace@npm:5.65.0":
+  version: 5.65.0
+  resolution: "dd-trace@npm:5.65.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.7.0"
     "@datadog/native-appsec": "npm:10.1.0"
@@ -1530,7 +1530,7 @@ __metadata:
     source-map: "npm:^0.7.4"
     tlhunter-sorted-set: "npm:^0.1.0"
     ttl-set: "npm:^1.0.0"
-  checksum: 10/50739e538ded166deb828213e320ac5c1d6f6f47906e9baffda5b878566d5b22d6efb72e4e53afbdee992a047d681f7e14feb84c388e551e75250069a95a8e52
+  checksum: 10/7186a0505463f34113aa0467f2b50d63d46e76488b926e434ac9a5c0f5021cebce2d7f6e641306f2cc7e8009cff38b12ded7d9e3b38261224770977a269cd903
   languageName: node
   linkType: hard
 
@@ -3471,9 +3471,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:9.7.0, pino@npm:^9.0.0":
-  version: 9.7.0
-  resolution: "pino@npm:9.7.0"
+"pino@npm:9.9.4, pino@npm:^9.0.0":
+  version: 9.9.4
+  resolution: "pino@npm:9.9.4"
   dependencies:
     atomic-sleep: "npm:^1.0.0"
     fast-redact: "npm:^3.1.1"
@@ -3488,7 +3488,7 @@ __metadata:
     thread-stream: "npm:^3.0.0"
   bin:
     pino: bin.js
-  checksum: 10/01f489e01457ceeb46aa73189922381a6e6c7e0b8599a49d2d18e4d765e7898e36534b7bfd389aca9702c57d680f14dc87d66ab4e80792266f928b051ba8872a
+  checksum: 10/d9755c2f7e4f5aff96d038924650b76bfc4451b3e10ab39c948f3627bebe6f9ddc2b02789786a4798f4df6c82f40de430d61b2fedc87ed7b4df35c4bae2f73ef
   languageName: node
   linkType: hard
 
@@ -4464,7 +4464,7 @@ __metadata:
     "@types/express-session": "npm:1.18.2"
     "@types/jsonwebtoken": "npm:9.0.7"
     "@types/lodash": "npm:4.17.20"
-    "@types/node": "npm:22.17.2"
+    "@types/node": "npm:22.18.1"
     "@types/passport": "npm:1.0.17"
     "@types/passport-strategy": "npm:0.2.38"
     "@types/source-map-support": "npm:0.5.10"
@@ -4474,7 +4474,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.1.0"
-    dd-trace: "npm:5.63.3"
+    dd-trace: "npm:5.65.0"
     eslint: "npm:9.34.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.4"
@@ -4489,7 +4489,7 @@ __metadata:
     nocache: "npm:4.0.0"
     nodemon: "npm:3.1.10"
     passport: "npm:0.7.0"
-    pino: "npm:9.7.0"
+    pino: "npm:9.9.4"
     pino-http: "npm:10.5.0"
     pino-pretty: "npm:13.1.1"
     prettier: "npm:3.6.2"
@@ -4499,7 +4499,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
     typescript-eslint: "npm:8.42.0"
-    zod: "npm:4.0.17"
+    zod: "npm:4.1.5"
   languageName: unknown
   linkType: soft
 
@@ -4671,9 +4671,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.0.17":
-  version: 4.0.17
-  resolution: "zod@npm:4.0.17"
-  checksum: 10/bfdb7f1a7a3dd17e83c6720f9f763d522d4914962c81844fe408512e55df11378c6032d48dea4ec6ca6a260bdd9e92c59ec75bd40cb49f4c12115366744f2def
+"zod@npm:4.1.5":
+  version: 4.1.5
+  resolution: "zod@npm:4.1.5"
+  checksum: 10/2ac6bef2d6647de6e673b6fa07ee392b71eb6fd6ccb2be8899d8d853084dd8b3992d4d2cf267eba6f8495a35803e2ec254509194fd0849ed0a822dea7ae4a765
   languageName: node
   linkType: hard

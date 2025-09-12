@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
@@ -24,9 +23,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class SwitchSpacePolicyTests : IntegrationTestBase() {
-    @Autowired
-    lateinit var boatSpaceSwitchService: BoatSpaceSwitchService
-
     @Autowired
     lateinit var switchPolicyService: SwitchPolicyService
 
