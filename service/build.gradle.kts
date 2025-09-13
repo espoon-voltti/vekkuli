@@ -131,7 +131,7 @@ dependencies {
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:s3")
 
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("com.sun.mail:jakarta.mail:2.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.25.1")
