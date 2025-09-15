@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 open class EmailSendingTest : PlaywrightTest() {
@@ -280,7 +281,8 @@ open class EmailSendingTest : PlaywrightTest() {
         emailAddress,
         "Espoon kaupungin laituripaikkavarauksen jatkaminen",
         "Varaamasi Espoon kaupungin laituripaikka on jatkettu tulevalle kaudelle.",
-        sendAndAssertSendCount
+        sendAndAssertSendCount,
+        "Lasku lähetetään osoitteeseen"
     )
 
     protected fun assertEmailIsSentOfCitizensStorageSpaceRenewal(
@@ -442,13 +444,15 @@ open class EmailSendingTest : PlaywrightTest() {
         emailAddress: String? = null,
         emailSubject: String,
         contentSnippet: String,
-        sendAndAssertSendCount: Boolean? = null
+        sendAndAssertSendCount: Boolean? = null,
+        contentNotPresent: String? = null
     ) = assertOnlyOneConfirmationEmailIsSent(
         emailAddress,
         emailSubject,
         "Varauksesi on voimassa toistaiseksi ja kausimaksu maksetaan vuosittain.",
         contentSnippet,
-        sendAndAssertSendCount
+        sendAndAssertSendCount,
+        contentNotPresent
     )
 
     private fun assertFixedTermReservationEmail(
@@ -471,6 +475,7 @@ open class EmailSendingTest : PlaywrightTest() {
         validity: String,
         contentSnippet: String,
         sendAndAssertSendCount: Boolean? = null,
+        contentNotPresent: String? = null
     ) {
         val send = sendAndAssertSendCount ?: true
         val recipientAddress = emailAddress ?: "test@example.com"
@@ -482,6 +487,7 @@ open class EmailSendingTest : PlaywrightTest() {
             assertEquals(email.subject, emailSubject)
             assertTrue(email.body.contains(validity))
             assertTrue(email.body.contains(contentSnippet))
+            if (contentNotPresent !== null) assertFalse(email.body.contains(contentNotPresent))
         } else {
             assertTrue(
                 SendEmailServiceMock.emails.any { email ->
