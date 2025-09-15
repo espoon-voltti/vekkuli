@@ -16,6 +16,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.jdbi.v3.core.statement.Query
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 fun amenityFilter(
     amenity: BoatSpaceAmenity,
@@ -499,6 +500,59 @@ class JdbiBoatSpaceRepository(
             query.bind("endDateCut", timeProvider.getCurrentDate())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+
+            query.mapTo<Boolean>().first()
+        }
+
+    private fun buildBoatSpaceAvailableQuery(): String =
+        """
+                    SELECT NOT EXISTS (
+                        SELECT 1
+                        FROM boat_space_reservation bsr
+                        WHERE bsr.boat_space_id = :boatSpaceId 
+                            AND (
+                                (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                                OR
+                                (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                                OR
+                                (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                            )
+                    ) AND EXISTS (
+                        SELECT 1 FROM boat_space bs WHERE bs.id = :boatSpaceId AND bs.is_active = TRUE
+                    )
+                    """
+
+    override fun isBoatSpaceAvailable(
+        boatSpaceId: Int,
+        reserverId: UUID
+    ): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val boatSpaceAvailableForReserverQuery =
+                """
+                SELECT NOT EXISTS (
+                       SELECT 1
+                       FROM boat_space_reservation bsr
+                       WHERE bsr.boat_space_id = :boatSpaceId
+                           AND bsr.reserver_id <> :reserverId
+                           AND (
+                               (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                               OR
+                               (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                               OR
+                               (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                           )
+                   ) AND EXISTS (
+                       SELECT 1 FROM boat_space bs WHERE bs.id = :boatSpaceId AND bs.is_active = TRUE
+                   )
+                
+                """.trimIndent()
+
+            val query = handle.createQuery(boatSpaceAvailableForReserverQuery)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.bind("reserverId", reserverId)
 
             query.mapTo<Boolean>().first()
         }
