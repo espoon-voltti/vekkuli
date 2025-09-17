@@ -40,7 +40,7 @@ export const ResultGroup = React.memo(function ResultGroup({
               <th>{i18n.reservation.searchPage.size}</th>
               <th>{i18n.reservation.searchPage.amenityLabel}</th>
               <th>{i18n.reservation.searchPage.price}</th>
-              <th>{i18n.reservation.searchPage.place}</th>
+              <th>{i18n.reservation.searchPage.space}</th>
             </tr>
           </thead>
           <tbody>

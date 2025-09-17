@@ -163,6 +163,7 @@ class BoatReservationService(
                 ) != null
 
             if (!boatSpaceWasAvailable) {
+                logger.warn { "Payment handling failed for reservation ${reservation.id}: boat space no longer available" }
                 return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
             }
 

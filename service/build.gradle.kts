@@ -7,12 +7,12 @@ import java.util.regex.Pattern
 plugins {
     id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.2.10"
-    kotlin("plugin.spring") version "2.2.10"
-    id("org.flywaydb.flyway") version "11.11.2"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.spring") version "2.2.20"
+    id("org.flywaydb.flyway") version "11.12.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
-    kotlin("plugin.serialization") version "2.2.10"
+    kotlin("plugin.serialization") version "2.2.20"
     id("org.owasp.dependencycheck") version "12.1.3"
 
     idea
@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.7")
-        classpath("org.flywaydb:flyway-database-postgresql:11.11.2")
+        classpath("org.flywaydb:flyway-database-postgresql:11.12.0")
     }
 }
 
@@ -81,7 +81,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // cve fixes
-    implementation("org.yaml:snakeyaml:2.4")
+    implementation("org.yaml:snakeyaml:2.5")
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -89,8 +89,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-core:11.11.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.11.2")
+    implementation("org.flywaydb:flyway-core:11.12.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.12.0")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation(platform("org.jdbi:jdbi3-bom:3.49.5"))
     implementation("org.jdbi:jdbi3-core")
@@ -98,7 +98,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin")
     implementation("org.jdbi:jdbi3-postgres")
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.19.2"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.20.0"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("com.auth0:java-jwt:4.5.0")
@@ -114,7 +114,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.54.0")
+    testImplementation("com.microsoft.playwright:playwright:1.55.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.2.3")
     implementation("io.ktor:ktor-client-cio:3.2.3") // CIO engine
@@ -125,9 +125,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation(platform("software.amazon.awssdk:bom:2.32.32"))
+    // AWS dependencies
+    implementation(platform("software.amazon.awssdk:bom:2.33.7"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
+    implementation("software.amazon.awssdk:s3")
+
+    implementation("com.sun.mail:jakarta.mail:2.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.25.1")
@@ -138,7 +142,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.18")
     implementation("commons-codec:commons-codec:1.19.0")
 
-    downloadOnly("com.datadoghq:dd-java-agent:1.52.1")
+    downloadOnly("com.datadoghq:dd-java-agent:1.53.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

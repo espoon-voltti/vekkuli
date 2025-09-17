@@ -926,7 +926,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun paymentSuccess() {
+    fun `payment is successful`() {
         // login and pick first free space
         CitizenHomePage(page).loginAsOliviaVirtanen()
 
@@ -951,7 +951,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun paymentFailed() {
+    fun `payment fails`() {
         // login and pick first free space
         CitizenHomePage(page).loginAsOliviaVirtanen()
 

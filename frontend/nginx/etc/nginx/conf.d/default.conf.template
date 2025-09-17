@@ -218,6 +218,7 @@ server {
     proxy_hide_header X-Content-Type-Options;
     proxy_hide_header X-DNS-Prefetch-Control;
     proxy_hide_header X-XSS-Protection;
+    client_max_body_size 100m;
   }
 
   location / {

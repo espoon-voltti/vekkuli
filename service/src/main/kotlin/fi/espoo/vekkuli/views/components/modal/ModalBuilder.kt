@@ -145,9 +145,9 @@ class ModalBuilder {
         private var testId: String? = null
         private val attributes: MutableMap<String, String> =
             mutableMapOf(
-                "hx-disabled-elt" to "find button[type='submit']",
-                "hx-on:htmx:before-request" to "htmx.addClass(this.querySelector('button[type=submit]'), 'is-loading')",
-                "hx-on:htmx:after-request" to "htmx.removeClass(this.querySelector('button[type=submit]'), 'is-loading')"
+                "hx-disabled-elt" to "button[type='submit']",
+                "hx-on:htmx:before-request" to "this.querySelector('button[type=submit]')?.classList.add('is-loading')",
+                "hx-on:htmx:after-request" to "this.querySelector('button[type=submit]')?.classList.remove('is-loading')"
             )
 
         fun setId(id: String) =

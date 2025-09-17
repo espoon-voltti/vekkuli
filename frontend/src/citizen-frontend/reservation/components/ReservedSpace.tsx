@@ -47,7 +47,7 @@ export default React.memo(function ReservedSpace({
           </div>
           <div className="column is-one-quarter">
             <TextField
-              label={i18n.reservation.formPage.place}
+              label={i18n.reservation.formPage.space}
               value={formatPlaceIdentifier(
                 boatSpace.section,
                 boatSpace.placeNumber
