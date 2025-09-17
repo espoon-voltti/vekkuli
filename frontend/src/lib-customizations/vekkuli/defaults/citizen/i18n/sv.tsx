@@ -305,15 +305,8 @@ const sv: Translations = {
         Storage: (name: string) => `Förvaringsplatsreservation: ${name}`
       },
       info: {
-        renew:
-          'Du håller på att förnya din plats. Observera följande:\n' +
-          'Om du behöver en mindre plats för nästa säsong, byt plats först och betala säsongsavgiften först efter bytet.\n' +
-          'Om du behöver en större plats för nästa säsong, betala först säsongsavgiften, byt plats därefter och betala tilläggsavgiften för den större platsen.',
         switch:
-          'Du håller på att byta plats. Observera följande:\n' +
-          'Om du byter till en mindre plats för nästa säsong, betala säsongsavgiften efter bytet.\n' +
-          'Om du byter till en större plats för nästa säsong, betala först säsongsavgiften och byt plats först därefter.\n' +
-          'Om du byter till en plats av samma storlek för nästa säsong, kom ändå ihåg att betala säsongsavgiften.'
+          'Du håller på att byta båtplats. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.'
       },
       submit: {
         continueToPayment: 'Fortsätt till betalning',
