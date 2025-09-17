@@ -647,7 +647,7 @@ const sv: Translations = {
       paymentStatus: 'Betalningsstatus',
       storageType: 'Förvaringstyp'
     },
-    placeReservations: 'Platsreservationer',
+    spaceReservations: 'Platsreservationer',
     expired: 'Avslutade',
     expiredReservations: 'Avslutade bokningar'
   },
