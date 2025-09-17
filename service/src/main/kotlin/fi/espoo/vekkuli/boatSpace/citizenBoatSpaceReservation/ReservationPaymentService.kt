@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.utils.formatAsShortDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.time.LocalDate
 
@@ -125,9 +126,11 @@ class ReservationPaymentService(
             reservation.priceCents
         }
 
+    @Transactional
     fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
         createPaymentHandleResult(boatReservationService.handlePaytrailPaymentResult(params, true))
 
+    @Transactional
     fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult =
         createPaymentHandleResult(boatReservationService.handlePaytrailPaymentResult(params, false))
 
