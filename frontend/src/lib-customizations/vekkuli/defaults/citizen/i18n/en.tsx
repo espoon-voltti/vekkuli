@@ -313,15 +313,8 @@ const en: Translations = {
         Storage: (name: string) => `Storage space reservation: ${name}`
       },
       info: {
-        renew:
-          'You are renewing your boat space. Please note the following:\n' +
-          'If you need a smaller space for the next season, change the space first and pay the season fee only after the change.\n' +
-          'If you need a larger space for the next season, pay the season fee first, then change the space, and pay the additional fee for the larger space.',
         switch:
-          'You are switching your boat space. Please note the following: \n' +
-          'If you are changing to a smaller space for the next season, pay the season fee after the change.\n' +
-          'If you are changing to a larger space for the next season, pay the season fee first and then change the space.\n' +
-          'If you are changing to a space of the same size for the next season, remember to still pay the season fee.'
+          'You are switching your boat space. The reservation period for your boat space remains unchanged. At the same time, your old space will be canceled and made available for others to reserve.'
       },
       submit: {
         continueToPayment: 'Continue to payment',
