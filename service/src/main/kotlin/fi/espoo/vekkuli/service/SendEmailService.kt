@@ -91,7 +91,7 @@ class SendEmailService(
             return "Test-${UUID.randomUUID()}"
         }
         try {
-            val attachmentsContent = attachments.map { it -> attachmentService.getAttachment(it.key) }
+            val attachmentsContent = attachments.map { it -> attachmentService.getAttachment(it.id) }
             if (attachments.isNotEmpty() && attachmentsContent.any { it == null }) {
                 throw IllegalStateException(
                     "Failed to send email: one or more attachments could not be found"
