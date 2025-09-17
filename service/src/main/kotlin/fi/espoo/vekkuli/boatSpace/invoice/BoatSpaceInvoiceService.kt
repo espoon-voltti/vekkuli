@@ -47,7 +47,7 @@ class BoatSpaceInvoiceService(
             return invoice
         }
         val invoiceDataInput = if (markAsPaidAndSkipSending) invoiceData.copy(priceCents = 0) else invoiceData
-        var (createdInvoice) = createInvoice(invoiceDataInput, reserverId, reservationId)
+        val (createdInvoice) = createInvoice(invoiceDataInput, reserverId, reservationId)
 
         if (markAsPaidAndSkipSending) {
             // Mark as paid but never send invoice

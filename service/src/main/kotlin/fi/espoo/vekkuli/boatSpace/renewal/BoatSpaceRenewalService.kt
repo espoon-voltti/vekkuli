@@ -96,12 +96,24 @@ class BoatSpaceRenewalService(
             )
                 ?: throw InternalError("Failed to create invoice batch")
 
-        boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
+        invoiceService.createAndSendInvoice(
+            invoiceData,
+            reserverId,
+            renewedReservationId,
+            employeeId,
+            markAsPaidAndSkipSending = input.markAsPaid
+        )
+            ?: throw InternalError("Failed to send invoice")
 
         boatReservationService.markReservationEnded(originalReservationId)
 
-        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId, employeeId)
-            ?: throw InternalError("Failed to send invoice")
+        // Set correct reservation status: Confirmed if marked as paid, otherwise Invoiced
+        if (input.markAsPaid) {
+            boatReservationService.setReservationStatusToConfirmed(renewedReservationId)
+        } else {
+            boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
+        }
+
         boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(renewedReservationId)
     }
 

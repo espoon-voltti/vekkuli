@@ -750,6 +750,9 @@ class JdbiBoatSpaceReservationRepository(
     override fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation =
         setReservationStatus(reservationId, ReservationStatus.Info)
 
+    override fun setReservationStatusToConfirmed(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Confirmed)
+
     private fun setReservationStatus(
         reservationId: Int,
         status: ReservationStatus,
