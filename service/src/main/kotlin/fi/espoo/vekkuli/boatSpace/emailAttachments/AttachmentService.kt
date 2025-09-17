@@ -22,7 +22,7 @@ class AttachmentService(
         size: Long,
         name: String
     ): UUID {
-        val key = "attachment-${System.currentTimeMillis()}"
+        val key = "attachment-${UUID.randomUUID()}"
         if (contentType == null) throw IllegalArgumentException("Content type must not be null")
 
         if (!allowedContentTypes.contains(contentType)) {
@@ -35,8 +35,7 @@ class AttachmentService(
             key = key,
             contentType = contentType,
             inputStream = input,
-            size = size,
-            name = name
+            size = size
         )
         return attachmentRepository.addAttachment(
             key,
@@ -58,11 +57,9 @@ class AttachmentService(
         return getAttachmentFromS3(attachment.key, attachment.name)
     }
 
-    fun getAttachment(key: String): AttachmentData? = getAttachmentFromS3(key)
-
     private fun getAttachmentFromS3(
         key: String,
-        name: String? = null
+        name: String
     ): AttachmentData? {
         val response = s3Client?.getObject { it.bucket(emailEnv.s3BucketName).key(key) }
         if (response == null) {
@@ -73,7 +70,7 @@ class AttachmentService(
             contentType = response.response().contentType(),
             size = response.response().contentLength(),
             data = response.readAllBytes(),
-            name = name ?: response.response().metadata()["name"] ?: "attachment"
+            name = name
         )
     }
 
@@ -81,8 +78,7 @@ class AttachmentService(
         key: String,
         contentType: String,
         inputStream: InputStream,
-        size: Long,
-        name: String
+        size: Long
     ) {
         val request =
             PutObjectRequest
@@ -90,7 +86,6 @@ class AttachmentService(
                 .bucket(emailEnv.s3BucketName)
                 .key(key)
                 .contentType(contentType)
-                .metadata(mapOf("name" to name))
                 .build()
 
         val body = RequestBody.fromInputStream(inputStream, size)
