@@ -98,7 +98,7 @@ open class ReservationService(
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val organizations: List<Organization> = organizationService.getCitizenOrganizations(citizenId)
 
-        val boatSpaceIsAvailable = boatSpaceRepository.isBoatSpaceAvailable(spaceId, reserverId = citizenId)
+        val boatSpaceIsAvailable = boatSpaceRepository.isBoatSpaceAvailable(spaceId, citizenId)
 
         if (!boatSpaceIsAvailable) {
             logger.error { "Boat space $spaceId already has a reservation." }
@@ -234,7 +234,7 @@ open class ReservationService(
     ): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
         val reservation = accessReservationAsCurrentCitizen(reservationId)
-        val boatSpaceIsAvailable = boatSpaceRepository.isBoatSpaceAvailable(reservation.boatSpaceId, reserverId = citizenId)
+        val boatSpaceIsAvailable = boatSpaceRepository.isBoatSpaceAvailable(reservation.boatSpaceId, reservation.reserverId)
 
         if (!boatSpaceIsAvailable) {
             logger.error { "Boat space ${reservation.boatSpaceId} already has a reservation. Reservation ${reservation.id} failed." }
