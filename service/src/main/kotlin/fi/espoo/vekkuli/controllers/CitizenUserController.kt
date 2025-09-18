@@ -7,7 +7,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
-import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.JdbiReserverRepository
@@ -1174,8 +1173,10 @@ class CitizenUserController(
         paymentService.getPayment(paymentId)?.let {
             paymentService.updatePayment(it.copy(status = PaymentStatus.Refunded))
         } ?: throw RuntimeException("Payment not found")
+        val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
+        val history = paymentService.getReserverPaymentHistory(reserver.id)
 
-        return redirectUrl("/virkailija/kayttaja/$citizenId")
+        return ResponseEntity.ok(reserverDetailsReservationsContainer.paymentTabContent(reserver, history))
     }
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-traileri-varoitus")
