@@ -147,7 +147,7 @@ class RenewReservationTest : ReserveTest() {
         form.fillFormAndSubmit {
             getBoatSection().widthInput.fill("2")
             getBoatSection().lengthInput.fill("5")
-            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC123")
             getWinterStorageTypeSection().trailerLengthInput.fill("3")
             getWinterStorageTypeSection().trailerWidthInput.fill("1")
         }
