@@ -15,6 +15,8 @@ export const PHONE_REGEXP = /^[+]?[\d\s]{6,20}$/
 
 export const EMAIL_REGEXP = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
+export const TRAILER_REGISTRATION_NUMBER_REGEXP = /^[a-zA-Z0-9]{1,7}$/
+
 export type ErrorKey =
   | 'required'
   | 'requiredSelection'
@@ -92,6 +94,14 @@ export const validEmail = (
   err: ErrorKey = 'email'
 ): ErrorKey | undefined =>
   val.length > 0 && !EMAIL_REGEXP.test(val) ? err : undefined
+
+export const validTrailerRegistrationNumber = (
+  val: string,
+  err: ErrorKey = 'format'
+): ErrorKey | undefined =>
+  val.length > 0 && !TRAILER_REGISTRATION_NUMBER_REGEXP.test(val)
+    ? err
+    : undefined
 
 export const time = (val: string, err: ErrorKey = 'timeFormat') =>
   val.length > 0 && !TIME_REGEXP.test(val) ? err : undefined
