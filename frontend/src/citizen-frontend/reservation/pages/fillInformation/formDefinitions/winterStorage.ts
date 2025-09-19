@@ -85,11 +85,28 @@ export function onWinterStorageFormUpdate({
 }
 
 export default function initialFormState(
+  initialStorageType?: StorageType,
   initialTrailer?: Trailer
 ): StateOf<WinterStorageForm> {
+  switch (initialStorageType) {
+    case 'Trailer':
+      return {
+        storageType: initialStorageTypeState(initialStorageType),
+        trailerInfo: initialTrailerInfoState(initialTrailer)
+      }
+    case 'Buck':
+    case 'BuckWithTent':
+      return {
+        storageType: initialStorageTypeState(initialStorageType),
+        trailerInfo: {
+          branch: initialStorageType,
+          state: null
+        }
+      }
+  }
   return {
-    storageType: initialStorageTypeState(),
-    trailerInfo: initialTrailerInfoState(initialTrailer)
+    storageType: initialStorageTypeState('Trailer'),
+    trailerInfo: initialTrailerInfoState()
   }
 }
 
@@ -106,8 +123,10 @@ function initialTrailerInfoState(
   }
 }
 
-const initialStorageTypeState = (): StateOf<StorageTypeForm> => ({
-  domValue: 'Trailer',
+const initialStorageTypeState = (
+  initialStorageType?: StorageType
+): StateOf<StorageTypeForm> => ({
+  domValue: initialStorageType ?? 'Trailer',
   options: storageTypes.map((type) => ({
     domValue: type,
     label: (i18n) => i18n.boatSpace.winterStorageType[type],

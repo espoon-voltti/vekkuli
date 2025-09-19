@@ -1,6 +1,7 @@
 import {
   BoatSpaceAmenity,
   BoatSpaceType,
+  StorageType,
   Trailer
 } from 'citizen-frontend/shared/types'
 import { union, value } from 'lib-common/form/form'
@@ -32,6 +33,7 @@ export function initialSpaceTypeInfoFormState(
   type: BoatSpaceType,
   storedState?: StoredSearchState,
   reservationAmenity?: BoatSpaceAmenity,
+  initialStorageType?: StorageType,
   initialTrailer?: Trailer
 ): StateOf<SpaceTypeInfoUnionForm> {
   switch (type) {
@@ -45,7 +47,7 @@ export function initialSpaceTypeInfoFormState(
     case 'Winter':
       return {
         branch: type,
-        state: initialWinterStorageFormState(initialTrailer)
+        state: initialWinterStorageFormState(initialStorageType, initialTrailer)
       }
     case 'Storage':
       return {
