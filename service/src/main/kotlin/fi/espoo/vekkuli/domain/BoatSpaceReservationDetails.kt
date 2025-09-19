@@ -80,4 +80,5 @@ fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
         validity = validity,
         paymentDate = paymentDate,
         creationType = creationType,
+        trailerId = trailer?.id,
     )

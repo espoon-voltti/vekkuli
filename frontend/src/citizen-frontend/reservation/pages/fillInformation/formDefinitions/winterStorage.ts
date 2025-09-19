@@ -3,16 +3,18 @@ import {
   storageTypes,
   Trailer
 } from 'citizen-frontend/shared/types'
-import { positiveNumber, string } from 'lib-common/form/fields'
+import { positiveNumber, whitespaceTrimmedString } from 'lib-common/form/fields'
 import {
   mapped,
   object,
   oneOf,
   required,
   union,
+  validated,
   value
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
+import { validTrailerRegistrationNumber } from '../../../../../lib-common/form/form-validation'
 
 export const storageTypeForm = oneOf<StorageType>()
 export type StorageTypeForm = typeof storageTypeForm
@@ -20,7 +22,10 @@ export type StorageTypeForm = typeof storageTypeForm
 export const trailerInfoForm = object({
   length: required(positiveNumber()),
   width: required(positiveNumber()),
-  registrationNumber: required(string())
+  registrationNumber: validated(
+    required(whitespaceTrimmedString()),
+    validTrailerRegistrationNumber
+  )
 })
 export type TrailerInfoForm = typeof trailerInfoForm
 
@@ -85,11 +90,28 @@ export function onWinterStorageFormUpdate({
 }
 
 export default function initialFormState(
+  initialStorageType?: StorageType,
   initialTrailer?: Trailer
 ): StateOf<WinterStorageForm> {
+  switch (initialStorageType) {
+    case 'Trailer':
+      return {
+        storageType: initialStorageTypeState(initialStorageType),
+        trailerInfo: initialTrailerInfoState(initialTrailer)
+      }
+    case 'Buck':
+    case 'BuckWithTent':
+      return {
+        storageType: initialStorageTypeState(initialStorageType),
+        trailerInfo: {
+          branch: initialStorageType,
+          state: null
+        }
+      }
+  }
   return {
-    storageType: initialStorageTypeState(),
-    trailerInfo: initialTrailerInfoState(initialTrailer)
+    storageType: initialStorageTypeState('Trailer'),
+    trailerInfo: initialTrailerInfoState()
   }
 }
 
@@ -106,8 +128,10 @@ function initialTrailerInfoState(
   }
 }
 
-const initialStorageTypeState = (): StateOf<StorageTypeForm> => ({
-  domValue: 'Trailer',
+const initialStorageTypeState = (
+  initialStorageType?: StorageType
+): StateOf<StorageTypeForm> => ({
+  domValue: initialStorageType ?? 'Trailer',
   options: storageTypes.map((type) => ({
     domValue: type,
     label: (i18n) => i18n.boatSpace.winterStorageType[type],

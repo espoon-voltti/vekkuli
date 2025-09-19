@@ -41,6 +41,7 @@ data class BoatSpace(
 data class BoatSpaceReservation(
     val id: Int,
     val boatSpaceId: Int,
+    val trailerId: Int?,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val created: LocalDateTime,
@@ -231,7 +232,8 @@ fun ReservationWithDependencies.toBoatSpaceReservation() =
         reserverId = reserverId,
         validity = validity ?: ReservationValidity.Indefinite,
         paymentDate = null,
-        creationType = creationType
+        creationType = creationType,
+        trailerId = trailerId,
     )
 
 fun BoatSpaceReservation.effectiveEndDate() = if (status == ReservationStatus.Cancelled) endDate.minusDays(1) else endDate

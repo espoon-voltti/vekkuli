@@ -110,6 +110,7 @@ export function initialFormState(
       boatSpace.type,
       storedState,
       unfinishedReservation.reservation.boatSpace.amenity,
+      unfinishedReservation.reservation.storageType,
       unfinishedReservation.reservation.trailer
     ),
     ...initialUserAgreementFormState()
