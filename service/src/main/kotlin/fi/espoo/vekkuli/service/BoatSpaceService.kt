@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.util.UUID
 
 data class BoatSpaceFilter(
     val boatType: BoatType? = null,
@@ -52,7 +53,12 @@ interface BoatSpaceRepository {
 
     fun checkIfAnyBoatSpacesHaveReservations(boatSpaceIds: List<Int>): Boolean?
 
-    fun isBoatSpaceAvailable(boatSpace: Int): Boolean
+    fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean
+
+    fun isBoatSpaceAvailable(
+        boatSpaceId: Int,
+        reserverId: UUID
+    ): Boolean
 
     fun getBoatSpaces(
         filter: SqlExpr,
