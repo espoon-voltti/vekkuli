@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import React from 'react'
-
-import { ApplicationType } from 'lib-common/generated/api-types/application'
 import { DeepReadonly } from 'lib-common/types'
 
 import {
