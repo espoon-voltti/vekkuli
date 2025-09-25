@@ -14,6 +14,7 @@ import {
   value
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
+
 import { validTrailerRegistrationNumber } from '../../../../../lib-common/form/form-validation'
 
 export const storageTypeForm = oneOf<StorageType>()
