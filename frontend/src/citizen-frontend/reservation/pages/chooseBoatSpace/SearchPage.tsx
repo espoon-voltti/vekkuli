@@ -146,7 +146,9 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
                 <ReservationSeasons />
                 {switchInfo && (
                   <InfoBox
-                    text={i18n.reservation.formPage.info.switch}
+                    text={i18n.reservation.formPage.info.switch(
+                      switchInfo.endDate?.year
+                    )}
                     fullWidth
                   />
                 )}

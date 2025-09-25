@@ -305,8 +305,8 @@ const sv: Translations = {
         Storage: (name: string) => `Förvaringsplatsreservation: ${name}`
       },
       info: {
-        switch:
-          'Du håller på att byta båtplats. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.'
+        switch: (endDateYear?: number) =>
+          `Du håller på att byta båtplats${endDateYear !== undefined ? ` för säsong ${endDateYear - 1}-${endDateYear}` : ''}. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.`
       },
       submit: {
         continueToPayment: 'Fortsätt till betalning',
@@ -380,7 +380,7 @@ const sv: Translations = {
       isActive: boolean
     ) => {
       if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
-        return 'Tills vidare, förnyas årligen'
+        return `Till slutet av säsongen ${endDate.year - 1}-${endDate.year}, förnyas årligen`
       }
       return `Till ${endDate.format()}`
     },

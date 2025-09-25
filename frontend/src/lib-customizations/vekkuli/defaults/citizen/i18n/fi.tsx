@@ -314,8 +314,8 @@ export default {
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       },
       info: {
-        switch:
-          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+        switch: (endDateYear?: number) =>
+          `Olet vaihtamassa paikkaa${endDateYear !== undefined ? ` kaudelle ${endDateYear - 1}-${endDateYear}` : ''}. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.`
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -391,7 +391,7 @@ export default {
       isActive: boolean
     ): string => {
       if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
-        return 'Toistaiseksi, jatko vuosittain'
+        return `Kauden ${endDate.year - 1}-${endDate.year} loppuun, jatko vuosittain`
       }
       return `${endDate.format()} asti`
     },
