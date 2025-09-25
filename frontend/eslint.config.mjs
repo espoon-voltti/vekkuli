@@ -40,10 +40,10 @@ export default [
         '^(citizen-frontend|lib-common|lib-customizations|lib-icons)(/|$)'
     }
   },
-  importPlugin.flatConfigs.typescript,
   {
     files: ['**/*.{ts,tsx,js,mjs}'],
     rules: {
+      ...importPlugin.flatConfigs.typescript.rules,
       'import/order': [
         'warn',
         {

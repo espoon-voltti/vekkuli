@@ -1,11 +1,11 @@
 import { Column, Columns, ScreenReaderOnly } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
+import { ModalButton } from 'lib-components/modal/ModalButtons'
 import React from 'react'
+import { useNavigate } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import { ModalButton } from 'lib-components/modal/ModalButtons'
 import { ErrorGeneric } from 'lib-icons'
-import { useNavigate } from 'react-router'
 
 export type ErrorCode = 'SERVER_ERROR' | 'UNFINISHED_RESERVATION'
 
