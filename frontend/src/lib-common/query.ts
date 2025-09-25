@@ -250,8 +250,8 @@ export function useMutation<Arg, Data>(
   return useMutationOriginal({
     mutationFn: api,
     ...options,
-    onSuccess: async (data, arg, context) => {
-      await options?.onSuccess?.(data, arg, context)
+    onSuccess: async (data, arg, onMutateResult, context) => {
+      await options?.onSuccess?.(data, arg, onMutateResult, context)
       await resetDependencies(queryClient, mutationDescription, arg)
       await invalidateDependencies(queryClient, mutationDescription, arg)
     }
