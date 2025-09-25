@@ -1,12 +1,8 @@
-import {
-  StorageType,
-  storageTypes
-} from 'citizen-frontend/shared/types'
+import { StorageType, storageTypes } from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
 import { mapped, object, oneOf, required, union } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
 
 export type StorageAmenity = 'Buck' | 'Trailer'
 const buckStorageTypes = storageTypes.filter((type) => type !== 'Trailer')
@@ -52,10 +48,7 @@ export default function initialFormState(
   i18n: Translations
 ): StateOf<AllYearStorageForm> {
   return {
-    storageInfo: initialStorageInfoState(
-      branch,
-      i18n
-    )
+    storageInfo: initialStorageInfoState(branch, i18n)
   }
 }
 
@@ -80,7 +73,6 @@ function initialStorageInfoState(
       }
   }
 }
-
 
 const initialStorageTypeState = (
   i18n: Translations

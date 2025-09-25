@@ -336,13 +336,12 @@ class SwitchReservationTest : ReserveTest() {
         filterSection.winterRadio.click()
         winterFilterSection.widthInput.fill(width)
         winterFilterSection.lengthInput.fill(length)
-
         selectBoatSpaceForSwitch(reservationPage, expectedHarbors, expectedBoatSpaceSection, expectedPlaceNumber)
         // switch form
         val switchSpaceFormPage = SwitchSpaceFormPage(page)
         // Make sure that citizen is redirected to unfinished reservation switch form
         reservationPage.navigateToPage()
-        val trailerRegistrationNumber = "ABC-456"
+        val trailerRegistrationNumber = "ABC456"
         switchSpaceFormPage.getWinterStorageTypeSection().trailerRegistrationNumberInput.fill(
             trailerRegistrationNumber
         )
