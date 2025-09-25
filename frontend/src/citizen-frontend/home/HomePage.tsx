@@ -10,7 +10,8 @@ import {
   Boat,
   ContactSupport,
   InfoCircle,
-  MapMarker, Preparations
+  MapMarker,
+  Preparations
 } from 'lib-icons'
 
 export default React.memo(function HomePage() {
@@ -38,8 +39,8 @@ export default React.memo(function HomePage() {
               text={i18n.citizenFrontPage.info.contactInfo}
             />
             <InfoColumn
-                icon={Preparations}
-                text={i18n.citizenFrontPage.info.preparations}
+              icon={Preparations}
+              text={i18n.citizenFrontPage.info.preparations}
             />
             <InfoColumn
               icon={InfoCircle}
@@ -75,7 +76,7 @@ export default React.memo(function HomePage() {
 
 interface InfoColumnProps {
   icon: () => React.JSX.Element
-  text: string,
+  text: string
   useDangerouslySetInnerHtmlLabel?: boolean
 }
 
@@ -91,9 +92,9 @@ const InfoColumn = React.memo(function InfoColumn({
       </div>
       <div className="column">
         {useDangerouslySetInnerHtmlLabel ? (
-            <p dangerouslySetInnerHTML={{ __html: text ?? '' }} />
+          <p dangerouslySetInnerHTML={{ __html: text ?? '' }} />
         ) : (
-            <p>{text}</p>
+          <p>{text}</p>
         )}
       </div>
     </div>

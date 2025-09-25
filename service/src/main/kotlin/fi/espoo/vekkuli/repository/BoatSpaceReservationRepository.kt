@@ -114,6 +114,8 @@ interface BoatSpaceReservationRepository {
 
     fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation
 
+    fun setReservationStatusToConfirmed(reservationId: Int): BoatSpaceReservation
+
     fun updateReservationValidity(
         reservationId: Int,
         newValidity: ReservationValidity,

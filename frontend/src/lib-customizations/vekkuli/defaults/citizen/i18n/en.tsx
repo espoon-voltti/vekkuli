@@ -245,9 +245,9 @@ const en: Translations = {
         amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
-        additionalHarborspaceInfo:
+        additionalHarborSpaceInfo:
           'More information about the spaces and their prices here',
-        additionalHarborspaceInfoLink:
+        additionalHarborSpaceInfoLink:
           'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venepaikkojen-koot-ja-hinnasto',
         branchSpecific: {
           Slip: {
@@ -274,7 +274,7 @@ const en: Translations = {
           }
         },
         storageInfo:
-          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats spaced in unnecessarily large spaces may be moved to smaller spaces.'
+          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
       },
       switchInfoText:
         'You are changing your boat space. The space can only be changed to another space of the same type.',
@@ -296,11 +296,11 @@ const en: Translations = {
       modal: {
         reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
-        cannotReserveNewspace:
+        cannotReserveNewPlace:
           'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
-        currentspaces: 'Your current spaces:',
-        switchCurrentspace: 'Switch this space',
-        organizationCurrentspaces: (organizationName: string) =>
+        currentPlaces: 'Your current spaces:',
+        switchCurrentPlace: 'Switch this space',
+        organizationCurrentPlaces: (organizationName: string) =>
           `Your organization's ${organizationName} spaces:`
       }
     },
@@ -313,15 +313,8 @@ const en: Translations = {
         Storage: (name: string) => `Storage space reservation: ${name}`
       },
       info: {
-        renew:
-          'You are renewing your boat space. Please note the following:\n' +
-          'If you need a smaller space for the next season, change the space first and pay the season fee only after the change.\n' +
-          'If you need a larger space for the next season, pay the season fee first, then change the space, and pay the additional fee for the larger space.',
         switch:
-          'You are switching your boat space. Please note the following: \n' +
-          'If you are changing to a smaller space for the next season, pay the season fee after the change.\n' +
-          'If you are changing to a larger space for the next season, pay the season fee first and then change the space.\n' +
-          'If you are changing to a space of the same size for the next season, remember to still pay the season fee.'
+          'You are switching your boat space. The reservation period for your boat space remains unchanged. At the same time, your old space will be canceled and made available for others to reserve.'
       },
       submit: {
         continueToPayment: 'Continue to payment',
@@ -350,7 +343,7 @@ const en: Translations = {
       boatInformation: 'Boat information',
       boatSpaceInformation: 'Boat space to be reserved',
       harbor: 'Harbor',
-      space: 'space',
+      space: 'Space',
       boatSpaceType: 'Boat space type',
       boatSpaceDimensions: 'Boat space dimensions',
       boatSpaceAmenity: 'Amenity',
@@ -509,7 +502,7 @@ const en: Translations = {
     ownership: 'Ownership',
     boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
     boatSizeWarningExplanation:
-      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat spaced in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
+      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
     boatWeightWarning: `The maximum allowed weight for a boat moored in the City of Espoo's harbors is 15,000 kg.`,
     boatWeightWarning2:
       'A boat that is too heavy may be relocated by the city, and the berth holder is responsible for the costs.'
@@ -613,7 +606,7 @@ const en: Translations = {
     title: 'My information',
     reservation: {
       title: 'Reservations',
-      noReservations: 'No Reservations',
+      noReservations: 'No reservations',
       actions: {
         terminate: 'Cancel space',
         renew: 'Renew space',
@@ -638,7 +631,7 @@ const en: Translations = {
         `The contract period is ending. Secure the same space for next season by paying the season fee by ${date.format()}.`,
       harbor: 'Harbor',
       reservationDate: 'Reservation start date',
-      space: 'space',
+      space: 'Space',
       reservationValidity: 'Reservation validity',
       spaceType: 'Type of space',
       price: 'Price',
@@ -647,7 +640,7 @@ const en: Translations = {
       paymentStatus: 'Payment status',
       storageType: 'Storage type'
     },
-    spaceReservations: 'space reservations',
+    spaceReservations: 'Space reservations',
     expired: 'Expired',
     expiredReservations: 'Expired reservations'
   },
