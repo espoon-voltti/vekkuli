@@ -333,7 +333,7 @@ const sv: Translations = {
       reserver: 'Bokare',
       tenant: 'Hyresgäst',
       boatInformation: 'Båtinformation',
-      boatSpaceInformation: 'Båtplats att reservera',
+      boatSpaceInformation: 'Båtplatsinformation',
       harbor: 'Hamn',
       space: 'Plats',
       boatSpaceType: 'Båtplatstyp',

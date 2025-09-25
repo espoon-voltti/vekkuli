@@ -341,7 +341,7 @@ const en: Translations = {
       reserver: 'Reserver',
       tenant: 'Renter',
       boatInformation: 'Boat information',
-      boatSpaceInformation: 'Boat space to be reserved',
+      boatSpaceInformation: 'Boat space information',
       harbor: 'Harbor',
       space: 'Space',
       boatSpaceType: 'Boat space type',

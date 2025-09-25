@@ -342,7 +342,7 @@ export default {
       reserver: 'Varaaja',
       tenant: 'Vuokralainen',
       boatInformation: 'Veneen tiedot',
-      boatSpaceInformation: 'Varattava paikka',
+      boatSpaceInformation: 'Paikkatiedot',
       harbor: 'Satama',
       space: 'Paikka',
       boatSpaceType: 'Venepaikkatyyppi',
