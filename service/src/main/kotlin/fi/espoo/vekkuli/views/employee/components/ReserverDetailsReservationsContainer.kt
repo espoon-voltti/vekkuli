@@ -448,8 +448,8 @@ class ReserverDetailsReservationsContainer(
                                         id="refund-modal-confirm"
                                         data-testid="refund-payment-modal-confirm" 
                                         hx-post="${"/virkailija/kayttaja/${reserver.id}/maksut/$paymentId/hyvita"}"
-                                        hx-select="#reserver-details"
-                                        hx-target="#reserver-details">
+                                        hx-select="#tab-content"
+                                        hx-target="#tab-content">
                                         ${t("confirm")}
                                     </a>
                                 </div>
@@ -460,6 +460,7 @@ class ReserverDetailsReservationsContainer(
             </div>
             """.trimIndent()
 
+        // language=HTML
         fun createAckInvoicePaymentReservationWarningButton(reservationWarningId: UUID): String =
             """
             <div class="column" x-data="{invoicePaymentRWModal: false}">
@@ -477,7 +478,8 @@ class ReserverDetailsReservationsContainer(
                     <div class="modal-content invoice-payment-ack-modal">
                         <form hx-post="/virkailija/kayttaja/${reserver.id}/maksut/kuittaa/$reservationWarningId"
                               hx-swap="outerHTML"
-                              hx-target="#reserver-details"
+                              hx-select="#tab-content"
+                              hx-target="#tab-content"
                              >                            
                             <div class="block">
                                 <h2>${t("citizenDetails.payments.ackRW.title")}</h2>

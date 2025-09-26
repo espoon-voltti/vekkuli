@@ -288,6 +288,24 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `boat space should be available if it only has citizen reservations`() {
+        var isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10, reserverId = citizenIdLeo)
+        assertEquals(true, isBoatSpaceAvailable, "Boat space is available")
+        testUtils.createReservationInInfoState(
+            citizenIdLeo,
+            10,
+            CreationType.Renewal
+        )
+        // Boat space is available for the citizen who has the reservation
+        isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10, reserverId = citizenIdLeo)
+        assertEquals(true, isBoatSpaceAvailable, "Boat space is available for the citizen with the reservation")
+
+        // Boat space is not available for another citizen
+        isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10, reserverId = citizenIdMikko)
+        assertEquals(false, isBoatSpaceAvailable, "Boat space is not available for other citizens")
+    }
+
+    @Test
     fun `boat space should not be available if it is not active`() {
         val boatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(31)
         assertEquals(false, boatSpaceAvailable, "Boat space is not available")

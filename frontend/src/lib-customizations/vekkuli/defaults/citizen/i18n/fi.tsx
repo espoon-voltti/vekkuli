@@ -314,15 +314,8 @@ export default {
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       },
       info: {
-        renew:
-          'Olet uusimassa paikkaa. Huomioithan nämä: \n' +
-          'Jos tarvitset ensi kaudeksi pienemmän paikan, vaihda ensin paikka ja maksa kausimaksu vasta vaihdon jälkeen. \n' +
-          'Jos tarvitset ensi kaudeksi suuremman paikan, maksa ensin kausimaksu ja vaihda paikkaa sen jälkeen ja maksa lisämaksu suuremmasta paikasta.',
         switch:
-          'Olet vaihtamassa paikkaa. Huomioithan nämä: \n' +
-          'Jos vaihdat paikan ensi kaudeksi pienempään, maksa kausimaksu vaihdon jälkeen. \n' +
-          'Jos vaihdat paikan ensi kaudeksi suurempaan, maksa ensin kausimaksu ja vaihda paikka vasta sen jälkeen. \n' +
-          'Jos vaihdat paikan ensi kaudeksi samankokoiseen paikkaan, muista silti maksaa kausimaksu.'
+          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',

@@ -163,6 +163,7 @@ class BoatReservationService(
                 ) != null
 
             if (!boatSpaceWasAvailable) {
+                logger.warn { "Payment handling failed for reservation ${reservation.id}: boat space no longer available" }
                 return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
             }
 
@@ -423,6 +424,9 @@ class BoatReservationService(
 
     fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation =
         boatSpaceReservationRepo.setReservationStatusToInfo(reservationId)
+
+    fun setReservationStatusToConfirmed(reservationId: Int): BoatSpaceReservation =
+        boatSpaceReservationRepo.setReservationStatusToConfirmed(reservationId)
 
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
         boatSpaceReservationRepo.getUnfinishedReservationForCitizen(id)

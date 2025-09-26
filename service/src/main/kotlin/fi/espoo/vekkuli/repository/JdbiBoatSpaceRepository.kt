@@ -16,6 +16,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.jdbi.v3.core.statement.Query
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 fun amenityFilter(
     amenity: BoatSpaceAmenity,
@@ -474,32 +475,48 @@ class JdbiBoatSpaceRepository(
             query.mapTo<Int>().toList()
         }
 
-    override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
+    private fun isBoatSpaceAvailableInternal(
+        boatSpaceId: Int,
+        reserverId: UUID? = null
+    ): Boolean =
         jdbi.withHandleUnchecked { handle ->
-            val sql =
+            val boatSpaceAvailableQuery =
                 """
                 SELECT NOT EXISTS (
                     SELECT 1
                     FROM boat_space_reservation bsr
-                    WHERE bsr.boat_space_id = :boatSpaceId 
-                        AND (
-                            (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
-                            OR
-                            (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
-                            OR
-                            (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
-                        )
+                    WHERE bsr.boat_space_id = :boatSpaceId
+                      AND ((:reserverId::uuid IS NULL) OR (bsr.reserver_id <> :reserverId::uuid))
+                      AND (
+                          (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                          OR
+                          (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                          OR
+                          (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                      )
                 ) AND EXISTS (
-                    SELECT 1 FROM boat_space bs WHERE bs.id = :boatSpaceId AND bs.is_active = TRUE
+                    SELECT 1
+                    FROM boat_space bs
+                    WHERE bs.id = :boatSpaceId
+                      AND bs.is_active = TRUE
                 )
                 """.trimIndent()
 
-            val query = handle.createQuery(sql)
-            query.bind("boatSpaceId", boatSpaceId)
-            query.bind("endDateCut", timeProvider.getCurrentDate())
-            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-
-            query.mapTo<Boolean>().first()
+            handle
+                .createQuery(boatSpaceAvailableQuery)
+                .bind("boatSpaceId", boatSpaceId)
+                .bind("endDateCut", timeProvider.getCurrentDate())
+                .bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+                .bind("currentTime", timeProvider.getCurrentDateTime())
+                .bind("reserverId", reserverId)
+                .mapTo<Boolean>()
+                .first()
         }
+
+    override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean = isBoatSpaceAvailableInternal(boatSpaceId, null)
+
+    override fun isBoatSpaceAvailable(
+        boatSpaceId: Int,
+        reserverId: UUID
+    ): Boolean = isBoatSpaceAvailableInternal(boatSpaceId, reserverId)
 }
