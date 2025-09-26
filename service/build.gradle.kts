@@ -13,7 +13,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.2.20"
-    id("org.owasp.dependencycheck") version "12.1.3"
+    id("org.owasp.dependencycheck") version "12.1.5"
 
     idea
 }
