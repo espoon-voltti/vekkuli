@@ -226,7 +226,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
             getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
-            assertThat(form.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+            assertThat(form.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
         }
         assertZeroEmailsSent()
 
@@ -268,14 +268,14 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
             getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
-            assertThat(form.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+            assertThat(form.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
         }
         assertZeroEmailsSent()
         PaymentPage(page).payReservation()
 
         val confirmationPage = ConfirmationPage(page)
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
 
         assertEmailIsSentOfCitizensStorageSpaceReservation()
     }
@@ -292,7 +292,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val confirmationPage = ConfirmationPage(page)
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
         assertEmailIsSentOfCitizensStorageSpaceReservation()
     }
 
@@ -331,7 +331,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         userAgreementSection.certifyInfoCheckbox.check()
         userAgreementSection.agreementCheckbox.check()
-        assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
         formPage.submitButton.click()
         assertZeroEmailsSent()
         val paymentPage = PaymentPage(page)
@@ -339,7 +339,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val confirmationPage = ConfirmationPage(page)
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
 
         assertEmailIsSentOfCitizensIndefiniteTrailerReservation()
     }
@@ -504,7 +504,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         userAgreementSection.certifyInfoCheckbox.check()
         userAgreementSection.agreementCheckbox.check()
 
-        assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
         formPage.submitButton.click()
 
         assertZeroEmailsSent()
@@ -518,7 +518,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         // Now we should be on the confirmation page
         val confirmationPage = ConfirmationPage(page)
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("Kauden 2025-2026 loppuun, jatko vuosittain")
 
         val citizenDetailPage = CitizenDetailsPage(page)
         citizenDetailPage.navigateToPage()
