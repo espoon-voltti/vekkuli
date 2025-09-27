@@ -1,4 +1,4 @@
-FROM node:22.19.0-bookworm-slim AS base
+FROM node:22.20.0-bookworm-slim AS base
 
 ARG CACHE_BUST=none
 
