@@ -119,7 +119,10 @@ export async function getReservationBeingSwitched(
       method: 'GET'
     }
   )
-  return json
+  return {
+    ...json,
+    endDate: json.endDate ? LocalDate.parseIso(json.endDate) : undefined
+  }
 }
 
 export async function municipalities(): Promise<Municipality[]> {
