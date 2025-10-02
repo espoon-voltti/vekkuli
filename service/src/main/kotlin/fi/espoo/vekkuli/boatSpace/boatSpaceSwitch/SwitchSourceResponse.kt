@@ -53,8 +53,8 @@ class SwitchSourceResponseAssembler(
                 )
             BoatSpaceType.Trailer ->
                 Pair(
-                    intToDecimal(boatSpaceDetails.trailer?.widthCm),
-                    intToDecimal(boatSpaceDetails.trailer?.lengthCm)
+                    intToDecimal(boatSpaceDetails.trailerWithWarnings?.widthCm),
+                    intToDecimal(boatSpaceDetails.trailerWithWarnings?.lengthCm)
                 )
         }
 }

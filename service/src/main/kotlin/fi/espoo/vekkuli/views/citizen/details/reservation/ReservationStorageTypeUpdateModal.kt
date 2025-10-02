@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.StorageTypeContainer
 import fi.espoo.vekkuli.domain.StorageType
-import fi.espoo.vekkuli.domain.Trailer
+import fi.espoo.vekkuli.domain.TrailerWithWarnings
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
@@ -22,7 +22,7 @@ class ReservationStorageTypeUpdateModal : BaseView() {
         reserverId: UUID,
         reservationId: Int,
         storageType: StorageType? = null,
-        trailer: Trailer? = null
+        trailerWithWarnings: TrailerWithWarnings? = null
     ): String {
         val modalBuilder = modal.createModalBuilder()
         val formId = "reservation-storage-type-modal-form"
@@ -43,9 +43,9 @@ class ReservationStorageTypeUpdateModal : BaseView() {
                         <input hidden name="reserverId" value="$reserverId" />
                             <div class='form-section no-bottom-border' x-data="{ storageType: '${if (storageType?.name !== null) storageType.name else StorageType.Trailer.name}' }">
                                 ${storageTypeContainer.render(
-                    trailer?.registrationCode,
-                    intToDecimal(trailer?.widthCm),
-                    intToDecimal(trailer?.lengthCm),
+                    trailerWithWarnings?.registrationCode,
+                    intToDecimal(trailerWithWarnings?.widthCm),
+                    intToDecimal(trailerWithWarnings?.lengthCm),
                     storageType,
                     true
                 )}

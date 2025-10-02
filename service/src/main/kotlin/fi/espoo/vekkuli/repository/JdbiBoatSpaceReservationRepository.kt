@@ -121,7 +121,7 @@ class JdbiBoatSpaceReservationRepository(
         return query.mapTo<BoatType>().list()
     }
 
-    fun getWarningsForTrailerInReservation(
+    override fun getWarningsForTrailerInReservation(
         reservationId: Int,
         trailerId: Int?
     ): List<ReservationWarning> =
@@ -172,7 +172,7 @@ class JdbiBoatSpaceReservationRepository(
         handle: Handle,
         reservationId: Int,
         trailerId: Int?
-    ): Trailer? {
+    ): TrailerWithWarnings? {
         if (trailerId == null) {
             return null
         }
@@ -184,9 +184,16 @@ class JdbiBoatSpaceReservationRepository(
                 """.trimIndent()
             )
         query.bind("trailerId", trailerId)
-        val trailer = query.mapTo<Trailer>().findOne().orElse(null) ?: return null
+        val trailer = query.mapTo<TrailerRow>().findOne().orElse(null) ?: return null
         val warnings = getWarningsForTrailerInReservation(reservationId, trailerId).map { it.key }.toSet()
-        return trailer.copy(warnings = warnings)
+        return TrailerWithWarnings(
+            id = trailer.id,
+            registrationCode = trailer.registrationCode,
+            reserverId = trailer.reserverId,
+            widthCm = trailer.widthCm,
+            lengthCm = trailer.lengthCm,
+            warnings = warnings
+        )
     }
 
     override fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails? =
@@ -255,7 +262,7 @@ class JdbiBoatSpaceReservationRepository(
                 paymentType = dbResult.paymentType,
                 excludedBoatTypes = getExcludedBoatTypes(handle, dbResult.locationId),
                 boat = loadBoatForReserver(handle, dbResult.id, dbResult.boatId),
-                trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
+                trailerWithWarnings = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
                 storageType = dbResult.storageType,
                 paymentReference = dbResult.paymentReference,
                 invoiceDueDate = dbResult.invoiceDueDate,
@@ -956,7 +963,7 @@ class JdbiBoatSpaceReservationRepository(
                 place = it.place,
                 locationName = it.locationName,
                 boat = loadBoatForReserver(handle, it.id, it.boatId),
-                trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
+                trailerWithWarnings = loadTrailerForReserver(handle, it.id, it.trailerId),
                 boatSpaceLengthCm = it.boatSpaceLengthCm,
                 boatSpaceWidthCm = it.boatSpaceWidthCm,
                 amenity = it.amenity,

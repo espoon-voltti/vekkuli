@@ -122,10 +122,10 @@ class BoatReservationServiceTests : IntegrationTestBase() {
 
         val updatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
 
-        assertEquals(trailer.id, updatedReservation?.trailer?.id, "Reservation has a trailer attached")
-        assertEquals(trailer.reserverId, updatedReservation?.trailer?.reserverId, "Trailer belongs to the reserver")
-        assertEquals(trailer.widthCm, updatedReservation?.trailer?.widthCm, "Trailer width has been set")
-        assertEquals(trailer.lengthCm, updatedReservation?.trailer?.lengthCm, "Trailer length has been set")
+        assertEquals(trailer.id, updatedReservation?.trailerWithWarnings?.id, "Reservation has a trailer attached")
+        assertEquals(trailer.reserverId, updatedReservation?.trailerWithWarnings?.reserverId, "Trailer belongs to the reserver")
+        assertEquals(trailer.widthCm, updatedReservation?.trailerWithWarnings?.widthCm, "Trailer width has been set")
+        assertEquals(trailer.lengthCm, updatedReservation?.trailerWithWarnings?.lengthCm, "Trailer length has been set")
 
         reservationService
             .updateTrailerAndAddWarnings(

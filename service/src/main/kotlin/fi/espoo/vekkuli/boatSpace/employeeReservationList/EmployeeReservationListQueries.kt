@@ -218,7 +218,7 @@ private fun getBoatSpaceReservationItems(query: Query) =
                             warnings = emptySet(),
                         )
                     },
-                trailer = null,
+                trailerWithWarnings = null,
                 warnings = (warnings.mapNotNull { it.warning }).toSet(),
                 actingCitizenId = row.actingCitizenId,
                 reserverType = row.reserverType,

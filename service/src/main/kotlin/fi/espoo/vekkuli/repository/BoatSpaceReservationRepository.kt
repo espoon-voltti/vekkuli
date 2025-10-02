@@ -37,6 +37,11 @@ interface BoatSpaceReservationRepository {
 
     fun removeBoatSpaceReservation(id: Int): Unit
 
+    fun getWarningsForTrailerInReservation(
+        reservationId: Int,
+        trailerId: Int?
+    ): List<ReservationWarning>
+
     fun getBoatSpaceReservationsForReserver(
         reserverId: UUID,
         spaceType: BoatSpaceType?

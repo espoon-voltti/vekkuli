@@ -1,8 +1,11 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Trailer
+import fi.espoo.vekkuli.domain.TrailerRow
+import fi.espoo.vekkuli.domain.TrailerWithWarnings
+import fi.espoo.vekkuli.domain.TrailerWithWarningsRow
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -10,8 +13,8 @@ import java.util.*
 class JdbiTrailerRepository(
     private val jdbi: Jdbi
 ) : TrailerRepository {
-    override fun getTrailersForReserver(reserverId: UUID): List<Trailer> =
-        jdbi.withHandle<List<Trailer>, Exception> { handle ->
+    override fun getTrailersForReserver(reserverId: UUID): List<TrailerRow> =
+        jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
@@ -19,26 +22,31 @@ class JdbiTrailerRepository(
                     WHERE reserver_id = :reserverId
                     """.trimIndent()
                 ).bind("reserverId", reserverId)
-                .mapTo<Trailer>()
+                .mapTo<TrailerRow>()
                 .list()
         }
 
-    override fun getTrailer(trailerId: Int): Trailer? =
-        jdbi.withHandle<Trailer?, Exception> { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT * FROM trailer
-                    WHERE id = :id
-                    """.trimIndent()
-                ).bind("id", trailerId)
-                .mapTo<Trailer>()
-                .findOne()
-                .orElse(null)
+    override fun getTrailer(trailerId: Int): TrailerWithWarnings? =
+        jdbi.withHandleUnchecked { handle ->
+            val trailer =
+                handle
+                    .createQuery(
+                        """
+                        SELECT t.*, ARRAY_AGG(rw.key) AS warnings
+                        FROM trailer t 
+                        LEFT JOIN reservation_warning rw ON rw.trailer_id = t.id
+                        WHERE t.id = :id
+                        GROUP BY t.id;
+                        """.trimIndent()
+                    ).bind("id", trailerId)
+                    .mapTo<TrailerWithWarningsRow>()
+                    .findOne()
+                    .orElse(null)
+            trailer?.toTrailerWithWarnings()
         }
 
-    override fun updateTrailer(trailer: Trailer): Trailer =
-        jdbi.withHandle<Trailer, Exception> { handle ->
+    override fun updateTrailer(trailerWithWarnings: TrailerWithWarnings): TrailerRow =
+        jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
                     """
@@ -49,14 +57,16 @@ class JdbiTrailerRepository(
                         width_cm = :widthCm,
                         length_cm = :lengthCm
                     WHERE id = :id
+                    RETURNING *
                     """.trimIndent()
-                ).bind("registrationCode", trailer.registrationCode)
-                .bind("reserverId", trailer.reserverId)
-                .bind("widthCm", trailer.widthCm)
-                .bind("lengthCm", trailer.lengthCm)
-                .bind("id", trailer.id)
-                .execute()
-            trailer
+                ).bind("registrationCode", trailerWithWarnings.registrationCode)
+                .bind("reserverId", trailerWithWarnings.reserverId)
+                .bind("widthCm", trailerWithWarnings.widthCm)
+                .bind("lengthCm", trailerWithWarnings.lengthCm)
+                .bind("id", trailerWithWarnings.id)
+                .executeAndReturnGeneratedKeys()
+                .mapTo<TrailerRow>()
+                .one()
         }
 
     override fun insertTrailer(
@@ -64,8 +74,8 @@ class JdbiTrailerRepository(
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-    ): Trailer =
-        jdbi.withHandle<Trailer, Exception> { handle ->
+    ): TrailerRow =
+        jdbi.withHandleUnchecked { handle ->
             val id =
                 handle
                     .createQuery(
@@ -80,7 +90,7 @@ class JdbiTrailerRepository(
                     .bind("lengthCm", lengthCm)
                     .mapTo<Int>()
                     .one()
-            Trailer(id, registrationCode, reserverId, widthCm, lengthCm)
+            TrailerRow(id, registrationCode, reserverId, widthCm, lengthCm)
         }
 
     override fun insertTrailerAndAddToReservation(
@@ -89,8 +99,8 @@ class JdbiTrailerRepository(
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-    ): Trailer =
-        jdbi.withHandle<Trailer, Exception> { handle ->
+    ): TrailerRow =
+        jdbi.withHandleUnchecked { handle ->
             val trailer = insertTrailer(reserverId, registrationCode, widthCm, lengthCm)
 
             handle

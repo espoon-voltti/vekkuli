@@ -230,7 +230,6 @@ class BoatReservationService(
     ) {
         // find all active reservations that have this trailer
         val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
-
         reservations.forEach {
             val warnings = mutableListOf<ReservationWarningType>()
 
@@ -642,7 +641,7 @@ class BoatReservationService(
 
     fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
 
-    fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
+    fun getTrailer(id: Int): TrailerWithWarnings? = trailerRepository.getTrailer(id)
 
     fun createOrUpdateTrailerForReservationEmployee(
         reservationId: Int,
@@ -651,7 +650,7 @@ class BoatReservationService(
         trailerRegistrationCode: String,
         trailerWidth: BigDecimal,
         trailerLength: BigDecimal,
-    ): Trailer {
+    ): TrailerWithWarnings {
         if (!canUpdateTrailerForType(reservationId)) {
             throw IllegalArgumentException("Can't update trailer if amenity does not match")
         }
@@ -663,13 +662,13 @@ class BoatReservationService(
                 ?: throw IllegalArgumentException("Reservation $reservationId not found")
 
         if (reservation.trailerId != null) {
-            updateTrailer(
-                userId,
-                trailerId = reservation.trailerId,
-                trailerRegistrationCode,
-                trailerWidth,
-                trailerLength,
-            )
+                updateTrailer(
+                    userId,
+                    trailerId = reservation.trailerId,
+                    trailerRegistrationCode,
+                    trailerWidth,
+                    trailerLength,
+                )
         }
         val trailer =
             trailerRepository.insertTrailerAndAddToReservation(
@@ -689,7 +688,7 @@ class BoatReservationService(
         trailerRegistrationCode: String,
         trailerWidth: BigDecimal,
         trailerLength: BigDecimal,
-    ): Trailer {
+    ): TrailerRow {
         val updatedTrailer = updateTrailer(userId, trailerId, trailerRegistrationCode, trailerWidth, trailerLength)
         addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
         return updatedTrailer
@@ -701,14 +700,14 @@ class BoatReservationService(
         trailerRegistrationCode: String,
         trailerWidth: BigDecimal,
         trailerLength: BigDecimal,
-    ): Trailer {
+    ): TrailerRow {
         val oldTrailer = getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
 
         if (!permissionService.canEditTrailer(userId, oldTrailer.reserverId)) {
             throw UnauthorizedException()
         }
-        val updatedTrailer =
-            Trailer(
+        val updatedTrailerWithWarnings =
+            TrailerWithWarnings(
                 id = trailerId,
                 registrationCode = trailerRegistrationCode,
                 widthCm = decimalToInt(trailerWidth),
@@ -716,7 +715,7 @@ class BoatReservationService(
                 reserverId = oldTrailer.reserverId
             )
 
-        val result = trailerRepository.updateTrailer(updatedTrailer)
+        val result = trailerRepository.updateTrailer(updatedTrailerWithWarnings)
         return result
     }
 
@@ -743,7 +742,7 @@ class BoatReservationService(
         }
 
         // If storage type is Trailer, update or create it
-        val trailer: Trailer? =
+        val trailerWithWarnings: TrailerWithWarnings? =
             if (storageType == StorageType.Trailer) {
                 createOrUpdateTrailerAndAddWarnings(trailerInput, reservationId, reservation.trailerId, reservation.reserverId, !isEmployee)
             } else {
@@ -755,7 +754,7 @@ class BoatReservationService(
             boatSpaceReservationRepo.updateStorageType(
                 reservationId,
                 storageType,
-                trailerId = trailer?.id
+                trailerId = trailerWithWarnings?.id
             )
         }
 
@@ -797,15 +796,15 @@ class BoatReservationService(
         trailerId: Int?,
         reserverId: UUID,
         addWarnings: Boolean = true
-    ): Trailer? {
+    ): TrailerWithWarnings? {
         if (trailerInput == null) return null
-        val trailer: Trailer
+        val trailerRow: TrailerRow
         // If trailer does not exist, create it
         if (trailerId != null) {
             // If trailer already exists, update it
-            trailer =
+            trailerRow =
                 trailerRepository.updateTrailer(
-                    Trailer(
+                    TrailerWithWarnings(
                         id = trailerId,
                         registrationCode = trailerInput.registrationNumber,
                         widthCm = decimalToInt(trailerInput.width),
@@ -815,17 +814,25 @@ class BoatReservationService(
                 )
         } else {
             // If trailer does not exist, create it
-            trailer =
+            trailerRow =
                 trailerRepository.insertTrailerAndAddToReservation(
                     reservationId,
                     reserverId,
                     trailerInput.registrationNumber,
                     decimalToInt(trailerInput.width),
-                    decimalToInt(trailerInput.length)
+                    decimalToInt(trailerInput.length),
                 )
         }
-        if (addWarnings) addTrailerWarningsToReservations(trailer.id)
-        return trailer
+        if (addWarnings) addTrailerWarningsToReservations(trailerRow.id)
+        val warnings = boatSpaceReservationRepo.getWarningsForTrailerInReservation(reservationId, trailerRow.id)
+        return TrailerWithWarnings(
+            id = trailerRow.id,
+            registrationCode = trailerRow.registrationCode,
+            widthCm = trailerRow.widthCm,
+            lengthCm = trailerRow.lengthCm,
+            reserverId = trailerRow.reserverId,
+            warnings = warnings.map { it.key }.toSet()
+        )
     }
 
     fun canUpdateTrailerForType(reservationId: Int): Boolean {

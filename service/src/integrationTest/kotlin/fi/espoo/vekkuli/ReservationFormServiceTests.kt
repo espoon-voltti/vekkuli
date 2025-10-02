@@ -237,11 +237,19 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
 
         assertEquals(StorageType.Trailer, reservation?.storageType, "Storage type should be Trailer")
-        assertEquals(decimalToInt(input.trailerLength), reservation?.trailer?.lengthCm, "Trailer length should be the same as in the input")
-        assertEquals(decimalToInt(input.trailerWidth), reservation?.trailer?.widthCm, "Trailer width should be the same as in the input")
+        assertEquals(
+            decimalToInt(input.trailerLength),
+            reservation?.trailerWithWarnings?.lengthCm,
+            "Trailer length should be the same as in the input"
+        )
+        assertEquals(
+            decimalToInt(input.trailerWidth),
+            reservation?.trailerWithWarnings?.widthCm,
+            "Trailer width should be the same as in the input"
+        )
         assertEquals(
             input.trailerRegistrationNumber,
-            reservation?.trailer?.registrationCode,
+            reservation?.trailerWithWarnings?.registrationCode,
             "Trailer registration number should be the same as in the input"
         )
     }

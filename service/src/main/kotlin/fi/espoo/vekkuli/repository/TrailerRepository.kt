@@ -1,21 +1,22 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Trailer
+import fi.espoo.vekkuli.domain.TrailerRow
+import fi.espoo.vekkuli.domain.TrailerWithWarnings
 import java.util.*
 
 interface TrailerRepository {
-    fun getTrailersForReserver(reserverId: UUID): List<Trailer>
+    fun getTrailersForReserver(reserverId: UUID): List<TrailerRow>
 
-    fun getTrailer(trailerId: Int): Trailer?
+    fun getTrailer(trailerId: Int): TrailerWithWarnings?
 
-    fun updateTrailer(trailer: Trailer): Trailer
+    fun updateTrailer(trailerWithWarnings: TrailerWithWarnings): TrailerRow
 
     fun insertTrailer(
         reserverId: UUID,
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-    ): Trailer
+    ): TrailerRow
 
     fun insertTrailerAndAddToReservation(
         reservationId: Int,
@@ -23,7 +24,7 @@ interface TrailerRepository {
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-    ): Trailer
+    ): TrailerRow
 
     fun deleteTrailer(trailerId: Int): Boolean
 }

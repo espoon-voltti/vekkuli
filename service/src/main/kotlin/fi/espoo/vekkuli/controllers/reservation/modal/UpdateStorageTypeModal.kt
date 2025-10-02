@@ -44,7 +44,7 @@ class UpdateStorageTypeModal {
                 reserverId,
                 reservation.id,
                 reservation.storageType,
-                reservation.trailer
+                reservation.trailerWithWarnings
             )
         )
     }

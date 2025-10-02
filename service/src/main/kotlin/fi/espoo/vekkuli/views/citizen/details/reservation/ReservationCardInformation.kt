@@ -136,7 +136,7 @@ class ReservationCardInformation(
         val trailerContainer =
             if (boatReservationService.canUpdateTrailerForType(reservation.id)) {
                 trailerCard.render(
-                    reservation.trailer,
+                    reservation.trailerWithWarnings,
                     reserverId,
                     reservation.id
                 )
