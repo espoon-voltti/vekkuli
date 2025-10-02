@@ -724,16 +724,15 @@ class BoatReservationService(
         if (!permissionService.canEditTrailer(userId, oldTrailer.reserverId)) {
             throw UnauthorizedException()
         }
-        val updatedTrailerWithWarnings =
-            TrailerWithWarnings(
-                id = trailerId,
-                registrationCode = trailerRegistrationCode,
-                widthCm = decimalToInt(trailerWidth),
-                lengthCm = decimalToInt(trailerLength),
-                reserverId = oldTrailer.reserverId
-            )
 
-        val result = trailerRepository.updateTrailer(updatedTrailerWithWarnings)
+        val result =
+            trailerRepository.updateTrailer(
+                trailerId,
+                trailerRegistrationCode,
+                decimalToInt(trailerWidth),
+                decimalToInt(trailerLength),
+                oldTrailer.reserverId
+            )
         return result
     }
 
@@ -822,13 +821,11 @@ class BoatReservationService(
             // If trailer already exists, update it
             trailerRow =
                 trailerRepository.updateTrailer(
-                    TrailerWithWarnings(
-                        id = trailerId,
-                        registrationCode = trailerInput.registrationNumber,
-                        widthCm = decimalToInt(trailerInput.width),
-                        lengthCm = decimalToInt(trailerInput.length),
-                        reserverId = reserverId
-                    )
+                    trailerId,
+                    trailerInput.registrationNumber,
+                    decimalToInt(trailerInput.width),
+                    decimalToInt(trailerInput.length),
+                    reserverId
                 )
         } else {
             // If trailer does not exist, create it

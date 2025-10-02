@@ -9,7 +9,13 @@ interface TrailerRepository {
 
     fun getTrailer(trailerId: Int): TrailerWithWarnings?
 
-    fun updateTrailer(trailerWithWarnings: TrailerWithWarnings): TrailerRow
+    fun updateTrailer(
+        id: Int,
+        registrationCode: String?,
+        widthCm: Int,
+        lengthCm: Int,
+        reserverId: UUID
+    ): TrailerRow
 
     fun insertTrailer(
         reserverId: UUID,

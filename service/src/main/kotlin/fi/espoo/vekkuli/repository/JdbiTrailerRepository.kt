@@ -45,7 +45,13 @@ class JdbiTrailerRepository(
             trailer?.toTrailerWithWarnings()
         }
 
-    override fun updateTrailer(trailerWithWarnings: TrailerWithWarnings): TrailerRow =
+    override fun updateTrailer(
+        id: Int,
+        registrationCode: String?,
+        widthCm: Int,
+        lengthCm: Int,
+        reserverId: UUID
+    ): TrailerRow =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
@@ -59,11 +65,11 @@ class JdbiTrailerRepository(
                     WHERE id = :id
                     RETURNING *
                     """.trimIndent()
-                ).bind("registrationCode", trailerWithWarnings.registrationCode)
-                .bind("reserverId", trailerWithWarnings.reserverId)
-                .bind("widthCm", trailerWithWarnings.widthCm)
-                .bind("lengthCm", trailerWithWarnings.lengthCm)
-                .bind("id", trailerWithWarnings.id)
+                ).bind("registrationCode", registrationCode)
+                .bind("reserverId", reserverId)
+                .bind("widthCm", widthCm)
+                .bind("lengthCm", lengthCm)
+                .bind("id", id)
                 .executeAndReturnGeneratedKeys()
                 .mapTo<TrailerRow>()
                 .one()
