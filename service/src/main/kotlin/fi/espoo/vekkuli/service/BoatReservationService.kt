@@ -661,7 +661,9 @@ class BoatReservationService(
             boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
                 ?: throw IllegalArgumentException("Reservation $reservationId not found")
 
+        // If reservation already has a trailer, update it
         if (reservation.trailerId != null) {
+            val trailer =
                 updateTrailer(
                     userId,
                     trailerId = reservation.trailerId,
@@ -669,7 +671,17 @@ class BoatReservationService(
                     trailerWidth,
                     trailerLength,
                 )
+            val warnings = boatSpaceReservationRepo.getWarningsForTrailerInReservation(reservationId, trailer.id)
+            return TrailerWithWarnings(
+                id = trailer.id,
+                registrationCode = trailer.registrationCode,
+                widthCm = trailer.widthCm,
+                lengthCm = trailer.lengthCm,
+                reserverId = trailer.reserverId,
+                warnings = warnings.map { it.key }.toSet()
+            )
         }
+        // If reservation does not have a trailer, create it and add to reservation
         val trailer =
             trailerRepository.insertTrailerAndAddToReservation(
                 reservationId = reservationId,
@@ -678,8 +690,14 @@ class BoatReservationService(
                 widthCm = decimalToInt(trailerWidth),
                 lengthCm = decimalToInt(trailerLength),
             )
-
-        return trailer
+        return TrailerWithWarnings(
+            id = trailer.id,
+            registrationCode = trailer.registrationCode,
+            widthCm = trailer.widthCm,
+            lengthCm = trailer.lengthCm,
+            reserverId = trailer.reserverId,
+            warnings = emptySet() // Do not add warnings for employee created trailers
+        )
     }
 
     fun updateTrailerAndAddWarnings(
