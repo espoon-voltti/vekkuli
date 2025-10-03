@@ -4,8 +4,16 @@ import {
   storageTypes,
   Trailer
 } from 'citizen-frontend/shared/types'
-import { positiveNumber, string } from 'lib-common/form/fields'
-import { mapped, object, oneOf, required, union } from 'lib-common/form/form'
+import { positiveNumber, whitespaceTrimmedString } from 'lib-common/form/fields'
+import {
+  mapped,
+  object,
+  oneOf,
+  required,
+  union,
+  validated
+} from 'lib-common/form/form'
+import { validTrailerRegistrationNumber } from 'lib-common/form/form-validation'
 import { StateOf } from 'lib-common/form/types'
 
 export const storageTypeForm = required(oneOf<StorageType>())
@@ -13,7 +21,10 @@ export const storageTypeForm = required(oneOf<StorageType>())
 export const trailerInfoForm = object({
   length: required(positiveNumber()),
   width: required(positiveNumber()),
-  registrationNumber: required(string())
+  registrationNumber: validated(
+    required(whitespaceTrimmedString()),
+    validTrailerRegistrationNumber
+  )
 })
 
 export type TrailerInfoForm = typeof trailerInfoForm
