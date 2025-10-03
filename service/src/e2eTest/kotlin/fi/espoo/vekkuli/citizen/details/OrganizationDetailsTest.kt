@@ -45,12 +45,12 @@ class OrganizationDetailsTest : PlaywrightTest() {
 
         trailerSection.editButton.click()
 
-        trailerSection.registrationCodeInput.fill("UPDATED")
+        trailerSection.registrationCodeInput.fill("CBA123")
         trailerSection.widthInput.fill("6.2")
         trailerSection.lengthInput.fill("12.11")
         trailerSection.saveButton.click()
 
-        assertThat(trailerSection.registrationCodeField).containsText("UPDATED")
+        assertThat(trailerSection.registrationCodeField).containsText("CBA123")
         assertThat(trailerSection.widthField).containsText("6,20")
         assertThat(trailerSection.lengthField).containsText("12,11")
     }
