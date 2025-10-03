@@ -1,8 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
-import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationPaymentService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -68,10 +65,8 @@ class ReservationFormService(
     private val reserverRepository: ReserverRepository,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService,
     private val paymentService: ReservationPaymentService,
     private val renewalPolicyService: RenewalPolicyService,
-    private val switchPolicyService: SwitchPolicyService
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
