@@ -676,30 +676,31 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         assertThat(trailerInformation.container()).isVisible()
         citizenDetails.editStorageTypeButton(reservationId).click()
 
+        val storageTypeModal = citizenDetails.getStorageTypeEditModal()
         // cancel the edit and check that modal is closed
-        assertThat(trailerInformation.editStorageTypeForm()).isVisible()
-        trailerInformation.registrationNumberInput().fill("XYZ-789")
-        trailerInformation.editStorageTypeCancelButton().click()
-        assertThat(trailerInformation.editStorageTypeForm()).not().isVisible()
+        assertThat(storageTypeModal.container()).isVisible()
+        storageTypeModal.registrationNumberInput().fill("XYZ-789")
+        storageTypeModal.editStorageTypeCancelButton().click()
+        assertThat(storageTypeModal.container()).not().isVisible()
         assertThat(trailerInformation.registrationCode()).not().hasText("XYZ-789")
 
         // open the edit form again
         citizenDetails.editStorageTypeButton(reservationId).click()
-        trailerInformation.storageTypeCheckboxBuck().click()
+        storageTypeModal.storageTypeCheckboxBuck().click()
 
-        trailerInformation.storageTypeCheckboxTrailer().click()
-        assertThat(trailerInformation.trailerInputs()).isVisible()
+        storageTypeModal.storageTypeCheckboxTrailer().click()
+        assertThat(storageTypeModal.trailerInputs()).isVisible()
 
         // check that the validation works
-        trailerInformation.registrationNumberInput().fill("")
-        trailerInformation.editStorageTypeConfirmButton().click()
+        storageTypeModal.registrationNumberInput().fill("")
+        storageTypeModal.editStorageTypeConfirmButton().click()
         assertThat(trailerInformation.registrationNumberError()).isVisible()
 
-        trailerInformation.registrationNumberInput().fill("XYZ-789")
-        trailerInformation.widthInput().fill("2.5")
-        trailerInformation.lengthInput().fill("5.0")
+        storageTypeModal.registrationNumberInput().fill("XYZ-789")
+        storageTypeModal.widthInput().fill("2.5")
+        storageTypeModal.lengthInput().fill("5.0")
 
-        trailerInformation.editStorageTypeConfirmButton().click()
+        storageTypeModal.editStorageTypeConfirmButton().click()
 
         assertThat(trailerInformation.registrationCode()).hasText("XYZ-789")
         assertThat(trailerInformation.width()).hasText("2,50")

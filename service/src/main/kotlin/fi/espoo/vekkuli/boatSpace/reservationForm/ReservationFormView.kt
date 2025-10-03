@@ -110,7 +110,6 @@ class ReservationFormView(
         input: ReservationInput,
         userType: UserType,
         municipalities: List<Municipality>,
-        isNewCustomer: Boolean = true,
     ): String {
         val citizenContainer =
             citizenContainer.render(
@@ -195,7 +194,6 @@ class ReservationFormView(
         input: ReservationInput,
         userType: UserType,
         municipalities: List<Municipality>,
-        isNewCustomer: Boolean = true,
     ): String {
         val citizenContainer =
             citizenContainer.render(

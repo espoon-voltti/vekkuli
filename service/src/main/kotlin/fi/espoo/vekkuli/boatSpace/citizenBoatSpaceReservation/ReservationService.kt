@@ -289,7 +289,7 @@ open class ReservationService(
         val (storageType, trailer) = input
 
         // Try to update the storage type and trailer
-        boatReservationService.updateStorageTypeAndTrailer(citizenId, reservationId, storageType, trailer, false)
+        boatReservationService.updateStorageTypeAndMaybeTrailer(citizenId, reservationId, storageType, trailer, false)
     }
 
     @Transactional

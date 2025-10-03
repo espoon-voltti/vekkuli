@@ -36,18 +36,6 @@ class CitizenDetailsPage(
         fun editSubmitButton(): Locator = root.getByTestId("trailer-edit-submit")
 
         fun editCancelButton(): Locator = root.getByTestId("trailer-edit-cancel")
-
-        fun editStorageTypeForm(): Locator = root.getByTestId("reservation-storage-type-modal-form")
-
-        fun storageTypeCheckboxTrailer(): Locator = root.getByTestId("storageType-Trailer")
-
-        fun storageTypeCheckboxBuck(): Locator = root.getByTestId("storageType-Buck")
-
-        fun trailerInputs(): Locator = root.getByDataTestId("trailer-information-inputs")
-
-        fun editStorageTypeConfirmButton(): Locator = root.getByTestId("reservation-validity-modal-confirm")
-
-        fun editStorageTypeCancelButton(): Locator = root.getByTestId("reservation-validity-modal")
     }
 
     fun getTrailerInformation(reservationName: String): TrailerInformation =
@@ -55,6 +43,32 @@ class CitizenDetailsPage(
 
     fun getTrailerInformation(reservationId: Int): TrailerInformation =
         TrailerInformation(page.getByTestId("trailer-for-reservation-$reservationId"))
+
+    class StorageTypeEditModal(
+        private val root: Locator
+    ) {
+        fun container(): Locator = root
+
+        fun title(): Locator = root.getByTestId("change-storage-type-modal-title")
+
+        fun storageTypeCheckboxTrailer(): Locator = root.getByTestId("storageType-Trailer")
+
+        fun storageTypeCheckboxBuck(): Locator = root.getByTestId("storageType-Buck")
+
+        fun trailerInputs(): Locator = root.getByDataTestId("trailer-information-inputs")
+
+        fun registrationNumberInput(): Locator = root.getByTestId("trailerRegistrationNumber")
+
+        fun widthInput(): Locator = root.getByTestId("trailerWidth")
+
+        fun lengthInput(): Locator = root.getByTestId("trailerLength")
+
+        fun editStorageTypeConfirmButton(): Locator = root.getByTestId("reservation-validity-modal-confirm")
+
+        fun editStorageTypeCancelButton(): Locator = root.getByTestId("reservation-validity-modal-cancel")
+    }
+
+    fun getStorageTypeEditModal(): StorageTypeEditModal = StorageTypeEditModal(page.getByTestId("reservation-storage-type-modal-form"))
 
     val reservationValidity = getByDataTestId("reservation-validity")
     val updateReservationValidity = getByDataTestId("update-reservation-validity-link")
