@@ -230,7 +230,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         boat.registrationNumberInput.fill("ABC123")
         boat.lengthInput.fill("6")
         boat.ownershipSelect.selectOption("Owner")
-        boat.otherIdentifierInput.fill("ID12345")
+        boat.otherIdentifierInput.fill("IDC-123")
         boat.extraInformationInput.fill("Extra info")
 
         boat.saveButton.click()
@@ -244,7 +244,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         assertThat(boat.registrationNumberField).hasText("ABC123")
         assertThat(boat.lengthField).hasText("6,00")
         assertThat(boat.ownershipField).hasText("Omistan veneen")
-        assertThat(boat.otherIdentifierField).hasText("ID12345")
+        assertThat(boat.otherIdentifierField).hasText("IDC-123")
         assertThat(boat.extraInformationField).hasText("Extra info")
     }
 

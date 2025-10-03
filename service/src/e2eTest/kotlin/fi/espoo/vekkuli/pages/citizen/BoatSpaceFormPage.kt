@@ -149,7 +149,7 @@ open class BoatSpaceFormPage(
 
         boatSection.weightInput.fill("2000")
         boatSection.nameInput.fill("My Boat")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.check()
 
