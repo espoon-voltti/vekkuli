@@ -15,22 +15,21 @@ class SessionTimer {
         val d = "$"
         // language=JavaScript
         val timerScript =
-            """
+            $$"""
             (function () {
               let interval = undefined;
-              htmx.onLoad(() => {
-                let startingTime = $reservationTimeInSeconds;
+              document.body.addEventListener("htmx:afterOnLoad", () => {
+                let startingTime = $$reservationTimeInSeconds;
                 const timerElement = document.getElementById("timer");
-                const timerMessageTemplate =
-                  /*[[#{boatApplication.timer}]]*/ "Sinulla on {0} ja {1} aikaa vahvistaa venepaikkavaraus maksamalla.";
-                const minutesText = /*[[#{boatApplication.minutes}]]*/ "minuuttia";
-                const secondsText = /*[[#{boatApplication.seconds}]]*/ "sekuntia";
+                const timerMessageTemplate = "Sinulla on {0} ja {1} aikaa vahvistaa venepaikkavaraus maksamalla.";
+                const minutesText = "minuuttia";
+                const secondsText = "sekuntia";
 
                 const formatTimeMessage = (time) => {
                   const minutes = Math.floor(time / 60);
                   const seconds = time % 60;
-                  const minutesPart = `<span class="has-text-weight-bold">$d{String(minutes)} $d{minutesText}</span>`;
-                  const secondsPart = `<span class="has-text-weight-bold">$d{String(seconds).padStart(2, "0")} $d{secondsText}</span>`;
+                  const minutesPart = `<span class="has-text-weight-bold">${String(minutes)} ${minutesText}</span>`;
+                  const secondsPart = `<span class="has-text-weight-bold">${String(seconds).padStart(2, "0")} ${secondsText}</span>`;
                   return timerMessageTemplate
                     .replace("{0}", minutesPart)
                     .replace("{1}", secondsPart);
