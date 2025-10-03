@@ -660,7 +660,7 @@ class ReservationFormService(
     private fun createTrailerAndUpdateReservation(
         reserverId: UUID,
         input: ReserveBoatSpaceInput
-    ): Trailer {
+    ): TrailerRow {
         if (
             input.trailerRegistrationNumber?.isEmpty() == false &&
             input.trailerWidthInM != null &&

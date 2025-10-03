@@ -188,26 +188,26 @@ class ExistingReservationResponseMapper(
         )
     }
 
-    private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
+    private fun getTrailer(reservation: ReservationWithDependencies): TrailerWithWarnings? {
         if (reservation.trailerId == null) {
             return null
         }
         return spaceReservationService.getTrailer(reservation.trailerId) ?: throw NotFound()
     }
 
-    private fun formatTrailer(trailer: Trailer?): ExistingReservationResponse.Trailer? {
-        if (trailer == null) {
+    private fun formatTrailer(trailerWithWarnings: TrailerWithWarnings?): ExistingReservationResponse.Trailer? {
+        if (trailerWithWarnings == null) {
             return null
         }
         return ExistingReservationResponse.Trailer(
-            id = trailer.id,
-            registrationNumber = trailer.registrationCode ?: "",
+            id = trailerWithWarnings.id,
+            registrationNumber = trailerWithWarnings.registrationCode ?: "",
             width =
                 fi.espoo.vekkuli.utils
-                    .intToDecimal(trailer.widthCm),
+                    .intToDecimal(trailerWithWarnings.widthCm),
             length =
                 fi.espoo.vekkuli.utils
-                    .intToDecimal(trailer.lengthCm),
+                    .intToDecimal(trailerWithWarnings.lengthCm),
         )
     }
 

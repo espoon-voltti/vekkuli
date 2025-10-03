@@ -116,7 +116,7 @@ data class BoatSpaceReservationItem(
     val section: String,
     val locationName: String,
     val boat: Boat?,
-    val trailer: Trailer?,
+    val trailerWithWarnings: TrailerWithWarnings?,
     val storageType: StorageType?,
     val municipalityCode: Int,
     val municipalityName: String,

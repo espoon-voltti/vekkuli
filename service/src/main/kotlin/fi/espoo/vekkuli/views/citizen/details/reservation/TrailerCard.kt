@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.ReservationWarningType
-import fi.espoo.vekkuli.domain.Trailer
+import fi.espoo.vekkuli.domain.TrailerWithWarnings
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
@@ -63,14 +63,14 @@ class TrailerCard(
     }
 
     fun showWarningsDialog(
-        trailer: Trailer,
+        trailerWithWarnings: TrailerWithWarnings,
         reserverId: UUID
     ): String {
         // language=HTML
 
-        if (trailer.hasAnyWarnings()) {
+        if (trailerWithWarnings.hasAnyWarnings()) {
             val warningLabels =
-                trailer.warnings.joinToString("\n") { warning ->
+                trailerWithWarnings.warnings.joinToString("\n") { warning ->
                     """
                     <label class="checkbox pb-s">
                         <input type="checkbox" name="key" value="$warning">
@@ -86,7 +86,7 @@ class TrailerCard(
                               hx-swap="outerHTML"
                               hx-target="#reserver-details"
                              >
-                            <input type="hidden" name="trailerId" value="${trailer.id}" />
+                            <input type="hidden" name="trailerId" value="${trailerWithWarnings.id}" />
                             <input type="hidden" name="reserverId" value="$reserverId" />
                             <div class="block">
                                 <div class="field">
@@ -126,34 +126,34 @@ class TrailerCard(
     }
 
     fun render(
-        trailer: Trailer?,
+        trailerWithWarnings: TrailerWithWarnings?,
         reserverId: UUID,
         reservationId: Int
     ): String {
         val trailerRegNum =
             trailerValue(
                 "trailer-registration-code",
-                trailer?.registrationCode ?: "-",
+                trailerWithWarnings?.registrationCode ?: "-",
                 "citizenDetails.trailer.registrationNumber",
                 false
             )
         val trailerWidth =
             trailerValue(
                 "trailer-width",
-                if (trailer?.widthCm != null) formatInt(trailer.widthCm) else "-",
+                if (trailerWithWarnings?.widthCm != null) formatInt(trailerWithWarnings.widthCm) else "-",
                 "shared.label.widthInMeters",
-                trailer !== null && trailer.hasWarning(ReservationWarningType.TrailerWidth)
+                trailerWithWarnings !== null && trailerWithWarnings.hasWarning(ReservationWarningType.TrailerWidth)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
-                if (trailer?.lengthCm != null) formatInt(trailer.lengthCm) else "-",
+                if (trailerWithWarnings?.lengthCm != null) formatInt(trailerWithWarnings.lengthCm) else "-",
                 "shared.label.lengthInMeters",
-                trailer !== null && trailer.hasWarning(ReservationWarningType.TrailerLength)
+                trailerWithWarnings !== null && trailerWithWarnings.hasWarning(ReservationWarningType.TrailerLength)
             )
 
-        val warningText = if (trailer !== null) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
-        val warningDialog = if (trailer !== null) showWarningsDialog(trailer, reserverId) else ""
+        val warningText = if (trailerWithWarnings !== null) showTrailerWarnings(trailerWithWarnings.hasAnyWarnings()) else ""
+        val warningDialog = if (trailerWithWarnings !== null) showWarningsDialog(trailerWithWarnings, reserverId) else ""
 
         // language=HTML
         return """
@@ -182,28 +182,28 @@ class TrailerCard(
     }
 
     fun renderEdit(
-        trailer: Trailer?,
+        trailerWithWarnings: TrailerWithWarnings?,
         reserverId: UUID,
         reservationId: Int
     ): String {
         val regNum =
             formComponents.textInput(
                 labelKey = "citizenDetails.trailer.registrationNumber",
-                value = trailer?.registrationCode,
+                value = trailerWithWarnings?.registrationCode,
                 id = "trailerRegistrationCode",
                 required = true,
             )
         val width =
             formComponents.decimalInput(
                 labelKey = "shared.label.widthInMeters",
-                value = intToDecimal(trailer?.widthCm),
+                value = intToDecimal(trailerWithWarnings?.widthCm),
                 id = "trailerWidth",
                 required = true,
             )
         val length =
             formComponents.decimalInput(
                 labelKey = "shared.label.lengthInMeters",
-                value = intToDecimal(trailer?.lengthCm),
+                value = intToDecimal(trailerWithWarnings?.lengthCm),
                 id = "trailerLength",
                 required = true,
             )

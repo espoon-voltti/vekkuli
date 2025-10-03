@@ -331,22 +331,22 @@ class ReservationResponseMapper(
 
     private fun Int?.toMeters(): BigDecimal? = this?.let { BigDecimal(it).divide(BigDecimal(100)) }
 
-    private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
+    private fun getTrailer(reservation: ReservationWithDependencies): TrailerWithWarnings? {
         if (reservation.trailerId == null) {
             return null
         }
         return spaceReservationService.getTrailer(reservation.trailerId) ?: throw NotFound()
     }
 
-    private fun formatTrailer(trailer: Trailer?): ReservationResponse.Trailer? {
-        if (trailer == null) {
+    private fun formatTrailer(trailerWithWarnings: TrailerWithWarnings?): ReservationResponse.Trailer? {
+        if (trailerWithWarnings == null) {
             return null
         }
         return ReservationResponse.Trailer(
-            id = trailer.id,
-            registrationNumber = trailer.registrationCode ?: "",
-            width = intToDecimal(trailer.widthCm),
-            length = intToDecimal(trailer.lengthCm),
+            id = trailerWithWarnings.id,
+            registrationNumber = trailerWithWarnings.registrationCode ?: "",
+            width = intToDecimal(trailerWithWarnings.widthCm),
+            length = intToDecimal(trailerWithWarnings.lengthCm),
         )
     }
 

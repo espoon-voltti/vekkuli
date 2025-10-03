@@ -37,7 +37,7 @@ data class BoatSpaceReservationDetails(
     val locationName: String,
     val storageType: StorageType?,
     val boat: Boat?,
-    val trailer: Trailer?,
+    val trailerWithWarnings: TrailerWithWarnings?,
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
@@ -80,5 +80,5 @@ fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
         validity = validity,
         paymentDate = paymentDate,
         creationType = creationType,
-        trailerId = trailer?.id,
+        trailerId = trailerWithWarnings?.id,
     )
