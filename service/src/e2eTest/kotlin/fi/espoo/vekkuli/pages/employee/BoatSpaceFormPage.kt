@@ -43,6 +43,7 @@ class BoatSpaceFormPage(
     val storageTypeBuckOption = page.getByTestId("storageType-Buck")
     val storageTypeBuckWithTentOption = page.getByTestId("storageType-BuckWithTent")
     val storageTypeTrailerOption = page.getByTestId("storageType-Trailer")
+    val trailerInputsIncompleteWarning = getByDataTestId("trailer-inputs-incomplete-warning")
     val trailerInformationInputs = getByDataTestId("trailer-information-inputs")
     val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
     val trailerRegistrationNumberInput = page.getByTestId("trailerRegistrationNumber")

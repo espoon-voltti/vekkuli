@@ -293,6 +293,41 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
+    fun `Employee can reserve winter boat space without trailer information`() {
+        val listingPage = reservationListPage()
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+        // fill in the filters
+        assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+        reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
+        reservationPage.widthFilterInput.fill("1.8")
+        reservationPage.lengthFilterInput.fill("5.5")
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+
+        fillWinterBoatSpaceForm(formPage)
+
+        formPage.storageTypeTrailerOption.click()
+        formPage.trailerRegistrationNumberInput.fill("ABC-123")
+        assertThat(formPage.trailerInputsIncompleteWarning).isVisible()
+        formPage.trailerRegistrationNumberInput.fill("")
+        assertThat(formPage.trailerInputsIncompleteWarning).isHidden()
+
+        formPage.submitButton.click()
+        processInvoiceAndVerifyCitizenDetailsPageVisible(false)
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        val trailerInformation = citizenDetailsPage.getTrailerInformation("Haukilahti B 021")
+        assertThat(trailerInformation.registrationCode()).hasText("-")
+        assertThat(trailerInformation.width()).hasText("-")
+        assertThat(trailerInformation.length()).hasText("-")
+    }
+
+    @Test
     fun `When employee cancels the reservation from invoice page, the reservation is deleted`() {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
@@ -406,7 +441,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
-        formPage.submitButton.click()
         fillWinterBoatSpaceForm(formPage)
         if (isFixed) {
             formPage.reservationValidityFixedTermRadioButton.click()
@@ -415,16 +449,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         formPage.submitButton.click()
 
-        val invoicePreviewPage = InvoicePreviewPage(page)
-        assertThat(invoicePreviewPage.header).isVisible()
-        if (sendInvoice) {
-            invoicePreviewPage.sendButton.click()
-        } else {
-            invoicePreviewPage.markAsPaid.click()
-            invoicePreviewPage.confirmModalSubmit.click()
-        }
-        val citizenDetailsPage = CitizenDetailsPage(page)
-        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+        processInvoiceAndVerifyCitizenDetailsPageVisible(sendInvoice)
     }
 
     @Test
@@ -588,6 +613,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             }
         }
 
+        processInvoiceAndVerifyCitizenDetailsPageVisible(sendInvoice)
+    }
+
+    private fun processInvoiceAndVerifyCitizenDetailsPageVisible(sendInvoice: Boolean) {
         val invoicePreviewPage = InvoicePreviewPage(page)
         assertThat(invoicePreviewPage.header).isVisible()
         if (sendInvoice) {
@@ -596,12 +625,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
         }
-
         val citizenDetailsPage = CitizenDetailsPage(page)
         assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
     }
 
     private fun fillWinterBoatSpaceForm(formPage: BoatSpaceFormPage) {
+        formPage.submitButton.click()
         assertThat(formPage.depthError).isVisible()
         assertThat(formPage.weightError).isVisible()
         assertThat(formPage.boatRegistrationNumberError).isVisible()

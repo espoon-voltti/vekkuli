@@ -573,33 +573,34 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         listingPage.boatSpace8.click()
         val citizenDetails = CitizenDetailsPage(page)
         // Check that the trailer information is visible
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
+        val trailerInformation = citizenDetails.getTrailerInformation(reservationId)
+        assertThat(trailerInformation.container()).isVisible()
         citizenDetails.editTrailerButton(reservationId).click()
-        assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
+        assertThat(trailerInformation.registrationCodeInput()).isVisible()
         val newTrailerRegistrationCode = "XYZ-789"
-        citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
-        citizenDetails.trailerWidthInput.fill("2.5")
-        citizenDetails.trailerLengthInput.fill("5.0")
+        trailerInformation.registrationCodeInput().fill(newTrailerRegistrationCode)
+        trailerInformation.widthInput().fill("2.5")
+        trailerInformation.lengthInput().fill("5.0")
         // Cancel the edit
-        citizenDetails.trailerEditCancelButton.click()
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText(newTrailerRegistrationCode)
-        assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2,50")
-        assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5,00")
+        trailerInformation.editCancelButton().click()
+        assertThat(trailerInformation.container()).isVisible()
+        assertThat(trailerInformation.registrationCode()).not().hasText(newTrailerRegistrationCode)
+        assertThat(trailerInformation.width()).not().hasText("2,50")
+        assertThat(trailerInformation.length()).not().hasText("5,00")
 
         // Edit the trailer again and submit
         citizenDetails.editTrailerButton(reservationId).click()
-        assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
-        citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
-        citizenDetails.trailerWidthInput.fill("2.5")
-        citizenDetails.trailerLengthInput.fill("5.0")
-        citizenDetails.trailerEditSubmitButton.click()
+        assertThat(trailerInformation.registrationCodeInput()).isVisible()
+        trailerInformation.registrationCodeInput().fill(newTrailerRegistrationCode)
+        trailerInformation.widthInput().fill("2.5")
+        trailerInformation.lengthInput().fill("5.0")
+        trailerInformation.editSubmitButton().click()
 
         // Check that the trailer information is updated
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText(newTrailerRegistrationCode)
-        assertThat(citizenDetails.trailerWidth(reservationId)).hasText("2,50")
-        assertThat(citizenDetails.trailerLength(reservationId)).hasText("5,00")
+        assertThat(trailerInformation.container()).isVisible()
+        assertThat(trailerInformation.registrationCode()).hasText(newTrailerRegistrationCode)
+        assertThat(trailerInformation.width()).hasText("2,50")
+        assertThat(trailerInformation.length()).hasText("5,00")
     }
 
     @Test
@@ -614,50 +615,50 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         val citizenDetails = CitizenDetailsPage(page)
         // Check that the trailer information is visible
         assertThat(citizenDetails.getReservation("Haukilahti B 009")).isVisible()
-        val trailerInformation = citizenDetails.trailerInformation(reservationId)
-        assertThat(trailerInformation).isVisible()
+        val trailerInformation = citizenDetails.getTrailerInformation(reservationId)
+        assertThat(trailerInformation.container()).isVisible()
 
         citizenDetails.editTrailerButton(reservationId).click()
-        assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
+        assertThat(trailerInformation.registrationCodeInput()).isVisible()
         val newTrailerRegistrationCode = "XYZ-789"
-        citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
-        citizenDetails.trailerWidthInput.fill("2.5")
-        citizenDetails.trailerLengthInput.fill("5.0")
+        trailerInformation.registrationCodeInput().fill(newTrailerRegistrationCode)
+        trailerInformation.widthInput().fill("2.5")
+        trailerInformation.lengthInput().fill("5.0")
 
         // Cancel the edit
-        citizenDetails.trailerEditCancelButton.click()
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText(newTrailerRegistrationCode)
-        assertThat(citizenDetails.trailerWidth(reservationId)).not().hasText("2,50")
-        assertThat(citizenDetails.trailerLength(reservationId)).not().hasText("5,00")
+        trailerInformation.editCancelButton().click()
+        assertThat(trailerInformation.container()).isVisible()
+        assertThat(trailerInformation.registrationCode()).not().hasText(newTrailerRegistrationCode)
+        assertThat(trailerInformation.width()).not().hasText("2,50")
+        assertThat(trailerInformation.length()).not().hasText("5,00")
 
         // Edit the trailer again and submit
         citizenDetails.editTrailerButton(reservationId).click()
-        assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
-        citizenDetails.trailerRegistrationCodeInput.fill(newTrailerRegistrationCode)
-        citizenDetails.trailerWidthInput.fill("2.5")
-        citizenDetails.trailerLengthInput.fill("5.0")
-        citizenDetails.trailerEditSubmitButton.click()
+        assertThat(trailerInformation.registrationCodeInput()).isVisible()
+        trailerInformation.registrationCodeInput().fill(newTrailerRegistrationCode)
+        trailerInformation.widthInput().fill("2.5")
+        trailerInformation.lengthInput().fill("5.0")
+        trailerInformation.editSubmitButton().click()
 
         // Check that the trailer information is updated
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText(newTrailerRegistrationCode)
-        assertThat(citizenDetails.trailerWidth(reservationId)).hasText("2,50")
-        assertThat(citizenDetails.trailerLength(reservationId)).hasText("5,00")
+        assertThat(trailerInformation.container()).isVisible()
+        assertThat(trailerInformation.registrationCode()).hasText(newTrailerRegistrationCode)
+        assertThat(trailerInformation.width()).hasText("2,50")
+        assertThat(trailerInformation.length()).hasText("5,00")
 
         // Edit the trailer and submit the second time
         citizenDetails.editTrailerButton(reservationId).click()
-        assertThat(citizenDetails.trailerRegistrationCodeInput).isVisible()
-        citizenDetails.trailerRegistrationCodeInput.fill("ACV-456")
-        citizenDetails.trailerWidthInput.fill("3")
-        citizenDetails.trailerLengthInput.fill("4.0")
-        citizenDetails.trailerEditSubmitButton.click()
+        assertThat(trailerInformation.registrationCodeInput()).isVisible()
+        trailerInformation.registrationCodeInput().fill("ACV-456")
+        trailerInformation.widthInput().fill("3")
+        trailerInformation.lengthInput().fill("4.0")
+        trailerInformation.editSubmitButton().click()
 
         // Check that the trailer information is updated
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText("ACV-456")
-        assertThat(citizenDetails.trailerWidth(reservationId)).hasText("3,00")
-        assertThat(citizenDetails.trailerLength(reservationId)).hasText("4,00")
+        assertThat(trailerInformation.container()).isVisible()
+        assertThat(trailerInformation.registrationCode()).hasText("ACV-456")
+        assertThat(trailerInformation.width()).hasText("3,00")
+        assertThat(trailerInformation.length()).hasText("4,00")
     }
 
     @Test
@@ -671,37 +672,38 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         listingPage.boatSpace8.click()
         val citizenDetails = CitizenDetailsPage(page)
         // Check that the trailer information is visible
-        assertThat(citizenDetails.trailerInformation(reservationId)).isVisible()
+        val trailerInformation = citizenDetails.getTrailerInformation(reservationId)
+        assertThat(trailerInformation.container()).isVisible()
         citizenDetails.editStorageTypeButton(reservationId).click()
 
         // cancel the edit and check that modal is closed
-        assertThat(citizenDetails.editStorageTypeForm).isVisible()
-        citizenDetails.trailerRegistrationNumberInput.fill("XYZ-789")
-        citizenDetails.editStorageTypeCancelButton.click()
-        assertThat(citizenDetails.editStorageTypeForm).not().isVisible()
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).not().hasText("XYZ-789")
+        assertThat(trailerInformation.editStorageTypeForm()).isVisible()
+        trailerInformation.registrationNumberInput().fill("XYZ-789")
+        trailerInformation.editStorageTypeCancelButton().click()
+        assertThat(trailerInformation.editStorageTypeForm()).not().isVisible()
+        assertThat(trailerInformation.registrationCode()).not().hasText("XYZ-789")
 
         // open the edit form again
         citizenDetails.editStorageTypeButton(reservationId).click()
-        citizenDetails.storageTypeCheckboxBuck.click()
+        trailerInformation.storageTypeCheckboxBuck().click()
 
-        citizenDetails.storageTypeCheckboxTrailer.click()
-        assertThat(citizenDetails.trailerInputs).isVisible()
+        trailerInformation.storageTypeCheckboxTrailer().click()
+        assertThat(trailerInformation.trailerInputs()).isVisible()
 
         // check that the validation works
-        citizenDetails.trailerRegistrationNumberInput.fill("")
-        citizenDetails.editStorageTypeConfirmButton.click()
-        assertThat(citizenDetails.trailerRegistrationNumberError).isVisible()
+        trailerInformation.registrationNumberInput().fill("")
+        trailerInformation.editStorageTypeConfirmButton().click()
+        assertThat(trailerInformation.registrationNumberError()).isVisible()
 
-        citizenDetails.trailerRegistrationNumberInput.fill("XYZ-789")
-        citizenDetails.trailerWidthInput.fill("2.5")
-        citizenDetails.trailerLengthInput.fill("5.0")
+        trailerInformation.registrationNumberInput().fill("XYZ-789")
+        trailerInformation.widthInput().fill("2.5")
+        trailerInformation.lengthInput().fill("5.0")
 
-        citizenDetails.editStorageTypeConfirmButton.click()
+        trailerInformation.editStorageTypeConfirmButton().click()
 
-        assertThat(citizenDetails.trailerRegistrationCode(reservationId)).hasText("XYZ-789")
-        assertThat(citizenDetails.trailerWidth(reservationId)).hasText("2,50")
-        assertThat(citizenDetails.trailerLength(reservationId)).hasText("5,00")
+        assertThat(trailerInformation.registrationCode()).hasText("XYZ-789")
+        assertThat(trailerInformation.width()).hasText("2,50")
+        assertThat(trailerInformation.length()).hasText("5,00")
     }
 
     private fun reservationListPage(): ReservationListPage {
