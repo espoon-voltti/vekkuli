@@ -157,7 +157,7 @@ class TrailerCard(
 
         // language=HTML
         return """
-            <div id="trailer-for-reservation-$reservationId" class="pb-s" x-data="{ modalOpen: false }">
+            <div data-testid="trailer-for-reservation" id="trailer-for-reservation-$reservationId" class="pb-s" x-data="{ modalOpen: false }">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>

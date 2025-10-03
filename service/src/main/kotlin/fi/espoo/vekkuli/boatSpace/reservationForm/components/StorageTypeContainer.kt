@@ -78,7 +78,7 @@ class StorageTypeContainer(
                             $trailerLengthInput
                         </div>
                     </div>
-                    <div class="warning" x-show='showWarning'>Huom. Trailerin tiedot eivät päivity, jos kaikkia kenttiä ei ole täytetty</div>
+                    <div data-testid="trailer-inputs-incomplete-warning" class="warning" x-show='showWarning'>Huom. Trailerin tiedot eivät päivity, jos kaikkia kenttiä ei ole täytetty</div>
                 </div>
             </template>"""
         )
