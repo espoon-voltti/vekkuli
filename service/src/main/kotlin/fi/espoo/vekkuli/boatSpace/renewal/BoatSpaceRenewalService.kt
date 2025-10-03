@@ -20,13 +20,9 @@ import java.util.*
 @Service
 class BoatSpaceRenewalService(
     private val boatReservationService: BoatReservationService,
-    private val reserverService: ReserverService,
     private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val invoiceService: BoatSpaceInvoiceService,
-    private val boatService: BoatService,
-    private val messageUtil: MessageUtil,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
-    private val trailerRepo: TrailerRepository,
     private val renewalPolicy: RenewalPolicyService,
     private val citizenAccessControl: ContextCitizenAccessControl
 ) {
@@ -116,102 +112,6 @@ class BoatSpaceRenewalService(
 
         boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(renewedReservationId)
     }
-
-    fun buildBoatSpaceRenewalViewParams(
-        citizenId: UUID,
-        renewedReservation: ReservationWithDependencies,
-        formInput: ModifyReservationInput,
-    ): BoatSpaceRenewViewParams {
-        val citizen = reserverService.getCitizen(citizenId)
-        if (citizen == null || renewedReservation.reserverId != citizenId) {
-            throw UnauthorizedException()
-        }
-
-        var input =
-            formInput.copy(
-                email = formInput.email ?: citizen.email,
-                phone = formInput.phone ?: citizen.phone,
-                storageType =
-                    renewedReservation.storageType ?: StorageType.None,
-            )
-        if (renewedReservation.trailerId != null) {
-            val trailer = trailerRepo.getTrailer(renewedReservation.trailerId) ?: throw BadRequest("Trailer not found")
-            input =
-                input.copy(
-                    trailerLength = intToDecimal(trailer.lengthCm),
-                    trailerWidth = intToDecimal(trailer.widthCm),
-                    trailerRegistrationNumber = trailer.registrationCode,
-                )
-        }
-
-        val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
-        if (usedBoatId != null && usedBoatId != 0) {
-            val boat = boatService.getBoat(usedBoatId)
-
-            if (boat != null) {
-                input =
-                    input.copy(
-                        boatId = boat.id,
-                        depth = intToDecimal(boat.depthCm),
-                        boatName = boat.name,
-                        weight = boat.weightKg,
-                        width = intToDecimal(boat.widthCm),
-                        length = intToDecimal(boat.lengthCm),
-                        otherIdentification = boat.otherIdentification,
-                        extraInformation = boat.extraInformation,
-                        ownership = boat.ownership,
-                        boatType = boat.type,
-                        boatRegistrationNumber = boat.registrationCode,
-                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
-                    )
-            }
-        } else {
-            input = input.copy(boatId = 0)
-        }
-
-        val reserverId = renewedReservation.reserverId
-
-        val boats =
-            reserverId.let {
-                boatService
-                    .getBoatsForReserver(reserverId)
-                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
-            } ?: emptyList()
-
-        val renewedReservationForApplicationForm = buildReservationForApplicationForm(renewedReservation)
-        return BoatSpaceRenewViewParams(
-            renewedReservationForApplicationForm,
-            boats,
-            citizen,
-            input,
-            UserType.CITIZEN,
-        )
-    }
-
-    private fun buildReservationForApplicationForm(reservationWithDependencies: ReservationWithDependencies) =
-        RenewalReservationForApplicationForm(
-            reservationWithDependencies.id,
-            reservationWithDependencies.reserverId,
-            reservationWithDependencies.boatId,
-            reservationWithDependencies.lengthCm,
-            reservationWithDependencies.widthCm,
-            reservationWithDependencies.amenity,
-            reservationWithDependencies.type,
-            reservationWithDependencies.place,
-            reservationWithDependencies.locationName,
-            reservationWithDependencies.validity,
-            reservationWithDependencies.startDate,
-            reservationWithDependencies.endDate,
-            reservationWithDependencies.priceCents,
-            reservationWithDependencies.vatCents,
-            reservationWithDependencies.netPriceCents,
-            reservationWithDependencies.created,
-            reservationWithDependencies.excludedBoatTypes,
-            reservationWithDependencies.section,
-            reservationWithDependencies.storageType,
-            reservationWithDependencies.creationType,
-            reservationWithDependencies.originalReservationId.toString(),
-        )
 
     fun createRenewalReservation(
         originalReservationId: Int,
