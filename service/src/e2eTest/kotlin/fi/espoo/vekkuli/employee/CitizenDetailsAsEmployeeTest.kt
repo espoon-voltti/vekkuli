@@ -219,7 +219,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         citizenDetails.registrationNumberInput.fill("ABC123")
         citizenDetails.length.fill("6.00")
         citizenDetails.ownership.selectOption("Owner")
-        citizenDetails.otherIdentifier.fill("ID12345")
+        citizenDetails.otherIdentifier.fill("IDC-123")
         citizenDetails.extraInformation.fill("Extra info")
 
         citizenDetails.submitButton.click()
@@ -232,7 +232,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
 
         assertThat(citizenDetails.lengthText(3)).hasText("6,00")
         assertThat(citizenDetails.ownershipText(3)).hasText("Owner")
-        assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
+        assertThat(citizenDetails.otherIdentifierText(3)).hasText("IDC-123")
         assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
     }
 
@@ -522,7 +522,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         val newBoatLength = "6.0"
         val newBoatRegNum = "ABC-123"
         val newBoatOwnership = "Owner"
-        val newBoatOtherId = "ID12345"
+        val newBoatOtherId = "IDC-123"
         val newBoatExtraInfo = "Extra info"
 
         // I'm quite not sure where this comes from. Probably seed state?

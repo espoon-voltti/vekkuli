@@ -85,7 +85,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(formPage.weightError).isHidden()
 
         formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
+        formPage.otherIdentification.fill("IDC-123")
         formPage.noRegistrationCheckbox.check()
         assertThat(formPage.boatRegistrationNumberError).isHidden()
 
@@ -653,7 +653,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.weightInput.fill("500")
         formPage.depthInput.blur()
 
-        formPage.otherIdentification.fill("ID12345")
+        formPage.otherIdentification.fill("IDC-123")
         formPage.noRegistrationCheckbox.check()
         assertThat(formPage.boatRegistrationNumberError).isHidden()
 
@@ -1037,7 +1037,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(formPage.weightError).isHidden()
 
         formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
+        formPage.otherIdentification.fill("IDC-123")
         formPage.noRegistrationCheckbox.check()
         assertThat(formPage.boatRegistrationNumberError).isHidden()
 
@@ -1359,7 +1359,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.weightInput.blur()
 
         formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
+        formPage.otherIdentification.fill("IDC-123")
         formPage.noRegistrationCheckbox.check()
 
         formPage.ownerRadioButton.check()
