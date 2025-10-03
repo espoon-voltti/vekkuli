@@ -146,7 +146,7 @@ class HistoryNavigationTest : PlaywrightTest() {
         formPage.depthInput.fill("1.5")
         formPage.weightInput.fill("2000")
         formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
+        formPage.otherIdentification.fill("IDC-123")
         formPage.noRegistrationCheckbox.check()
         formPage.ownerRadioButton.check()
         formPage.certifyInfoCheckbox.check()

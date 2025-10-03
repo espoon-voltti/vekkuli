@@ -160,7 +160,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.weightInput.fill("2000")
         assertThat(boatSection.weightError).isHidden()
 
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         assertThat(boatSection.otherIdentifierError).isHidden()
 
         boatSection.noRegistrationCheckbox.check()
@@ -316,7 +316,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.widthInput.fill("25")
         boatSection.depthInput.fill("1.5")
         boatSection.weightInput.fill("2000")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.click()
 
@@ -366,7 +366,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.widthInput.fill("2.5")
         boatSection.depthInput.fill("1.5")
         boatSection.weightInput.fill("2000")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.click()
 
@@ -467,7 +467,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.weightInput.fill("2000")
         assertThat(boatSection.weightError).isHidden()
 
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         assertThat(boatSection.otherIdentifierError).isHidden()
 
         boatSection.noRegistrationCheckbox.check()
@@ -494,7 +494,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         winterStorageTypeSection.trailerStorageTypeRadio.click()
         assertThat(winterStorageTypeSection.trailerRegistrationNumberInput).isVisible()
 
-        val trailerRegistrationCode = "ID12345"
+        val trailerRegistrationCode = "IDC-123"
 
         winterStorageTypeSection.trailerRegistrationNumberInput.fill(trailerRegistrationCode)
         winterStorageTypeSection.trailerWidthInput.fill("1.5")
@@ -578,7 +578,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.depthInput.fill("1.5")
         boatSection.weightInput.fill("2000")
         boatSection.nameInput.fill("My Boat")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.check()
 
@@ -1249,7 +1249,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.widthInput.fill("25")
         boatSection.depthInput.fill("1.5")
         boatSection.weightInput.fill("2000")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.click()
 

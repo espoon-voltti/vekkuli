@@ -70,7 +70,7 @@ class OrganizationDetailsViewTest : ReserveTest() {
         organizationDetails.registrationNumberInput.fill("ABC123")
         organizationDetails.length.fill("6")
         organizationDetails.ownership.selectOption("Owner")
-        organizationDetails.otherIdentifier.fill("ID12345")
+        organizationDetails.otherIdentifier.fill("IDC-123")
         organizationDetails.extraInformation.fill("Extra info")
 
         organizationDetails.submitButton.click()
@@ -83,7 +83,7 @@ class OrganizationDetailsViewTest : ReserveTest() {
 
         assertThat(organizationDetails.lengthText(boatId)).hasText("6,00")
         assertThat(organizationDetails.ownershipText(boatId)).hasText("Owner")
-        assertThat(organizationDetails.otherIdentifierText(boatId)).hasText("ID12345")
+        assertThat(organizationDetails.otherIdentifierText(boatId)).hasText("IDC-123")
         assertThat(organizationDetails.extraInformationText(boatId)).hasText("Extra info")
 
         // delete the boat

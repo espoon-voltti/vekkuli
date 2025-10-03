@@ -15,7 +15,10 @@ export const PHONE_REGEXP = /^[+]?[\d\s]{6,20}$/
 
 export const EMAIL_REGEXP = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-export const TRAILER_REGISTRATION_NUMBER_REGEXP = /^[a-zA-Z0-9]{1,7}$/
+// Matches e.g. AA-123, AAA-123, PAA-1234
+// and older trailer formats like A-1234 with or without hyphens and case insensitive
+export const TRAILER_REGISTRATION_NUMBER_REGEXP =
+  /^(?:[A-Za-z]{2,3}-?[1-9][0-9]{0,2}|P[A-Za-z]-?[1-9][0-9]{3})$/
 
 export type ErrorKey =
   | 'required'
