@@ -12,7 +12,7 @@ import java.math.BigDecimal
 class StorageTypeContainer(
     private val formComponents: FormComponents
 ) : BaseView() {
-    fun trailerContainer(
+    fun trailerContainerWithWarningText(
         trailerRegistrationNumber: String?,
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
@@ -20,13 +20,58 @@ class StorageTypeContainer(
         """ <div class='form-section'>
                 <h1 class='label'>${t("boatApplication.title.trailerType")}</h1>
                 <input type="hidden" name="storageType" value='Trailer'>
-                    ${trailerEdit(
+                    ${trailerEditWithWarningText(
             trailerRegistrationNumber,
             trailerWidth,
             trailerLength
         )}"""
 
     fun trailerEdit(
+        trailerRegistrationNumber: String?,
+        trailerWidth: BigDecimal?,
+        trailerLength: BigDecimal?,
+        fullWidth: Boolean = false,
+    ): String {
+        val trailerRegistrationNumberInput =
+            formComponents.textInput(
+                "boatApplication.title.trailerRegistrationNumber",
+                "trailerRegistrationNumber",
+                trailerRegistrationNumber ?: "",
+                true
+            )
+        val trailerWidthInput =
+            formComponents.decimalInput(
+                labelKey = "boatApplication.title.trailerWidth",
+                "trailerWidth",
+                trailerWidth,
+                true
+            )
+        val trailerLengthInput =
+            formComponents.decimalInput(
+                "boatApplication.title.trailerLength",
+                "trailerLength",
+                trailerLength,
+                true
+            )
+
+        return (
+            """ <template x-if="storageType === '${StorageType.Trailer.name}'">
+                <div data-testid="trailer-information-inputs" class='columns'>
+                    <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
+                        $trailerRegistrationNumberInput
+                    </div>
+                     <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
+                        $trailerWidthInput
+                     </div>
+                     <div class='column ${if (fullWidth) "" else "is-one-quarter"}'>
+                        $trailerLengthInput
+                    </div>
+                </div>
+            </template>"""
+        )
+    }
+
+    fun trailerEditWithWarningText(
         trailerRegistrationNumber: String?,
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
@@ -54,9 +99,9 @@ class StorageTypeContainer(
         return (
             """ <template x-if="storageType === '${StorageType.Trailer.name}'">
                 <div data-testid="trailer-information-inputs" x-data="{
-                    trailerRegistrationNumber: '',
-                    trailerWidth: '',
-                    trailerLength: '',
+                    trailerRegistrationNumber: '${trailerRegistrationNumber ?: ""}',
+                    trailerWidth: '${trailerWidth ?: ""}',
+                    trailerLength: '${trailerLength ?: ""}',
                     get showWarning() {
                         const values = [
                             this.trailerRegistrationNumber,
@@ -130,6 +175,23 @@ class StorageTypeContainer(
         return """<div data-testid="storage-type-selector" >
             $radioButtons
             ${trailerEdit(trailerRegistrationNumber, trailerWidth, trailerLength, fullWidth)}
+            </div>
+            """
+    }
+
+    fun renderWithWarningText(
+        trailerRegistrationNumber: String?,
+        trailerWidth: BigDecimal?,
+        trailerLength: BigDecimal?,
+        storageType: StorageType? = StorageType.Trailer,
+        fullWidth: Boolean = false,
+    ): String {
+        val radioButtons =
+            storageTypeRadioButtons(storageType)
+
+        return """<div data-testid="storage-type-selector" >
+            $radioButtons
+            ${trailerEditWithWarningText(trailerRegistrationNumber, trailerWidth, trailerLength, fullWidth)}
             </div>
             """
     }

@@ -754,7 +754,7 @@ class BoatReservationService(
             throw IllegalArgumentException("Can't update trailer if amenity does not match")
         }
 
-        if (!isEmployee && storageType == StorageType.Trailer && trailerInput == null) {
+        if (storageType == StorageType.Trailer && trailerInput == null) {
             throw IllegalArgumentException("Trailer information must be provided when storage type is Trailer")
         }
 
