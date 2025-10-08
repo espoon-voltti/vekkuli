@@ -694,7 +694,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         // check that the validation works
         storageTypeModal.registrationNumberInput().fill("")
         storageTypeModal.editStorageTypeConfirmButton().click()
-        assertThat(trailerInformation.registrationNumberError()).isVisible()
+        assertThat(storageTypeModal.registrationNumberError()).isVisible()
 
         storageTypeModal.registrationNumberInput().fill("XYZ-789")
         storageTypeModal.widthInput().fill("2.5")

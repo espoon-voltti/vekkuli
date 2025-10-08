@@ -23,10 +23,6 @@ class CitizenDetailsPage(
 
         fun length(): Locator = root.getByDataTestId("trailer-length")
 
-        fun registrationNumberInput(): Locator = root.getByTestId("trailerRegistrationNumber")
-
-        fun registrationNumberError(): Locator = root.getByTestId("trailerRegistrationNumber-error")
-
         fun registrationCodeInput(): Locator = root.getByTestId("trailerRegistrationCode")
 
         fun widthInput(): Locator = root.getByTestId("trailerWidth")
@@ -58,6 +54,8 @@ class CitizenDetailsPage(
         fun trailerInputs(): Locator = root.getByDataTestId("trailer-information-inputs")
 
         fun registrationNumberInput(): Locator = root.getByTestId("trailerRegistrationNumber")
+
+        fun registrationNumberError(): Locator = root.getByTestId("trailerRegistrationNumber-error")
 
         fun widthInput(): Locator = root.getByTestId("trailerWidth")
 
