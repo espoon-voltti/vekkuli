@@ -289,7 +289,7 @@ class ReserveBoatSpacePage(
         // click send to trigger validation
         val formPage = BoatSpaceFormPage(page)
 
-        val trailerRegistrationCode = "ID12345"
+        val trailerRegistrationCode = "IDC-123"
         val trailerWidth = "1.5"
         val trailerLength = "3.5"
 

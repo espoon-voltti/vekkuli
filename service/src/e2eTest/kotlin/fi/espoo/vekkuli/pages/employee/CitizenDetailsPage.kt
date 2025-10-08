@@ -4,12 +4,69 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.getByDataTestId
 import java.util.UUID
 
 class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
     val citizenDetailsSection = page.getByTestId("reserver-details")
+
+    class TrailerInformation(
+        private val root: Locator
+    ) {
+        fun container(): Locator = root
+
+        fun registrationCode(): Locator = root.getByDataTestId("trailer-registration-code")
+
+        fun width(): Locator = root.getByDataTestId("trailer-width")
+
+        fun length(): Locator = root.getByDataTestId("trailer-length")
+
+        fun registrationCodeInput(): Locator = root.getByTestId("trailerRegistrationCode")
+
+        fun widthInput(): Locator = root.getByTestId("trailerWidth")
+
+        fun lengthInput(): Locator = root.getByTestId("trailerLength")
+
+        fun editSubmitButton(): Locator = root.getByTestId("trailer-edit-submit")
+
+        fun editCancelButton(): Locator = root.getByTestId("trailer-edit-cancel")
+    }
+
+    fun getTrailerInformation(reservationName: String): TrailerInformation =
+        TrailerInformation(getReservation(reservationName).getByDataTestId("trailer-for-reservation"))
+
+    fun getTrailerInformation(reservationId: Int): TrailerInformation =
+        TrailerInformation(page.getByTestId("trailer-for-reservation-$reservationId"))
+
+    class StorageTypeEditModal(
+        private val root: Locator
+    ) {
+        fun container(): Locator = root
+
+        fun title(): Locator = root.getByTestId("change-storage-type-modal-title")
+
+        fun storageTypeCheckboxTrailer(): Locator = root.getByTestId("storageType-Trailer")
+
+        fun storageTypeCheckboxBuck(): Locator = root.getByTestId("storageType-Buck")
+
+        fun trailerInputs(): Locator = root.getByDataTestId("trailer-information-inputs")
+
+        fun registrationNumberInput(): Locator = root.getByTestId("trailerRegistrationNumber")
+
+        fun registrationNumberError(): Locator = root.getByTestId("trailerRegistrationNumber-error")
+
+        fun widthInput(): Locator = root.getByTestId("trailerWidth")
+
+        fun lengthInput(): Locator = root.getByTestId("trailerLength")
+
+        fun editStorageTypeConfirmButton(): Locator = root.getByTestId("reservation-validity-modal-confirm")
+
+        fun editStorageTypeCancelButton(): Locator = root.getByTestId("reservation-validity-modal-cancel")
+    }
+
+    fun getStorageTypeEditModal(): StorageTypeEditModal = StorageTypeEditModal(page.getByTestId("reservation-storage-type-modal-form"))
 
     val reservationValidity = getByDataTestId("reservation-validity")
     val updateReservationValidity = getByDataTestId("update-reservation-validity-link")
@@ -271,32 +328,9 @@ class CitizenDetailsPage(
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 
-    fun trailerInformation(reservationId: Int) = page.getByTestId("trailer-for-reservation-$reservationId")
-
-    fun trailerRegistrationCode(reservationId: Int) = getByDataTestId("trailer-registration-code", trailerInformation(reservationId))
-
-    fun trailerWidth(reservationId: Int) = getByDataTestId("trailer-width", trailerInformation(reservationId))
-
-    fun trailerLength(reservationId: Int) = getByDataTestId("trailer-length", trailerInformation(reservationId))
-
     fun editTrailerButton(reservationId: Int) = page.getByTestId("edit-trailer-$reservationId")
 
     fun editStorageTypeButton(reservationId: Int) = getByDataTestId("open-change-storage-type-modal-$reservationId")
-
-    val editStorageTypeForm: Locator = page.getByTestId("reservation-storage-type-modal-form")
-    val storageTypeCheckboxTrailer: Locator = page.getByTestId("storageType-Trailer")
-    val storageTypeCheckboxBuck: Locator = page.getByTestId("storageType-Buck")
-    val trailerInputs: Locator = getByDataTestId("trailer-information-inputs")
-    val editStorageTypeConfirmButton = page.getByTestId("reservation-validity-modal-confirm")
-    val editStorageTypeCancelButton = page.getByTestId("reservation-validity-modal-cancel")
-    val trailerRegistrationNumberInput = page.getByTestId("trailerRegistrationNumber")
-    val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
-
-    val trailerRegistrationCodeInput = page.getByTestId("trailerRegistrationCode")
-    val trailerWidthInput = page.getByTestId("trailerWidth")
-    val trailerLengthInput = page.getByTestId("trailerLength")
-    val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
-    val trailerEditCancelButton = page.getByTestId("trailer-edit-cancel")
 
     // Exceptions
     val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")

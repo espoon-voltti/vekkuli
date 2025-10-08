@@ -737,7 +737,7 @@ class BoatReservationService(
     }
 
     @Transactional
-    fun updateStorageTypeAndTrailer(
+    fun updateStorageTypeAndMaybeTrailer(
         reserverId: UUID,
         reservationId: Int,
         storageType: StorageType,
@@ -777,11 +777,15 @@ class BoatReservationService(
 
         // Should delete trailer from reservation if storage type is changed to something else
         if (storageType !== StorageType.Trailer && reservation.trailerId !== null) {
-            try {
-                trailerRepository.deleteTrailer(reservation.trailerId)
-            } catch (e: Exception) {
-                // Suppress error
-            }
+            deleteTrailerQuietly(reservation.trailerId)
+        }
+    }
+
+    private fun deleteTrailerQuietly(trailerId: Int) {
+        try {
+            trailerRepository.deleteTrailer(trailerId)
+        } catch (e: Exception) {
+            // Suppress error
         }
     }
 
@@ -804,7 +808,7 @@ class BoatReservationService(
                 )
         }
         // Try to update the storage type and trailer
-        updateStorageTypeAndTrailer(userId, reservationId, storageType, trailer, true)
+        updateStorageTypeAndMaybeTrailer(userId, reservationId, storageType, trailer, true)
     }
 
     private fun createOrUpdateTrailerAndAddWarnings(

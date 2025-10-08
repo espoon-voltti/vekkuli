@@ -110,7 +110,6 @@ class ReservationFormView(
         input: ReservationInput,
         userType: UserType,
         municipalities: List<Municipality>,
-        isNewCustomer: Boolean = true,
     ): String {
         val citizenContainer =
             citizenContainer.render(
@@ -155,7 +154,7 @@ class ReservationFormView(
             """
              <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
                 <div class='form-section'>
-                   ${ storageTypeContainer.trailerContainer(
+                   ${ storageTypeContainer.trailerContainerWithWarningText(
                 input.trailerRegistrationNumber,
                 input.trailerWidth,
                 input.trailerLength,
@@ -195,7 +194,6 @@ class ReservationFormView(
         input: ReservationInput,
         userType: UserType,
         municipalities: List<Municipality>,
-        isNewCustomer: Boolean = true,
     ): String {
         val citizenContainer =
             citizenContainer.render(
@@ -238,7 +236,7 @@ class ReservationFormView(
             )
         val storageTypeContainer =
             if (reservation.amenity == BoatSpaceAmenity.Trailer) {
-                storageTypeContainer.trailerContainer(
+                storageTypeContainer.trailerContainerWithWarningText(
                     input.trailerRegistrationNumber,
                     input.trailerWidth,
                     input.trailerLength,
@@ -331,7 +329,7 @@ class ReservationFormView(
             """
             <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
                 <div class='form-section'>
-                    ${storageTypeContainer.render(
+                    ${storageTypeContainer.renderWithWarningText(
                 input.trailerRegistrationNumber,
                 input.trailerWidth,
                 input.trailerLength,

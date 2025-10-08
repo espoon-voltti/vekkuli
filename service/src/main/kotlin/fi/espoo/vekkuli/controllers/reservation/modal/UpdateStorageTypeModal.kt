@@ -1,9 +1,7 @@
 package fi.espoo.vekkuli.controllers.reservation.modal
 
-import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationStorageTypeUpdateModal
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,12 +19,6 @@ class UpdateStorageTypeModal {
 
     @Autowired
     private lateinit var reservationService: BoatReservationService
-
-    @Autowired
-    private lateinit var reserverService: ReserverService
-
-    @Autowired
-    private lateinit var seasonalService: SeasonalService
 
     @GetMapping("/reservation/modal/update-storage-type/{reservationId}/{reserverId}")
     @ResponseBody

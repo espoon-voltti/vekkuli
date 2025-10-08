@@ -45,12 +45,12 @@ class OrganizationDetailsTest : PlaywrightTest() {
 
         trailerSection.editButton.click()
 
-        trailerSection.registrationCodeInput.fill("UPDATED")
+        trailerSection.registrationCodeInput.fill("CBA123")
         trailerSection.widthInput.fill("6.2")
         trailerSection.lengthInput.fill("12.11")
         trailerSection.saveButton.click()
 
-        assertThat(trailerSection.registrationCodeField).containsText("UPDATED")
+        assertThat(trailerSection.registrationCodeField).containsText("CBA123")
         assertThat(trailerSection.widthField).containsText("6,20")
         assertThat(trailerSection.lengthField).containsText("12,11")
     }
@@ -76,7 +76,7 @@ class OrganizationDetailsTest : PlaywrightTest() {
         boatSection.registrationNumberInput.fill("ABC123")
         boatSection.lengthInput.fill("6")
         boatSection.ownershipSelect.selectOption("Owner")
-        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.otherIdentifierInput.fill("IDC-123")
         boatSection.extraInformationInput.fill("Extra info")
 
         boatSection.saveButton.click()
@@ -90,7 +90,7 @@ class OrganizationDetailsTest : PlaywrightTest() {
         assertThat(boatSection.registrationNumberField).hasText("ABC123")
         assertThat(boatSection.lengthField).hasText("6,00")
         assertThat(boatSection.ownershipField).hasText("Omistan veneen")
-        assertThat(boatSection.otherIdentifierField).hasText("ID12345")
+        assertThat(boatSection.otherIdentifierField).hasText("IDC-123")
         assertThat(boatSection.extraInformationField).hasText("Extra info")
     }
 

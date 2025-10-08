@@ -1,8 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
-import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationPaymentService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -68,10 +65,8 @@ class ReservationFormService(
     private val reserverRepository: ReserverRepository,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService,
     private val paymentService: ReservationPaymentService,
     private val renewalPolicyService: RenewalPolicyService,
-    private val switchPolicyService: SwitchPolicyService
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -238,7 +233,7 @@ class ReservationFormService(
                 input.reservationValidity
             )
 
-        processBoatSpaceReservation(
+        processBoatSpaceReservationForEmployee(
             reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
@@ -578,28 +573,23 @@ class ReservationFormService(
         trailerWidthInM = input.trailerWidth,
     )
 
-    fun buildReserveBoatSpaceInput(
-        reservationId: Int,
-        input: FillReservationInformationInput
-    ) = ReserveBoatSpaceInput(
-        reservationId = reservationId,
-        boatId = input.boat.id,
-        boatType = input.boat.type,
-        width = input.boat.width,
-        length = input.boat.length,
-        depth = input.boat.depth,
-        weight = input.boat.weight,
-        boatRegistrationNumber = input.boat.registrationNumber ?: "",
-        boatName = input.boat.name ?: "",
-        otherIdentification = input.boat.otherIdentification ?: "",
-        extraInformation = input.boat.extraInformation ?: "",
-        ownerShip = input.boat.ownership,
-        email = input.citizen.email,
-        phone = input.citizen.phone,
-        storageType = input.storageType,
-        trailerRegistrationNumber = input.trailer?.registrationNumber,
-        trailerLengthInM = input.trailer?.length,
-        trailerWidthInM = input.trailer?.width,
+    @Transactional
+    fun processBoatSpaceReservationForEmployee(
+        reserverId: UUID,
+        input: ReserveBoatSpaceInput,
+        reservationStatus: ReservationStatus,
+        reservationValidity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ) = processReservation(
+        reserverId = reserverId,
+        input = input,
+        reservationStatus = reservationStatus,
+        reservationValidity = reservationValidity,
+        startDate = startDate,
+        endDate = endDate,
+        addWarnings = false, // employee version skips warnings
+        updateStorageInfo = { i, r -> updateReservationWithStorageTypeRelatedInformationForEmployee(i, r) }
     )
 
     @Transactional
@@ -610,18 +600,40 @@ class ReservationFormService(
         reservationValidity: ReservationValidity,
         startDate: LocalDate,
         endDate: LocalDate,
+    ) = processReservation(
+        reserverId = reserverId,
+        input = input,
+        reservationStatus = reservationStatus,
+        reservationValidity = reservationValidity,
+        startDate = startDate,
+        endDate = endDate,
+        addWarnings = true, // customer version adds warnings
+        updateStorageInfo = { i, r -> updateReservationWithStorageTypeRelatedInformation(i, r) }
+    )
+
+    private fun processReservation(
+        reserverId: UUID,
+        input: ReserveBoatSpaceInput,
+        reservationStatus: ReservationStatus,
+        reservationValidity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        addWarnings: Boolean,
+        updateStorageInfo: (ReserveBoatSpaceInput, UUID) -> Unit,
     ) {
         val boatSpace =
-            boatReservationService.getBoatSpaceRelatedToReservation(input.reservationId)
+            boatReservationService
+                .getBoatSpaceRelatedToReservation(input.reservationId)
                 ?: throw IllegalArgumentException("Boat space not found")
 
         val (boat, previousBoatInfo) = createOrUpdateBoat(reserverId, input)
 
-        addReservationWarnings(input.reservationId, boatSpace, boat, previousBoatInfo)
-        val hasStorageType =
-            boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer || boatSpace.type == BoatSpaceType.Storage
-        if (hasStorageType) {
-            updateReservationWithStorageTypeRelatedInformation(input, reserverId)
+        if (addWarnings) {
+            addReservationWarnings(input.reservationId, boatSpace, boat, previousBoatInfo)
+        }
+
+        if (boatSpace.type.isStorageType()) {
+            updateStorageInfo(input, reserverId)
         }
 
         boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
@@ -635,6 +647,9 @@ class ReservationFormService(
         )
     }
 
+    private fun BoatSpaceType.isStorageType(): Boolean =
+        this == BoatSpaceType.Winter || this == BoatSpaceType.Trailer || this == BoatSpaceType.Storage
+
     private fun updateReservationWithStorageTypeRelatedInformation(
         input: ReserveBoatSpaceInput,
         reserverId: UUID,
@@ -646,6 +661,20 @@ class ReservationFormService(
         if (input.storageType == StorageType.Trailer) {
             val trailer = createTrailerAndUpdateReservation(reserverId, input)
             boatReservationService.addTrailerWarningsToReservations(trailer.id, trailer.widthCm, trailer.lengthCm)
+        }
+    }
+
+    // Does not fail if trailer info is missing, because employee might not add trailer
+    private fun updateReservationWithStorageTypeRelatedInformationForEmployee(
+        input: ReserveBoatSpaceInput,
+        reserverId: UUID,
+    ) {
+        if (input.storageType == null || input.storageType == StorageType.None) {
+            throw IllegalArgumentException("Storage type has to be given.")
+        }
+        addStorageType(input.reservationId, input.storageType)
+        if (input.storageType == StorageType.Trailer) {
+            createTrailerAndUpdateReservationForEmployee(reserverId, input)
         }
     }
 
@@ -675,6 +704,25 @@ class ReservationFormService(
             )
         } else {
             throw IllegalArgumentException("Trailer information can not be empty.")
+        }
+    }
+
+    private fun createTrailerAndUpdateReservationForEmployee(
+        reserverId: UUID,
+        input: ReserveBoatSpaceInput
+    ) {
+        if (
+            input.trailerRegistrationNumber?.isEmpty() == false &&
+            input.trailerWidthInM != null &&
+            input.trailerLengthInM != null
+        ) {
+            trailerRepository.insertTrailerAndAddToReservation(
+                input.reservationId,
+                reserverId,
+                input.trailerRegistrationNumber,
+                decimalToInt(input.trailerWidthInM),
+                decimalToInt(input.trailerLengthInM)
+            )
         }
     }
 
