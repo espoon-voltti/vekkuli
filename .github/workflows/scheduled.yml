@@ -2,6 +2,10 @@ name: Cleanup
 on:
   schedule:
     - cron: '0 2 * * *' # every night at 02:00
+  workflow_dispatch:
+
+permissions:
+  packages: write
 
 jobs:
   cleanup:
