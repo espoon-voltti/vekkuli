@@ -30,7 +30,7 @@ export default React.memo(function ReservedSpace({
   return (
     <>
       <div className="form-section" data-testid="reserved-space">
-        <h3 className="header mb-none">
+        <h3 className="header">
           {i18n.reservation.formPage.boatSpaceInformation}
         </h3>
         <div className="columns">

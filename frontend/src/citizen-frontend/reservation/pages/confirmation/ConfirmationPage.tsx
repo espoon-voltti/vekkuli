@@ -53,7 +53,7 @@ const Content = React.memo(function Content({
         return (
           <>
             <h2 className="h1">{i18n.reservation.confirmationPage.header}</h2>
-            <div className="container mb-m">
+            <div className="container">
               <ul className="has-bullets ml-none">
                 <li>{i18n.reservation.confirmationPage.emailInfo}</li>
                 <li>
