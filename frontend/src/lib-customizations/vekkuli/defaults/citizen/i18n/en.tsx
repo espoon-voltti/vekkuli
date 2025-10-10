@@ -297,9 +297,9 @@ const en: Translations = {
         reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
         cannotReserveNewPlace:
-          'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
+          'You already have two boat spaces. You cannot reserve a new space, but you can change your current space.',
         currentPlaces: 'Your current spaces:',
-        switchCurrentPlace: 'Switch this space',
+        switchCurrentPlace: 'Change this space',
         organizationCurrentPlaces: (organizationName: string) =>
           `Your organization's ${organizationName} spaces:`
       }
@@ -313,8 +313,8 @@ const en: Translations = {
         Storage: (name: string) => `Storage space reservation: ${name}`
       },
       info: {
-        switch:
-          'You are switching your boat space. The reservation period for your boat space remains unchanged. At the same time, your old space will be canceled and made available for others to reserve.'
+        switch: (endDateYear?: number) =>
+          `You are changing your boat space${endDateYear !== undefined ? ` for the ${endDateYear - 1}-${endDateYear} season` : ''}. The reservation period for your boat space remains unchanged. Once the change is made, your old space will be cancelled and made available for others to reserve.`
       },
       submit: {
         continueToPayment: 'Continue to payment',
@@ -341,13 +341,13 @@ const en: Translations = {
       reserver: 'Reserver',
       tenant: 'Renter',
       boatInformation: 'Boat information',
-      boatSpaceInformation: 'Boat space to be reserved',
+      boatSpaceInformation: 'Boat space information',
       harbor: 'Harbor',
       space: 'Space',
       boatSpaceType: 'Boat space type',
       boatSpaceDimensions: 'Boat space dimensions',
       boatSpaceAmenity: 'Amenity',
-      reservationValidity: 'Reservation Validity:',
+      reservationValidity: 'Reservation validity:',
       price: 'Price',
       storageType: 'Storage method'
     },
@@ -390,7 +390,7 @@ const en: Translations = {
       isActive: boolean
     ) => {
       if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
-        return 'For now, resume annually'
+        return `Until end of season ${endDate.year - 1}-${endDate.year}, renewed annually`
       }
       return `until ${endDate.format()}`
     },
