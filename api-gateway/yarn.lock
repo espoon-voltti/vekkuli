@@ -362,14 +362,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:1.8.0":
-  version: 1.8.0
-  resolution: "@opentelemetry/api@npm:1.8.0"
-  checksum: 10/62f0c42711b9f0c56ea9527c2e6e609e371bfb47d0b78956c91fe27365b4744d7dcc407636ef5b19a24a1d5e2c3cfa79c1b715deca829074e24e3ffba1315ba2
+"@opentelemetry/api@npm:>=1.0.0 <1.10.0":
+  version: 1.9.0
+  resolution: "@opentelemetry/api@npm:1.9.0"
+  checksum: 10/a607f0eef971893c4f2ee2a4c2069aade6ec3e84e2a1f5c2aac19f65c5d9eeea41aa72db917c1029faafdd71789a1a040bdc18f40d63690e22ccae5d7070f194
   languageName: node
   linkType: hard
 
-"@opentelemetry/core@npm:^1.14.0":
+"@opentelemetry/core@npm:>=1.14.0 <1.31.0":
   version: 1.30.1
   resolution: "@opentelemetry/core@npm:1.30.1"
   dependencies:
@@ -1492,9 +1492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.67.0":
-  version: 5.67.0
-  resolution: "dd-trace@npm:5.67.0"
+"dd-trace@npm:5.69.0":
+  version: 5.69.0
+  resolution: "dd-trace@npm:5.69.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.7.0"
     "@datadog/native-appsec": "npm:10.2.1"
@@ -1504,8 +1504,8 @@ __metadata:
     "@datadog/sketches-js": "npm:2.1.1"
     "@datadog/wasm-js-rewriter": "npm:4.0.1"
     "@isaacs/ttlcache": "npm:^1.4.1"
-    "@opentelemetry/api": "npm:1.8.0"
-    "@opentelemetry/core": "npm:^1.14.0"
+    "@opentelemetry/api": "npm:>=1.0.0 <1.10.0"
+    "@opentelemetry/core": "npm:>=1.14.0 <1.31.0"
     crypto-randomuuid: "npm:^1.0.0"
     dc-polyfill: "npm:^0.1.10"
     ignore: "npm:^7.0.5"
@@ -1513,7 +1513,6 @@ __metadata:
     istanbul-lib-coverage: "npm:^3.2.2"
     jest-docblock: "npm:^29.7.0"
     jsonpath-plus: "npm:^10.3.0"
-    koalas: "npm:^1.0.2"
     limiter: "npm:^1.1.5"
     lodash.sortby: "npm:^4.7.0"
     lru-cache: "npm:^10.4.3"
@@ -1530,7 +1529,7 @@ __metadata:
     source-map: "npm:^0.7.4"
     tlhunter-sorted-set: "npm:^0.1.0"
     ttl-set: "npm:^1.0.0"
-  checksum: 10/e7c83a9a1d7d21c299d8407cdab9d5c28f280f16e4c66f6347ebc44c11ea871d3ac4acbf370d930f2d988d99006927c3fa9e29355493071f88a7c8b8299ffbce
+  checksum: 10/361b05366fc5c62e99815b584a91de0e5c4bbf7a08cf04a8689621a9544871dae35bfe87d3e2ae38a34f05d1de24d4093e8ad414c5660fd9088d5184acf40adf
   languageName: node
   linkType: hard
 
@@ -2739,13 +2738,6 @@ __metadata:
   dependencies:
     json-buffer: "npm:3.0.1"
   checksum: 10/167eb6ef64cc84b6fa0780ee50c9de456b422a1e18802209234f7c2cf7eae648c7741f32e50d7e24ccb22b24c13154070b01563d642755b156c357431a191e75
-  languageName: node
-  linkType: hard
-
-"koalas@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "koalas@npm:1.0.2"
-  checksum: 10/a252c98af00376e11ca4387a9cc2ec9772d3f0c821216dff31893e9bc11dfbafeacc5627227e53abc3af7751c5503b2bd895c0a0bbf0255e7fc0975b97499a8e
   languageName: node
   linkType: hard
 
@@ -4474,7 +4466,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.1.0"
-    dd-trace: "npm:5.67.0"
+    dd-trace: "npm:5.69.0"
     eslint: "npm:9.36.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.4"
