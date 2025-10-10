@@ -125,13 +125,9 @@ export type ReservationBeingSwitchedResponse = {
   width: number
   length: number
   boatType: BoatType | null
-  endDate?: string
 }
 
-export type SwitchReservationInformation = Omit<
-  ReservationBeingSwitchedResponse,
-  'endDate'
-> & { endDate?: LocalDate }
+export type SwitchReservationInformation = ReservationBeingSwitchedResponse
 
 export type ExistingBoatSpaceReservationResponse = {
   id: ReservationId

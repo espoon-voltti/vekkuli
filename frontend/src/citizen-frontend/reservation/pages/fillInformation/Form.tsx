@@ -162,11 +162,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
         </h2>
         <Block>
           {reservation.reservation.creationType === 'Switch' && (
-            <InfoBox
-              text={i18n.reservation.formPage.info.switch(
-                reservation.reservation.endDate.year
-              )}
-            />
+            <InfoBox text={i18n.reservation.formPage.info.switch} />
           )}
           <ReserverSection
             reserver={updatedReservation.citizen}

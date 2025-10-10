@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.time.LocalDate
 
 data class SwitchSourceResponse(
     val id: Int,
@@ -14,7 +13,6 @@ data class SwitchSourceResponse(
     val width: BigDecimal?,
     val length: BigDecimal?,
     val boatType: BoatType?,
-    val endDate: LocalDate?
 )
 
 @Service
@@ -29,8 +27,7 @@ class SwitchSourceResponseAssembler(
             spaceType = boatSpaceDetails.type,
             width = getSwitchSourceDimensions(boatSpaceDetails).first,
             length = getSwitchSourceDimensions(boatSpaceDetails).second,
-            boatType = boatSpaceDetails.boat?.type,
-            endDate = reservation.endDate
+            boatType = boatSpaceDetails.boat?.type
         )
     }
 

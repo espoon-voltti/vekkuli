@@ -314,8 +314,8 @@ export default {
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       },
       info: {
-        switch: (endDateYear?: number) =>
-          `Olet vaihtamassa paikkaa${endDateYear !== undefined ? ` kaudelle ${endDateYear - 1}-${endDateYear}` : ''}. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.`
+        switch:
+          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -342,7 +342,7 @@ export default {
       reserver: 'Varaaja',
       tenant: 'Vuokralainen',
       boatInformation: 'Veneen tiedot',
-      boatSpaceInformation: 'Paikkatiedot',
+      boatSpaceInformation: 'Varattava paikka',
       harbor: 'Satama',
       space: 'Paikka',
       boatSpaceType: 'Venepaikkatyyppi',
@@ -391,7 +391,7 @@ export default {
       isActive: boolean
     ): string => {
       if (status !== 'Cancelled' && validity === 'Indefinite' && isActive) {
-        return `Kauden ${endDate.year - 1}-${endDate.year} loppuun, jatko vuosittain`
+        return 'Toistaiseksi, jatko vuosittain'
       }
       return `${endDate.format()} asti`
     },
