@@ -6,12 +6,10 @@ on:
 
 permissions:
   packages: write
+  contents: read
 
 jobs:
   cleanup:
-    permissions:
-      packages: write
-      contents: read
     runs-on: ubuntu-latest
 
     steps:
@@ -20,4 +18,5 @@ jobs:
         with:
           package-name: vekkuli/service-builder
           package-type: container
-          min-versions-to-keep: 0
+          min-versions-to-keep: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
