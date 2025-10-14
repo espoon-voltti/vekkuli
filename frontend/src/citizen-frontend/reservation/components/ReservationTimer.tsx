@@ -42,12 +42,13 @@ const TimeRemaining = React.memo(function TimeRemaining({
   const queryClient = useQueryClient()
   const [totalSeconds, setTotalSeconds] = useState(seconds || 0)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [startTime, setStartTime] = useState(getCurrentTime())
+  const [startTime, setStartTime] = useState<number | null>(null)
   const [announceText, setAnnounceText] = useState('')
   const [initialAnnounced, setInitialAnnounced] = useState(false)
 
   useEffect(() => {
-    setTotalSeconds(seconds)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTotalSeconds((prev) => (prev === (seconds ?? 0) ? prev : (seconds ?? 0)))
     setElapsedSeconds(0)
     setStartTime(getCurrentTime())
   }, [seconds])
@@ -61,7 +62,7 @@ const TimeRemaining = React.memo(function TimeRemaining({
     }
 
     const intervalId = setInterval(() => {
-      const newElapsedSeconds = getCurrentTime() - startTime
+      const newElapsedSeconds = getCurrentTime() - (startTime ?? 0)
 
       if (newElapsedSeconds > totalSeconds) {
         clearInterval(intervalId)
@@ -115,6 +116,7 @@ const TimeRemaining = React.memo(function TimeRemaining({
       alertTimeSeconds.includes(remainingTime) ||
       (!initialAnnounced && seconds - remainingTime >= 5)
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInitialAnnounced(true)
       setAnnounceText(screenReaderText)
       setTimeout(() => setAnnounceText(''), 5000)

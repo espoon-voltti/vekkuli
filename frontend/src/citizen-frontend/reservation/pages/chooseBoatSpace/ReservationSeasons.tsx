@@ -5,10 +5,9 @@ import { useTranslation } from 'citizen-frontend/localization'
 
 import { MapIcon, OpenInNew } from '../../../../lib-icons'
 
-export default React.memo(function ReservationSeasons() {
+export const MapsLink = () => {
   const i18n = useTranslation()
-
-  const MapsLink = () => (
+  return (
     <div className="is-primary-color ">
       <Link
         to={i18n.header.harborsInfoLink}
@@ -22,6 +21,10 @@ export default React.memo(function ReservationSeasons() {
       </Link>
     </div>
   )
+}
+
+export default React.memo(function ReservationSeasons() {
+  const i18n = useTranslation()
 
   return (
     <div className="mb-xl instructions-container">

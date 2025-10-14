@@ -4,7 +4,6 @@ import { GoBackLink } from 'lib-components/links'
 import React, { useContext, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
-import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces.js'
 import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
@@ -84,20 +83,16 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
 
-  const [freeSpacesSearchParams, setFreeSpacesSearchParams] =
-    React.useState<SearchFreeSpacesParams>()
-
-  const freeSpaces = useQueryResult(freeSpacesQuery(freeSpacesSearchParams), {
-    enabled: freeSpacesSearchParams !== undefined
-  })
-
   const debouncedFreeSpacesSearchParams = useDebounce(
     bind.isValid() ? bind.value() : undefined,
     500,
     true
   )
+  const freeSpacesSearchParams = debouncedFreeSpacesSearchParams
+  const freeSpaces = useQueryResult(freeSpacesQuery(freeSpacesSearchParams), {
+    enabled: freeSpacesSearchParams !== undefined
+  })
   useEffect(() => {
-    setFreeSpacesSearchParams(debouncedFreeSpacesSearchParams)
     setSearchState(transformFromStateToStoredState(bind.state))
   }, [debouncedFreeSpacesSearchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -125,7 +120,7 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
     typeof spaceIdParam === 'string' ? parseInt(spaceIdParam, 10) : null
   useEffect(() => {
     if (userLoggedIn && spaceId !== null) {
-      setSelectedBoatSpace(spaceId)
+      setSelectedBoatSpace(spaceId) // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [spaceId, userLoggedIn])
 
