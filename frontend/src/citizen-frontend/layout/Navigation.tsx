@@ -10,10 +10,9 @@ import { useTranslation } from '../localization'
 import LanguageSelection from './LanguageSelection'
 import Menu from './Menu'
 
-export default React.memo(function Navigation() {
+export const InstructionsLink = () => {
   const i18n = useTranslation()
-
-  const InstructionsLink = () => (
+  return (
     <div className="is-primary-color ">
       <Link
         to="https://admin.espoo.fi/sites/default/files/2025-03/Venepaikan%20varaaminen%20ja%20vaihtaminen.pdf"
@@ -26,6 +25,10 @@ export default React.memo(function Navigation() {
       </Link>
     </div>
   )
+}
+
+export default React.memo(function Navigation() {
+  const i18n = useTranslation()
 
   return (
     <nav role="navigation" aria-label={i18n.header.mainNavigation}>

@@ -2,12 +2,14 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 export function useStableCallback<Args extends unknown[], Ret>(
   callback: (...args: Args) => Ret
 ): (...args: Args) => Ret {
   const callbackRef = useRef(callback)
-  callbackRef.current = callback
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
   return useCallback((...args: Args) => callbackRef.current(...args), [])
 }

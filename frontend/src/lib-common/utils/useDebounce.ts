@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const useDebounce = <T>(
   value: T,
@@ -10,23 +10,36 @@ export const useDebounce = <T>(
   triggerOnFirstChange = false
 ): T => {
   const [debouncedValue, setDebouncedValue] = useState(value)
-  const [isWaiting, setIsWaiting] = useState(false)
+  const firstChangeFiredRef = useRef(false)
+  const timerRef = useRef<number | null>(null)
 
   useEffect(() => {
-    if (!isWaiting && triggerOnFirstChange) {
-      setDebouncedValue(value)
+    if (timerRef.current != null) {
+      clearTimeout(timerRef.current)
     }
 
-    setIsWaiting(true)
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-      setIsWaiting(false)
-    }, delay)
+    const shouldFireImmediately =
+      triggerOnFirstChange && !firstChangeFiredRef.current
+
+    const effectiveDelay = shouldFireImmediately ? 0 : delay
+
+    timerRef.current = window.setTimeout(
+      () => {
+        setDebouncedValue(value)
+        if (shouldFireImmediately) {
+          firstChangeFiredRef.current = true
+        }
+      },
+      // Make sure the delay is never negative
+      Math.max(0, effectiveDelay)
+    )
 
     return () => {
-      clearTimeout(handler)
+      if (timerRef.current != null) {
+        clearTimeout(timerRef.current)
+      }
     }
-  }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [value, delay, triggerOnFirstChange])
 
   return debouncedValue
 }
