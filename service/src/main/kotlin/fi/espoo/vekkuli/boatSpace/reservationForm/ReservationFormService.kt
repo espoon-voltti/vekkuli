@@ -560,7 +560,7 @@ class ReservationFormService(
         length = input.length ?: BigDecimal.ZERO,
         depth = input.depth ?: BigDecimal.ZERO,
         weight = input.weight,
-        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+        boatRegistrationNumber = if (input.noRegistrationNumber ?: false) "" else input.boatRegistrationNumber,
         boatName = input.boatName ?: "",
         otherIdentification = input.otherIdentification ?: "",
         extraInformation = input.extraInformation ?: "",
