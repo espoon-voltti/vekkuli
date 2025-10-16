@@ -17,8 +17,10 @@ import {
   oneOf,
   required,
   union,
+  validated,
   value
 } from 'lib-common/form/form'
+import { validEmail, validPhone } from 'lib-common/form/form-validation'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
@@ -32,8 +34,8 @@ const organizationInfoForm = object({
   name: required(string()),
   businessId: required(string()),
   municipality: required(oneOf<Municipality>()),
-  phone: required(whitespaceTrimmedString()),
-  email: required(phoneNumberTrimmedString()),
+  phone: validated(required(phoneNumberTrimmedString()), validPhone),
+  email: validated(required(whitespaceTrimmedString()), validEmail),
   streetAddress: string(),
   postalCode: string(),
   postOffice: string(),

@@ -3,11 +3,12 @@ import {
   whitespaceTrimmedString,
   phoneNumberTrimmedString
 } from 'lib-common/form/fields'
-import { object, required } from 'lib-common/form/form'
+import { object, required, validated } from 'lib-common/form/form'
+import { validEmail, validPhone } from 'lib-common/form/form-validation'
 
 export const reserverForm = object({
-  email: required(whitespaceTrimmedString()),
-  phone: required(phoneNumberTrimmedString())
+  phone: validated(required(phoneNumberTrimmedString()), validPhone),
+  email: validated(required(whitespaceTrimmedString()), validEmail)
 })
 export type ReserverForm = typeof reserverForm
 
