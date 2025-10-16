@@ -147,7 +147,7 @@ export default React.memo(function Boat({
         <Column isOneQuarter>
           <CheckboxField
             id="no-register-number"
-            name="noRegisterNumber"
+            name="hasNoRegistrationNumber"
             bind={noRegisterNumber}
             isFullWidth={true}
           />
