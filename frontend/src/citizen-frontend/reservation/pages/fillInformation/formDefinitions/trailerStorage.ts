@@ -1,7 +1,8 @@
 import { formatInputNumberValue } from 'citizen-frontend/shared/formatters'
 import { Trailer } from 'citizen-frontend/shared/types'
-import { positiveNumber, string } from 'lib-common/form/fields'
-import { mapped, object, required } from 'lib-common/form/form'
+import { positiveNumber, whitespaceTrimmedString } from 'lib-common/form/fields'
+import { mapped, object, required, validated } from 'lib-common/form/form'
+import { validTrailerRegistrationNumber } from 'lib-common/form/form-validation'
 import { StateOf } from 'lib-common/form/types'
 
 import { StoredSearchState } from '../../useStoredSearchState'
@@ -9,7 +10,10 @@ import { StoredSearchState } from '../../useStoredSearchState'
 export const trailerInfoForm = object({
   length: required(positiveNumber()),
   width: required(positiveNumber()),
-  registrationNumber: required(string())
+  registrationNumber: validated(
+    required(whitespaceTrimmedString()),
+    validTrailerRegistrationNumber
+  )
 })
 
 export type TrailerInfoForm = typeof trailerInfoForm
