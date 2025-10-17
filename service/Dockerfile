@@ -1,6 +1,5 @@
 FROM eclipse-temurin:25-jammy AS base
-
-ARG CACHE_BUST=2025-W37
+ARG CACHE_BUST
 
 LABEL maintainer="https://github.com/espoon-voltti/vekkuli"
 
