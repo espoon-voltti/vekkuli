@@ -40,3 +40,36 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+
+
+  yarn-audit:
+    name: yarn audit (YARN 3+)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        lockfile:
+          - ./frontend/yarn.lock
+          - ./api-gateway/yarn.lock
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+          # nothing to cache, but we need to set it to to avoid errors
+          cache-dependency-path: ${{ matrix.lockfile }}
+
+      - name: Run yarn audit (YARN 3+)
+        run: |
+          cd $(dirname ${{ matrix.lockfile }})
+          yarn npm audit --recursive --severity high
