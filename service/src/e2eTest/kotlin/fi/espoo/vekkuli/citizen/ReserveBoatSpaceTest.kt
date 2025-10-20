@@ -321,7 +321,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.ownerRadio.click()
 
         val trailerSection = formPage.getTrailerStorageTypeSection()
-        trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
+        trailerSection.trailerRegistrationNumberInput.fill("RGS123")
         val citizenSection = formPage.getCitizenSection()
         citizenSection.emailInput.fill("test@example.com")
         assertThat(citizenSection.emailError).isHidden()
@@ -371,7 +371,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         boatSection.ownerRadio.click()
 
         val trailerSection = formPage.getTrailerStorageTypeSection()
-        trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
+        trailerSection.trailerRegistrationNumberInput.fill("RGS123")
         val citizenSection = formPage.getCitizenSection()
         citizenSection.emailInput.fill(" test @example.com")
         assertThat(citizenSection.emailError).isHidden()
