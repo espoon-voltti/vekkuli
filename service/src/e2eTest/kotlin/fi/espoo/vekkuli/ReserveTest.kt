@@ -24,11 +24,13 @@ class ReserveTest : EmailSendingTest() {
             .click()
         val citizenDetails = CitizenDetailsPage(page)
         citizenDetails.exceptionsNavi.click()
+        assertThat(citizenDetails.exceptionsEditButton).isVisible()
         citizenDetails.exceptionsEditButton.click()
-        val discount0 = page.getByTestId("reserver_discount_0")
-        assertThat(discount0).isChecked()
-        page.getByTestId("reserver_discount_$discount").check()
+        val exceptionsTab = citizenDetails.getReserverExceptionsTabContent()
+        assertThat(exceptionsTab.discount0Checkbox).isChecked()
+        exceptionsTab.getDiscountCheckbox(discount).check()
         citizenDetails.exceptionsSubmitButton.click()
+        assertThat(exceptionsTab.discountText).containsText("$discount% discount")
     }
 
     protected fun assertCorrectPaymentForReserver(

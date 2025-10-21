@@ -45,10 +45,7 @@ export default React.memo(function ReserverPriceInfo({
     discountText && (!switchText || (switchText && numericPrice > 0))
 
   return switchText || discountText ? (
-    <div
-      id="empty-dimensions-warning"
-      className="message-box column is-four-fifths"
-    >
+    <div className="message-box column is-four-fifths">
       <div className="column is-narrow">
         <span className="icon">
           <BlueInfoCircle />

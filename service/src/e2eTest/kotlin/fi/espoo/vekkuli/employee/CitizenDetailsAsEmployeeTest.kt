@@ -395,9 +395,9 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention")
 
         citizenDetails.exceptionsEditButton.click()
-        val discount0 = page.getByDataTestId("reserver_discount_0")
-        assertThat(discount0).isChecked()
-        page.getByTestId("reserver_discount_50").check()
+        val exceptionsTab = citizenDetails.getReserverExceptionsTabContent()
+        assertThat(exceptionsTab.discount0Checkbox).isChecked()
+        exceptionsTab.discount50Checkbox.check()
 
         citizenDetails.exceptionsSubmitButton.click()
 
