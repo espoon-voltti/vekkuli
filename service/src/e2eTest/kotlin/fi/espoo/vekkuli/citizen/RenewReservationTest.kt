@@ -327,7 +327,7 @@ class RenewReservationTest : ReserveTest() {
     }
 
     @Test
-    fun `if reserver has a discount of 100% the reservation should be immediately confirmed`() {
+    fun `if reserver has a discount of 100 percent the reservation should be immediately confirmed`() {
         val discount = 100
         val expectedPrice = "0,00"
         mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
@@ -363,6 +363,7 @@ class RenewReservationTest : ReserveTest() {
         assertThat(reservedSpaceSection.fields.getField("Hinta").last())
             .containsText("Yhteensä: 267,19 €")
 
+        assertThat(reservedSpaceSection.discountText).containsText("Sinulle on myönnetty 100 % alennus.")
         form.confirmButton.click()
 
         val paymentPage = PaymentPage(page)

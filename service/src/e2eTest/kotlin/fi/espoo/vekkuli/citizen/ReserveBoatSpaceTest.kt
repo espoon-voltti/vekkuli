@@ -1263,9 +1263,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val reservedSpaceSection = formPage.getReservedSpaceSection()
         assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: $boatSpacePrice €")
-        val discountText = formPage.getByDataTestId("reservation-info-text")
-        assertThat(discountText).containsText("$discount %")
-        assertThat(discountText).containsText("$expectedPrice €")
+
+        assertThat(reservedSpaceSection.discountText).containsText("$discount %")
+        assertThat(reservedSpaceSection.discountText).containsText("$expectedPrice €")
         return formPage
     }
 

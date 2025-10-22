@@ -333,6 +333,22 @@ class CitizenDetailsPage(
     fun editStorageTypeButton(reservationId: Int) = getByDataTestId("open-change-storage-type-modal-$reservationId")
 
     // Exceptions
+    class ReserverExceptions(
+        private val root: Locator
+    ) {
+        val editButton: Locator = root.getByDataTestId("exceptions-edit")
+        val cancelButton: Locator = root.getByDataTestId("exceptions-cancel")
+        val submitButton: Locator = root.getByDataTestId("exceptions-submit")
+        val discountText: Locator = root.getByTestId("discount")
+        val discount0Checkbox = root.getByDataTestId("reserver_discount_0")
+        val discount50Checkbox = root.getByDataTestId("reserver_discount_50")
+        val discount100Checkbox = root.getByDataTestId("reserver_discount_100")
+
+        fun getDiscountCheckbox(discount: Int): Locator = root.getByDataTestId("reserver_discount_$discount")
+    }
+
+    fun getReserverExceptionsTabContent(): ReserverExceptions = ReserverExceptions(page.getByTestId("exceptions-tab-content"))
+
     val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
     val exceptionsEditButton = getByDataTestId("exceptions-edit")
     val exceptionsCancelButton = getByDataTestId("exceptions-cancel")

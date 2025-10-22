@@ -6,6 +6,7 @@ import com.microsoft.playwright.Page.*
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveErrorModal
+import fi.espoo.vekkuli.pages.getByDataTestId
 
 open class BoatSpaceFormPage(
     page: Page
@@ -107,6 +108,7 @@ open class BoatSpaceFormPage(
     ) {
         val fields = FieldLocator(root)
         val storageTypeField = fields.getField("Säilytystapa")
+        val discountText = root.getByDataTestId("reservation-info-text")
     }
 
     class ConfirmCancelReservationModal(

@@ -55,7 +55,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                 <input type="radio" id="reserver_discount_$discount" 
                 ${addTestId("reserver_discount_$discount")} name="discountPercentage" value='$discount'
                     ${if (reserver.discountPercentage == discount) "checked" else ""}>
-                    <label for="reserver_discount_0" >${t("employee.reserverDetails.exceptions.discount_$discount")}</label>
+                    <label for="reserver_discount_$discount" >${t("employee.reserverDetails.exceptions.discount_$discount")}</label>
             </div>
             """.trimIndent()
     }
@@ -104,9 +104,9 @@ class ReserverDetailsExceptionsContainer : BaseView() {
     fun tabContent(reserver: ReserverWithDetails): String {
         // language=HTML
         return """
-            <div id="tab-content" class="container block">
+            <div id="exceptions-tab-content" class="container block">
               ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Exceptions)}
-              <div class="exceptions-container columns">
+              <div ${addTestId("exceptions-container")} class="exceptions-container columns">
                   <div class='column'>
                        <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
                        <div class='mb-l'>
@@ -124,7 +124,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                             ${addTestId("exceptions-edit")}    
                             id="edit-customer"
                             hx-get="/virkailija/kayttaja/${reserver.id}/poikkeukset/muokkaa"
-                            hx-target="#tab-content"
+                            hx-target="#exceptions-tab-content"
                             hx-swap="outerHTML">
                             <span class="icon">
                                 ${icons.edit}
@@ -140,7 +140,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
     fun tabEdit(reserver: ReserverWithDetails): String {
         // language=HTML
         return """
-            <div id="tab-content" class="container block">
+            <div id="exceptions-tab-content" class="container block">
               ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Exceptions)}
               <form id="exception-edit-form" class="exceptions-container">
                 <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
@@ -158,8 +158,8 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                             class="button is-secondary" 
                             type="button"
                             hx-get=${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset")}
-                            hx-target="#tab-content"
-                            hx-select="#tab-content"
+                            hx-target="#exceptions-tab-content"
+                            hx-select="#exceptions-tab-content"
                             hx-swap="outerHTML">
                     ${t("cancel")}
                     </a>
@@ -167,8 +167,8 @@ class ReserverDetailsExceptionsContainer : BaseView() {
                     hx-post="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/muokkaa")}"
                     hx-include="#exception-edit-form"
                     hx-trigger="click"
-                    hx-target="#tab-content"
-                    hx-select="#tab-content"
+                    hx-target="#exceptions-tab-content"
+                    hx-select="#exceptions-tab-content"
                     hx-swap="outerHTML">
                     ${t("citizenDetails.saveChanges")}
                     </a>
