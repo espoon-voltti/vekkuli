@@ -421,7 +421,7 @@ const en: Translations = {
         MAX_RESERVATIONS:
           'You already have the maximum number of spaces of this type.',
         NOT_POSSIBLE:
-          'The reservation period is not open. Check the search times on the homepage.',
+          'The reservation period is not open, or you do not have permission to reserve the space. Check the search times on the homepage.',
         SERVER_ERROR:
           'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
         MAX_PERSONAL_RESERVATIONS:

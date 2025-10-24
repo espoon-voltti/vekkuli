@@ -418,7 +418,8 @@ export default {
       startReservation: {
         title: 'Varaaminen ei ole mahdollista',
         MAX_RESERVATIONS: 'Sinulla on jo maksimimäärä tämän tyypin paikkoja.',
-        NOT_POSSIBLE: 'Varauskausi ei ole auki. Tarkista hakuajat etusivulta.',
+        NOT_POSSIBLE:
+          'Varauskausi ei ole auki tai sinulla ei ole oikeuksia varata paikkaa. Tarkista hakuajat etusivulta.',
         SERVER_ERROR:
           'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
         MAX_PERSONAL_RESERVATIONS:
