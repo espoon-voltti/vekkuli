@@ -1120,9 +1120,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
         reserveBoatSpacePage.getReserveModal().reserveANewSpace.click()
         assertThat(boatSection.existingBoat("Leon vene")).isVisible()
         assertThat(boatSection.existingBoat("Leon toinen liian iso vene")).isVisible()
-
         boatSpaceFormPage.cancelButton.click()
         boatSpaceFormPage.getConfirmCancelReservationModal().confirmButton.click()
+        assertThat(reserveBoatSpacePage.header).isVisible()
 
         // delete boat
         citizenDetailsPage.navigateToPage()
