@@ -202,9 +202,7 @@ open class ReservationService(
                 }.filter { it.reservations.isNotEmpty() }
 
         if (canReserveSpaceResult is ReservationResult.Failure) {
-            if (canReserveOrganizationSpaceResult &&
-                canReserveSpaceResult.errorCode == ReservationResultErrorCode.MaxReservations
-            ) {
+            if (canReserveOrganizationSpaceResult) {
                 // Can not reserve for reserver, but can reserve for organization
                 return CanReserveResult(
                     status = CanReserveResultStatus.CanReserveOnlyForOrganization,
