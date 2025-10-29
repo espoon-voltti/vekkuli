@@ -1158,6 +1158,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         boatSpaceFormPage.cancelButton.click()
         boatSpaceFormPage.getConfirmCancelReservationModal().confirmButton.click()
+        assertThat(reserveBoatSpacePage.header).isVisible()
 
         // delete boat
         citizenDetailsPage.navigateToPage()
