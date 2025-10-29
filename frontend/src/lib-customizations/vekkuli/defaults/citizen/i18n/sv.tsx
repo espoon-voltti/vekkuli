@@ -408,7 +408,7 @@ const sv: Translations = {
         MAX_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ.',
         NOT_POSSIBLE:
-          'Bokningsperioden är inte öppen. Kontrollera bokningstiderna på startsidan.',
+          'Bokningsperioden är inte öppen, eller så har du inte rätt att boka platsen. Kontrollera bokningstiderna på startsidan.',
         SERVER_ERROR:
           'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.',
         MAX_PERSONAL_RESERVATIONS:
