@@ -439,6 +439,7 @@ class SwitchReservationTest : ReserveTest() {
 
         // switch form
         val form = BoatSpaceFormPage(page)
+        assertThat(form.switchInfoBox).isVisible()
         // Make sure that citizen is redirected to unfinished reservation switch form
         reservationPage.navigateToPage()
 
@@ -660,6 +661,8 @@ class SwitchReservationTest : ReserveTest() {
             choosePlace(section, placeNumber, searchResultsSection)
         }
         reserveModal.firstSwitchReservationButton.click()
+        val form = BoatSpaceFormPage(page)
+        assertThat(form.switchInfoBox).isVisible()
     }
 
     private fun choosePlace(
