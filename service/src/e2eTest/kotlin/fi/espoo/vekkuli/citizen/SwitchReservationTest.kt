@@ -661,6 +661,8 @@ class SwitchReservationTest : ReserveTest() {
             choosePlace(section, placeNumber, searchResultsSection)
         }
         reserveModal.firstSwitchReservationButton.click()
+        val form = BoatSpaceFormPage(page)
+        assertThat(form.switchInfoBox).isVisible()
     }
 
     private fun choosePlace(
