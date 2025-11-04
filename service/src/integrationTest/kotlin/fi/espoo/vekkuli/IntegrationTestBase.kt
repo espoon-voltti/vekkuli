@@ -14,7 +14,9 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.domain.TrailerRow
 import fi.espoo.vekkuli.repository.JdbiPaymentRepository
+import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -43,6 +45,9 @@ abstract class IntegrationTestBase {
 
     @Autowired
     private lateinit var reservationWarningRepository: ReservationWarningRepository
+
+    @Autowired
+    private lateinit var trailerRepository: TrailerRepository
 
     @Autowired
     protected lateinit var jdbi: Jdbi
@@ -230,4 +235,17 @@ abstract class IntegrationTestBase {
             listOf(reservationWarning)
         )
     }
+
+    fun insertDevTrailer(
+        reserverId: UUID,
+        registrationCode: String,
+        widthCm: Int,
+        lengthCm: Int,
+    ): TrailerRow =
+        trailerRepository.insertTrailer(
+            reserverId,
+            registrationCode,
+            widthCm,
+            lengthCm
+        )
 }

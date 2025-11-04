@@ -43,6 +43,7 @@ data class StickerReportRow(
     val email: String?,
     val phone: String?,
     val boatInfo: String?,
+    val trailerInfo: String?,
 )
 
 fun getStickerReportRows(
@@ -66,7 +67,12 @@ fun getStickerReportRows(
                     bsr.created,
                     r.email,
                     r.phone,
-                    TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info
+                    TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info,                    
+                    CONCAT_WS(', ', 
+                                    t.registration_code::text, 
+                                    NULLIF(t.width_cm, NULL) || ' cm', 
+                                    NULLIF(t.length_cm, NULL) || ' cm' 
+                                ) AS trailer_info                    
                 FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
@@ -74,6 +80,7 @@ fun getStickerReportRows(
                     JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
                     LEFT JOIN boat b ON b.id = bsr.boat_id
                     LEFT JOIN price ON price.id = bs.price_id
+                    LEFT JOIN trailer t ON t.id = bsr.trailer_id
                 WHERE
                     bsr.reserver_id IS NOT NULL
                     AND :reportingDate::date <= p.created::date
@@ -112,6 +119,7 @@ data class BoatSpaceReportRow(
     val email: String?,
     val phone: String?,
     val boatInfo: String?,
+    val trailerInfo: String?,
 )
 
 data class BoatSpaceReportRowWithWarnings(
@@ -196,7 +204,12 @@ fun getBoatSpaceReportRows(
                         bsr.status AS reservation_status,
                         r.email,
                         r.phone,
-                        TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info
+                        TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info,
+                        CONCAT_WS(', ', 
+                                    t.registration_code::text, 
+                                    NULLIF(t.width_cm, NULL) || ' cm', 
+                                    NULLIF(t.length_cm, NULL) || ' cm' 
+                                ) AS trailer_info                    
                     FROM boat_space bs
                          LEFT JOIN location l ON l.id = bs.location_id
                          LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
@@ -205,6 +218,7 @@ fun getBoatSpaceReportRows(
                          LEFT JOIN boat b ON b.id = bsr.boat_id
                          LEFT JOIN municipality m ON m.code = r.municipality_code
                          LEFT JOIN price ON price.id = bs.price_id
+                         LEFT JOIN trailer t ON t.id = bsr.trailer_id
                     WHERE
                         (bsr.start_date is NULL OR
                         (:reportDate::date >= bsr.start_date
