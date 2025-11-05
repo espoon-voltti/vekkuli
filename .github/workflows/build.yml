@@ -254,7 +254,7 @@ jobs:
 
       - name: Store logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: unit-test-results
           path: |
@@ -324,7 +324,7 @@ jobs:
 
       - name: Store test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: e2e-test-results
           path: |
@@ -392,7 +392,7 @@ jobs:
 
       - name: Store logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: integration-test-results
           path: |
