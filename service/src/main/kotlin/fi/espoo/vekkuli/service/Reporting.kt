@@ -48,7 +48,8 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "varauksen loppupvm",
             "sähköposti",
             "puhno",
-            "vene"
+            "vene",
+            "traileri"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -109,6 +110,8 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(sanitizeCsvCellData(report.phone ?: ""))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.boatInfo ?: ""))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.trailerInfo ?: ""))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -167,7 +170,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "maksupäivä",
             "sähköposti",
             "puhno",
-            "vene"
+            "vene",
+            "traileri"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -220,6 +224,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.phone ?: ""))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.boatInfo ?: ""))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.trailerInfo ?: ""))
             .append(CSV_RECORD_SEPARATOR)
     }
 
