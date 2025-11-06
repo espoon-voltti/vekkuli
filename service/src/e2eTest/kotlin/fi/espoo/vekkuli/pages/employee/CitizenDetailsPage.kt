@@ -347,7 +347,7 @@ class CitizenDetailsPage(
         fun getDiscountCheckbox(discount: Int): Locator = root.getByDataTestId("reserver_discount_$discount")
     }
 
-    fun getReserverExceptionsTabContent(): ReserverExceptions = ReserverExceptions(page.getByTestId("exceptions-tab-content"))
+    fun getReserverExceptionsTabContent(): ReserverExceptions = ReserverExceptions(page.getByTestId("tab-content"))
 
     val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
     val exceptionsEditButton = getByDataTestId("exceptions-edit")
