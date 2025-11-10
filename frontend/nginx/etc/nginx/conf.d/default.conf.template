@@ -232,4 +232,10 @@ server {
 
     rewrite     /(.*) /index.html break;
   }
+
+  location = /.well-known/security.txt {
+    default_type text/plain;
+
+    return 200 "Contact: mailto:tietoturva@espoo.fi\nExpires: {{ (time.Now.AddDate 0 9 0).Format "2006-01-02T00:00:00+00:00" }}\n";
+  }
 }
