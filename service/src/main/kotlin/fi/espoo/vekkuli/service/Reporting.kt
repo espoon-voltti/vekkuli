@@ -49,7 +49,9 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "sähköposti",
             "puhno",
             "vene",
-            "traileri"
+            "trailerin rekno",
+            "trailerin leveys",
+            "trailerin pituus"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -111,7 +113,11 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.boatInfo ?: ""))
             .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.trailerInfo ?: ""))
+            .append(sanitizeCsvCellData(report.trailerRegistrationCode ?: ""))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.trailerWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.trailerLengthCm)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -171,7 +177,9 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "sähköposti",
             "puhno",
             "vene",
-            "traileri"
+            "trailerin rekno",
+            "trailerin leveys",
+            "trailerin pituus"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -225,7 +233,11 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.boatInfo ?: ""))
             .append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.trailerInfo ?: ""))
+            .append(sanitizeCsvCellData(report.trailerRegistrationCode ?: ""))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.trailerWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.trailerLengthCm)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
