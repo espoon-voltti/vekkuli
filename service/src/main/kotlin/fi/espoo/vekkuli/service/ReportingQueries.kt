@@ -43,7 +43,9 @@ data class StickerReportRow(
     val email: String?,
     val phone: String?,
     val boatInfo: String?,
-    val trailerInfo: String?,
+    val trailerRegistrationCode: String?,
+    val trailerWidthCm: String?,
+    val trailerLengthCm: String?
 )
 
 fun getStickerReportRows(
@@ -68,11 +70,9 @@ fun getStickerReportRows(
                     r.email,
                     r.phone,
                     TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info,                    
-                    CONCAT_WS(', ', 
-                                    t.registration_code::text, 
-                                    NULLIF(t.width_cm, NULL) || ' cm', 
-                                    NULLIF(t.length_cm, NULL) || ' cm' 
-                                ) AS trailer_info                    
+                    COALESCE(t.registration_code, '') AS trailer_registration_code,
+                    t.width_cm AS trailer_width_cm,
+                    t.length_cm AS trailer_length_cm
                 FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
@@ -119,7 +119,9 @@ data class BoatSpaceReportRow(
     val email: String?,
     val phone: String?,
     val boatInfo: String?,
-    val trailerInfo: String?,
+    val trailerRegistrationCode: String?,
+    val trailerWidthCm: String?,
+    val trailerLengthCm: String?
 )
 
 data class BoatSpaceReportRowWithWarnings(
@@ -205,11 +207,9 @@ fun getBoatSpaceReportRows(
                         r.email,
                         r.phone,
                         TRIM(COALESCE(other_identification || ' ', '') || COALESCE(extra_information, '')) AS boat_info,
-                        CONCAT_WS(', ', 
-                                    t.registration_code::text, 
-                                    NULLIF(t.width_cm, NULL) || ' cm', 
-                                    NULLIF(t.length_cm, NULL) || ' cm' 
-                                ) AS trailer_info                    
+                        COALESCE(t.registration_code, '') AS trailer_registration_code,
+                        t.width_cm AS trailer_width_cm,
+                        t.length_cm AS trailer_length_cm                   
                     FROM boat_space bs
                          LEFT JOIN location l ON l.id = bs.location_id
                          LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id

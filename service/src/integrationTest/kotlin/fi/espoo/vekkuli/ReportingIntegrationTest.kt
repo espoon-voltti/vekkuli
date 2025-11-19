@@ -166,7 +166,9 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
         assertEquals("Testi Venho", row?.boatName)
         assertEquals("leo@noreplytest.fi", row?.email)
-        assertEquals("ABC-987, 123 cm, 456 cm", row?.trailerInfo)
+        assertEquals("ABC-987", row?.trailerRegistrationCode)
+        assertEquals("123", row?.trailerWidthCm)
+        assertEquals("456", row?.trailerLengthCm)
 
         val terminatedRow = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 002" }
         assertEquals("leo@noreplytest.fi", terminatedRow?.email)
@@ -381,7 +383,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
 
         val reservedRows = getReservedBoatSpaceReport(jdbi, today.atStartOfDay())
         assertTrue(reservedRows.none { it.harbor == "Haukilahti" && it.place == "A 001" })
-        assertTrue(reservedRows.any { it.harbor == "Haukilahti" && it.place == "A 002" && it.trailerInfo == "ABC-987, 123 cm, 456 cm" })
+        assertTrue(reservedRows.any { it.harbor == "Haukilahti" && it.place == "A 002" && it.trailerRegistrationCode == "ABC-987" })
 
         val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay())
         assertEquals(1, terminatedRows.size)
