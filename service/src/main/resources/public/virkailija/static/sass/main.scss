@@ -1274,3 +1274,11 @@ a {
 .is-with-pointer {
   cursor: pointer;
 }
+
+body:has(#dont-send-termination-message:checked) #customer-message {
+  display: none;
+}
+
+#termination-message-controls {
+  margin-bottom: 1em;
+}
