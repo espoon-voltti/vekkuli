@@ -65,7 +65,8 @@ class TerminateReservationService(
         endDate: LocalDate,
         comment: String? = null,
         messageTitle: String,
-        messageContent: String
+        messageContent: String,
+        sendTerminationNoticeToCitizen: Boolean
     ) {
         if (!permissionService.canTerminateBoatSpaceReservationForOtherUser(terminatorId, reservationId)) {
             throw Unauthorized()
@@ -84,7 +85,9 @@ class TerminateReservationService(
 
         reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
-        sendCustomTerminationNotice(reservation, terminatorId, messageTitle, messageContent)
+        if (sendTerminationNoticeToCitizen) {
+            sendCustomTerminationNotice(reservation, terminatorId, messageTitle, messageContent)
+        }
     }
 
     private fun executeBoatSpaceReservationTerminationAsOwner(
