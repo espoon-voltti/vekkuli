@@ -20,6 +20,7 @@ val startOfSlipRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 
 val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
 val startOfWinterSpaceRenewPeriod2026: LocalDateTime = LocalDateTime.of(2026, 8, 18, 12, 0, 0)
 
+val switchPeriodOutsideRenewPeriod: LocalDateTime = LocalDateTime.of(2024, 2, 7, 12, 0, 0)
 val startofTrailerRenewPeriod: LocalDateTime = LocalDateTime.of(2026, 4, 1, 12, 0, 0)
 val startOfStorageRenewPeriod2026: LocalDateTime = LocalDateTime.of(2026, 8, 17, 12, 0, 0)
 
@@ -32,9 +33,13 @@ val startOfTrailerReservationPeriod: LocalDateTime = LocalDateTime.of(2025, 5, 1
 
 val startOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
 val endOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 9, 30, 12, 0, 0)
+val switchPeriodOutsideRenewPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 10, 5, 12, 0, 0)
 val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
 val startOfStorageSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 8, 18, 12, 0, 0)
 val startOfTrailerSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2025, 4, 1, 12, 0, 0)
+
+val trailerSwitchPeriodOutsideRenewal: LocalDateTime = LocalDateTime.of(2025, 7, 1, 12, 0, 0)
+val storageSwitchPeriodOutsideRenewal: LocalDateTime = LocalDateTime.of(2025, 9, 18, 12, 0, 0)
 
 // Others
 val startOfStorageReservationPeriodForOthers: LocalDateTime = LocalDateTime.of(2025, 9, 15, 12, 0, 0)

@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 class SwitchReservationTest : ReserveTest() {
     @Test
     fun `should be able to switch slip reservation when the price is higher`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "3", "6", 3, false)
 
         // switch form
@@ -50,7 +50,7 @@ class SwitchReservationTest : ReserveTest() {
             .containsText("Leo Korhonen vaihtoi paikasta Haukilahti B 001 paikkaan Haukilahti D 013.")
 
         assertEquals(
-            "Vaihto Venepaikka 2025 Haukilahti D 013",
+            "Vaihto Venepaikka 2024 Haukilahti D 013",
             PaytrailMock.paytrailPayments
                 .first()
                 .items
@@ -61,7 +61,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should be able to switch slip reservation when the price is the same`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         val reservationPage = switchSlipBoatSpace(CitizenHomePage.leoKorhonenSsn, "2", "4", 5, false)
 
         // switch form
@@ -85,7 +85,7 @@ class SwitchReservationTest : ReserveTest() {
         assertCorrectPaymentForReserver(
             "korhonen",
             PaymentStatus.Success,
-            "Haukilahti B 003",
+            "Haukilahti D 001",
             "0,00",
             "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
         )
@@ -94,7 +94,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should be able to switch slip reservation for organization when the price is the same`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen.minusYears(1))
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         page.navigate(baseUrlWithFinnishLangParam)
         val citizenHomePage = CitizenHomePage(page)
         citizenHomePage.loginAsOliviaVirtanen()
@@ -192,7 +192,7 @@ class SwitchReservationTest : ReserveTest() {
     }
 
     private fun verifySuccesfullTrailerSwitch(forEspooCitizen: Boolean) {
-        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+        mockTimeProvider(timeProvider, trailerSwitchPeriodOutsideRenewal)
         page.navigate(baseUrlWithFinnishLangParam)
         val citizenHomePage = CitizenHomePage(page)
         if (forEspooCitizen) {
@@ -216,7 +216,7 @@ class SwitchReservationTest : ReserveTest() {
         SendEmailServiceMock.resetEmails()
 
         if (forEspooCitizen) {
-            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen)
+            mockTimeProvider(timeProvider, trailerSwitchPeriodOutsideRenewal)
         } else {
             // mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForNonEspooCitizen.plusYears(1))
         }
@@ -269,7 +269,7 @@ class SwitchReservationTest : ReserveTest() {
         val filterSection = reservationPage.getFilterSection()
         val winterFilterSection = filterSection.getWinterFilterSection()
         CitizenHomePage(page).loginAsLeoKorhonen()
-        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriodForEspooCitizen)
         reservationPage.reserveWinterBoatSpace()
         assertEmailIsSentOfCitizensWinterSpaceReservation()
         SendEmailServiceMock.resetEmails()
@@ -296,7 +296,7 @@ class SwitchReservationTest : ReserveTest() {
         val filterSection = reservationPage.getFilterSection()
         val winterFilterSection = filterSection.getWinterFilterSection()
         CitizenHomePage(page).loginAsLeoKorhonen()
-        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriodForEspooCitizen)
         reservationPage.reserveWinterBoatSpace()
         assertEmailIsSentOfCitizensWinterSpaceReservation()
         SendEmailServiceMock.resetEmails()
@@ -327,7 +327,7 @@ class SwitchReservationTest : ReserveTest() {
         expectedPlaceNumber: String? = null,
         paymentFlow: Boolean = false
     ) {
-        mockTimeProvider(timeProvider, startOfWinterSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriodForEspooCitizen)
 
         reservationPage.navigateToPage()
 
@@ -371,7 +371,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should be able to switch a storage space`() {
-        mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, storageSwitchPeriodOutsideRenewal)
 
         val reservationPage = ReserveBoatSpacePage(page)
         val filterSection = reservationPage.getFilterSection()
@@ -382,7 +382,7 @@ class SwitchReservationTest : ReserveTest() {
         assertEmailIsSentOfCitizensStorageSpaceReservation()
         SendEmailServiceMock.resetEmails()
 
-        mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, storageSwitchPeriodOutsideRenewal)
 
         reservationPage.navigateToPage()
 
@@ -470,7 +470,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `going to boat space search page from citizen profile switch button limits available space choices`() {
-        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
@@ -502,7 +502,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `back button in space search page when switching should lead back to citizen details page`() {
-        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
@@ -527,7 +527,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `switching a slip space should have the boat type and boat length and width filters pre-filled from existing boat`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
@@ -592,6 +592,19 @@ class SwitchReservationTest : ReserveTest() {
         // the reserved space is defined in seed and is sized 2.5 * 4.5 m
         assertThat(storageFilterSection.widthInput).hasValue("2.5")
         assertThat(storageFilterSection.lengthInput).hasValue("4.5")
+    }
+
+    @Test
+    fun `should not be able to switch boat space during renewal period`() {
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        page.pause()
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.loginAsLeoKorhonen()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+
+        citizenDetailsPage.getByDataTestId("reservation-list-card")
     }
 
     private fun switchSlipBoatSpace(

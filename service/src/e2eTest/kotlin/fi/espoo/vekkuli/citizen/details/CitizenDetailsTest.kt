@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.endOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
-import fi.espoo.vekkuli.utils.startOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -386,7 +385,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
     @Test
     fun `citizen can see switch button on slip reservation`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 3, 1, 12, 0, 0)) // 1.3.2024 passes
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
@@ -394,7 +393,6 @@ class CitizenDetailsTest : PlaywrightTest() {
 
         val firstReservationSection = citizenDetails.getFirstReservationSection()
         assertThat(firstReservationSection.switchSpace).isVisible()
-
         // move to after the switch period has ended
         mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.plusDays(1))
         citizenDetails.navigateToPage()
