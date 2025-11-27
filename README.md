@@ -48,13 +48,25 @@ To start service in http://localhost:8080
 - `cd service`
 - `./gradlew bootRun`
 
-To run unit/integration tests (requires DB running through compose)
+To run unit tests (requires DB running through compose)
 
 - `./gradlew test`
+
+To run integration tests (requires DB running through compose)
+
+- `./gradlew integrationTest`
 
 To run E2E tests. Requires compose (see above), api-gateway (see below) and frontend (see below).
 
 - `./gradlew e2eTest`
+
+You can run a specific test file or individual test by filtering it with
+
+- `./gradlew e2eTest --tests fi.espoo.vekkuli.[path to file].[function name]
+
+If function name is inside backticks (like `fun \`citizen can change the language\`()`), put it into regular quotes:
+
+- `./gradlew e2eTest --tests fi.espoo.vekkuli.citizen.ReserveBoatSpaceTest.'citizen can change the language'
 
 If any tests fail, screenshots and Playwright traces of the failures are saved to
 `build/failure-screenshots` and `build/failure-traces`. To show a trace in the
