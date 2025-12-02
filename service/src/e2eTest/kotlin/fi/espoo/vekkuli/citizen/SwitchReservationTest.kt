@@ -594,15 +594,36 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `should not be able to switch boat space during renewal period`() {
-        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
-        page.pause()
+        // reserve a new slip
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.minusYears(1))
         val citizenHomePage = CitizenHomePage(page)
         citizenHomePage.loginAsLeoKorhonen()
 
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+
+        reservationPage.filterForBoatSpaceB314()
+
+        val searchResultsSection = reservationPage.getSearchResultsSection()
+
+        searchResultsSection.firstReserveButton.click()
+        val reserveModal = reservationPage.getReserveModal()
+
+        reserveModal.reserveANewSpace.click()
+
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaSuccessButton.click()
+
+        // Move to next switch period and check switch button is not visible
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
+        val firstReservationSection = citizenDetailsPage.getReservationSection("Laituripaikka: Haukilahti B 001")
+        assertThat(firstReservationSection.switchSpace).isHidden()
 
-        citizenDetailsPage.getByDataTestId("reservation-list-card")
     }
 
     private fun switchSlipBoatSpace(
