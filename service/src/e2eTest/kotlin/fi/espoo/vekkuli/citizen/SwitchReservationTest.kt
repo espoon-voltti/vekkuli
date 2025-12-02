@@ -623,7 +623,6 @@ class SwitchReservationTest : ReserveTest() {
         citizenDetailsPage.navigateToPage()
         val firstReservationSection = citizenDetailsPage.getReservationSection("Laituripaikka: Haukilahti B 001")
         assertThat(firstReservationSection.switchSpace).isHidden()
-
     }
 
     private fun switchSlipBoatSpace(
