@@ -26,10 +26,12 @@ class CitizenReservationsTest : PlaywrightTest() {
         assertThat(firstReservationSection.place).hasText("B 003")
 
         assertThat(firstReservationSection.validity).hasText("31.12.2024 asti")
+        assertThat(firstReservationSection.endDate).hasText("31.12.2024")
 
         val secondReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
         assertThat(secondReservationSection.place).hasText("B 015")
         assertThat(secondReservationSection.validity).hasText("Toistaiseksi, jatko vuosittain")
+        assertThat(secondReservationSection.endDate).hasText("31.08.2025")
 
         // Seed user has 3 active reservations
         assertThat(citizenDetailsPage.reservationListCards).hasCount(3)
@@ -48,10 +50,12 @@ class CitizenReservationsTest : PlaywrightTest() {
         assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
         assertThat(firstExpiredReservationSection.place).hasText("B 003")
         assertThat(firstExpiredReservationSection.validity).hasText("31.12.2023 asti")
+        assertThat(firstExpiredReservationSection.endDate).hasText("31.12.2023")
 
         val secondExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2022 asti")
         assertThat(secondExpiredReservationSection.place).hasText("B 003")
         assertThat(secondExpiredReservationSection.validity).hasText("31.12.2022 asti")
+        assertThat(secondExpiredReservationSection.endDate).hasText("31.12.2022")
         // Seed user has 2 expired reservations
         assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)
     }
@@ -59,7 +63,7 @@ class CitizenReservationsTest : PlaywrightTest() {
     @Test
     fun `Cancelled reservations should show previous date as the end date`() {
         val endDate = LocalDate.of(2024, 4, 8)
-        val expectedDisplayedEndDate = "07.04.2024 asti"
+        val expectedDisplayedEndDate = "07.04.2024"
 
         // create reservation
         CitizenHomePage(page).loginAsMikkoVirtanen()
@@ -90,6 +94,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         citizenDetailsPage.navigateToPage()
 
         val reservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 314")
-        assertThat(reservationSection.validity).hasText(expectedDisplayedEndDate)
+        assertThat(reservationSection.validity).hasText(expectedDisplayedEndDate + " asti")
+        assertThat(reservationSection.endDate).hasText(expectedDisplayedEndDate)
     }
 }

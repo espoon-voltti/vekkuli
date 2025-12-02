@@ -28,6 +28,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val paymentStatus = fields.getField("Maksun tila")
 
         val startDate = fields.getField("Varauksen alkupäivä")
+        val endDate = fields.getField("Varauksen päättymispäivä")
         val renewNotification = root.getByText("Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu")
         val editStorageTypeButton = root.getByDataTestId("edit-storage-type-field")
         val storageTypeInput = root.getByDataTestId("storage-type-select")

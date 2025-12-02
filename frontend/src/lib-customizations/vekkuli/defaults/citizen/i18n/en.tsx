@@ -631,6 +631,7 @@ const en: Translations = {
         `The contract period is ending. Secure the same space for next season by paying the season fee by ${date.format()}.`,
       harbor: 'Harbor',
       reservationDate: 'Reservation start date',
+      reservationEndDate: 'Reservation end date',
       space: 'Space',
       reservationValidity: 'Reservation validity',
       spaceType: 'Type of space',

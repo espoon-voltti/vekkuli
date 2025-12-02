@@ -168,6 +168,26 @@ export default React.memo(function Reservation({
               readonly={true}
               precision={2}
             />
+            <TextField
+              label={i18n.citizenPage.reservation.reservationEndDate}
+              value={reservation.endDate.format()}
+              readonly={true}
+            />
+          </Column>
+          <Column>
+            <TextField
+              label={i18n.citizenPage.reservation.spaceType}
+              value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
+              readonly={true}
+            />
+            <TextField
+              label={i18n.citizenPage.reservation.price}
+              value={i18n.reservation.totalPrice(
+                reservation.totalPrice,
+                reservation.vatValue
+              )}
+              readonly={true}
+            />
             <div>
               <TextField
                 label={i18n.citizenPage.reservation.reservationValidity}
@@ -189,25 +209,10 @@ export default React.memo(function Reservation({
           </Column>
           <Column>
             <TextField
-              label={i18n.citizenPage.reservation.spaceType}
-              value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
-              readonly={true}
-            />
-            <TextField
-              label={i18n.citizenPage.reservation.price}
-              value={i18n.reservation.totalPrice(
-                reservation.totalPrice,
-                reservation.vatValue
-              )}
-              readonly={true}
-            />
-            <TextField
               label={i18n.citizenPage.reservation.boatPresent}
               value={reservation.boat.name}
               readonly={true}
             />
-          </Column>
-          <Column>
             {boatSpace.type === 'Slip' ? (
               <TextField
                 label={i18n.citizenPage.reservation.equipment}
