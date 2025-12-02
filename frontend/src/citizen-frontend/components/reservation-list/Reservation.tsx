@@ -122,6 +122,14 @@ export default React.memo(function Reservation({
     )
   }
 
+  let reservationEndDate = reservation.endDate.format()
+
+  // There's a special case for winter reservations
+  // where we show a hard-coded "10.6."
+  if (reservation.boatSpace.type == 'Winter') {
+    reservationEndDate = `10.6.${reservation.endDate.year}`
+  }
+
   return (
     <>
       <div className="reservation-card" data-testid="reservation-list-card">
@@ -168,19 +176,12 @@ export default React.memo(function Reservation({
               readonly={true}
               precision={2}
             />
-            {boatSpace.type === 'Winter' ? (
-              <TextField
-                label={i18n.citizenPage.reservation.reservationEndDate}
-                value="10.6."
-                readonly={true}
-              />
-            ) : (
-              <TextField
-                label={i18n.citizenPage.reservation.reservationEndDate}
-                value={reservation.endDate.format()}
-                readonly={true}
-              />
-            )}
+
+            <TextField
+              label={i18n.citizenPage.reservation.reservationEndDate}
+              value={reservationEndDate}
+              readonly={true}
+            />
           </Column>
           <Column>
             <TextField
