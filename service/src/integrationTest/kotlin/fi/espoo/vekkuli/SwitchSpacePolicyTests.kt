@@ -38,6 +38,8 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val targetSpaceId = boatSpaceIdForSlip2
         val reserver = espooCitizenWithoutReservationsId
 
+        testUtils.moveTimeToAfterRenewalEnd(BoatSpaceType.Slip, ReservationOperation.Renew)
+
         val originalReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -110,7 +112,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val targetSpaceId = boatSpaceIdForWinter2
         val reserver = espooCitizenWithoutReservationsId
 
-        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
+        testUtils.moveTimeToAfterRenewalEnd(BoatSpaceType.Winter, ReservationOperation.Renew)
         val originalReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -123,6 +125,28 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             true,
             switchPolicyService.citizenCanSwitchToReservation(originalReservation.id, reserver, targetSpaceId).success,
             "Allow switching winter reservations to another"
+        )
+    }
+
+    @Test
+    fun `do not allow switching winter reservations during renewal period`() {
+        val originalSpaceId = boatSpaceIdForWinter
+        val targetSpaceId = boatSpaceIdForWinter2
+        val reserver = espooCitizenWithoutReservationsId
+
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
+        val originalReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserver,
+                    originalSpaceId
+                )
+            )
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchToReservation(originalReservation.id, reserver, targetSpaceId).success,
+            "Do not allow switching winter reservations to another during renewal period"
         )
     }
 
@@ -180,8 +204,8 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             "Reservation can't be switched before the start of the season"
         )
 
-        // Move to the start of switch period
-        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        // Move to beyond the renewal period
+        testUtils.moveTimeToAfterRenewalEnd(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
@@ -239,7 +263,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of switch period
-        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        testUtils.moveTimeToAfterRenewalEnd(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
@@ -296,7 +320,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of switch period
-        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        testUtils.moveTimeToAfterRenewalEnd(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
@@ -345,8 +369,8 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
                 )
             )
 
-        // Move to the start of 2026 switch period
-        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        // Move to the start of switch period after renewal period
+        testUtils.moveTimeToAfterRenewalEnd(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
