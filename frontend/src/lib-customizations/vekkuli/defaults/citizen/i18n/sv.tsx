@@ -631,6 +631,7 @@ const sv: Translations = {
         `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()}.`,
       harbor: 'Hamn',
       reservationDate: 'Reservationens startdatum',
+      reservationEndDate: 'Reservationens slutdatum',
       space: 'Plats',
       reservationValidity: 'Reservationens giltighet',
       spaceType: 'Platstyp',

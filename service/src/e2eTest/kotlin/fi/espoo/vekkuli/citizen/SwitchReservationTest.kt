@@ -66,8 +66,6 @@ class SwitchReservationTest : ReserveTest() {
 
         // switch form
         val switchSpaceFormPage = SwitchSpaceFormPage(page)
-        // Make sure that citizen is redirected to unfinished reservation switch form
-        reservationPage.navigateToPage()
 
         val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
         userAgreementSection.certifyInfoCheckbox.check()
