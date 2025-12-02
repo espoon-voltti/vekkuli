@@ -334,6 +334,16 @@ class TestUtils(
         moveTimeToPeriod(period.endDate.month.value, period.endDate.dayOfMonth, year, addDays)
     }
 
+    fun moveTimeToAfterRenewalEnd(
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation,
+        isEspooCitizen: Boolean = true,
+        addDays: Long? = null
+    ) {
+        val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
+        moveTimeToPeriod(period.endDate.month.value + 1, 1, 2025, addDays)
+    }
+
     private fun moveTimeToPeriod(
         month: Int,
         day: Int,
