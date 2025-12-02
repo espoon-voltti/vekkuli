@@ -31,7 +31,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         val secondReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 015")
         assertThat(secondReservationSection.place).hasText("B 015")
         assertThat(secondReservationSection.validity).hasText("Toistaiseksi, jatko vuosittain")
-        assertThat(secondReservationSection.endDate).hasText("31.08.2025")
+        assertThat(secondReservationSection.endDate).hasText("10.6.")
 
         // Seed user has 3 active reservations
         assertThat(citizenDetailsPage.reservationListCards).hasCount(3)

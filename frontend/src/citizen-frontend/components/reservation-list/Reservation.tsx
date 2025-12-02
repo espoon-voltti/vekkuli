@@ -168,11 +168,19 @@ export default React.memo(function Reservation({
               readonly={true}
               precision={2}
             />
-            <TextField
-              label={i18n.citizenPage.reservation.reservationEndDate}
-              value={reservation.endDate.format()}
-              readonly={true}
-            />
+            {boatSpace.type === 'Winter' ? (
+              <TextField
+                label={i18n.citizenPage.reservation.reservationEndDate}
+                value="10.6."
+                readonly={true}
+              />
+            ) : (
+              <TextField
+                label={i18n.citizenPage.reservation.reservationEndDate}
+                value={reservation.endDate.format()}
+                readonly={true}
+              />
+            )}
           </Column>
           <Column>
             <TextField
