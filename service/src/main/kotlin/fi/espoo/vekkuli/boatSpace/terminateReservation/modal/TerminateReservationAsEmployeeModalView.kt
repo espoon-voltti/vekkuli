@@ -54,20 +54,27 @@ class TerminateReservationAsEmployeeModalView(
                     </div>
                     <div class="column is-full">
                         $endDateField
-                    
+
                         $reasonField
-                    
+
                         $explanationField
                     </div>
                 </div>
-                <h3 class="pt-s">${t("boatSpaceTermination.messageToCustomerTitle")}</h3>
-                <div class='columns is-multiline'>
-                    <div class="column is-full">
-                        $messageTitleField
-                        
-                        $messageContentField
+                <div id="termination-message-controls">
+                    <input id="dont-send-termination-message" name="dontSendMessage" type="checkbox" data-testid="termination-dont-send-message">
+                    <label for="dont-send-termination-message">${t("boatSpaceTermination.messageToCustomerCheckboxLabel")}</label>
+                </div>
+                <div id="customer-message" data-testid="customer-message">
+                    <h3 class="pt-s">${t("boatSpaceTermination.messageToCustomerTitle")}</h3>
+                    <div class='columns is-multiline'>
+                        <div class="column is-full">
+                            $messageTitleField
+
+                            $messageContentField
+                        </div>
                     </div>
                  </div>
+                 <div>
                 <input hidden name="reservationId" value="${reservation.id}" />
                 """.trimIndent()
             ).addButton {

@@ -336,4 +336,73 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
         citizenDetailsPage.terminateReservationFailOkButton.click()
         assertThat(citizenDetailsPage.terminateReservationFail).not().isVisible()
     }
+
+    @Test
+    fun `Employee can choose not to send a message with a termination`() {
+        val listingPage = ReservationListPage(page)
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        val endDate = timeProvider.getCurrentDate()
+        val terminationComment = "Test comment"
+        val terminationReason = ReservationTerminationReasonOptions.PaymentViolation
+        val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.paymentViolation")
+
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        listingPage.navigateTo()
+        listingPage.boatSpace1.click()
+
+        // Expired list is not on the page
+        assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
+        assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+
+        // Opens up information from the first reservation of the first user
+        assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
+
+        // Fills the form
+        citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
+        citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
+        citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
+
+        // Choose not to send a message
+        citizenDetailsPage.getByDataTestId("termination-dont-send-message").click()
+        assert(citizenDetailsPage.getByDataTestId("customer-message").isHidden())
+
+        citizenDetailsPage.terminateReservationModalConfirm.click()
+
+        // Shows a success message in modal
+        assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
+
+        // Hides the modal and the expired list is on the page, but not visible
+        citizenDetailsPage.modalWindow.click(
+            Locator
+                .ClickOptions()
+                .setPosition(5.0, 5.0)
+        )
+
+        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
+        assertThat(citizenDetailsPage.expiredReservationList).not().isVisible()
+        assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
+
+        citizenDetailsPage
+            .getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion)
+            .click()
+        assertThat(citizenDetailsPage.expiredReservationList).isVisible()
+        assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
+        assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
+
+        assertThat(
+            citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
+        ).containsText(expectedTerminationReason)
+
+        assertThat(
+            citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
+        ).containsText(terminationComment)
+
+        // Check that a message was not sent
+        messageService.sendScheduledEmails()
+        assertEquals(0, SendEmailServiceMock.emails.size)
+    }
 }
