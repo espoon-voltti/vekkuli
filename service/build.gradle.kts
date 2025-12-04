@@ -9,7 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.spring") version "2.2.21"
-    id("org.flywaydb.flyway") version "11.17.1"
+    id("org.flywaydb.flyway") version "11.17.2"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.2.21"
@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.8")
-        classpath("org.flywaydb:flyway-database-postgresql:11.17.1")
+        classpath("org.flywaydb:flyway-database-postgresql:11.17.2")
     }
 }
 
@@ -89,8 +89,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-core:11.17.1")
-    implementation("org.flywaydb:flyway-database-postgresql:11.17.1")
+    implementation("org.flywaydb:flyway-core:11.17.2")
+    implementation("org.flywaydb:flyway-database-postgresql:11.17.2")
     implementation("org.postgresql:postgresql:42.7.8")
     implementation(platform("org.jdbi:jdbi3-bom:3.50.0"))
     implementation("org.jdbi:jdbi3-core")
@@ -117,10 +117,10 @@ dependencies {
     testImplementation("com.microsoft.playwright:playwright:1.56.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:3.3.2")
-    implementation("io.ktor:ktor-client-cio:3.3.2") // CIO engine
-    implementation("io.ktor:ktor-client-content-negotiation:3.3.2") // Content negotiation
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.2") // kotlinx serialization
+    implementation("io.ktor:ktor-client-core:3.3.3")
+    implementation("io.ktor:ktor-client-cio:3.3.3") // CIO engine
+    implementation("io.ktor:ktor-client-content-negotiation:3.3.3") // Content negotiation
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1-0.6.x-compat")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
