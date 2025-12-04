@@ -634,6 +634,7 @@ export default {
         `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä.`,
       harbor: 'Satama',
       reservationDate: 'Varauksen alkupäivä',
+      reservationEndDate: 'Varauksen päättymispäivä',
       space: 'Paikka',
       reservationValidity: 'Varaus voimassa',
       spaceType: 'Paikan tyyppi',

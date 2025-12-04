@@ -253,7 +253,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
             oliviaEndDate,
             oliviaTerminationComment,
             oliviaMessageTitle,
-            oliviaMessageContent
+            oliviaMessageContent,
+            true
         )
 
         terminateService.terminateBoatSpaceReservationAsEmployee(
@@ -263,6 +264,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
             endDate = leoEndDate,
             messageTitle = oliviaMessageTitle,
             messageContent = oliviaMessageContent,
+            sendTerminationNoticeToCitizen = true,
         )
 
         val terminatedOliviaReservation = reservationService.getBoatSpaceReservation(reservationOfOlivia.id)
@@ -316,7 +318,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
                     terminationReason = ReservationTerminationReason.UserRequest,
                     endDate = timeProvider.getCurrentDate(),
                     messageTitle = "",
-                    messageContent = ""
+                    messageContent = "",
+                    sendTerminationNoticeToCitizen = true,
                 )
             }
         assertEquals("Unauthorized", exception.message, "termination throws unauthorized exception")

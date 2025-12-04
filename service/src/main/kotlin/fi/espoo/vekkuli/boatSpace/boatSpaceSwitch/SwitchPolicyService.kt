@@ -60,6 +60,11 @@ class SwitchPolicyService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
+        // Do not allow switching during renewal period
+        if (seasonalService.isReservationRenewalPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
         // It should have the same dates as the original
         return ReservationResult.Success(
             ReservationResultSuccess(
@@ -85,6 +90,11 @@ class SwitchPolicyService(
 
         // Check the period is active
         if (!seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        // Do not allow switching during renewal period
+        if (seasonalService.isReservationRenewalPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 

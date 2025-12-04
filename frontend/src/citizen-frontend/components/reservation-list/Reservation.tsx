@@ -122,6 +122,14 @@ export default React.memo(function Reservation({
     )
   }
 
+  let reservationEndDate = reservation.endDate.format()
+
+  // There's a special case for winter reservations
+  // where we show a hard-coded "10.6."
+  if (reservation.boatSpace.type == 'Winter') {
+    reservationEndDate = `10.6.${reservation.endDate.year}`
+  }
+
   return (
     <>
       <div className="reservation-card" data-testid="reservation-list-card">
@@ -168,6 +176,27 @@ export default React.memo(function Reservation({
               readonly={true}
               precision={2}
             />
+
+            <TextField
+              label={i18n.citizenPage.reservation.reservationEndDate}
+              value={reservationEndDate}
+              readonly={true}
+            />
+          </Column>
+          <Column>
+            <TextField
+              label={i18n.citizenPage.reservation.spaceType}
+              value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
+              readonly={true}
+            />
+            <TextField
+              label={i18n.citizenPage.reservation.price}
+              value={i18n.reservation.totalPrice(
+                reservation.totalPrice,
+                reservation.vatValue
+              )}
+              readonly={true}
+            />
             <div>
               <TextField
                 label={i18n.citizenPage.reservation.reservationValidity}
@@ -189,25 +218,10 @@ export default React.memo(function Reservation({
           </Column>
           <Column>
             <TextField
-              label={i18n.citizenPage.reservation.spaceType}
-              value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
-              readonly={true}
-            />
-            <TextField
-              label={i18n.citizenPage.reservation.price}
-              value={i18n.reservation.totalPrice(
-                reservation.totalPrice,
-                reservation.vatValue
-              )}
-              readonly={true}
-            />
-            <TextField
               label={i18n.citizenPage.reservation.boatPresent}
               value={reservation.boat.name}
               readonly={true}
             />
-          </Column>
-          <Column>
             {boatSpace.type === 'Slip' ? (
               <TextField
                 label={i18n.citizenPage.reservation.equipment}
