@@ -144,6 +144,8 @@ class ReservationCardInformation(
                 ""
             }
 
+        val originalReservationStartDate: LocalDate? = boatReservationService.getOriginalStartDateForReservation(reservation)
+
         // language=HTML
         return """
             <div class="columns">
@@ -161,6 +163,10 @@ class ReservationCardInformation(
                          <p>${formatAsFullDate(reservation.startDate)}</p>
                          <span class="reservation-created-tooltip">Varaus tehty: ${formatAsFullDateTime(reservation.created)}<span>
                      </div>
+                     <div class="field">
+                        <label class="label">${t("boatSpaceReservation.label.originalEndDate")}</label>
+                        <div>${formatAsFullDate(originalReservationStartDate)}</div>
+                    </div>
                  </div>
                  <div class="column">
                      <div class="field">

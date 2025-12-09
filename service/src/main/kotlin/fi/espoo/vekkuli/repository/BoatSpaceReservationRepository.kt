@@ -126,4 +126,6 @@ interface BoatSpaceReservationRepository {
         newValidity: ReservationValidity,
         endDate: LocalDate
     )
+
+    fun getOriginalStartDateForReservation(reservationId: Int): LocalDate?
 }
