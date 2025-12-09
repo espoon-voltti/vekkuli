@@ -62,6 +62,7 @@ class TerminateReservationController(
         @RequestParam("explanation") explanation: String?,
         @RequestParam("messageTitle") messageTitle: String,
         @RequestParam("messageContent") messageContent: String,
+        @RequestParam("dontSendMessage") dontSendMessage: String?,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(
@@ -75,6 +76,8 @@ class TerminateReservationController(
         try {
             val user = request.getAuthenticatedUser() ?: throw Unauthorized()
 
+            val sendTerminationNoticeToCitizen = !(dontSendMessage == "on" ?: false)
+
             terminateService.terminateBoatSpaceReservationAsEmployee(
                 reservationId,
                 user.id,
@@ -82,7 +85,8 @@ class TerminateReservationController(
                 endDate ?: timeProvider.getCurrentDate(),
                 explanation,
                 messageTitle,
-                messageContent
+                messageContent,
+                sendTerminationNoticeToCitizen,
             )
 
             return ResponseEntity.ok(
