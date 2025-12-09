@@ -470,7 +470,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `going to boat space search page from citizen profile switch button limits available space choices`() {
-        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
@@ -527,7 +527,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `switching a slip space should have the boat type and boat length and width filters pre-filled from existing boat`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
