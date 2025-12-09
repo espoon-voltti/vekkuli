@@ -164,7 +164,7 @@ class ReservationCardInformation(
                          <span class="reservation-created-tooltip">Varaus tehty: ${formatAsFullDateTime(reservation.created)}<span>
                      </div>
                      <div class="field">
-                        <label class="label">Varauksen alkuperäinen alkamispäivä</label>
+                        <label class="label">${t("boatSpaceReservation.label.originalEndDate")}</label>
                         <div>${formatAsFullDate(originalReservationStartDate)}</div>
                     </div>
                  </div>
