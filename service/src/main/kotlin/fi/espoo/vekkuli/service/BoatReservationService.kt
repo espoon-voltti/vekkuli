@@ -1115,4 +1115,7 @@ class BoatReservationService(
             val reserver = reserverRepository.getReserverById(boat.reserverId)
             Pair(boat, reserver)
         }
+
+    fun getOriginalStartDateForReservation(reservation: BoatSpaceReservationDetails): LocalDate? =
+        boatSpaceReservationRepo.getOriginalStartDateForReservation(reservation.id)
 }

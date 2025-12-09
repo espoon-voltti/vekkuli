@@ -929,6 +929,33 @@ class JdbiBoatSpaceReservationRepository(
         }
     }
 
+    override fun getOriginalStartDateForReservation(reservationId: Int): LocalDate? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                        WITH RECURSIVE OriginalID AS (
+                        SELECT id, original_reservation_id, start_date
+                        FROM boat_space_reservation
+                        WHERE id = :id
+
+                        UNION ALL
+
+                        SELECT t.id, t.original_reservation_id, t.start_date
+                        FROM boat_space_reservation t
+                        JOIN OriginalId p ON t.id = p.original_reservation_id
+                    )
+
+                    SELECT start_date
+                    FROM OriginalId
+                    WHERE original_reservation_id IS NULL
+                    LIMIT 1;
+                    """.trimIndent()
+                )
+            query.bind("id", reservationId)
+            query.mapTo<LocalDate>().singleOrNull()
+        }
+
     private fun toBoatSpaceReservationDetailsList(
         query: Query,
         handle: Handle
