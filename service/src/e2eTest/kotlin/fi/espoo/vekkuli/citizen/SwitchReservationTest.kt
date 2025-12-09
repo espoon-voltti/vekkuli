@@ -502,7 +502,7 @@ class SwitchReservationTest : ReserveTest() {
 
     @Test
     fun `back button in space search page when switching should lead back to citizen details page`() {
-        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        mockTimeProvider(timeProvider, switchPeriodOutsideRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
         val citizenDetails = CitizenDetailsPage(page)
