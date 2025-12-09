@@ -262,7 +262,7 @@ export default React.memo(function Reservation({
                 {i18n.citizenPage.reservation.actions.terminate}
               </Button>
             )}
-            {canSwitch && (
+            {canSwitch && !canRenew && (
               <Button
                 type="primary"
                 action={() =>
