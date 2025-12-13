@@ -10741,9 +10741,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.94.2, sass@npm:^1.71.1":
-  version: 1.94.2
-  resolution: "sass@npm:1.94.2"
+"sass@npm:1.95.1, sass@npm:^1.71.1":
+  version: 1.95.1
+  resolution: "sass@npm:1.95.1"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
     chokidar: "npm:^4.0.0"
@@ -10754,7 +10754,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: 10/e60c214ea93677740c9ddfad55c77fd433255bbfdd9faba137acf1215bed5ba6ad9d83efea81feb87a89283931d01f0435227e3fff37c65c263e0ee05f885328
+  checksum: 10/548520f8e341d45cde8bcdce5bbe442a874ec4daef658f8caf6fb3ca62f6aacba61411e76b8a26efb25b6d48cfa23af10684bde11010780f68adff43594851f8
   languageName: node
   linkType: hard
 
@@ -12167,7 +12167,7 @@ __metadata:
     react-dom: "npm:19.2.1"
     react-focus-on: "npm:3.10.1"
     react-router: "npm:7.10.1"
-    sass: "npm:1.94.2"
+    sass: "npm:1.95.1"
     sass-loader: "npm:16.0.6"
     seamless-scroll-polyfill: "npm:2.3.4"
     style-loader: "npm:4.0.0"
