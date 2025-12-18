@@ -203,8 +203,7 @@ export default {
       },
       footNote:
         '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata laituri-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
-      footNote2:
-        ''
+      footNote2: ''
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'

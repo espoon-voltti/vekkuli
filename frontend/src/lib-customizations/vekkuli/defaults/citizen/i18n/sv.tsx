@@ -202,8 +202,7 @@ const sv: Translations = {
       },
       footNote:
         '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
-      footNote2:
-        ''
+      footNote2: ''
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'

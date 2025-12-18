@@ -202,8 +202,7 @@ const en: Translations = {
       },
       footNote:
         '* If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spaces as an Espoo resident. In this case, an Espoo resident must make the reservation.',
-      footNote2:
-        ''
+      footNote2: ''
     },
     button: {
       browseBoatSpaces: 'Browse boat spaces'
