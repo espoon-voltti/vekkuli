@@ -162,7 +162,7 @@ const sv: Translations = {
     },
     periods: {
       Slip: {
-        title: 'Boka båtplats 2025',
+        title: 'Boka båtplats 2026',
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
           (period: string) =>
@@ -172,7 +172,7 @@ const sv: Translations = {
         ]
       },
       Trailer: {
-        title: 'Boka trailerplats i Finno 2025',
+        title: 'Boka trailerplats i Finno 2026',
         season: (season: string) =>
           `Hyressäsong ${season}. Båt på trailer, sjösättning från ramp.`,
         periods: [
@@ -182,7 +182,7 @@ const sv: Translations = {
         ]
       },
       Winter: {
-        title: 'Boka vinterförvaringsplats 2025',
+        title: 'Boka vinterförvaringsplats 2026',
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -192,7 +192,7 @@ const sv: Translations = {
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplats i Käringbacken 2025 **',
+        title: 'Boka förvaringsplats i Käringbacken 2026',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -202,8 +202,7 @@ const sv: Translations = {
       },
       footNote:
         '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
-      footNote2:
-        '** Fram till 14.9.2025 kan alla boka förvaringsplats för den pågående säsongen.'
+      footNote2: ''
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
@@ -271,18 +270,18 @@ const sv: Translations = {
       switchInfoText:
         'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
       infoText: {
-        title: 'Bokning av båtplatser 2025',
+        title: 'Bokning av båtplatser 2026',
         periods: {
           newReservations:
-            'Bokning av båtplatser för Esbobor från och med 3.3. och för andra från 1.4.–30.9.2025. Bokningen är för båtsäsongen 10.6–14.9.2025.',
+            'Bokning av båtplatser för Esbobor från och med 2.3. och för andra från 1.4.–30.9.2026. Bokningen är för båtsäsongen 10.6–14.9.2026.',
           trailerReservations:
-            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025. Bokningen är för båtsäsongen 1.5.2025–30.4.2026.',
+            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2026. Bokningen är för båtsäsongen 1.5.2026–30.4.2027.',
           winter:
-            'Bokning av vinterplatser för Esbobor från 15.9.–31.12.2025. Bokningen är för vintersäsongen 15.9.2025–10.6.2026.',
+            'Bokning av vinterplatser för Esbobor från 15.9.–31.12.2026. Bokningen är för vintersäsongen 15.9.2026–10.6.2027.',
           storage1:
-            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2024–14.9.2025 är öppen till 14.9.2025.',
+            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2025–14.9.2026 är öppen till 14.9.2026.',
           storage2:
-            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
+            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2026–14.9.2027 öppnar den 15.9.2026.'
         }
       },
       modal: {
