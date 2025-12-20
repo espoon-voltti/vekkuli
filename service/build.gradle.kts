@@ -12,7 +12,7 @@ plugins {
     id("org.flywaydb.flyway") version "11.19.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("com.github.node-gradle.node") version "7.1.0"
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("plugin.serialization") version "2.3.0"
     id("org.owasp.dependencycheck") version "12.1.9"
 
     idea
