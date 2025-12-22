@@ -162,43 +162,48 @@ export default {
     },
     periods: {
       Slip: {
-        title: 'Laituripaikkojen varaaminen 2026',
-        season: (season: string) => `Veneilykausi ${season}`,
+        title: 'Laituripaikka 2026',
+        season: (season: string) => `Vuokrakausi ${season}`,
         periods: [
           (period: string) =>
             `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa laituripaikansa vuokrausta`,
           (period: string) =>
             `${period} vain espoolaiset* voivat varata laituripaikkoja`,
-          (period: string) => `${period} kaikki voivat varata laituripaikkoja`
+          (period: string) => `${period} kaikki voivat varata laituripaikkoja`,
+          (period: string) =>
+            `${period} laituripaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen)`
         ]
       },
       Trailer: {
-        title: 'Suomenojan traileripaikkojen varaaminen 2026',
+        title: 'Traileripaikka 2026',
         season: (season: string) =>
-          `Vuokrakausi ${season}. Vene trailerilla, vesillelasku luiskalta.`,
+          `Vuokrakausi ${season}. Vene trailerilla, vesillelasku luiskalta`,
         periods: [
           (period: string) =>
-            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta`,
-          (period: string) => `${period} kaikki voivat varata traileripaikkoja`
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikkansa vuokrausta`,
+          (period: string) => `${period} kaikki voivat varata traileripaikkoja`,
+          (period: string) =>
+            `${period} traileripaikan vaihtaminen toiseen traileripaikkaan (on mahdollista vasta paikan maksamisen jälkeen)`
         ]
       },
       Winter: {
-        title: 'Talvipaikkojen varaaminen 2026',
-        season: (season: string) => `Talvisäilytyskausi ${season}`,
+        title: 'Talvipaikka 2026',
+        season: (season: string) => `Vuokrakausi ${season}`,
         periods: [
           (period: string) =>
             `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikan vuokrausta`,
           (period: string) =>
-            `${period} vain espoolaiset* voivat varata talvipaikkoja`
+            `${period} vain espoolaiset* voivat varata talvipaikkoja`,
+          (period: string) =>
+            `${period} talvipaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen)`
         ]
       },
       Storage: {
-        title: 'Ämmäsmäen säilytyspaikan varaaminen 2026',
-        season: (season: string) => `Säilytyskausi ${season}`,
+        title: 'Ämmäsmäki 2026',
+        season: (season: string) => `Vuokrakausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} espoolaiset säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
-          (period: string) => `${period} kaikki voivat varata säilytyspaikkoja`
+            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2026-14.9.2027. Maksettuaan paikan, voi paikan vaihtaa seuraavalle kaudelle. Koko kauden ajan voi sekä varata uuden paikan että vaihtaa paikan`
         ]
       },
       footNote:
