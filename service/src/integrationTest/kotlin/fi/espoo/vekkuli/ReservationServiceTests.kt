@@ -479,7 +479,7 @@ class ReservationServiceTests : IntegrationTestBase() {
             assertEquals(1, paytrailPayments.get(0).items?.size)
             val item = paytrailPayments.get(0).items?.get(0)
             assertEquals("329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100", item?.productCode)
-            assertEquals("Venepaikka 2025 Haukilahti A 001", item?.description)
+            assertEquals("Venepaikka ${LocalDate.now().year} Haukilahti A 001", item?.description)
         }
 
     @Test
@@ -552,7 +552,7 @@ class ReservationServiceTests : IntegrationTestBase() {
             assertEquals(1, paytrailPayments.get(0).items?.size)
             val item = paytrailPayments.get(0).items?.get(0)
             assertEquals("329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100", item?.productCode)
-            assertEquals("Venepaikka 2025 Haukilahti A 001", item?.description)
+            assertEquals("Venepaikka ${LocalDate.now().year} Haukilahti A 001", item?.description)
         }
 
     @Test
