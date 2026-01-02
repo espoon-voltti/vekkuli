@@ -78,6 +78,11 @@ To format code
 
 - `./gradlew ktlintFormat`
 
+#### Updating email templates
+
+Email templates are in table email_template. To make any modifications in email templates update the file
+`src/main/resources/db/R__email_templates.sql` correspondingly
+
 ### API-gateway
 
 To start API-gateway in http://localhost:3000

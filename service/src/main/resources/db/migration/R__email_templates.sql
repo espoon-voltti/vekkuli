@@ -2,7 +2,7 @@ UPDATE email_template
 SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta',
     body    = E'Hyvä asiakas,
 
-Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu.{{citizenReserverFi}}
+Vesikulkuneuvolle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu.{{citizenReserverFi}}
 
 Vuokralainen:
 {{reserverName}}
@@ -16,12 +16,12 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
 Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -112,12 +112,12 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
 Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -196,7 +196,7 @@ UPDATE email_template
 SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
     body= E'Hyvä asiakas,
 
-Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu uudelle kaudelle.{{citizenReserverFi}}
+Vesikulkuneuvollesi varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu uudelle kaudelle.{{citizenReserverFi}}
 
 Lähetämme uuden kausitarran postitse.
 
@@ -212,7 +212,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -297,7 +297,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -382,7 +382,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -453,7 +453,7 @@ SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksen vaihdosta',
 
 Olet vaihtanut Espoon kaupungilta vuokraamaasi {{placeTypeFi}}a.
 
-HUOM! Vanha paikka päättyy heti vaihdon yhteydessä ja vene tulee siirtää pois vanhalta paikalta, sillä vanha paikkasi on vapautunut seuraavalle vuokrattavaksi. Venepaikkasi vuokrakausi säilyy ennallaan.
+HUOM! Vanha paikka päättyy heti vaihdon yhteydessä ja vesikulkuneuvo tulee siirtää pois vanhalta paikalta, sillä vanha paikkasi on vapautunut seuraavalle vuokrattavaksi. Venepaikkasi vuokrakausi säilyy ennallaan.
 
 Jos vaihdoit laituripaikkaa saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten jos tarvitset uuden avaimen (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.{{citizenReserverFi}}
 
@@ -471,7 +471,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -648,12 +648,12 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
 Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon  p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
-Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
 Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
 
@@ -909,7 +909,7 @@ Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
 Irtisanominen astuu voimaan *xx.xx.xxxx*.
 Irtisanomisen syy: *xxxxxx*
 
-Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
+Pyydämme teitä ystävällisesti siirtämään vesikulkuneuvonne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
 
 Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
 
