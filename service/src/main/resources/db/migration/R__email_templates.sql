@@ -16,7 +16,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Varauksesi on voimassa {{endDateFi}}.
 
-Saat myöhemmin postissa varausvahvistuksen ja kausitarran, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai traileri-, talvi- ja säilytyspaikalla, suojatelttaan, traileriin tai pukkiin.
+Saat myöhemmin postissa kausitarran ja varausvahvistuksen, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia).
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
 Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 040 634 3463 arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
@@ -33,7 +33,7 @@ venepaikat@espoo.fi
 
 Bästa kund,
 
-Den plats du har bokat för din vattenfarkost, {{placeTypeSv}}, är betald och bokningen har bekräftad.{{citizenReserverSv}}
+Den plats du har bokat för din vattenfarkost är betald och bokningen har bekräftad.{{citizenReserverSv}}
 
 Hyresgäst:
 {{reserverName}}
@@ -47,10 +47,10 @@ Platsens utrustning/förvaringssätt: {{amenitySv}}
 
 Din bokning är i kraft till {{endDateSv}}.
 
-Om du har bokat en bryggplats får du senare per post ett sänsongklistermärke för din båt och en hamnkarta med nyckelkodsuppgifter för att tillverka en nyckel till bryggans port (obs! Ingen port till F-bryggan i Björnviken). Klistermärket ska fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller bocken.
+Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port).
 
 Om du har bokat en förvaringsplats i Käringbacken:
-Upphämtning av passernyckeln till Käringbacken, ring 040 634 3463 vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn(Säljägarvägen 9) mot uppvisande av betalningskvitto.
+Upphämtning av passernyckeln till Käringbacken, ring 040 634 3463 vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -78,10 +78,10 @@ Amenities/storage type: {{amenityEn}}
 
 Your reservation is valid until {{endDateEn}}.
 
-You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s Fpier). The season sticker must be affixed in a visible place on the watercraft, or at the trailer, winter, and storage place — on the protective tent, trailer, or cradle.
+You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s Fpier).
 
 If you reserved a storage space in Ämmäsmäki:
-The pickup of the access badge must be arranged in advance by calling 046 877 3668 (Toimela) or 044 566 8690 (Pohjala) on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+The pickup of the access badge must be arranged in advance by calling 04040 634 3463 on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -515,9 +515,9 @@ venepaikat@espoo.fi
 
 Dear customer,
 
-You have changed your rented {{placeTypeEn}} in the City of Espoo.
+You have changed your rented place in the City of Espoo.
 
-NOTICE! The previous place ends immediately upon the change, and the watercraft must be removed from the old place, as it has been released for rental to the next user. Your berth rental period remains unchanged.
+NOTICE! The previous place ends immediately upon the change, and the watercraft must be removed from the old place, as it has been released for rental to the next user. Your rental period remains unchanged.
 
 You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s F pier). The season sticker must be affixed in a visible place on the watercraft, or at the winter and storage place — on the protective tent, trailer, or cradle.
 
@@ -578,8 +578,7 @@ Hyresgäst: {{reserverName}}
 
 Platsen måste vara tom och städad för nästa hyresgäst.
 
-Om du har sagt upp en brygg- eller trailerplats måste den tömmas omedelbart.
-Vinter- och Käringbacken-förvaringsplats kan användas till slutet av pågående säsong.
+Rätten till platsen upphör i och med uppsägningen och platsen ska tömmas omedelbart.
 
 Om du har sagt upp en förvaringsplats i Käringbacken:
 Elektroniska nyckeln måste returneras till Finno hamn (Hylkeenpyytäjäntie 9).
