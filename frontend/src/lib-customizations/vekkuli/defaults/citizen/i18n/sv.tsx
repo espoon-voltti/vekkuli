@@ -206,7 +206,7 @@ const sv: Translations = {
         ]
       },
       footNote:
-        '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
+        '* Om en båt är delägd och över 50% av ägarna och/eller innehavare bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
       footNote2: ''
     },
     button: {
@@ -551,10 +551,10 @@ const sv: Translations = {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
-            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att platsen ska kunna förnyas årligen. Annars är platsen tidsbegränsad.'
+            return 'Minst 50% av båtägarna och/eller innehavare måste vara bosatta i Esbo för att platsen ska kunna förnyas årligen. Annars är platsen tidsbegränsad.'
 
           case 'Winter':
-            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att ni ska kunna boka en vinterplats. Förvaringsplatser i Käringbacken kan bokas av alla oavsett hemkommun.'
+            return 'Minst 50% av båtägarna och/eller innehavare måste vara bosatta i Esbo för att ni ska kunna boka en vinterplats. Förvaringsplatser i Käringbacken kan bokas av alla oavsett hemkommun.'
         }
       }
       return undefined

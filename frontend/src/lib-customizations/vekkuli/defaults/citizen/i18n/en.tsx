@@ -206,7 +206,7 @@ const en: Translations = {
         ]
       },
       footNote:
-        '* If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spaces as an Espoo resident. In this case, an Espoo resident must make the reservation.',
+        '* If a boat is co-owned and over 50% of the owners and/or operators reside in Espoo, you can book berths, winter, or storage spaces as an Espoo resident. In this case, an Espoo resident must make the reservation.',
       footNote2: ''
     },
     button: {
@@ -572,9 +572,9 @@ const en: Translations = {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
-            return 'At least 50% of the boat owners must be residents of Espoo to renew the boat space annually. Otherwise, the space is fixed-term.'
+            return 'At least 50% of the boat owners and/or operators of the boat must be residents of Espoo to renew the boat space annually. Otherwise, the space is fixed-term.'
           case 'Winter':
-            return 'At least 50% of the boat owners must be residents of Espoo to reserve a winter space. Ämmäsmäki storage spaces can be reserved by anyone regardless of their home municipality.'
+            return 'At least 50% of the boat owners and/or operators must be residents of Espoo to reserve a winter space. Ämmäsmäki storage spaces can be reserved by anyone regardless of their home municipality.'
         }
       }
       return undefined
