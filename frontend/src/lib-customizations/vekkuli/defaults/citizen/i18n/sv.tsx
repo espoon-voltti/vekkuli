@@ -621,7 +621,7 @@ const sv: Translations = {
         termination: {
           title: 'Du säger upp båtplatsreservationen',
           spaceInformation:
-            'Observera att du omedelbart måste flytta din båt från brygg- eller trailerplatsen när du har sagt upp platsen. Vinter- eller Käringbackens förvaringsplats kan användas till slutet av den pågående säsongen.',
+            'Observera att platsen ska tömmas omedelbart efter att du har sagt upp platsen.',
           notEntitledToRefund:
             'Esbo stad beviljar ingen återbetalning för en betald båtplats.',
           confirm: 'Säg upp båtplatsen',
