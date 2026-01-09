@@ -100,7 +100,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should terminate the storage type reservation for the owner and keep the end date of original reservation`() {
+    fun `should terminate the storage type reservation today`() {
         val endDate = timeProvider.getCurrentDate().plusWeeks(2)
 
         val newReservation =
@@ -145,7 +145,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
         assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
-        assertEquals(endDate, terminatedReservation?.endDate, "End date is set to the original end date")
+        assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate, "Reservation end date is set to today")
     }
 
     @Test

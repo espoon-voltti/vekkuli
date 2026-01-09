@@ -221,11 +221,11 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
 
         assertNotNull(citizenDetailsPage.getReservationSection(expectedReservationId))
 
-        // Check that the boat space is not available for reservation yet
+        // Check that the boat space is available for reservation
         reserveBoatSpacePage.navigateToPage()
         storageFilterSection.trailerRadio.click()
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
-        assertThat(searchResultsSection.b007ReserveButton).isHidden()
+        assertThat(searchResultsSection.b007ReserveButton).isVisible()
     }
 }
