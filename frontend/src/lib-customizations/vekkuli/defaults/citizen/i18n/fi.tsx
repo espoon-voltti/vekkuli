@@ -207,7 +207,7 @@ export default {
         ]
       },
       footNote:
-        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata laituri-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
+        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista ja/tai haltijoista asuu Espoossa, voitte varata laituri-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
       footNote2: ''
     },
     button: {
@@ -555,10 +555,10 @@ export default {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
-            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.'
+            return 'Vähintään 50% veneen omistajista ja/tai haltijoista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.'
 
           case 'Winter':
-            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta saatte varata talvipaikan. Ämmäsmäen säilytyspaikkoja saa varata kaikki kotikunnasta riippumatta.'
+            return 'Vähintään 50% veneen omistajista ja/tai haltijoista tulee olla Espoolaisia, jotta saatte varata talvipaikan. Ämmäsmäen säilytyspaikkoja saa varata kaikki kotikunnasta riippumatta.'
         }
       }
       return undefined
@@ -624,7 +624,7 @@ export default {
         termination: {
           title: 'Olet irtisanomassa venepaikkaa:',
           spaceInformation:
-            'Huomioithan, että laituri- tai traileripaikka tulee tyhjentää välittömästi, kun olet irtisanonut paikan. Talvi- tai Ämmäsmäen säilytyspaikka on käytettävissä kuluvan kauden loppuun asti.',
+            'Huomioithan, että paikka tulee tyhjentää välittömästi, kun olet irtisanonut paikan.',
           notEntitledToRefund:
             'Espoon kaupunki ei myönnä hyvitystä maksetusta venepaikasta.',
           confirm: 'Irtisano venepaikka',
