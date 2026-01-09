@@ -39,19 +39,11 @@ class TerminateReservationService(
         val reservation = reservationService.getBoatSpaceReservation(reservationId) ?: throw BadRequest("Reservation not found")
 
         val terminatedReservation =
-            when (reservation.type) {
-                BoatSpaceType.Trailer,
-                BoatSpaceType.Slip ->
-                    executeBoatSpaceReservationTerminationAsOwner(
-                        reservationId,
-                        timeProvider.getCurrentDate()
-                    )
-                BoatSpaceType.Storage, BoatSpaceType.Winter ->
-                    executeBoatSpaceReservationTerminationAsOwner(
-                        reservationId,
-                        reservation.endDate
-                    )
-            }
+            executeBoatSpaceReservationTerminationAsOwner(
+                reservationId,
+                timeProvider.getCurrentDate()
+            )
+
         reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
         sendTerminationNotice(terminatedReservation, terminatorId)
