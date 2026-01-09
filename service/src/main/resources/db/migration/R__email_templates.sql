@@ -546,7 +546,7 @@ WHERE id = 'reservation_switched_by_citizen';
 
 UPDATE email_template
 SET subject = 'Vahvistus Espoon kaupungin venepaikan irtisanomisesta',
-    body= E'Hei!,
+    body= E'Hei,
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu.
 
@@ -568,7 +568,7 @@ venepaikat@espoo.fi
 
 **************************************************
 
-Hej!
+Hej,
 
 {{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
 
@@ -591,7 +591,7 @@ venepaikat@espoo.fi
 
 **************************************************
 
-Hello!,
+Hello,
 
 The {{placeTypeEn}} {{name}} in the City of Espoo has been terminated.
 
@@ -614,7 +614,7 @@ WHERE id = 'reservation_termination_by_citizen';
 
 UPDATE email_template
 SET subject = 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}',
-    body= E'Hei!
+    body= E'Hei,
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}
 
