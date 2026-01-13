@@ -1136,7 +1136,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         page.waitForCondition { reservationPriceInfo.isVisible }
         assertThat(reservationPriceInfo)
             .hasText(
-                "Reserver Leo Korhonen has a 50 % discount. After the discount, price of the boat space is $discountedPrice €"
+                "Reserver Leo Korhonen has a 50 % discount. After the discount, price of the boat place is $discountedPrice €"
             )
 
         // Fill in the boat information
@@ -1153,7 +1153,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val discountInfo = invoicePage.getByDataTestId("invoice-discount-info")
         assertEquals(
             discountInfo.innerText(),
-            "Customer discount of $discountPercentage% taken into account.\nOriginal price of the boat space ${
+            "Customer discount of $discountPercentage% taken into account.\nOriginal price of the boat place ${
                 priceWithTax.replace(
                     ",",
                     "."
@@ -1335,7 +1335,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoiceDetails.confirmModalSubmit.click()
         }
         assertThat(citizenDetails.renewReservationButton(1)).isHidden()
-        assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
+        assertThat(citizenDetails.reservationListCards).containsText("Boat place: Haukilahti B 001")
 
         citizenDetails.paymentsNavi.click()
 
