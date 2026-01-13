@@ -455,7 +455,7 @@ Olet vaihtanut Espoon kaupungilta vuokraamaasi {{placeTypeFi}}a.
 
 HUOM! Vanha paikka päättyy heti vaihdon yhteydessä ja vesikulkuneuvo tulee siirtää pois vanhalta paikalta, sillä vanha paikkasi on vapautunut seuraavalle vuokrattavaksi. Venepaikkasi vuokrakausi säilyy ennallaan.
 
-Saat myöhemmin postissa varausvahvistuksen ja kausitarran, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai talvi- ja säilytyspaikalla, suojatelttaan, traileriin tai pukkiin.{{citizenReserverFi}}
+Saat myöhemmin postissa kausitarran ja varausvahvistuksen, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia).{{citizenReserverFi}}
 
 Uusi paikka:
 
@@ -487,7 +487,7 @@ Du har bytt din hyrda {{placeTypeSv}} i Esbo stad.
 
 OBS! Den gamla platsen upphör genast i samband med bytet och vattenfarkosten ska flyttas från den gamla platsen, eftersom den gamla platsen har blivit ledig att hyras ut till nästa kund. Hyresperioden för din båtplats förblir oförändrad.
 
-Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port). Säsongsklistermärket ska fästas på ett synligt ställe på vattenfarkosten eller på vinter-, trailer- eller förvaringsplatsen på skyddstält, trailer eller bock. {{citizenReserverSv}}
+Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port).{{citizenReserverSv}}
 
 Ny plats:
 
@@ -519,7 +519,7 @@ You have changed your rented place in the City of Espoo.
 
 NOTICE! The previous place ends immediately upon the change, and the watercraft must be removed from the old place, as it has been released for rental to the next user. Your rental period remains unchanged.
 
-You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s F pier). The season sticker must be affixed in a visible place on the watercraft, or at the winter and storage place — on the protective tent, trailer, or cradle.
+You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s F pier).
 
 New location:
 
