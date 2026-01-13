@@ -145,7 +145,7 @@ Platsens utrustning/förvaringssätt: {{amenitySv}}
 
 Bokningen gäller till {{endDateSv}}.
 
-Om du har bokat en bryggplats får du senare per post ett sänsongklistermärke för din båt och en hamnkarta med nyckelkodsuppgifter för att tillverka en nyckel till bryggans port (obs! Ingen port till F-bryggan i Björnviken). Klistermärket ska fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller bocken.
+Om du har bokat en båtplats får du senare per post ett sänsongklistermärke för din båt och en hamnkarta med nyckelkodsuppgifter för att tillverka en nyckel till bryggans port (obs! Ingen port till F-bryggan i Björnviken). Klistermärket ska fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller bocken.
 
 Om du har bokat en förvaringsplats i Käringbacken:
 För att få tillgång till en elektronisk portnyckel ska man i förväg komma överrens om upphämtning av nyckeln på telefonnummer 046 877 3668 (Toimela) eller 044 566 8690 (Pohjala) vardagar mellan 8-14. Upphämtning av nyckeln från Finno hamn (Hylkeenpyytäjäntie 9) får du genoma att visa kvittot på den betalda platsen.
@@ -827,7 +827,7 @@ Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du ka
 Om säsongsavgiften inte har betalats senast {{endDate}}, sägs platsen upp och blir tillgänglig för andra.
 
 Tider för förnyelse av plats:
-Bryggplats: 7.–31.1.
+Båtplats: 7.–31.1.
 Trailerplats: 1.–30.4.
 Vinterplats: 15.8.–14.9.
 Förvaringsplats i Käringbacken: 15.8.–14.9.
