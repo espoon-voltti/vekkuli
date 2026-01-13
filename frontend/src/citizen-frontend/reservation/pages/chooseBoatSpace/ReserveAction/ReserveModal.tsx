@@ -48,6 +48,7 @@ export default React.memo(function ReserveModal({
               <SectionTitle>
                 {i18n.reservation.searchPage.modal.reservingBoatSpace}
               </SectionTitle>
+              <span>({i18n.reservation.searchPage.modal.reservingBoatSpaceWarning})</span>
             </Column>
             <Column isFull>
               <Columns>
