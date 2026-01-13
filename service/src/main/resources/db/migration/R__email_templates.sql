@@ -129,7 +129,7 @@ venepaikat@espoo.fi
 
 Bästa kund,
 
-Vi har bokat en  {{placeTypeSv}} {{name}} från Esbo stad till dig.
+Vi har bokat en {{placeTypeSv}} {{name}} från Esbo stad till dig.
 
 Fakturan skickas till {{invoiceAddressSv}}. För att bekräfta bokningen, betala platsen senast på förfallodatumet. Om betalningen uteblir annulleras bokningen och platsen blir tillgänglig för andra. När betalningen har mottagits på vårt konto skickar vi information om nyckeln till bryggans port samt klistermärket för din båt per post.
 
@@ -143,7 +143,7 @@ Platsens bredd: {{width}}
 Platsens längd: {{length}}
 Platsens utrustning/förvaringssätt: {{amenitySv}}
 
-Bokningen gäller till {{endDateSv}}.
+Bokningen gäller {{endDateSv}}.
 
 Om du har bokat en båtplats får du senare per post ett sänsongklistermärke för din båt och en hamnkarta med nyckelkodsuppgifter för att tillverka en nyckel till bryggans port (obs! Ingen port till F-bryggan i Björnviken). Klistermärket ska fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller bocken.
 
@@ -176,7 +176,7 @@ Width: {{width}}
 Length: {{length}}
 Amenities/storage type: {{amenityEn}}
 
-Your reservation is valid until {{endDateEn}}.
+Your reservation is valid {{endDateEn}}.
 
 If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer or stand.
 
