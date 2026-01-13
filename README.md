@@ -1,6 +1,6 @@
 # Vekkuli
 
-A boat space self reservation system.
+A boat place self reservation system.
 
 ## Technical overview
 
