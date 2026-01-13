@@ -80,7 +80,7 @@ Your reservation is valid {{endDateEn}}.
 
 You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s Fpier).
 
-If you reserved a storage space in Ämmäsmäki:
+If you reserved a storage place in Ämmäsmäki:
 The pickup of the access badge must be arranged in advance by calling 04040 634 3463 on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
@@ -164,7 +164,7 @@ Dear customer,
 
 You have reserved a {{placeTypeEn}} {{name}} from the City of Espoo.
 
-The invoice will be sent to {{invoiceAddressEn}}. To confirm your booking, please pay for the spot before the due date. If unpaid, the booking will be canceled and made available for others. Once payment is received, we will send additional information about the dock gate key via email and the season sticker by mail.
+The invoice will be sent to {{invoiceAddressEn}}. To confirm your booking, please pay for the place before the due date. If unpaid, the booking will be canceled and made available for others. Once payment is received, we will send additional information about the dock gate key via email and the season sticker by mail.
 
 Tenant:
 {{reserverName}}
@@ -178,9 +178,9 @@ Amenities/storage type: {{amenityEn}}
 
 Your reservation is valid {{endDateEn}}.
 
-If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer or stand.
+If you reserved a dock place, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage place, on the protective tent, trailer or stand.
 
-If you reserved a storage space in Ämmäsmäki:
+If you reserved a storage place in Ämmäsmäki:
 The collection of the access tag for Ämmämäki must be arranged in advance by calling tel. 040 634 3463 on weekdays between 8:00 and 14:00. The access tag is collected from the Suomenoja harbor (Hylkeenpyytäjäntie 9) upon presentation of the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
@@ -339,7 +339,7 @@ Dear customer,
 
 Your reservation for {{placeTypeEn}} has been extended for a new season.
 
-The invoice will be sent to {{invoiceAddressEn}}. To confirm your reservation, please pay for the spot before the due date. An unpaid spot will be canceled and made available for others.
+The invoice will be sent to {{invoiceAddressEn}}. To confirm your reservation, please pay for the place before the due date. An unpaid place will be canceled and made available for others.
 
 Tenant:
 {{reserverName}}
@@ -598,11 +598,11 @@ Terminator: {{terminatorName}}
 
 Tenant: {{reserverName}}
 
-The space must be empty and cleaned for the next tenant.
+The place must be empty and cleaned for the next tenant.
 
 Upon termination, the right to the place has ceased, and the premises must be vacated without delay.
 
-If you have terminated a storage space in Ämmäsmäki:
+If you have terminated a storage place in Ämmäsmäki:
 The access badge must be returned to the Finno harbor (Hylkeenpyytäjäntie 9).
 
 Best regards,
@@ -706,9 +706,9 @@ Amenities/storage type: {{amenityEn}}
 
 Your reservation is valid until {{endDateEn}}.
 
-If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer or stand.
+If you reserved a dock place, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage place, on the protective tent, trailer or stand.
 
-If you reserved a storage space in Ämmäsmäki:
+If you reserved a storage place in Ämmäsmäki:
 The pickup of the access badge must be arranged in advance by calling 046 877 3668 (Toimela) or 044 566 8690 (Pohjala) on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
@@ -764,9 +764,9 @@ Your reservation for {{placeTypeEn}} {{name}} in the City of Espoo is coming to 
 
 Tenant: {{reserverName}}
 
-Once the rental period ends, the space must be emptied and cleaned.
+Once the rental period ends, the place must be emptied and cleaned.
 
-If you rented a storage space in Ämmäsmäki, the access badge must be returned to the Finno harbor (Hylkeenpyytäjäntie 9).
+If you rented a storage place in Ämmäsmäki, the access badge must be returned to the Finno harbor (Hylkeenpyytäjäntie 9).
 
 You can check reservation periods and make a new reservation at https://varaukset.espoo.fi.
 
@@ -861,18 +861,18 @@ Dear customer,
 
 It is time to renew your reservation for {{placeTypeEn}} for the next season.
 
-Secure your spot by paying the seasonal fee.
+Secure your place by paying the seasonal fee.
 You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. You will find the seasonal payment button under your reservation details. Online banking credentials are required for payment.
 
-If the seasonal fee is not paid by {{endDate}}, your spot will be canceled and made available for others.
+If the seasonal fee is not paid by {{endDate}}, your place will be canceled and made available for others.
 
-Deadlines for renewing a spot:
-Dock space: 7.–31.1.
-Trailer space: 1.–30.4.
+Deadlines for renewing a place:
+Dock place: 7.–31.1.
+Trailer place: 1.–30.4.
 Winter storage: 15.8.–14.9.
-Storage space in Ämmäsmäki: 15.8.–14.9.
+Storage place in Ämmäsmäki: 15.8.–14.9.
 
-Spot to be renewed:
+Place to be renewed:
 
 Tenant: {{reserverName}}
 
@@ -883,7 +883,7 @@ Width: {{width}}
 Length: {{length}}
 Amenities/storage type: {{amenityEn}}
 
-Please note that if your home municipality is no longer Espoo, you may not be eligible to renew your spot.
+Please note that if your home municipality is no longer Espoo, you may not be eligible to renew your place.
 
 If you are unable to make the payment, please contact us via email at venepaikat@espoo.fi or by phone at 09 81658984. Phone hours can be found on our website.
 
@@ -954,7 +954,7 @@ The rental agreement for the {{placeTypeEn}} {{name}} has ended.
 
 Tenant: {{reserverName}}
 
-Once the rental period ends, the space must be emptied and cleaned.
+Once the rental period ends, the place must be emptied and cleaned.
 
 You can check reservation periods and make a new reservation at https://varaukset.espoo.fi.
 
