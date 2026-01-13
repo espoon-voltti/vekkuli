@@ -18,7 +18,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin laituripaikkavarauksesta",
-        "Veneelle varaamasi laituripaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi laituripaikka on maksettu ja varaus on vahvistettu.",
         sendAndAssertSendCount
     )
 
@@ -74,7 +74,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin laituripaikkavarauksesta",
-        "Veneelle varaamasi laituripaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi laituripaikka on maksettu ja varaus on vahvistettu.",
         endDate,
         sendAndAssertSendCount
     )
@@ -85,7 +85,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin säilytyspaikkavarauksesta",
-        "Veneelle varaamasi säilytyspaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi säilytyspaikka on maksettu ja varaus on vahvistettu.",
         sendAndAssertSendCount
     )
 
@@ -139,7 +139,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin traileripaikkavarauksesta",
-        "Veneelle varaamasi traileripaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi traileripaikka on maksettu ja varaus on vahvistettu.",
         sendAndAssertSendCount
     )
 
@@ -194,7 +194,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin traileripaikkavarauksesta",
-        "Veneelle varaamasi traileripaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi traileripaikka on maksettu ja varaus on vahvistettu.",
         endDate,
         sendAndAssertSendCount
     )
@@ -205,7 +205,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin talvipaikkavarauksesta",
-        "Veneelle varaamasi talvipaikka on maksettu ja varaus on vahvistettu.",
+        "Vesikulkuneuvolle varaamasi talvipaikka on maksettu ja varaus on vahvistettu.",
         sendAndAssertSendCount
     )
 
@@ -260,7 +260,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin laituripaikkavarauksen jatkaminen",
-        "Veneelle varaamasi laituripaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
+        "Vesikulkuneuvolle varaamasi laituripaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
         sendAndAssertSendCount
     )
 
@@ -291,7 +291,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin säilytyspaikkavarauksen jatkaminen",
-        "Veneelle varaamasi säilytyspaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
+        "Vesikulkuneuvolle varaamasi säilytyspaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
         sendAndAssertSendCount
     )
 
@@ -321,7 +321,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin talvipaikkavarauksen jatkaminen",
-        "Veneelle varaamasi talvipaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
+        "Vesikulkuneuvolle varaamasi talvipaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
         sendAndAssertSendCount
     )
 
@@ -351,7 +351,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin traileripaikkavarauksen jatkaminen",
-        "Veneelle varaamasi traileripaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
+        "Vesikulkuneuvolle varaamasi traileripaikka on maksettu ja varaus on vahvistettu uudelle kaudelle.",
         sendAndAssertSendCount
     )
 
@@ -495,7 +495,8 @@ open class EmailSendingTest : PlaywrightTest() {
                         email.subject == emailSubject &&
                         email.body.contains(validity) &&
                         email.body.contains(contentSnippet)
-                }
+                },
+                "Expected any email to have subject $emailSubject and validity $validity and $contentSnippet\n ${SendEmailServiceMock.emails}"
             )
         }
     }

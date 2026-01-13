@@ -22,6 +22,7 @@ fun createAndSeedDatabase(jdbi: Jdbi) {
                 WHERE table_schema = 'public'
                 AND table_type = 'BASE TABLE'
                 AND table_name <> 'flyway_schema_history'
+                AND table_name <> 'email_template'
               );
               EXECUTE (
                 SELECT 'SELECT ' || coalesce(string_agg(format('setval(%L, %L, false)', sequence_name, start_value), ', '), '')
