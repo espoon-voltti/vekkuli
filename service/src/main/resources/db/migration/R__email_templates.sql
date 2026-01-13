@@ -792,7 +792,7 @@ Traileripaikka: 8.–30.4.
 Talvipaikka: 23.8.–14.9.
 Säilytyspaikka Ämmäsmäellä: 23.8.–14.9.
 
-Jatkettava paikka:
+Jatkettava paikka: {{placeTypeFi}} {{name}}
 
 Paikan vuokraaja: {{reserverName}}
 
@@ -832,7 +832,7 @@ Trailerplats: 8.–30.4.
 Vinterplats: 23.8.–14.9.
 Förvaringsplats i Käringbacken: 23.8.–14.9.
 
-Plats att förnya:
+Plats att förnya: {{placeTypeSv}} {{name}}
 
 Hyresgäst: {{reserverName}}
 
@@ -872,7 +872,7 @@ Trailer place: 8.–30.4.
 Winter storage: 23.8.–14.9.
 Storage place in Ämmäsmäki: 23.8.–14.9.
 
-Place to be renewed:
+Place to be renewed: {{placeTypeEn}} {{name}}
 
 Tenant: {{reserverName}}
 
