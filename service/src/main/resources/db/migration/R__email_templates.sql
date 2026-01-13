@@ -787,10 +787,10 @@ Teet sen helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot
 Jos kausimaksua ei ole maksettu {{endDate}} mennessä, paikka irtisanoutuu ja vapautuu.
 
 Määräajat paikan jatkamiselle:
-Laituripaikka: 7.–31.1.
-Traileripaikka: 1.–30.4.
-Talvipaikka: 15.8.–14.9.
-Säilytyspaikka Ämmäsmäellä: 15.8.–14.9.
+Laituripaikka: 11.–31.1.
+Traileripaikka: 8.–30.4.
+Talvipaikka: 23.8.–14.9.
+Säilytyspaikka Ämmäsmäellä: 23.8.–14.9.
 
 Jatkettava paikka:
 
@@ -827,10 +827,10 @@ Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du ka
 Om säsongsavgiften inte har betalats senast {{endDate}}, sägs platsen upp och blir tillgänglig för andra.
 
 Tider för förnyelse av plats:
-Båtplats: 7.–31.1.
-Trailerplats: 1.–30.4.
-Vinterplats: 15.8.–14.9.
-Förvaringsplats i Käringbacken: 15.8.–14.9.
+Båtplats: 11.–31.1.
+Trailerplats: 8.–30.4.
+Vinterplats: 23.8.–14.9.
+Förvaringsplats i Käringbacken: 23.8.–14.9.
 
 Plats att förnya:
 
@@ -867,10 +867,10 @@ You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Yo
 If the seasonal fee is not paid by {{endDate}}, your place will be canceled and made available for others.
 
 Deadlines for renewing a place:
-Dock place: 7.–31.1.
-Trailer place: 1.–30.4.
-Winter storage: 15.8.–14.9.
-Storage place in Ämmäsmäki: 15.8.–14.9.
+Dock place: 11.–31.1.
+Trailer place: 8.–30.4.
+Winter storage: 23.8.–14.9.
+Storage place in Ämmäsmäki: 23.8.–14.9.
 
 Place to be renewed:
 
