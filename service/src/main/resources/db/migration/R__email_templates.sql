@@ -45,7 +45,7 @@ Platsens bredd: {{width}}
 Platsens längd: {{length}}
 Platsens utrustning/förvaringssätt: {{amenitySv}}
 
-Din bokning är i kraft till {{endDateSv}}.
+Din bokning är {{endDateSv}}.
 
 Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port).
 
@@ -76,7 +76,7 @@ Width: {{width}}
 Length: {{length}}
 Amenities/storage type: {{amenityEn}}
 
-Your reservation is valid until {{endDateEn}}.
+Your reservation is valid {{endDateEn}}.
 
 You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s Fpier).
 
