@@ -819,7 +819,7 @@ venepaikat@espoo.fi
 
 Bästa kund,
 
-Det är dags att förnya din bokning för {{placeTypeSv}} inför nästa säsong.
+Det är dags att förnya bokning för din {{placeTypeSv}} inför nästa säsong.
 
 Säkra din plats genom att betala säsongsavgiften.
 Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du kan förnya din plats via din bokning. För betalning krävs bankkoder.
@@ -847,7 +847,7 @@ Observera att om din hemkommun inte längre är Esbo kan du eventuellt inte för
 
 Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon 09 81658984. Telefontider finns på vår webbplats.
 
-Du kan byta din nuvarande plats via dina egna uppgifter. Platsbytet är möjligt först efter att säsongsavgiften har betalats.
+Du kan också byta din nuvarande plats till en annan via dina egna sidor. Du kan byta plats först efter att du betalat din nuvarande plats.
 
 Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
@@ -859,7 +859,7 @@ venepaikat@espoo.fi
 
 Dear customer,
 
-It is time to renew your reservation for {{placeTypeEn}} for the next season.
+It is time to renew the reservation for your {{placeTypeEn}} for the next season.
 
 Secure your place by paying the seasonal fee.
 You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. You will find the seasonal payment button under your reservation details. Online banking credentials are required for payment.

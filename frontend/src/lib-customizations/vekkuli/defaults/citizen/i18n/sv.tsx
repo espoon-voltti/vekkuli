@@ -292,7 +292,8 @@ const sv: Translations = {
       modal: {
         reserveNewSpace: 'Boka ny plats',
         reservingBoatSpace: 'Du håller på att boka en båtplats:',
-        reservingBoatSpaceWarning: 'Observera! Om förnyelseperioden pågår ska den gamla platsen betalas innan byte.',
+        reservingBoatSpaceWarning:
+          'Observera! Om förnyelseperioden pågår ska den gamla platsen betalas innan byte.',
         cannotReserveNewPlace:
           'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',
         currentPlaces: 'Din nuvarande plats:',

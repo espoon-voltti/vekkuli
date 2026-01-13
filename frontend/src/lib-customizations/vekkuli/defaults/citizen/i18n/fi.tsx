@@ -301,7 +301,8 @@ export default {
       modal: {
         reserveNewSpace: 'Varaan uuden paikan',
         reservingBoatSpace: 'Olet varaamassa paikkaa:',
-        reservingBoatSpaceWarning: 'Huom! Jos uusimiskausi on käynnissä, maksa vanha paikka ennen vaihtoa.',
+        reservingBoatSpaceWarning:
+          'Huom! Jos uusimiskausi on käynnissä, maksa vanha paikka ennen vaihtoa.',
         cannotReserveNewPlace:
           'Sinulla on jo kaksi paikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
         currentPlaces: 'Omat paikkasi:',
