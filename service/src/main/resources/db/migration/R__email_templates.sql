@@ -787,12 +787,12 @@ Teet sen helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot
 Jos kausimaksua ei ole maksettu {{endDate}} mennessä, paikka irtisanoutuu ja vapautuu.
 
 Määräajat paikan jatkamiselle:
-Laituripaikka: 7.–31.1.
-Traileripaikka: 1.–30.4.
-Talvipaikka: 15.8.–14.9.
-Säilytyspaikka Ämmäsmäellä: 15.8.–14.9.
+Laituripaikka: 11.–31.1.
+Traileripaikka: 8.–30.4.
+Talvipaikka: 23.8.–14.9.
+Säilytyspaikka Ämmäsmäellä: 23.8.–14.9.
 
-Jatkettava paikka:
+Jatkettava paikka: {{placeTypeFi}} {{name}}
 
 Paikan vuokraaja: {{reserverName}}
 
@@ -819,7 +819,7 @@ venepaikat@espoo.fi
 
 Bästa kund,
 
-Det är dags att förnya din bokning för {{placeTypeSv}} inför nästa säsong.
+Det är dags att förnya bokning för din {{placeTypeSv}} inför nästa säsong.
 
 Säkra din plats genom att betala säsongsavgiften.
 Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du kan förnya din plats via din bokning. För betalning krävs bankkoder.
@@ -827,12 +827,12 @@ Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du ka
 Om säsongsavgiften inte har betalats senast {{endDate}}, sägs platsen upp och blir tillgänglig för andra.
 
 Tider för förnyelse av plats:
-Båtplats: 7.–31.1.
-Trailerplats: 1.–30.4.
-Vinterplats: 15.8.–14.9.
-Förvaringsplats i Käringbacken: 15.8.–14.9.
+Båtplats: 11.–31.1.
+Trailerplats: 8.–30.4.
+Vinterplats: 23.8.–14.9.
+Förvaringsplats i Käringbacken: 23.8.–14.9.
 
-Plats att förnya:
+Plats att förnya: {{placeTypeSv}} {{name}}
 
 Hyresgäst: {{reserverName}}
 
@@ -847,7 +847,7 @@ Observera att om din hemkommun inte längre är Esbo kan du eventuellt inte för
 
 Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon 09 81658984. Telefontider finns på vår webbplats.
 
-Du kan byta din nuvarande plats via dina egna uppgifter. Platsbytet är möjligt först efter att säsongsavgiften har betalats.
+Du kan också byta din nuvarande plats till en annan via dina egna sidor. Du kan byta plats först efter att du betalat din nuvarande plats.
 
 Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
@@ -859,7 +859,7 @@ venepaikat@espoo.fi
 
 Dear customer,
 
-It is time to renew your reservation for {{placeTypeEn}} for the next season.
+It is time to renew the reservation for your {{placeTypeEn}} for the next season.
 
 Secure your place by paying the seasonal fee.
 You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. You will find the seasonal payment button under your reservation details. Online banking credentials are required for payment.
@@ -867,12 +867,12 @@ You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Yo
 If the seasonal fee is not paid by {{endDate}}, your place will be canceled and made available for others.
 
 Deadlines for renewing a place:
-Dock place: 7.–31.1.
-Trailer place: 1.–30.4.
-Winter storage: 15.8.–14.9.
-Storage place in Ämmäsmäki: 15.8.–14.9.
+Dock place: 11.–31.1.
+Trailer place: 8.–30.4.
+Winter storage: 23.8.–14.9.
+Storage place in Ämmäsmäki: 23.8.–14.9.
 
-Place to be renewed:
+Place to be renewed: {{placeTypeEn}} {{name}}
 
 Tenant: {{reserverName}}
 
