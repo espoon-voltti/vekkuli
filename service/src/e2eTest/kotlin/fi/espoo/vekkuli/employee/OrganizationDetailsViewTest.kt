@@ -41,7 +41,7 @@ class OrganizationDetailsViewTest : ReserveTest() {
 
         invoiceDetails.sendButton.click()
         assertThat(organizationDetailsPage.renewReservationButton(reservationId)).isHidden()
-        assertThat(organizationDetailsPage.reservationListCards).containsText("Boat space: Haukilahti B 005")
+        assertThat(organizationDetailsPage.reservationListCards).containsText("Boat place: Haukilahti B 005")
 
         messageService.sendScheduledEmails()
         assertEquals(2, SendEmailServiceMock.emails.size)

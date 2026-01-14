@@ -300,6 +300,8 @@ const en: Translations = {
       modal: {
         reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
+        reservingBoatSpaceWarning:
+          'Note! If the renewal period is ongoing, please pay for the old place before making the change.',
         cannotReserveNewPlace:
           'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
         currentPlaces: 'Your current spaces:',

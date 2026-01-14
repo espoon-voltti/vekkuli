@@ -194,6 +194,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val confirmationPage = ConfirmationPage(page)
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("31.12.2024 asti")
+
         assertEmailIsSentOfCitizensFixedTermSlipReservation()
         assertCorrectPaymentForReserver("korhonen", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
     }
