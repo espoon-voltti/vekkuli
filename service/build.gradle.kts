@@ -135,7 +135,7 @@ dependencies {
     implementation("com.sun.mail:jakarta.mail:2.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.commonmark:commonmark:0.27.0")
+    implementation("org.commonmark:commonmark:0.27.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
