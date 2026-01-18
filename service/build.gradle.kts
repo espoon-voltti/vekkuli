@@ -24,7 +24,7 @@ ktlint {
 
 buildscript {
     dependencies {
-        classpath("org.postgresql:postgresql:42.7.8")
+        classpath("org.postgresql:postgresql:42.7.9")
         classpath("org.flywaydb:flyway-database-postgresql:11.20.2")
     }
 }
@@ -91,7 +91,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.flywaydb:flyway-core:11.20.2")
     implementation("org.flywaydb:flyway-database-postgresql:11.20.2")
-    implementation("org.postgresql:postgresql:42.7.8")
+    implementation("org.postgresql:postgresql:42.7.9")
     implementation(platform("org.jdbi:jdbi3-bom:3.51.0"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
