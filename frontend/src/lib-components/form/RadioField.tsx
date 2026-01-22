@@ -83,8 +83,7 @@ function RadioField_<T>({
 export const RadioField = React.memo(RadioField_) as typeof RadioField_
 
 interface RadioFieldInputProps
-  extends Omit<BaseFieldProps, 'value'>,
-    RadioOption {
+  extends Omit<BaseFieldProps, 'value'>, RadioOption {
   id: string
   name?: string
   selected: boolean
