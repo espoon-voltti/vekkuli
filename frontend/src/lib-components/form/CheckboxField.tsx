@@ -52,6 +52,7 @@ function CheckboxFieldR<T>({
       }))
     }
   }
+
   const readOnlyValue = state !== undefined ? state.domValues[0] : value
   return (
     <div>
@@ -104,8 +105,10 @@ function CheckboxFieldR<T>({
 
 export const CheckboxField = React.memo(CheckboxFieldR) as typeof CheckboxFieldR
 
-interface CheckboxFieldInputProps
-  extends Omit<BaseFieldProps<boolean>, 'value'> {
+interface CheckboxFieldInputProps extends Omit<
+  BaseFieldProps<boolean>,
+  'value'
+> {
   id: string
   name?: string
   value: string
