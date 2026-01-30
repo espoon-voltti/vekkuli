@@ -136,7 +136,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.27.1")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
     implementation("ch.qos.logback:logback-classic:1.5.25")
