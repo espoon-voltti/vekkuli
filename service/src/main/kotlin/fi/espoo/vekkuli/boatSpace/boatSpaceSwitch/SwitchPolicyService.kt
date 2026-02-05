@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.validateReservationIsActive
@@ -16,7 +17,8 @@ class SwitchPolicyService(
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
     private val reserverRepo: ReserverRepository,
-    private val boatSpaceRepository: BoatSpaceRepository
+    private val boatSpaceRepository: BoatSpaceRepository,
+    private val renewalPolicyService: RenewalPolicyService,
 ) {
     fun citizenCanSwitchToReservation(
         originalReservationId: Int,
@@ -57,6 +59,12 @@ class SwitchPolicyService(
 
         // Check the period is active
         if (!seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), boatSpace.type)) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        // Place must first be renewed before it can be switched
+        val citizenCanRenewReservation = renewalPolicyService.citizenCanRenewReservation(reservation.id, reserver.id)
+        if (citizenCanRenewReservation is ReservationResult.Success) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
