@@ -29,7 +29,7 @@ class PlaywrightTestWatcher : TestWatcher {
 
     override fun testFailed(
         context: ExtensionContext,
-        cause: Throwable
+        cause: Throwable?
     ) {
         val testInstance = context.testInstance.orElse(null)
         if (testInstance is PlaywrightTest) {

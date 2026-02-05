@@ -76,7 +76,7 @@ class AttachmentController(
     fun content(
         request: HttpServletRequest,
         @PathVariable attachmentId: UUID,
-    ): ResponseEntity<ByteArray?> {
+    ): ResponseEntity<ByteArray> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "OPEN_ATTACHMENT", mapOf("targetId" to attachmentId.toString()))
         }
@@ -95,7 +95,7 @@ class AttachmentController(
                 .body(attachment.data)
         } catch (e: Exception) {
             logger.error(e) { "Error opening an attachment" }
-            return ResponseEntity.badRequest().body(null)
+            return ResponseEntity.badRequest().build()
         }
     }
 

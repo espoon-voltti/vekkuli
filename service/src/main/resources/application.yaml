@@ -1,5 +1,8 @@
 environment: ${ENVIRONMENT:local}
 spring:
+  threads:
+    virtual:
+      enabled: false
   profiles:
     active: ${ENVIRONMENT:local}
   servlet:
