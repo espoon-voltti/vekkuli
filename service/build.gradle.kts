@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.util.regex.Pattern
 
 plugins {
-    id("org.springframework.boot") version "3.5.10"
+    id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.spring") version "2.3.0"
@@ -68,6 +68,7 @@ val integrationTestImplementation: Configuration by configurations.getting {
 }
 
 configurations["e2eTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
 
 idea {
     module {
@@ -85,9 +86,11 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.flywaydb:flyway-core:11.20.3")
     implementation("org.flywaydb:flyway-database-postgresql:11.20.3")
@@ -99,7 +102,10 @@ dependencies {
     implementation("org.jdbi:jdbi3-postgres")
 
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.0"))
+    implementation("com.fasterxml.jackson.core:jackson-core")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     implementation("com.auth0:java-jwt:4.5.0")
 
@@ -114,6 +120,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("com.microsoft.playwright:playwright:1.56.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -134,7 +141,7 @@ dependencies {
 
     implementation("com.sun.mail:jakarta.mail:2.0.2")
 
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-aspectj")
     implementation("org.commonmark:commonmark:0.27.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")

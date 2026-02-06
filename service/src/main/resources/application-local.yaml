@@ -16,6 +16,10 @@ spring:
     resources:
       static-locations: classpath:/public/
 
+server:
+  tomcat:
+    max-part-count: "100"
+
 vekkuli:
   email:
     enabled: false

@@ -585,7 +585,19 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bs.*, 
+                    SELECT 
+                    bs.id,
+                    bs.type,
+                    bs.section,
+                    bs.place_number,
+                    bs.amenity,
+                    bs.width_cm,
+                    bs.length_cm,
+                    bs.is_active AS active,
+                    bs.location_id,
+                    bs.price_id,
+                    bs.created,
+                    bs.updated, 
                     location.name as location_name, 
                     location.address as location_address, 
                     bsr,

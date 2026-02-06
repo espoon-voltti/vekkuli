@@ -13,8 +13,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @ExtendWith(SpringExtension::class)
@@ -33,7 +33,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Autowired
     lateinit var invoiceService: BoatSpaceInvoiceService
 
-    @MockBean
+    @MockitoBean
     lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
 
     @BeforeEach

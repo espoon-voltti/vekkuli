@@ -105,8 +105,7 @@ open class ReservationService(
             throw Conflict("Boat space is already reserved")
         }
 
-        // Boat space has to be active to be reservable
-        if (!boatSpace.isActive) {
+        if (!boatSpace.active) {
             throw Forbidden("Boat space is not active")
         }
 

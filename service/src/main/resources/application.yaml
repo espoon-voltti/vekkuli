@@ -1,5 +1,8 @@
 environment: ${ENVIRONMENT:local}
 spring:
+  threads:
+    virtual:
+      enabled: false
   profiles:
     active: ${ENVIRONMENT:local}
   servlet:
@@ -24,6 +27,11 @@ spring:
     resources:
       static-locations: classpath:/public/
 
+server:
+  tomcat:
+    max-part-count: "100"
+
+
 vekkuli:
   email:
     enabled: ${EMAIL_ENABLED}
@@ -39,4 +47,3 @@ vekkuli:
     api_url: ${ESPI_API_URL:https://integration.internal.staging.sst.espoon-voltti.fi}
     api_username: ${ESPI_API_USERNAME:vekkuli}
     api_password: ${ESPI_API_PASSWORD:password}
-

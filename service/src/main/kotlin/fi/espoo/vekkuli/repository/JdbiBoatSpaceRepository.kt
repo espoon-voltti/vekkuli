@@ -194,7 +194,18 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 SELECT 
-                     bs.*,
+                     bs.id,
+                     bs.type,
+                     bs.section,
+                     bs.place_number,
+                     bs.amenity,
+                     bs.width_cm,
+                     bs.length_cm,
+                     bs.is_active AS active,
+                     bs.location_id,
+                     bs.price_id,
+                     bs.created,
+                     bs.updated,
                      location.name as location_name, 
                      location.address as location_address,
                      ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
@@ -246,7 +257,7 @@ class JdbiBoatSpaceRepository(
                     bs.amenity,
                     bs.width_cm,
                     bs.length_cm,
-                    bs.is_active,
+                    bs.is_active AS active,
                     location.name AS location_name, 
                     location.address AS location_address,
                     price.price_cents,
@@ -316,7 +327,7 @@ class JdbiBoatSpaceRepository(
                     width_cm = COALESCE(:widthCm, width_cm),
                     length_cm = COALESCE(:lengthCm, length_cm),
                     price_id = COALESCE(:priceId, price_id),
-                    is_active = COALESCE(:isActive, is_active),
+                    is_active = COALESCE(:active, is_active),
                     updated = :currentTime
                 WHERE bs.id IN (<boatSpaceIds>)
                 """.trimIndent()
@@ -330,7 +341,7 @@ class JdbiBoatSpaceRepository(
             query.bind("widthCm", editBoatSpaceParams.widthCm)
             query.bind("lengthCm", editBoatSpaceParams.lengthCm)
             query.bind("priceId", editBoatSpaceParams.priceId)
-            query.bind("isActive", editBoatSpaceParams.isActive)
+            query.bind("active", editBoatSpaceParams.active)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.execute()
         }
@@ -394,7 +405,7 @@ class JdbiBoatSpaceRepository(
                     :lengthCm,
                     :currentTime,
                     :currentTime,
-                    :isActive
+                    :active
                 )
                 """.trimIndent()
             val query = handle.createUpdate(sql)
@@ -406,11 +417,11 @@ class JdbiBoatSpaceRepository(
             query.bind("amenity", params.amenity)
             query.bind("widthCm", params.widthCm)
             query.bind("lengthCm", params.lengthCm)
-            query.bind("isActive", params.isActive)
+            query.bind("active", params.active)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query
                 .executeAndReturnGeneratedKeys()
-                .mapTo(Int::class.java) // Assuming the ID is of type Long
+                .mapTo(Int::class.java)
                 .one()
         }
 

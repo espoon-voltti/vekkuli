@@ -23,7 +23,7 @@ data class ExistingReservationResponse(
     val endDate: LocalDate,
     val terminationDate: LocalDate?,
     val validity: ReservationValidity,
-    val isActive: Boolean,
+    val active: Boolean,
     val totalPrice: String,
     val vatValue: String,
     val storageType: StorageType?,
@@ -87,7 +87,7 @@ class ExistingReservationResponseMapper(
 
     fun toReservationResponse(
         boatSpaceReservation: BoatSpaceReservationDetails,
-        isActive: Boolean? = null
+        active: Boolean? = null
     ): ExistingReservationResponse {
         val (reserverId) = citizenAccessControl.requireCitizen()
         val reservationWithDependencies =
@@ -104,9 +104,9 @@ class ExistingReservationResponseMapper(
         val canSwitch = getCanSwitch(boatSpaceReservation.id, reserverId)
         val canTerminate = getCanTerminate(boatSpaceReservation.id)
 
-        val isActive =
-            if (isActive !== null) {
-                isActive
+        val active =
+            if (active !== null) {
+                active
             } else {
                 validateReservationIsActive(
                     boatSpaceReservation,
@@ -139,7 +139,7 @@ class ExistingReservationResponseMapper(
             endDate = boatSpaceReservation.toBoatSpaceReservation().effectiveEndDate(),
             terminationDate = getTerminationDate(boatSpaceReservation),
             validity = reservationWithDependencies.validity,
-            isActive = isActive,
+            active = active,
             paymentDate = boatSpaceReservation.paymentDate,
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
