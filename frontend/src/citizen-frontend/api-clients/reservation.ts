@@ -245,7 +245,7 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
     startDate: LocalDate.parseIso(json.startDate),
     endDate: LocalDate.parseIso(json.endDate),
     validity: json.validity,
-    active: json.isActive,
+    active: json.active,
     boatSpace: json.boatSpace,
     paymentDate: json.paymentDate
       ? LocalDate.parseIso(json.paymentDate)

@@ -139,7 +139,7 @@ export type ExistingBoatSpaceReservationResponse = {
   startDate: string
   endDate: string
   validity: ReservationValidity
-  isActive: boolean
+  active: boolean
   totalPrice: string
   vatValue: string
   boat: Boat

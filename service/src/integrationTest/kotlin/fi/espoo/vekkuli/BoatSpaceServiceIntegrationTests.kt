@@ -389,7 +389,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Amenity has been edited")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width has been edited")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
-        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space has been edited")
+        assertEquals(editBoatSpaceParams.active, editedBoatSpace.active, "Boat space has been edited")
 
         assertNotNull(editedBoatSpace2, "Edited boat space is fetched")
         assertEquals(originalBoatSpace2?.section, editedBoatSpace2.section, "Section has not been edited")
@@ -398,7 +398,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity has been edited")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width has been edited")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace2.lengthCm, "Boat space length has been edited")
-        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace2.isActive, "Boat space has been edited")
+        assertEquals(editBoatSpaceParams.active, editedBoatSpace2.active, "Boat space has been edited")
 
         assertNotEquals(editedBoatSpace.section, editedBoatSpace2.section, "Section has not been edited to be the same")
         assertNotEquals(editedBoatSpace.placeNumber, editedBoatSpace2.placeNumber, "Place number has not been edited to be the same")
@@ -424,13 +424,12 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val editedBoatSpace = boatSpaceRepository.getBoatSpace(1)
 
         assertNotNull(editedBoatSpace, "Boat space is edited")
-        // because there is only one boat space to edit, the section and place numbers should be the edited ones
         assertEquals(editBoatSpaceParams.section, editedBoatSpace.section, "Boat space section has been edited")
         assertEquals(editBoatSpaceParams.placeNumber, editedBoatSpace.placeNumber, "Boat space place number has been edited")
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity has been edited")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width has been edited")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
-        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space has been edited\"")
+        assertEquals(editBoatSpaceParams.active, editedBoatSpace.active, "Boat space has been edited\"")
     }
 
     @Test
@@ -469,7 +468,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(params.amenity, boatSpace.amenity, "Boat space amenity is correct")
         assertEquals(params.widthCm, boatSpace.widthCm, "Boat space width is correct")
         assertEquals(params.lengthCm, boatSpace.lengthCm, "Boat space length is correct")
-        assertEquals(params.isActive, boatSpace.isActive, "Boat space is active")
+        assertEquals(params.active, boatSpace.active, "Boat space is active")
     }
 
     @Test

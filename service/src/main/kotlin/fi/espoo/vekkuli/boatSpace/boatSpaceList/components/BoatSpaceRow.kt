@@ -50,7 +50,7 @@ class BoatSpaceRow : BaseView() {
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceClass}</td>
                     <td>${result.priceInEuro}</td>
-                    <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
+                    <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
                     <td> <a href=${getReserverPage(
             result.reserverId,
             result.reserverType
