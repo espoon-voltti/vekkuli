@@ -9,3 +9,7 @@ spring:
     url: "jdbc:postgresql://localhost:5432/vekkuli_it"
     username: "vekkuli"
     password: "postgres"
+
+server:
+  tomcat:
+    max-part-count: "100"
