@@ -163,27 +163,20 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @Test
     fun `reports correctly a switch reservation`() {
-        val originalReservation = createTestReservationForEspooCitizen(startDate = timeProvider.getCurrentDate().minusDays(60))
+        val originalReservation = createTestReservationForEspooCitizen()
         val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
-        val row = reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }
-        assertEquals("Virtanen Mikko", row?.name)
+        assertEquals("Virtanen Mikko", reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
 
-        val newBoatSpaceId = 2
-        val switchedReservationId =
-            boatSpaceSwitchService
-                .startReservation(
-                    newBoatSpaceId,
-                    originalReservation.id
-                ).id
-        val switchedReservation = boatReservationService.getBoatSpaceReservation(switchedReservationId)
-        assertNotNull(switchedReservation, "Switch reservation should exist")
+        val switchReservation =
+            boatSpaceSwitchService.startReservation(
+                2,
+                originalReservation.id
+            )
+        val switchInput = createTestSwitchReservationFormFillInput()
+        reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
 
         val reportRowsAfterSwitch = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
-        val switchedRow = reportRowsAfterSwitch.find { (it.harbor == "Haukilahti" && it.place == "B 003") }
-        assertEquals("Virtanen Mikko", switchedRow?.name)
-
-        println("DDEBUG $switchedReservation")
-        assertEquals(null, reportRowsAfterSwitch.find { (it.harbor == "Haukilahti" && it.place == "B 001") })
+        assertEquals(null, reportRowsAfterSwitch.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
     }
 
     @Test

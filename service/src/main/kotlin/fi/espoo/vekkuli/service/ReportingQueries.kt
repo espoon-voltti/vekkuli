@@ -157,6 +157,7 @@ fun getWarningsBoatSpaceReportRows(
     }
 
     val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
+    val x = getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
     val reservationsWithWarnings =
         getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
             .map { row ->
@@ -182,6 +183,20 @@ fun getBoatSpaceReportRows(
             tx
                 .createQuery(
                     """
+                        
+                    WITH active_reservations AS (
+                        SELECT bsr.*
+                        FROM boat_space_reservation bsr
+                          LEFT JOIN boat_space_reservation bsr2 ON 
+                            bsr2.original_reservation_id = bsr.id 
+                            AND bsr2.status IN ('Confirmed', 'Invoiced') 
+                            AND bsr2.creation_type IN ('Renewal','Switch')
+                        WHERE
+                            bsr2.id IS NULL AND
+                            (bsr.start_date is NULL OR
+                            (:reportDate::date >= bsr.start_date
+                            AND :reportDate::date <= bsr.end_date))
+                    ) 
                     SELECT
                         bsr.id AS reservation_id,
                         bs.id AS boat_space_id,
@@ -212,18 +227,14 @@ fun getBoatSpaceReportRows(
                         t.length_cm AS trailer_length_cm                   
                     FROM boat_space bs
                          LEFT JOIN location l ON l.id = bs.location_id
-                         LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+                         LEFT JOIN active_reservations bsr ON bsr.boat_space_id = bs.id
                          LEFT JOIN reserver r ON r.id = bsr.reserver_id
                          LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
                          LEFT JOIN boat b ON b.id = bsr.boat_id
                          LEFT JOIN municipality m ON m.code = r.municipality_code
                          LEFT JOIN price ON price.id = bs.price_id
                          LEFT JOIN trailer t ON t.id = bsr.trailer_id
-                    WHERE
-                        (bsr.start_date is NULL OR
-                        (:reportDate::date >= bsr.start_date
-                        AND :reportDate::date <= bsr.end_date))
-                        ${if (!ids.isNullOrEmpty()) "AND bsr.id in (<ids>)" else ""}
+                    ${if (!ids.isNullOrEmpty()) "WHERE bsr.id in (<ids>)" else ""}     
                     ORDER BY harbor, pier, place
                     """.trimIndent()
                 ).bind("reportDate", reportDate)

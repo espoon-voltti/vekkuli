@@ -391,6 +391,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals("leo@noreplytest.fi", terminatedRows[0].email)
 
         val reservationWarnings = getWarningsBoatSpaceReportRows(jdbi, today.atStartOfDay())
+        println("DDEBUG $reservationWarnings")
         assertEquals(1, reservationWarnings.size)
         assertEquals(2, reservationWarnings[0].warnings.size)
         assertEquals(terminatedId, reservationWarnings[0].boatSpaceReportRow.reservationId)
