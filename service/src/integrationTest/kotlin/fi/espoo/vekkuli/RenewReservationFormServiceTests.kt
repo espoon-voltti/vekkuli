@@ -62,6 +62,38 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should report renewal reservation correctly`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
+                )
+            )
+
+        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        assertEquals("Korhonen Leo", reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
+
+        val createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
+
+        val newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
+
+        val reportRowsAfterRenewal = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        assertEquals("Korhonen Leo", reportRowsAfterRenewal.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
+    }
+
+    @Test
     fun `should create a renewal reservation for employee on behalf of organization if not exist or fetch if already`() {
         val reservation =
             testUtils.createReservationInConfirmedState(

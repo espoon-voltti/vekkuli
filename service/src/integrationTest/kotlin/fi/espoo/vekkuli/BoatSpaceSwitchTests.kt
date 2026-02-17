@@ -162,6 +162,24 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `reports correctly a switch reservation`() {
+        val originalReservation = createTestReservationForEspooCitizen()
+        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        assertEquals("Virtanen Mikko", reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
+
+        val switchReservation =
+            boatSpaceSwitchService.startReservation(
+                2,
+                originalReservation.id
+            )
+        val switchInput = createTestSwitchReservationFormFillInput()
+        reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
+
+        val reportRowsAfterSwitch = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        assertEquals(null, reportRowsAfterSwitch.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
+    }
+
+    @Test
     fun `should not be able to start creating a switch reservation if active existing unfinished switch reservation exists`() {
         val originalReservation = createTestReservationForEspooCitizen()
         val firstSwitch =
