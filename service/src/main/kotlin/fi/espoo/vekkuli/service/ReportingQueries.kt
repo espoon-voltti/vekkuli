@@ -56,6 +56,19 @@ fun getStickerReportRows(
         tx
             .createQuery(
                 """
+                WITH active_reservations AS (
+                        SELECT bsr.*
+                        FROM boat_space_reservation bsr
+                          LEFT JOIN boat_space_reservation bsr2 ON 
+                            bsr2.original_reservation_id = bsr.id 
+                            AND bsr2.status IN ('Confirmed', 'Invoiced') 
+                            AND bsr2.creation_type IN ('Renewal','Switch')
+                        WHERE
+                            bsr2.id IS NULL AND
+                            (bsr.start_date is NULL OR
+                            (:reportingDate::date >= bsr.start_date
+                            AND :reportingDate::date <= bsr.end_date))
+                    )     
                 SELECT
                     r.name, r.street_address, r.postal_code, r.post_office,
                     l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
@@ -73,7 +86,7 @@ fun getStickerReportRows(
                     COALESCE(t.registration_code, '') AS trailer_registration_code,
                     t.width_cm AS trailer_width_cm,
                     t.length_cm AS trailer_length_cm
-                FROM boat_space_reservation bsr
+                FROM active_reservations bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
                     JOIN location l ON l.id = bs.location_id
@@ -157,7 +170,6 @@ fun getWarningsBoatSpaceReportRows(
     }
 
     val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
-    val x = getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
     val reservationsWithWarnings =
         getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
             .map { row ->
@@ -256,10 +268,22 @@ fun getFreeBoatSpaceReportRows(
             tx
                 .createQuery(
                     """
-WITH places_with_active_reservations AS (
+WITH active_reservations AS (
+    SELECT bsr.*
+    FROM boat_space_reservation bsr
+      LEFT JOIN boat_space_reservation bsr2 ON 
+        bsr2.original_reservation_id = bsr.id 
+        AND bsr2.status IN ('Confirmed', 'Invoiced') 
+        AND bsr2.creation_type IN ('Renewal','Switch')
+    WHERE
+        bsr2.id IS NULL AND
+        (bsr.start_date is NULL OR
+        (:reportDate::date >= bsr.start_date
+        AND :reportDate::date <= bsr.end_date))
+), places_with_active_reservations AS (
     SELECT bs.id
     FROM boat_space bs
-         JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+         JOIN active_reservations bsr ON bsr.boat_space_id = bs.id
     WHERE
     :reportDate::date >= bsr.start_date
     AND :reportDate::date <= bsr.end_date
