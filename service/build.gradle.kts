@@ -9,7 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.10"
     kotlin("plugin.spring") version "2.3.10"
-    id("org.flywaydb.flyway") version "11.20.3"
+    id("org.flywaydb.flyway") version "12.0.1"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.3.10"
@@ -25,7 +25,7 @@ ktlint {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.10")
-        classpath("org.flywaydb:flyway-database-postgresql:11.20.3")
+        classpath("org.flywaydb:flyway-database-postgresql:12.0.1")
     }
 }
 
@@ -92,8 +92,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-core:11.20.3")
-    implementation("org.flywaydb:flyway-database-postgresql:11.20.3")
+    implementation("org.flywaydb:flyway-core:12.0.1")
+    implementation("org.flywaydb:flyway-database-postgresql:12.0.1")
     implementation("org.postgresql:postgresql:42.7.10")
     implementation(platform("org.jdbi:jdbi3-bom:3.51.0"))
     implementation("org.jdbi:jdbi3-core")
