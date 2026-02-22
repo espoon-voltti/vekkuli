@@ -121,7 +121,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("com.microsoft.playwright:playwright:1.56.0")
+    testImplementation("com.microsoft.playwright:playwright:1.58.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.4.0")
