@@ -82,7 +82,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // cve fixes
-    implementation("org.yaml:snakeyaml:2.5")
+    implementation("org.yaml:snakeyaml:2.6")
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
