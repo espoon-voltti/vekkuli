@@ -50,13 +50,14 @@ data class StickerReportRow(
 
 fun getStickerReportRows(
     jdbi: Jdbi,
-    reportingDate: LocalDate
+    reportingDate: LocalDate,
+    today: LocalDate
 ): List<StickerReportRow> =
     jdbi.inTransactionUnchecked { tx ->
         tx
             .createQuery(
                 """
-                WITH active_reservations AS (
+                WITH active_reservations_today AS (
                         SELECT bsr.*
                         FROM boat_space_reservation bsr
                           LEFT JOIN boat_space_reservation bsr2 ON 
@@ -66,8 +67,8 @@ fun getStickerReportRows(
                         WHERE
                             bsr2.id IS NULL AND
                             (bsr.start_date is NULL OR
-                            (:reportingDate::date >= bsr.start_date
-                            AND :reportingDate::date <= bsr.end_date))
+                            (:today::date >= bsr.start_date
+                            AND :today::date <= bsr.end_date))
                     )     
                 SELECT
                     r.name, r.street_address, r.postal_code, r.post_office,
@@ -86,7 +87,7 @@ fun getStickerReportRows(
                     COALESCE(t.registration_code, '') AS trailer_registration_code,
                     t.width_cm AS trailer_width_cm,
                     t.length_cm AS trailer_length_cm
-                FROM active_reservations bsr
+                FROM active_reservations_today bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
                     JOIN location l ON l.id = bs.location_id
@@ -97,10 +98,9 @@ fun getStickerReportRows(
                 WHERE
                     bsr.reserver_id IS NOT NULL
                     AND :reportingDate::date <= p.created::date
-                    AND :reportingDate::date <= bsr.end_date
-                    AND (bsr.status = 'Confirmed' OR bsr.status = 'Cancelled')
                 """.trimIndent()
             ).bind("reportingDate", reportingDate)
+            .bind("today", reportingDate)
             .mapTo<StickerReportRow>()
             .list()
     }

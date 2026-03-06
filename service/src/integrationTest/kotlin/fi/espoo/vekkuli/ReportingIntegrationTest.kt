@@ -158,7 +158,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 .execute()
         }
 
-        val stickerReportRows = getStickerReportRows(jdbi, today)
+        val stickerReportRows = getStickerReportRows(jdbi, today, today)
         assertEquals(true, stickerReportRows.size > 0)
         assertEquals(today.atStartOfDay(), stickerReportRows[0].paid)
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
