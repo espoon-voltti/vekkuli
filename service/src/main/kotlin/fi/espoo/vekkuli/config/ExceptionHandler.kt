@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.common.isUniqueConstraintViolation
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.springframework.core.Ordered
@@ -26,6 +27,8 @@ import java.io.IOException
 import java.lang.Exception
 import java.time.Instant
 
+private val logger = KotlinLogging.logger {}
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class ExceptionHandler : ResponseEntityExceptionHandler() {
@@ -34,7 +37,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: BadRequest
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("Bad request (${ex.message})", ex)
+        logger.warn { "Bad request (${ex.message})" }
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse(errorCode = ex.errorCode))
@@ -45,7 +48,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: NotFound
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("Not found (${ex.message})", ex)
+        logger.warn { "Not found (${ex.message})" }
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse(errorCode = ex.errorCode))
@@ -56,7 +59,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: Conflict
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("fi.espoo.vekkuli.common.Conflict (${ex.message})", ex)
+        logger.warn { "fi.espoo.vekkuli.common.Conflict (${ex.message})" }
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
             .body(ErrorResponse(errorCode = ex.errorCode))
@@ -67,7 +70,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: Unauthorized
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("fi.espoo.vekkuli.common.Unauthorized (${ex.message})", ex)
+        logger.warn { "fi.espoo.vekkuli.common.Unauthorized (${ex.message})" }
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse(errorCode = ex.errorCode))
@@ -78,7 +81,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: Forbidden
     ): ResponseEntity<ErrorResponse> {
-        logger.warn("fi.espoo.vekkuli.common.Forbidden (${ex.message})", ex)
+        logger.warn { "fi.espoo.vekkuli.common.Forbidden (${ex.message})" }
         return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .body(ErrorResponse(errorCode = ex.errorCode))
@@ -90,7 +93,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         ex: UnableToExecuteStatementException
     ): ResponseEntity<ErrorResponse> {
         if (ex.isUniqueConstraintViolation()) {
-            logger.warn("Unique constraint violation (${ex.message})", ex)
+            logger.warn { "Unique constraint violation (${ex.message})" }
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse("UniqueConstraintViolation"))
         }
         return unexpectedError(req, ex)
@@ -103,10 +106,10 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         ex: IOException
     ): ResponseEntity<ErrorResponse>? {
         if (ex.toString().contains("ClientAbortException", true)) {
-            logger.warn("ClientAbortException", ex)
+            logger.warn { "ClientAbortException" }
             return null
         }
-        logger.error("IOException", ex)
+        logger.error { "IOException: ${ex.message}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse())
     }
 
@@ -117,7 +120,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         statusCode: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        logger.warn("Spring exception (${ex.message})", ex)
+        logger.warn { "Spring exception (${ex.message})" }
         return super.handleExceptionInternal(ex, body, headers, statusCode, request)
     }
 
@@ -126,8 +129,7 @@ class ExceptionHandler : ResponseEntityExceptionHandler() {
         req: HttpServletRequest,
         ex: Throwable
     ): ResponseEntity<ErrorResponse> {
-        val message = "Unexpected error (${ex.message})"
-        logger.error(message, ex)
+        logger.error { "Unexpected error: ${ex.message}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse())
     }
 }
