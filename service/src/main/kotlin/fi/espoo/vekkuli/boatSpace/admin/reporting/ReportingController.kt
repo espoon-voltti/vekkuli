@@ -57,7 +57,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$dateFormatted.csv\"")
-            .body(utf8BOM + stickerReportToCsv(getStickerReportRows(jdbi, minCreationDate)))
+            .body(utf8BOM + stickerReportToCsv(getStickerReportRows(jdbi, minCreationDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping("/boat-space-report", produces = ["text/csv"])
