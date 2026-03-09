@@ -29,7 +29,7 @@ class MessageUtil(
         try {
             return messageSource.getMessage(code, args.toTypedArray(), locale)
         } catch (e: Exception) {
-            logger.error("Missing message for code: $code for locale $locale")
+            logger.error { "Missing message for code: $code for locale $locale" }
             return code
         }
     }

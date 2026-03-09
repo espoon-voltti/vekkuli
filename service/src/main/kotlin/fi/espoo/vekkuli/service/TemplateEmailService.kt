@@ -48,7 +48,7 @@ class TemplateEmailService(
     ): List<QueuedMessage> {
         val tpl = templateRepo.getTemplate(template)
         if (tpl == null) {
-            logger.warn("Email template not found: $template")
+            logger.warn { "Email template not found: $template" }
             return emptyList()
         }
 
@@ -73,7 +73,7 @@ class TemplateEmailService(
     ): List<QueuedMessage> {
         val tpl = templateRepo.getTemplate(template)
         if (tpl == null) {
-            logger.warn("Email template not found: $template")
+            logger.warn { "Email template not found: $template" }
             return emptyList()
         }
         // Get emails that have not been sent
