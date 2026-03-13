@@ -100,7 +100,7 @@ fun getStickerReportRows(
                     AND :reportingDate::date <= p.created::date
                 """.trimIndent()
             ).bind("reportingDate", reportingDate)
-            .bind("today", reportingDate)
+            .bind("today", today)
             .mapTo<StickerReportRow>()
             .list()
     }
