@@ -51,7 +51,7 @@
     "@types/node": "24.11.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "babel-loader": "10.0.0",
+    "babel-loader": "10.1.1",
     "concurrently": "9.2.1",
     "css-loader": "7.1.4",
     "csstype": "3.2.3",
