@@ -6092,16 +6092,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-sass-plugin@npm:3.6.0":
-  version: 3.6.0
-  resolution: "esbuild-sass-plugin@npm:3.6.0"
+"esbuild-sass-plugin@npm:3.7.0":
+  version: 3.7.0
+  resolution: "esbuild-sass-plugin@npm:3.7.0"
   dependencies:
     resolve: "npm:^1.22.11"
-    sass: "npm:^1.97.2"
+    sass: "npm:^1.97.3"
   peerDependencies:
-    esbuild: ">=0.27.2"
-    sass-embedded: ^1.97.2
-  checksum: 10/fddd3d00b7d5c1e8161adff5c6aa72e510d1b8c15ddedc09aecbff10ddc61a7d9dd2b6bc81b8c42ba80064153e72c43786e297091c036008b62f25d8f6e4df4f
+    esbuild: ">=0.27.3"
+    sass-embedded: ^1.97.3
+  checksum: 10/0436363bc29ba028f4620f644e604f3cf8a6eed94558b7b00994c10bf66ef66254efa94e14d237026f59faf2f25aede727a6da13bb1edc1c2ccbd31ecebd77b5
   languageName: node
   linkType: hard
 
@@ -10839,7 +10839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.98.0, sass@npm:^1.97.2":
+"sass@npm:1.98.0, sass@npm:^1.97.3":
   version: 1.98.0
   resolution: "sass@npm:1.98.0"
   dependencies:
@@ -12224,7 +12224,7 @@ __metadata:
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"
     esbuild: "npm:0.27.3"
-    esbuild-sass-plugin: "npm:3.6.0"
+    esbuild-sass-plugin: "npm:3.7.0"
     eslint: "npm:9.39.4"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-import: "npm:2.32.0"
