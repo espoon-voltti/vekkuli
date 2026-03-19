@@ -330,7 +330,7 @@ export default {
       storageInfo: {
         title: 'Säilytyspaikan tiedot',
         buckWithTentInfo:
-          'Huomioi, että veneen ja pukkin suojatelttoineen tulee mahtua varatun paikan sisään.'
+          'Huomioi, että veneen ja pukin suojatelttoineen tulee mahtua varatun paikan sisään.'
       },
       trailerInfo: {
         title: 'Trailerin tiedot',
