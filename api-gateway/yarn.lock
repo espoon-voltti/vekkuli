@@ -82,15 +82,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/pprof@npm:5.13.5":
-  version: 5.13.5
-  resolution: "@datadog/pprof@npm:5.13.5"
+"@datadog/pprof@npm:5.14.0":
+  version: 5.14.0
+  resolution: "@datadog/pprof@npm:5.14.0"
   dependencies:
     node-gyp: "npm:latest"
     node-gyp-build: "npm:<4.0"
     pprof-format: "npm:^2.2.1"
     source-map: "npm:^0.7.4"
-  checksum: 10/9074473786968563265812ce95dff4d0ea6053e4f492da67b6a950e872754e878edf9b4039fd4eec4e1d0c7803a6da4ee8748a8c4b3bc54450e248aba81f6138
+  checksum: 10/5d2a457ffdccb034afc69bdffb687f7f56adcbeb523019e8745fa950e7f4a2d6c546fcaee0cc899de1062b91f7e7e0c8083de4d4b06f3b5eecd1e82d8a8059e9
   languageName: node
   linkType: hard
 
@@ -1582,16 +1582,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.91.0":
-  version: 5.91.0
-  resolution: "dd-trace@npm:5.91.0"
+"dd-trace@npm:5.92.0":
+  version: 5.92.0
+  resolution: "dd-trace@npm:5.92.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.8.1"
     "@datadog/native-appsec": "npm:11.0.1"
     "@datadog/native-iast-taint-tracking": "npm:4.1.0"
     "@datadog/native-metrics": "npm:3.1.1"
     "@datadog/openfeature-node-server": "npm:^1.1.0"
-    "@datadog/pprof": "npm:5.13.5"
+    "@datadog/pprof": "npm:5.14.0"
     "@datadog/wasm-js-rewriter": "npm:5.0.1"
     "@opentelemetry/api": "npm:>=1.0.0 <1.10.0"
     "@opentelemetry/api-logs": "npm:<1.0.0"
@@ -1619,7 +1619,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/d58fe24fae4ee6f4c26f5ae397fee241f6455ff1cda0c6e24276f0d525db6c63c1fd7d4feaf6f3cbe018228514c9dfeeaa6442e6e2ca3f8b895d7a974dea7274
+  checksum: 10/50e12a329d2e29362cbc354140ecf02e530964fad5bffc8108f15bcdfef03f7a1a830ff27aebae27c10270d2ddd0526bcb790fead03caf35917024ccd8c74c93
   languageName: node
   linkType: hard
 
@@ -4491,7 +4491,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.1.0"
-    dd-trace: "npm:5.91.0"
+    dd-trace: "npm:5.92.0"
     eslint: "npm:9.39.4"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.5"
