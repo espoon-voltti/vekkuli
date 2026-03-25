@@ -3,9 +3,9 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-ARG NGINX_VERSION=1.26.0
+ARG NGINX_VERSION=1.29.6
 
-FROM node:24.14.0-bookworm-slim AS builder
+FROM node:24.14.0-trixie-slim AS builder
 
 ARG CACHE_BUST=none
 
@@ -45,8 +45,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # https://docs.datadoghq.com/tracing/trace_collection/proxy_setup/nginx # update version using get_latest_release
-ARG OPENTRACING_NGINX_VERSION=v0.35.1
-ARG OPENTRACING_NGINX_SHA256="34e0fa9f110a6052a4f75451bc93e4de8d1a32229b523fb4748feee6bfb1d3ba"
+ARG OPENTRACING_NGINX_VERSION=v0.43.0
+ARG OPENTRACING_NGINX_SHA256="0b73c1abea2febcb8ca3118590d32a3fcac8f43337e37573142acf791595da0d"
 ARG DD_OPENTRACING_CPP_VERSION=v1.3.7
 ARG DD_OPENTRACING_CPP_SHA256="df9a8097c3d6f6e5a96f96db0f3919b5b7b35df3d10c5fcc530707a878e2dd00"
 
