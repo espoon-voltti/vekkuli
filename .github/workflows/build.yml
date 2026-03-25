@@ -252,6 +252,11 @@ jobs:
         run: |
           ./test-compose logs > tests-all.log
 
+      - name: Fix permissions for artifacts
+        if: always()
+        run: |
+          sudo chown -R $USER:$USER tests.log tests-all.log
+
       - name: Store logs
         if: always()
         uses: actions/upload-artifact@v7
@@ -322,6 +327,11 @@ jobs:
         run: |
           ./e2e-test-compose logs > tests-all.log
 
+      - name: Fix permissions for artifacts
+        if: always()
+        run: |
+          sudo chown -R $USER:$USER tests.log tests-all.log service-build/
+
       - name: Store test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -389,6 +399,11 @@ jobs:
         if: always()
         run: |
           ./integration-test-compose logs > integration-test-all.log
+
+      - name: Fix permissions for artifacts
+        if: always()
+        run: |
+          sudo chown -R $USER:$USER integration-test.log integration-test-all.log
 
       - name: Store logs
         if: always()
