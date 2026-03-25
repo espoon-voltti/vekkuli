@@ -4,8 +4,8 @@
 
 package fi.espoo.vekkuli.config
 
-import tools.jackson.core.TokenStreamContext
 import net.logstash.logback.mask.ValueMasker
+import tools.jackson.core.TokenStreamContext
 
 class SsnMasker : ValueMasker {
     override fun mask(

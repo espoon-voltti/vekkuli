@@ -7,9 +7,7 @@
 
   <appender name="VOLTTI_DEFAULT_APPENDER_SANITIZED" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-      <decorator class="net.logstash.logback.decorate.SerializationFeatureDecorator">
-        <disable>WRITE_DATES_AS_TIMESTAMPS</disable>
-      </decorator>
+
       <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
         <!--Hide social security numbers from logs-->
         <valueMasker class="fi.espoo.vekkuli.config.SsnMasker" />
