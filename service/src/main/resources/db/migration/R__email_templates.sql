@@ -570,7 +570,7 @@ venepaikat@espoo.fi
 
 Hej,
 
-{{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
+Din bokning av {{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
 
 Uppsägare: {{terminatorName}}
 
