@@ -570,7 +570,7 @@ venepaikat@espoo.fi
 
 Hej,
 
-{{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
+Din bokning av {{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
 
 Uppsägare: {{terminatorName}}
 
@@ -581,7 +581,7 @@ Platsen måste vara tom och städad för nästa hyresgäst.
 Rätten till platsen upphör i och med uppsägningen och platsen ska tömmas omedelbart.
 
 Om du har sagt upp en förvaringsplats i Käringbacken:
-Elektroniska nyckeln måste returneras till Finno hamn (Hylkeenpyytäjäntie 9).
+Elektroniska nyckeln måste returneras till Finno hamn (Säljägarvägen 9).
 
 Vänliga hälsningar,
 
