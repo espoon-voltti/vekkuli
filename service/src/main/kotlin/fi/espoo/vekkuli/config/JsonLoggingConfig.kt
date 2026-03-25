@@ -1,18 +1,18 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+// SPDX-FileCopyrightText: 2023-2026 City of Espoo
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 package fi.espoo.vekkuli.config
 
-import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import net.logstash.logback.decorate.JsonFactoryDecorator
-
-class JsonLoggingConfig : JsonFactoryDecorator {
-    override fun decorate(factory: JsonFactory): JsonFactory =
-        factory.apply {
-            val codec = factory.codec as? ObjectMapper
-            codec?.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        }
+/**
+ * Placeholder for historical JSON logging customization.
+ *
+ * logstash-logback-encoder v9 uses a new Decorator API and provides built-in
+ * SerializationFeatureDecorator. The previous JsonFactoryDecorator-based
+ * customization is replaced by configuring the SerializationFeatureDecorator
+ * in logback XML.
+ */
+@Suppress("unused")
+class JsonLoggingConfig {
+    // Intentionally left empty to avoid referencing removed APIs from v9.
 }

@@ -1,17 +1,17 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+// SPDX-FileCopyrightText: 2023-2026 City of Espoo
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 package fi.espoo.vekkuli.config
 
-import com.fasterxml.jackson.core.JsonStreamContext
+import tools.jackson.core.TokenStreamContext
 import net.logstash.logback.mask.ValueMasker
 
 class SsnMasker : ValueMasker {
     override fun mask(
-        context: JsonStreamContext?,
+        context: TokenStreamContext?,
         value: Any?
-    ): Any =
+    ): Any? =
         if (value is String) {
             value.replace(
                 Regex(
@@ -21,6 +21,6 @@ class SsnMasker : ValueMasker {
                 "REDACTED-SSN"
             )
         } else {
-            value ?: "null"
+            value
         }
 }

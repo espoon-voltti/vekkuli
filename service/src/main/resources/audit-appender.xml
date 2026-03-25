@@ -10,7 +10,9 @@
             <onMatch>NEUTRAL</onMatch>
         </filter>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <jsonFactoryDecorator class="fi.espoo.vekkuli.config.JsonLoggingConfig"/>
+            <decorator class="net.logstash.logback.decorate.SerializationFeatureDecorator">
+                <disable>WRITE_DATES_AS_TIMESTAMPS</disable>
+            </decorator>
             <includeTags>false</includeTags>
             <excludeMdcKeyName>spanExportable</excludeMdcKeyName>
             <excludeMdcKeyName>X-B3-ParentSpanId</excludeMdcKeyName>
