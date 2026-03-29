@@ -30,10 +30,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/libdatadog@npm:0.8.1":
-  version: 0.8.1
-  resolution: "@datadog/libdatadog@npm:0.8.1"
-  checksum: 10/d1da1b5557724a4445f904839cfc8a8a5ec4cb22b4a74d32d48f1d4ebd643bd154f5fd0b28897faf4ea4504aec1a520d29b97fcbd5f25edfb5a0fd07b480d082
+"@datadog/libdatadog@npm:0.9.2":
+  version: 0.9.2
+  resolution: "@datadog/libdatadog@npm:0.9.2"
+  checksum: 10/f6e67e28d0ba2342b9ae0c249b48b622bf91e7e6cb59b1d047d9dcc6ece3652f5dd726e7e7c20c663f57cc5d8f216f84e92aa19cea0e286baea543c76f85beda
   languageName: node
   linkType: hard
 
@@ -1582,11 +1582,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.92.0":
-  version: 5.92.0
-  resolution: "dd-trace@npm:5.92.0"
+"dd-trace@npm:5.93.0":
+  version: 5.93.0
+  resolution: "dd-trace@npm:5.93.0"
   dependencies:
-    "@datadog/libdatadog": "npm:0.8.1"
+    "@datadog/libdatadog": "npm:0.9.2"
     "@datadog/native-appsec": "npm:11.0.1"
     "@datadog/native-iast-taint-tracking": "npm:4.1.0"
     "@datadog/native-metrics": "npm:3.1.1"
@@ -1619,7 +1619,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/50e12a329d2e29362cbc354140ecf02e530964fad5bffc8108f15bcdfef03f7a1a830ff27aebae27c10270d2ddd0526bcb790fead03caf35917024ccd8c74c93
+  checksum: 10/c3378af834958b4665e7315bbb39a9735621e2359986816e26d7cd40c33db60b9f326ff271014df64edff654867e12992c3516e7a304980d557fe9e5b4cfadd7
   languageName: node
   linkType: hard
 
@@ -4491,7 +4491,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.1.0"
-    dd-trace: "npm:5.92.0"
+    dd-trace: "npm:5.93.0"
     eslint: "npm:9.39.4"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.5"
