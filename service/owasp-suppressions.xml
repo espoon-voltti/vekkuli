@@ -11,5 +11,6 @@ SPDX-License-Identifier: LGPL-2.1-or-later
         <notes>Fix not available</notes>
         <cve>CVE-2022-31691</cve>
         <cve>CVE-2026-29062</cve>
+        <cve>CVE-2026-33871</cve>
     </suppress>
 </suppressions>
