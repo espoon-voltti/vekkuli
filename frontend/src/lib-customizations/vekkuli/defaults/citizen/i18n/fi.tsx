@@ -624,7 +624,7 @@ export default {
       modal: {
         goBackToReservation: 'Siirry varaukseen',
         termination: {
-          title: 'Olet irtisanomassa venepaikkaa:',
+          title: 'Olet irtisanomassa varauksen:',
           spaceInformation:
             'Huomioithan, että paikka tulee tyhjentää välittömästi, kun olet irtisanonut paikan.',
           notEntitledToRefund:
