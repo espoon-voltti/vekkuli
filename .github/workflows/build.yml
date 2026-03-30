@@ -158,6 +158,8 @@ jobs:
     needs:
       - service
     runs-on: ubuntu-latest
+    # Allow Renovate PRs to pass even if OWASP finds new CVEs
+    continue-on-error: ${{ github.actor == 'renovate[bot]' }}
     env:
       name: vekkuli/service
       path: service
