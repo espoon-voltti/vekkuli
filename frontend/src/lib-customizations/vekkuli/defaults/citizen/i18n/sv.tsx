@@ -621,7 +621,7 @@ const sv: Translations = {
       modal: {
         goBackToReservation: 'Gå till bokningen',
         termination: {
-          title: 'Du säger upp båtplatsreservationen',
+          title: 'Du säger upp reservationen:',
           spaceInformation:
             'Observera att platsen ska tömmas omedelbart efter att du har sagt upp platsen.',
           notEntitledToRefund:

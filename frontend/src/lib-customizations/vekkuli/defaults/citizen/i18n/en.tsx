@@ -621,7 +621,7 @@ const en: Translations = {
       modal: {
         goBackToReservation: 'Go to the reservation',
         termination: {
-          title: 'You are terminating the boat space reservation',
+          title: 'You are terminating the reservation:',
           spaceInformation:
             'Please note that the place must be vacated immediately after you have terminated the place.',
           notEntitledToRefund:

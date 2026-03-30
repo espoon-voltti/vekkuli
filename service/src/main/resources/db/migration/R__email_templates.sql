@@ -33,7 +33,7 @@ venepaikat@espoo.fi
 
 Bästa kund,
 
-Den plats du har bokat för din vattenfarkost är betald och bokningen har bekräftad.{{citizenReserverSv}}
+Den plats du har bokat för din vattenfarkost är betald och bokningen bekräftad.{{citizenReserverSv}}
 
 Hyresgäst:
 {{reserverName}}
@@ -581,7 +581,7 @@ Platsen måste vara tom och städad för nästa hyresgäst.
 Rätten till platsen upphör i och med uppsägningen och platsen ska tömmas omedelbart.
 
 Om du har sagt upp en förvaringsplats i Käringbacken:
-Elektroniska nyckeln måste returneras till Finno hamn (Säljägarvägen 9).
+Passernyckeln måste returneras till Finno hamn (Säljägarvägen 9).
 
 Vänliga hälsningar,
 
