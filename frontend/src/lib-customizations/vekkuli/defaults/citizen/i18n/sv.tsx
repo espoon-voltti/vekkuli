@@ -626,7 +626,7 @@ const sv: Translations = {
             'Observera att platsen ska tömmas omedelbart efter att du har sagt upp platsen.',
           notEntitledToRefund:
             'Esbo stad beviljar ingen återbetalning för en betald båtplats.',
-          confirm: 'Säg upp båtplatsen',
+          confirm: 'Säg upp',
           terminationFailed:
             'Ett fel inträffade vid uppsägning av båtplatsen. Vänligen kontakta kundtjänst.',
           success: 'Bokningen har avslutats framgångsrikt'

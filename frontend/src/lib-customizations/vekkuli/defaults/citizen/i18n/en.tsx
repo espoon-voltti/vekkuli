@@ -626,7 +626,7 @@ const en: Translations = {
             'Please note that the place must be vacated immediately after you have terminated the place.',
           notEntitledToRefund:
             'The City of Espoo does not grant a refund for a paid berth.',
-          confirm: 'Terminate berth',
+          confirm: 'Terminate',
           terminationFailed:
             'An error occurred while terminating the boat space reservation. Please contact customer service.',
           success: 'Reservation terminated successfully'
