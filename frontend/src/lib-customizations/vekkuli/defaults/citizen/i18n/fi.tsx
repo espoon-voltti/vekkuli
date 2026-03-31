@@ -629,7 +629,7 @@ export default {
             'Huomioithan, että paikka tulee tyhjentää välittömästi, kun olet irtisanonut paikan.',
           notEntitledToRefund:
             'Espoon kaupunki ei myönnä hyvitystä maksetusta venepaikasta.',
-          confirm: 'Irtisano venepaikka',
+          confirm: 'Irtisano',
           terminationFailed:
             'Venepaikan irtisanomisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
           success: 'Paikka irtisanottu onnistuneesti'
