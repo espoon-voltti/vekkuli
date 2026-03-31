@@ -40,7 +40,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val root: Locator
     ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano venepaikka").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano").setExact(true))
 
         val placeIdentifierText = root.getByDataTestId("place-identifier")
         val boatSpaceText = root.getByDataTestId("boat-space")
