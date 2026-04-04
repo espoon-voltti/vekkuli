@@ -142,7 +142,7 @@ dependencies {
     implementation("com.sun.mail:jakarta.mail:2.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
-    implementation("org.commonmark:commonmark:0.27.1")
+    implementation("org.commonmark:commonmark:0.28.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
