@@ -75,7 +75,7 @@
     "jest-junit": "16.0.0",
     "lib-common": "link:src/lib-common",
     "lib-customizations": "link:src/lib-customizations",
-    "postcss": "8.5.8",
+    "postcss": "8.5.9",
     "postcss-loader": "8.2.1",
     "postcss-preset-env": "11.2.0",
     "prettier": "3.8.1",
