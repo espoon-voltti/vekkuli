@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-ARG NGINX_VERSION=1.29.6
+ARG NGINX_VERSION=1.29.8
 
 FROM node:24.14.1-trixie-slim AS builder
 
@@ -45,8 +45,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # https://docs.datadoghq.com/tracing/trace_collection/proxy_setup/nginx # update version using get_latest_release
-ARG OPENTRACING_NGINX_VERSION=v0.43.0
-ARG OPENTRACING_NGINX_SHA256="0b73c1abea2febcb8ca3118590d32a3fcac8f43337e37573142acf791595da0d"
+ARG OPENTRACING_NGINX_VERSION=v0.45.0
+ARG OPENTRACING_NGINX_SHA256="97a42507d99854dabe986f69faae1dc37261104632493b5ed00a5685df3f5729"
 ARG DD_OPENTRACING_CPP_VERSION=v1.3.7
 ARG DD_OPENTRACING_CPP_SHA256="df9a8097c3d6f6e5a96f96db0f3919b5b7b35df3d10c5fcc530707a878e2dd00"
 
