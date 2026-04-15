@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
+import fi.espoo.vekkuli.employee.waitForHtmxSettle
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
@@ -78,7 +79,9 @@ class CitizenReservationsTest : PlaywrightTest() {
         listingPage.boatSpace("Virtanen Mikko").click()
 
         val citizenDetails = EmployeeCitizenDetailsPage(page)
-        citizenDetails.terminateReservationAsEmployeeButton.click()
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+        page.waitForHtmxSettle { citizenDetails.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetails.terminateReservationAsEmployeeForm.isVisible }
         citizenDetails.terminateReservationEndDate.fill(formatAsTestDate(endDate))
         citizenDetails.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
         citizenDetails.terminateReservationModalConfirm.click()

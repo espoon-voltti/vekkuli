@@ -188,7 +188,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         citizenDetailsPage.paymentsNavi.click()
         page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Hyvitetty") }
 
+        page.waitForCondition { citizenDetailsPage.ackPaymentButton.isVisible }
         citizenDetailsPage.ackPaymentButton.click()
+        page.waitForCondition { citizenDetailsPage.ackPaymentModalConfirm.isVisible }
         citizenDetailsPage.ackPaymentModalConfirm.click()
         assertThat(citizenDetailsPage.ackPaymentButton).isHidden()
     }
@@ -198,8 +200,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             citizenDetailsPage.paymentStatus.textContent().contains("Invoiced: due date: 22.04.2024")
         }
         page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
-        citizenDetailsPage.updatePaymentStatusLink.click()
+        citizenDetailsPage.updatePaymentStatusLink.clickAndWaitForHtmxSettle()
 
+        page.waitForCondition { citizenDetailsPage.paymentStatusUpdateModalInfoTextInput.isVisible }
         assertEquals("100000", citizenDetailsPage.paymentStatusUpdateModalInfoTextInput.inputValue())
         assertEquals("2024-04-22", citizenDetailsPage.paymentStatusUpdateModalDateInput.inputValue())
 
@@ -281,8 +284,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
         page.getByText("Doe John").click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
-        citizenDetailsPage.updateReservationValidity.click()
+        page.waitForHtmxSettle { citizenDetailsPage.updateReservationValidity.click() }
+        page.waitForCondition { citizenDetailsPage.reservationValidityModalConfirm.isVisible }
         citizenDetailsPage.reservationValidityIndefiniteRadioButton.click()
         citizenDetailsPage.reservationValidityModalConfirm.click()
 
@@ -825,16 +830,19 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.existingCitizenSelector.click()
         assertThat(formPage.citizenSearchContainer).isVisible()
         typeText(formPage.citizenSearchInput, "virtane")
-        assertThat(formPage.citizenSearchOption1).isVisible()
-        assertThat(formPage.citizenSearchOption2).isVisible()
+        formPage.citizenResultsSelect.waitFor()
+        assertThat(formPage.citizenSearchOption1).hasCount(1)
+        assertThat(formPage.citizenSearchOption2).hasCount(1)
         formPage.citizenEmptyInput.click()
-        assertThat(formPage.citizenSearchOption1).isHidden()
+        assertThat(formPage.citizenSearchInput).hasValue("")
         typeText(formPage.citizenSearchInput, "virtane")
+        formPage.citizenResultsSelect.waitFor()
         assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
         formPage.citizenSearchInput.clear()
         typeText(formPage.citizenSearchInput, "010106A957V")
+        formPage.citizenResultsSelect.waitFor()
         assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
     }
 
@@ -860,7 +868,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         typeText(formPage.citizenSearchInput, "virtane")
 
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
         // Fill in the boat information
@@ -913,7 +921,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         typeText(formPage.citizenSearchInput, "kieltoinen")
 
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText("Turvald")
         assertThat(page.getByTestId("lastName")).containsText("Kieltoinen")
 
@@ -958,7 +966,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         typeText(formPage.citizenSearchInput, "olivia")
 
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText("Olivia")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
         assertThat(page.getByText("Olivian vene")).isVisible()
@@ -1000,7 +1008,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.submitButton.click()
 
         typeText(formPage.citizenSearchInput, "virtane")
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
         val email = "test@email.com"
@@ -1088,8 +1096,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "olivia")
-        page.waitForCondition { formPage.citizenSearchOption1.isVisible() }
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
 
         assertThat(page.getByText("Olivian vene")).isVisible()
 
@@ -1128,7 +1135,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         typeText(formPage.citizenSearchInput, reserverLastName)
 
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText(reserverFirstName)
         assertThat(page.getByTestId("lastName")).containsText(reserverLastName)
 
@@ -1188,8 +1195,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "olivia")
-        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
-        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+        formPage.selectCitizenByIndex(0)
 
         formPage.organizationRadioButton.click()
         assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
@@ -1225,8 +1231,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "olivia")
-        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
-        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+        formPage.selectCitizenByIndex(0)
 
         formPage.organizationRadioButton.click()
         assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
@@ -1302,8 +1307,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         employeeFormPage.existingCitizenSelector.click()
         typeText(employeeFormPage.citizenSearchInput, "mikko")
-        page.waitForCondition { employeeFormPage.citizenSearchOption1.isVisible }
-        employeeFormPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+        employeeFormPage.selectCitizenByIndex(0)
         fillBoatAndOtherDetails(employeeFormPage)
         employeeFormPage.submitButton.click()
 
@@ -1380,7 +1384,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetails = CitizenDetailsPage(page)
         assertThat(citizenDetails.citizenLastNameField).hasText(reserverName)
         citizenDetails.exceptionsNavi.click()
-        citizenDetails.exceptionsEditButton.click()
+        page.waitForHtmxSettle { citizenDetails.exceptionsEditButton.click() }
         val discount0 = page.getByTestId("reserver_discount_0")
         assertThat(discount0).isChecked()
         page.getByTestId("reserver_discount_$discount").check()

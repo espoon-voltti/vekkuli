@@ -41,11 +41,12 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
         assertThat(citizenDetailsPage.expiredReservationList)
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
         assertThat(citizenDetailsPage.terminateReservationModalConfirm).isVisible()
         assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
@@ -79,13 +80,15 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         // Expired list is not on the page
         assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
 
         // Opens up information from the first reservation of the first user
         assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
@@ -175,13 +178,14 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         // Expired list is not on the page
         assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
 
         // Opens up information from the first reservation of the first user
         assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
@@ -272,13 +276,14 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         // Expired list is not on the page
         assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
 
         // Opens up information from the first reservation of the first user
         assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
@@ -314,9 +319,11 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
 
         // Opens up information from the first reservation of the first user
         assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
@@ -351,12 +358,13 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
         listingPage.navigateTo()
         listingPage.boatSpace1.click()
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
         // Expired list is not on the page
         assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
-        citizenDetailsPage.terminateReservationAsEmployeeButton.click()
-        assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+        page.waitForHtmxSettle { citizenDetailsPage.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetailsPage.terminateReservationAsEmployeeForm.isVisible }
 
         // Opens up information from the first reservation of the first user
         assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")

@@ -97,6 +97,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         citizenDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
         val text = "This is a new memo"
         val memoId = 2
+        page.waitForCondition { citizenDetails.newMemoContent.isVisible }
         citizenDetails.newMemoContent.fill(text)
         citizenDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
 
@@ -340,7 +341,8 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
 
         // terminate reservation
-        citizenDetails.terminateReservationAsEmployeeButton.click()
+        page.waitForHtmxSettle { citizenDetails.terminateReservationAsEmployeeButton.click() }
+        page.waitForCondition { citizenDetails.terminateReservationAsEmployeeForm.isVisible }
         citizenDetails.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
         citizenDetails.terminateReservationModalConfirm.click()
         assertThat(citizenDetails.terminateReservationSuccess).isVisible()
@@ -374,10 +376,12 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         reserver.click()
 
         val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
         assertThat(citizenDetails.citizenLastNameField).hasText("Pulkkinen")
-        citizenDetails.exceptionsNavi.click()
+        citizenDetails.exceptionsNavi.clickAndWaitForHtmxSettle()
 
         val espooRulesAppliedCheckbox = page.getByDataTestId("edit-espoorules-applied-checkbox")
+        page.waitForCondition { espooRulesAppliedCheckbox.isVisible }
         val espooRulesAppliedCheckboxContent = page.getByDataTestId("espoorules-applied-checkbox")
         // Check that cancel does not save the changes
         citizenDetails.exceptionsEditButton.click()
@@ -436,6 +440,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
 
         citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
         citizenDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
+        page.waitForCondition { citizenDetails.newMemoContent.isVisible }
         citizenDetails.newMemoContent.fill(maliciousCode(maliciousValue))
         citizenDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
 
@@ -504,11 +509,12 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         val boat = citizenDetails.boatInFirstBoatSpaceReservationCard
         assertThat(boat).containsText(existingBoat)
 
-        citizenDetails.editBoatInFirstBoatSpaceReservationCard.click()
+        page.waitForHtmxSettle { citizenDetails.editBoatInFirstBoatSpaceReservationCard.click() }
+        page.waitForCondition { citizenDetails.changeBoatSelect.isVisible }
         citizenDetails.changeBoatSelect.selectOption(newBoat)
-        citizenDetails.changeBoatConfirm.click()
+        page.waitForHtmxSettle { citizenDetails.changeBoatConfirm.click() }
 
-        assertThat(boat).containsText(newBoat)
+        page.waitForCondition { boat.textContent().contains(newBoat) }
     }
 
     @Test

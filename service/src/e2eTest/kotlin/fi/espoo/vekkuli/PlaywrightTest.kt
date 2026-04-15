@@ -140,4 +140,46 @@ abstract class PlaywrightTest {
             }
         }
     }
+
+    /**
+     * Fills a search input that uses HTMX with debounced triggers (e.g., hx-trigger="keyup changed delay:500ms")
+     * and Alpine.js x-model bindings.
+     * Types each character and then ensures Alpine.js state is synced before triggering the search.
+     */
+    fun fillSearchInput(
+        locator: Locator,
+        text: String
+    ) {
+        // Clear any existing value first
+        locator.clear()
+        // Type each character using press() - this properly triggers Alpine.js x-model bindings
+        text.forEach { character ->
+            locator.press("$character")
+        }
+        // Ensure Alpine.js x-model is synced by triggering an input event and updating Alpine data directly
+        locator.evaluate(
+            """el => {
+            // Dispatch input event to trigger any listeners
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            // Find the Alpine component and update citizenFullName
+            const alpineEl = el.closest('[x-data]');
+            if (alpineEl && alpineEl._x_dataStack) {
+                alpineEl._x_dataStack[0].citizenFullName = el.value;
+            }
+        }"""
+        )
+        // Set up HTMX settle listener and wait for the debounced request to complete
+        page.evaluate(
+            """
+            window.htmxHasSettled = 'false';
+            window.addEventListener("htmx:afterSettle", (event) => window.htmxHasSettled = true, { once: true });
+            """.trimIndent()
+        )
+        // Press End key to trigger a final keyup event that satisfies the debounce
+        locator.press("End")
+        // Wait for HTMX to settle (debounce delay 500ms + request/response time)
+        page.waitForFunction("window.htmxHasSettled === true")
+        // Give Alpine.js time to process x-show directives on the new content
+        page.waitForTimeout(100.0)
+    }
 }

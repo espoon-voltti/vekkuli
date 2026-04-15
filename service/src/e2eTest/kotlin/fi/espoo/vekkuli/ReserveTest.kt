@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.employee.clickAndWaitForHtmxSettle
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
@@ -46,8 +47,8 @@ class ReserveTest : EmailSendingTest() {
         // verity that there's a payment row in reserver's info in employee view
         // todo: citizen and organization pages should have a common base class
         val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin, filterReservations)
-        citizenDetails.paymentsNavi.click()
-        assertThat(citizenDetails.paymentsTable).isVisible()
+        citizenDetails.paymentsNavi.clickAndWaitForHtmxSettle()
+        page.waitForCondition { citizenDetails.paymentsTable.isVisible }
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
 
         val matchingRow =
@@ -79,7 +80,9 @@ class ReserveTest : EmailSendingTest() {
             .getByText(reserverName)
             .first()
             .click()
-        return CitizenDetailsPage(page)
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+        return citizenDetails
     }
 
     private fun reservationListPage(doLogin: Boolean = true): ReservationListPage {

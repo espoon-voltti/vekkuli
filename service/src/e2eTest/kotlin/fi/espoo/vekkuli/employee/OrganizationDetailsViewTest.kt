@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.options.SelectOption
 import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
@@ -140,6 +141,7 @@ class OrganizationDetailsViewTest : ReserveTest() {
         organizationDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
         val text = "This is a new memo"
         val memoId = 2
+        page.waitForCondition { organizationDetails.newMemoContent.isVisible }
         organizationDetails.newMemoContent.fill(text)
         organizationDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
         assertThat(organizationDetails.userMemo(memoId)).containsText(text)
@@ -286,8 +288,10 @@ class OrganizationDetailsViewTest : ReserveTest() {
 
         // Add the citizen to the organization
         typeText(organizationDetails.citizenSearchInput, "mikko")
-        assertThat(organizationDetails.citizenSearchOption1).isVisible()
-        organizationDetails.citizenSearchOption1.click()
+        // Wait for search results select to appear - option elements in <select> aren't accessible via isVisible in Chrome for Testing
+        val citizenResultsSelect = page.locator("#citizen-results select")
+        citizenResultsSelect.waitFor()
+        citizenResultsSelect.selectOption(SelectOption().setIndex(0))
 
         // Check that the citizen is added to the organization
         assertThat(organizationDetails.citizenNameField).isVisible()

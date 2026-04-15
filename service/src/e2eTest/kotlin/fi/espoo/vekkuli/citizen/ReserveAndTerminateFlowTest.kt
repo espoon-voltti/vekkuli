@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.options.SelectOption
 import fi.espoo.vekkuli.EmailSendingTest
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
@@ -69,8 +70,10 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
 
         // Add the citizen to the organization
         typeText(organizationDetails.citizenSearchInput, "mikko")
-        assertThat(organizationDetails.citizenSearchOption1).isVisible()
-        organizationDetails.citizenSearchOption1.click()
+        // Wait for the select with search results to appear (option elements in <select> aren't accessible via isVisible in Chrome for Testing)
+        val citizenResultsSelect = page.locator("#citizen-results select")
+        citizenResultsSelect.waitFor()
+        citizenResultsSelect.selectOption(SelectOption().setIndex(0))
 
         // Check that the citizen is added to the organization
         assertThat(organizationDetails.citizenNameField).isVisible()

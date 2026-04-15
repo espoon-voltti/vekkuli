@@ -136,7 +136,7 @@ class HistoryNavigationTest : PlaywrightTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "leo")
-        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+        formPage.selectCitizenByIndex(0)
         assertThat(page.getByTestId("firstName")).containsText("Leo")
         assertThat(page.getByTestId("lastName")).containsText("Korhonen")
 

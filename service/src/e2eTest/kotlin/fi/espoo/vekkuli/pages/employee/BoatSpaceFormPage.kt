@@ -2,6 +2,8 @@ package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.options.SelectOption
+import fi.espoo.vekkuli.employee.waitForHtmxSettle
 import fi.espoo.vekkuli.pages.BasePage
 import fi.espoo.vekkuli.shared.OrganizationIds
 
@@ -63,12 +65,24 @@ class BoatSpaceFormPage(
     val citizenSearchContainer = page.locator("#customer-search-container")
     val citizenInformationContainer = page.locator("#reserver-details")
     val citizenSearchInput = page.locator("#customer-search")
+    val citizenResultsSelect = page.locator("#citizen-results select")
     val citizenSearchOption1 = page.locator("#option-0")
     val citizenSearchOption2 = page.locator("#option-1")
     val citizenEmptyInput = page.locator("#citizen-empty-input")
     val existingCitizenSelector = page.locator("#existing-citizen-selector")
     val newCitizenSelector = page.locator("#new-citizen-selector")
     val citizenIdError = page.getByTestId("citizenId-error")
+
+    fun selectCitizenByIndex(index: Int) {
+        citizenResultsSelect.waitFor()
+        page.waitForHtmxSettle {
+            citizenResultsSelect.selectOption(SelectOption().setIndex(index))
+        }
+    }
+
+    fun hasCitizenSearchResults(): Boolean = citizenResultsSelect.locator("option").count() > 0
+
+    fun getCitizenOptionCount(): Int = citizenResultsSelect.locator("option").count()
 
     val organizationRadioButton = page.getByTestId("reseverTypeOrg")
     val espoonPursiseuraRadioButton = page.getByTestId("org-${OrganizationIds.espoonPursiseura}-radio")
@@ -142,7 +156,7 @@ class BoatSpaceFormPage(
         reserverName.forEach { character ->
             formPage.citizenSearchInput.press("$character")
         }
-        formPage.citizenSearchOption1.click()
+        formPage.selectCitizenByIndex(0)
         // Not the best solution, but required because of content replacement
         assertThat(formPage.firstNameInput).not().isEmpty()
 

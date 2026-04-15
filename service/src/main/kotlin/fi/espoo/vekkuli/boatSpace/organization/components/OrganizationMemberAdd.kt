@@ -22,10 +22,11 @@ class OrganizationMemberAdd(
     ): String {
         val listSize = if (citizens.size >= 3) 3 else citizens.size
         // language=HTML
+        // Note: The x-show was removed because it caused issues with Chrome for Testing in Playwright 1.57+.
+        // The select is only rendered when there are search results, so the x-show was redundant.
         return (
             """
             <select 
-                x-show="citizenFullName != ''" 
                 multiple 
                 size="$listSize" 
                 name='citizenIdOption' 

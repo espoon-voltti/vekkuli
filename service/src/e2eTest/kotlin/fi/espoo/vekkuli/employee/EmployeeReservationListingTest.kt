@@ -202,8 +202,8 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.toString()).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.sendMassMessageLink).containsText("(1 varausta)")
-        listingPage.sendMassMessageLink.click()
-        assertThat(listingPage.sendMassMessageForm).isVisible()
+        listingPage.sendMassMessageLink.clickAndWaitForHtmxSettle()
+        page.waitForCondition { listingPage.sendMassMessageForm.isVisible }
     }
 
     @Test

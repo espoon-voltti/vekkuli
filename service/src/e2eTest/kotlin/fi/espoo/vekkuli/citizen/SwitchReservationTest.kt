@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
 import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.employee.clickAndWaitForHtmxSettle
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -45,7 +46,7 @@ class SwitchReservationTest : ReserveTest() {
 
         assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
         val citizenDetails = citizenPageInEmployeeView("korhonen", false)
-        citizenDetails.memoNavi.click()
+        citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
         assertThat(citizenDetails.userMemo(2))
             .containsText("Leo Korhonen vaihtoi paikasta Haukilahti B 001 paikkaan Haukilahti D 013.")
 
