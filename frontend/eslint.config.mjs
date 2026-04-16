@@ -91,8 +91,8 @@ export default [
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
-      react: reactPlugin,
-      'react-hooks': reactHooksPlugin,
+      react: fixupPluginRules(reactPlugin),
+      'react-hooks': fixupPluginRules(reactHooksPlugin),
       'jsx-expressions': fixupPluginRules(jsxExpressionsPlugin)
     },
     settings: {
