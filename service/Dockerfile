@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jammy AS base
+FROM eclipse-temurin:25-noble AS base
 ARG CACHE_BUST
 
 LABEL maintainer="https://github.com/espoon-voltti/vekkuli"

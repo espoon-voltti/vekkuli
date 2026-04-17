@@ -19,6 +19,6 @@ export const sessionKeepalive = async () => {
     const data = (await response.json()) as { loggedIn?: boolean }
     return data.loggedIn === true
   } catch (error) {
-    throw new Error('Failed to parse JSON response')
+    throw new Error('Failed to parse JSON response', { cause: error })
   }
 }
