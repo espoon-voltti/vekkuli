@@ -86,7 +86,7 @@
     "tsconfig-paths-webpack-plugin": "4.2.0",
     "typescript": "6.0.2",
     "typescript-eslint": "8.58.1",
-    "webpack": "5.106.0",
+    "webpack": "5.106.1",
     "webpack-cli": "7.0.2",
     "webpack-pwa-manifest": "4.3.0",
     "yargs": "18.0.0"
