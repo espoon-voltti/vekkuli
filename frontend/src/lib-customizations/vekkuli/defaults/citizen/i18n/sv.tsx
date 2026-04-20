@@ -280,7 +280,7 @@ const sv: Translations = {
           newReservations:
             'Bokning av båtplatser för esbobor från och med 2.3. och för andra från 1.4.–30.9.2026. Bokningen är för båtsäsongen 10.6–14.9.2026.',
           trailerReservations:
-            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2026. Bokningen är för båtsäsongen 1.5.2026–30.4.2027.',
+            'Bokning av trailerplatser i Finno för alla från 2.5.–31.12.2026. Bokningen är för båtsäsongen 2.5.2026–30.4.2027.',
           winter:
             'Bokning av vinterplatser för esbobor från 15.9.–31.12.2026. Bokningen är för vintersäsongen 15.9.2026–10.6.2027.',
           storage1:
