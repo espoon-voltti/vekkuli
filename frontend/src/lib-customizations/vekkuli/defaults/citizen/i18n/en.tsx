@@ -288,7 +288,7 @@ const en: Translations = {
           newReservations:
             'Booking boat spaces for Espoo residents starting 2.3. and for others from 1.4.–30.9.2026. The reservation is for the boating season 10.6.–14.9.2026.',
           trailerReservations:
-            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2026. The reservation is for the boating season 1.5.2026–30.4.2027.',
+            'Booking Suomenoja trailer spaces for everyone from 2.5.–31.12.2026. The reservation is for the boating season 2.5.2026–30.4.2027.',
           winter:
             'Booking winter spaces for Espoo residents from 15.9.–31.12.2026. The reservation is for the winter season 15.9.2026–10.6.2027.',
           storage1:

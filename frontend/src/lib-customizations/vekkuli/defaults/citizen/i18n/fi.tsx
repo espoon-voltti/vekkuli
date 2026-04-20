@@ -289,7 +289,7 @@ export default {
           newReservations:
             'Laituripaikkojen varaaminen espoolaisille 2.3. alkaen ja muille 1.4.–30.9.2026. Varaus on veneilykaudelle 10.6.–14.9.2026.',
           trailerReservations:
-            'Suomenojan traileripaikkojen varaaminen 1.5.–31.12.2026. Varaus on kaudelle 1.5.2026–30.4.2027.',
+            'Suomenojan traileripaikkojen varaaminen 2.5.–31.12.2026. Varaus on kaudelle 2.5.2026–30.4.2027.',
           winter:
             'Talvipaikkojen varaaminen espoolaisille 15.9.–15.12.2026. Varaus on talvisäilytyskaudelle 15.9.2026–10.6.2027.',
           storage1:
