@@ -64,8 +64,14 @@ RUN cd /tmp \
 COPY ./nginx/bin/ /bin/
 COPY ./nginx/etc/ /etc/
 
+RUN rm /etc/nginx/conf.d/default.conf /etc/nginx/nginx.conf \
+ && mkdir -p /nginx \
+ && chown nginx:nginx /nginx
+
+VOLUME /nginx
+
 ENTRYPOINT ["/bin/proxy-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-c", "/nginx/config/nginx.conf", "-g", "daemon off;"]
 
 COPY --from=builder /project/dist/esbuild/citizen-frontend/ /static/
 

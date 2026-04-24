@@ -53,9 +53,26 @@ WORKDIR /app
 COPY ./entrypoint.sh entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
 
+ENV USERNAME=vekkuli
+ENV HOME_DIR=/home/${USERNAME}
+ENV USER_ID=1000
+ENV GROUP_ID=1000
+
+# Remove ubuntu user that exists in noble base image with GID 1000
+RUN userdel -r ubuntu || true \
+ && addgroup --gid ${GROUP_ID} ${USERNAME} \
+ && adduser --uid ${USER_ID} --gid ${GROUP_ID} --gecos "" -q --home ${HOME_DIR} --disabled-password ${USERNAME} \
+ && mkdir -p /config \
+ && chown ${USERNAME}:${USERNAME} /config
+
+VOLUME /config
+VOLUME /tmp
+
 COPY --from=builder /app/build/download-only/dd-java-agent.jar /opt/dd-java-agent.jar
 COPY ./dd-jmxfetch/ /etc/jmxfetch/
 COPY --from=builder /app/target/ .
+
+USER ${USERNAME}
 
 ARG build=none
 ARG commit=none
