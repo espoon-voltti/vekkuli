@@ -19,7 +19,7 @@ Varauksesi on voimassa {{endDateFi}}.
 Saat myöhemmin postissa kausitarran ja varausvahvistuksen, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia).
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
-Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 040 639 3463 arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
 Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -50,7 +50,7 @@ Din bokning är {{endDateSv}}.
 Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port).
 
 Om du har bokat en förvaringsplats i Käringbacken:
-Upphämtning av passernyckeln till Käringbacken, ring 046 877 3668 (Toimela) eller 044 566 8690 (Pohjala) vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
+Upphämtning av passernyckeln till Käringbacken, ring 040 639 3463 vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -81,7 +81,7 @@ Your reservation is valid {{endDateEn}}.
 You will later receive by mail a reservation confirmation and a season sticker, which includes the key code for having a key made for the pier gate (note: there is no gate at Otsolahti’s Fpier).
 
 If you reserved a storage place in Ämmäsmäki:
-The pickup of the access badge must be arranged in advance by calling 046 877 3668 (Toimela) or 044 566 8690 (Pohjala) on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+The pickup of the access badge must be arranged in advance by calling 040 639 3463 on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -115,7 +115,7 @@ Varauksesi on voimassa {{endDateFi}}.
 Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
-Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 040 639 3463 arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
 Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -148,7 +148,7 @@ Bokningen gäller {{endDateSv}}.
 Om du har bokat en båtplats får du senare per post ett sänsongklistermärke för din båt och en hamnkarta med nyckelkodsuppgifter för att tillverka en nyckel till bryggans port (obs! Ingen port till F-bryggan i Björnviken). Klistermärket ska fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller bocken.
 
 Om du har bokat en förvaringsplats i Käringbacken:
-Upphämtning av passernyckeln till Käringbacken, ring 046 877 3668 (Toimela) eller 044 566 8690 (Pohjala) vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
+Upphämtning av passernyckeln till Käringbacken, ring 040 639 3463 vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -181,7 +181,7 @@ Your reservation is valid {{endDateEn}}.
 If you reserved a dock place, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage place, on the protective tent, trailer or stand.
 
 If you reserved a storage place in Ämmäsmäki:
-The pickup of the access badge must be arranged in advance by calling 046 877 3668 (Toimela) or 044 566 8690 (Pohjala) on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+The pickup of the access badge must be arranged in advance by calling 040 639 3463 on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -647,7 +647,7 @@ Varauksesi on voimassa {{endDateFi}}.
 Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle vesikulkuneuvoon tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
 
 Jos varasit säilytyspaikan Ämmäsmäeltä:
-Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon p. 046 877 3668 (Toimela) tai p. 044 566 8690 (Pohjala) arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 040 639 3463 arkisin kello 8-14. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
 
 Hallinnoi varauksiasi, vesikulkuneuvojasi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -678,7 +678,7 @@ Din bokning är giltig {{endDateSv}}.
 Du får senare per post en bokningsbekräftelse och ett säsongsklistermärke. I bokningsbekräftelsen finns en nyckelkod som du behöver för att tillverka en portnyckel till bryggan (brygga F i Björnviken har ingen port). Säsongsklistermärket ska fästas på ett synligt ställe på vattenfarkosten eller på vinter-, trailer- eller förvaringsplatsen på skyddstält, trailer eller bock.
 
 Om du har bokat en förvaringsplats i Käringbacken:
-Upphämtning av passernyckeln till Käringbacken, ring 046 877 3668 (Toimela) eller 044 566 8690 (Pohjala) vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
+Upphämtning av passernyckeln till Käringbacken, ring 040 639 3463 vardagar kl. 8-14. Passernyckeln hämtas från Finno hamn (Säljägarvägen 9) mot uppvisande av betalningskvitto.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
@@ -709,7 +709,7 @@ Your reservation is valid until {{endDateEn}}.
 If you reserved a dock place, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage place, on the protective tent, trailer or stand.
 
 If you reserved a storage place in Ämmäsmäki:
-The pickup of the access badge must be arranged in advance by calling 046 877 3668 (Toimela) or 044 566 8690 (Pohjala) on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+The pickup of the access badge must be arranged in advance by calling 040 639 3463 on weekdays between 8-14. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
 
 Manage your reservations, boats and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
