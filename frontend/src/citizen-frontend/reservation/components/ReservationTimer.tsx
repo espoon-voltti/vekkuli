@@ -47,7 +47,6 @@ const TimeRemaining = React.memo(function TimeRemaining({
   const [initialAnnounced, setInitialAnnounced] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTotalSeconds((prev) => (prev === (seconds ?? 0) ? prev : (seconds ?? 0)))
     setElapsedSeconds(0)
     setStartTime(getCurrentTime())
@@ -116,7 +115,6 @@ const TimeRemaining = React.memo(function TimeRemaining({
       alertTimeSeconds.includes(remainingTime) ||
       (!initialAnnounced && seconds - remainingTime >= 5)
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInitialAnnounced(true)
       setAnnounceText(screenReaderText)
       setTimeout(() => setAnnounceText(''), 5000)
