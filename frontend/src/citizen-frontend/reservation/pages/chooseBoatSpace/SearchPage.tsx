@@ -120,7 +120,7 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
     typeof spaceIdParam === 'string' ? parseInt(spaceIdParam, 10) : null
   useEffect(() => {
     if (userLoggedIn && spaceId !== null) {
-      setSelectedBoatSpace(spaceId) // eslint-disable-line react-hooks/set-state-in-effect
+      setSelectedBoatSpace(spaceId)
     }
   }, [spaceId, userLoggedIn])
 
