@@ -128,7 +128,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:3.4.3") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:3.4.3") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.3") // kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1-0.6.x-compat")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
