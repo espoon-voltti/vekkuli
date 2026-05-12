@@ -1563,9 +1563,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.101.0":
-  version: 5.101.0
-  resolution: "dd-trace@npm:5.101.0"
+"dd-trace@npm:5.102.0":
+  version: 5.102.0
+  resolution: "dd-trace@npm:5.102.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.9.3"
     "@datadog/native-appsec": "npm:11.0.1"
@@ -1600,7 +1600,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/8bf49b25901bac4085b5722ab55baadae6436af005f08477d578cd8869a046b85596dc03f8bbefba66ae695a0609d53d2b71d19a7b7020f1474489071bc1453d
+  checksum: 10/8349d49d0543ad744305705d5c2820366b21f004ae5fcd3ad7cac552e24e55ad0a0c706523ee05abbb44c6212dc30ba9d9c195f51966d775e981b4d5cbda4069
   languageName: node
   linkType: hard
 
@@ -4410,7 +4410,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.1.0"
-    dd-trace: "npm:5.101.0"
+    dd-trace: "npm:5.102.0"
     eslint: "npm:10.3.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.5"
