@@ -38,6 +38,14 @@ RUN apt-get update \
  && echo "${S3_DOWNLOADER_SHA256}  /bin/s3download" | sha256sum -c - \
  && chmod +x /bin/s3download
 
+RUN userdel -r node \
+ && addgroup --gid 1000 vekkuli \
+ && adduser --uid 1000 --gid 1000 --gecos "" -q --home /home/vekkuli --disabled-password vekkuli \
+ && mkdir -p /config \
+ && chown vekkuli:vekkuli /config
+
+VOLUME /config
+
 ARG build=none
 ARG commit=none
 
@@ -46,6 +54,8 @@ ENV APP_BUILD="$build" \
 
 LABEL fi.espoo.build="$build" \
       fi.espoo.commit="$commit"
+
+USER vekkuli
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["node", "dist/index.js"]
