@@ -49,6 +49,12 @@ repositories {
     mavenCentral()
 }
 
+// Override Spring Boot's managed kotlinx-coroutines version. Ktor 3.5.0 requires
+// >=1.11.0; this keeps the WHOLE coroutines family (bom/core/reactor/reactive/slf4j)
+// aligned via Spring's dependency management, which otherwise force-pins it back to
+// 1.10.2 and breaks the suspend->Mono bridge (NoSuchMethodError in MonoCoroutine).
+extra["kotlin-coroutines.version"] = "1.11.0"
+
 sourceSets {
     register("e2eTest") {
         compileClasspath += main.get().output + test.get().output
@@ -129,8 +135,9 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.5.0") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.0") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
+    // Version managed by Spring Boot via the kotlin-coroutines.version override above.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
     // AWS dependencies
