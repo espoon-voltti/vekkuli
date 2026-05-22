@@ -3,12 +3,12 @@ package fi.espoo.vekkuli.boatSpace.emailAttachments
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AttachmentView
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
+import fi.espoo.vekkuli.config.AwsConstants
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -57,26 +57,43 @@ class AttachmentController(
                             file.inputStream,
                             file.size,
                             name,
-                            existingAttachmentIds,
                         )
-                return ResponseEntity.ok(
-                    attachmentView.renderAttachmentListItemWithDelete(
-                        id,
-                        name
-                    )
-                )
+                return ResponseEntity
+                    .ok()
+                    .header("HX-Trigger", sizeStateTriggerHeader(existingAttachmentIds + id))
+                    .body(attachmentView.renderAttachmentListItemWithDelete(id, name))
             } else {
                 return ResponseEntity.noContent().build()
             }
-        } catch (e: MessageSizeLimitExceededException) {
-            logger.info { "Attachment upload rejected: combined size ${e.currentBytes + e.attemptedBytes} > limit ${e.limitBytes}" }
-            return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(attachmentView.renderSizeLimitError(e.currentBytes, e.attemptedBytes, e.limitBytes))
         } catch (e: Exception) {
             logger.error(e) { "Error uploading an attachment" }
             return ResponseEntity.badRequest().build()
         }
+    }
+
+    private fun sizeStateTriggerHeader(currentAttachmentIds: List<UUID>): String {
+        val total = attachmentService.combinedAttachmentSize(currentAttachmentIds)
+        val limit = AwsConstants.MAX_RAW_ATTACHMENT_TOTAL_BYTES
+        val over = total > limit
+        val message =
+            if (over) {
+                attachmentView.renderSizeLimitError(totalBytes = total, limitBytes = limit)
+            } else {
+                ""
+            }
+        // Minimal JSON payload; values are numeric / boolean / a server-controlled message string.
+        return """{"composer-size-changed":{"over":$over,"message":${jsonString(message)}}}"""
+    }
+
+    private fun jsonString(s: String): String {
+        val escaped =
+            s
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+        return "\"$escaped\""
     }
 
     @GetMapping("/liite/{attachmentId}")
@@ -111,7 +128,8 @@ class AttachmentController(
     @ResponseBody
     fun deleteAttachment(
         request: HttpServletRequest,
-        @PathVariable attachmentId: UUID
+        @PathVariable attachmentId: UUID,
+        @RequestParam("attachmentId") draftAttachmentIds: List<UUID> = emptyList(),
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
         authenticatedUser.let {
@@ -128,7 +146,11 @@ class AttachmentController(
         }
         try {
             attachmentService.deleteAttachment(attachmentId)
-            return ResponseEntity.ok("")
+            val remaining = draftAttachmentIds.filter { it != attachmentId }
+            return ResponseEntity
+                .ok()
+                .header("HX-Trigger", sizeStateTriggerHeader(remaining))
+                .body("")
         } catch (e: Exception) {
             logger.error(e) { "Error deleting the attachment" }
             return ResponseEntity.badRequest().body("Error deleting attachment")
