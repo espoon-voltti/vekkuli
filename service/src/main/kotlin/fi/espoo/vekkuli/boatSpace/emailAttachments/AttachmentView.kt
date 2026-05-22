@@ -48,7 +48,16 @@ class AttachmentView : BaseView() {
           <div id="attachment-size-error" hidden role="alert" class="is-centered is-vcentered is-error-text"></div>
           <div id="error-box" hidden role="alert" class="is-centered is-vcentered is-error-text">Liitteen lisäämisessä tapahtui virhe.</div>
         </form>
-        <ul id="attachment-list">
+        <ul
+          id="attachment-list"
+          @htmx:after-request="
+            if (event.detail.successful) {
+              const sizeBox = document.getElementById('attachment-size-error');
+              sizeBox.textContent = '';
+              sizeBox.hidden = true;
+            }
+          "
+        >
          <div id="upload-indicator" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
         </ul>
 
