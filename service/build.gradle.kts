@@ -122,7 +122,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    implementation(platform("org.junit:junit-bom:6.0.3"))
+    implementation(platform("org.junit:junit-bom:6.1.0"))
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
