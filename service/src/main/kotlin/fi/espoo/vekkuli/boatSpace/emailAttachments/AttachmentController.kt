@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.emailAttachments
 
-import fi.espoo.vekkuli.boatSpace.emailAttachments.MessageSizeLimitExceededException
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AttachmentView
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
