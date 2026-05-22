@@ -212,6 +212,42 @@ class SendMessageView(
             ).build()
     }
 
+    fun renderMessageSizeError(
+        totalBytes: Long,
+        limitBytes: Long
+    ): String {
+        val totalMb = formatMb(totalBytes)
+        val limitMb = formatMb(limitBytes)
+        val modalBuilder = modal.createModalBuilder()
+        return modalBuilder
+            // language=HTML
+            .setContent(
+                """
+                 <div class="columns is-multiline is-2" ${addTestId("message-size-error-modal")}>
+                    <div class="column is-full has-text-centered">
+                        ${icons.errorNotification}
+                    </div>
+                    <div class="column is-full">
+                        <h2 class="has-text-centered mb-none">
+                            Viestin koko on liian suuri lähetettäväksi ($totalMb MB / $limitMb MB). Lyhennä viestiä tai poista liite.
+                        </h2>
+                    </div>
+                </div>
+                """.trimIndent()
+            ).addButton {
+                setText(t("button.ok"))
+                setType(ModalButtonType.Cancel)
+                setStyle(ModalButtonStyle.Danger)
+                setTestId("employee-messages-modal-size-error-ok")
+            }.setButtonsCentered(true)
+            .build()
+    }
+
+    private fun formatMb(bytes: Long): String {
+        val mb = bytes.toDouble() / 1_000_000.0
+        return String.format(messageUtil.localeFI, "%.1f", mb)
+    }
+
     fun renderSendingFailed(): String {
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder

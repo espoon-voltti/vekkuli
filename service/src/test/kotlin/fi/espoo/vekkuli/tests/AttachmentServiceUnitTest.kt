@@ -123,4 +123,60 @@ class AttachmentServiceUnitTest {
         assertEquals(200L, ex.attemptedBytes)
         assertEquals(limit, ex.limitBytes)
     }
+
+    @Test
+    fun `checkMessageSize passes within limit`() {
+        service.checkMessageSize("Subject", "Body text", emptyList())
+    }
+
+    @Test
+    fun `checkMessageSize rejects when body alone over limit`() {
+        val hugeBody = "x".repeat((limit + 1).toInt())
+        assertThrows(MessageSizeLimitExceededException::class.java) {
+            service.checkMessageSize("Subject", hugeBody, emptyList())
+        }
+    }
+
+    @Test
+    fun `checkMessageSize rejects when title plus body plus attachments over limit`() {
+        val id = UUID.randomUUID()
+        whenever(repo.findSizesByIds(listOf(id))).thenReturn(mapOf(id to (limit - 100L)))
+        val body = "x".repeat(101)
+        assertThrows(MessageSizeLimitExceededException::class.java) {
+            service.checkMessageSize("", body, listOf(id))
+        }
+    }
+
+    @Test
+    fun `checkMessageSize at limit succeeds`() {
+        val id = UUID.randomUUID()
+        whenever(repo.findSizesByIds(listOf(id))).thenReturn(mapOf(id to (limit - 100L)))
+        val body = "x".repeat(100)
+        service.checkMessageSize("", body, listOf(id))
+    }
+
+    @Test
+    fun `checkMessageSize uses UTF-8 byte length not char length`() {
+        // 'ä' is 2 bytes in UTF-8 but 1 char; (limit/2)+1 chars × 2 bytes/char > limit
+        val multiByteContent = "ä".repeat(((limit / 2) + 1).toInt())
+        val ex =
+            assertThrows(MessageSizeLimitExceededException::class.java) {
+                service.checkMessageSize("", multiByteContent, emptyList())
+            }
+        assertEquals(0L, ex.attemptedBytes)
+    }
+
+    @Test
+    fun `checkMessageSize exception splits text and attachment bytes`() {
+        val id = UUID.randomUUID()
+        whenever(repo.findSizesByIds(listOf(id))).thenReturn(mapOf(id to (limit - 100L)))
+        val body = "x".repeat(200)
+        val ex =
+            assertThrows(MessageSizeLimitExceededException::class.java) {
+                service.checkMessageSize("AB", body, listOf(id))
+            }
+        assertEquals(202L, ex.currentBytes) // 2 (title) + 200 (body)
+        assertEquals(limit - 100L, ex.attemptedBytes)
+        assertEquals(limit, ex.limitBytes)
+    }
 }
