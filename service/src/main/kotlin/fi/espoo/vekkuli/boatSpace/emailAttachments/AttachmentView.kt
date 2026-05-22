@@ -105,7 +105,7 @@ class AttachmentView : BaseView() {
         return """
             Liitteiden yhteenlaskettu koko ylittäisi sallitun rajan ($combinedMb MB / $limitMb MB).
             Poista liite tai valitse pienempi tiedosto.
-        """.trimIndent()
+            """.trimIndent()
     }
 
     private fun formatMb(bytes: Long): String {

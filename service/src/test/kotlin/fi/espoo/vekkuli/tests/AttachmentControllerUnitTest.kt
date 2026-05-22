@@ -35,8 +35,7 @@ class AttachmentControllerUnitTest {
             setAttribute("vekkuli.user", AuthenticatedUser(id = UUID.randomUUID(), type = "user"))
         }
 
-    private fun pdf(size: Int = 100) =
-        MockMultipartFile("file", "x.pdf", "application/pdf", ByteArray(size))
+    private fun pdf(size: Int = 100) = MockMultipartFile("file", "x.pdf", "application/pdf", ByteArray(size))
 
     @Test
     fun `over-limit upload returns 422 with rendered size-limit error body`() {

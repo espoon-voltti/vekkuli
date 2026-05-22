@@ -41,14 +41,16 @@ class AttachmentServiceUnitTest {
         service = AttachmentService(s3, repo, emailEnv)
     }
 
-    private fun upload(size: Long, existing: List<UUID> = emptyList()) =
-        service.uploadAttachment(
-            contentType = pdf,
-            input = ByteArrayInputStream(ByteArray(0)),
-            size = size,
-            name = "x.pdf",
-            existingAttachmentIds = existing,
-        )
+    private fun upload(
+        size: Long,
+        existing: List<UUID> = emptyList()
+    ) = service.uploadAttachment(
+        contentType = pdf,
+        input = ByteArrayInputStream(ByteArray(0)),
+        size = size,
+        name = "x.pdf",
+        existingAttachmentIds = existing,
+    )
 
     @Test
     fun `first upload at limit succeeds`() {

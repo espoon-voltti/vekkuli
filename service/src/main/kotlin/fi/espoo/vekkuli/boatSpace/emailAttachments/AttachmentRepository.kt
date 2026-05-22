@@ -21,8 +21,7 @@ class AttachmentRepository(
                 handle
                     .createUpdate(
                         "INSERT INTO attachment (key, name, size_bytes) VALUES (:key, :name, :sizeBytes)"
-                    )
-                    .bind("key", key)
+                    ).bind("key", key)
                     .bind("name", name)
                     .bind("sizeBytes", sizeBytes)
                     .executeAndReturnGeneratedKeys("id")
@@ -82,15 +81,13 @@ class AttachmentRepository(
             handle
                 .createQuery(
                     "SELECT id, size_bytes FROM attachment WHERE id IN (<ids>)"
-                )
-                .bindList("ids", ids)
+                ).bindList("ids", ids)
                 .map { rs, _ ->
                     val uuid = rs.getObject("id", UUID::class.java)
                     val raw = rs.getLong("size_bytes")
                     val size: Long? = if (rs.wasNull()) null else raw
                     uuid to size
-                }
-                .list()
+                }.list()
                 .toMap()
         }
     }
