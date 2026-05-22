@@ -17,5 +17,26 @@ SPDX-License-Identifier: LGPL-2.1-or-later
         <cve>CVE-2026-34487</cve>
         <cve>CVE-2026-34486</cve>
         <cve>CVE-2026-41417</cve>
+        <!-- Tomcat 11.0.21 (fix not yet available) -->
+        <cve>CVE-2026-41284</cve>
+        <cve>CVE-2026-41293</cve>
+        <cve>CVE-2026-42498</cve>
+        <cve>CVE-2026-43512</cve>
+        <cve>CVE-2026-43513</cve>
+        <cve>CVE-2026-43514</cve>
+        <cve>CVE-2026-43515</cve>
+        <!-- Netty 4.2.12 (fix not yet available) -->
+        <cve>CVE-2026-42577</cve>
+        <cve>CVE-2026-42578</cve>
+        <cve>CVE-2026-42579</cve>
+        <cve>CVE-2026-42580</cve>
+        <cve>CVE-2026-42581</cve>
+        <cve>CVE-2026-42582</cve>
+        <cve>CVE-2026-42583</cve>
+        <cve>CVE-2026-42584</cve>
+        <cve>CVE-2026-42585</cve>
+        <cve>CVE-2026-42586</cve>
+        <cve>CVE-2026-42587</cve>
+        <cve>CVE-2026-44248</cve>
     </suppress>
 </suppressions>
