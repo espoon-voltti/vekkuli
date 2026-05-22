@@ -22,6 +22,7 @@ data class Attachment(
     val key: String,
     val id: UUID,
     val name: String,
+    val sizeBytes: Long? = null,
 )
 
 data class MessageWithAttachments(
