@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.emailAttachments
 
+import fi.espoo.vekkuli.boatSpace.emailAttachments.MessageSizeLimitExceededException
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.AttachmentView
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.common.Unauthorized
@@ -8,6 +9,7 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -28,6 +30,7 @@ class AttachmentController(
     fun addAttachment(
         request: HttpServletRequest,
         @RequestParam spaceId: List<Int> = emptyList(),
+        @RequestParam("attachmentId") existingAttachmentIds: List<UUID> = emptyList(),
         @RequestParam file: MultipartFile?,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
@@ -54,7 +57,8 @@ class AttachmentController(
                             file.contentType,
                             file.inputStream,
                             file.size,
-                            name
+                            name,
+                            existingAttachmentIds,
                         )
                 return ResponseEntity.ok(
                     attachmentView.renderAttachmentListItemWithDelete(
@@ -65,6 +69,11 @@ class AttachmentController(
             } else {
                 return ResponseEntity.noContent().build()
             }
+        } catch (e: MessageSizeLimitExceededException) {
+            logger.info { "Attachment upload rejected: combined size ${e.currentBytes + e.attemptedBytes} > limit ${e.limitBytes}" }
+            return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(attachmentView.renderSizeLimitError(e.currentBytes, e.attemptedBytes, e.limitBytes))
         } catch (e: Exception) {
             logger.error(e) { "Error uploading an attachment" }
             return ResponseEntity.badRequest().build()
