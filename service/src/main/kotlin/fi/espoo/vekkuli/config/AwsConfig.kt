@@ -17,7 +17,14 @@ import software.amazon.awssdk.utils.AttributeMap
 import java.net.URI
 
 object AwsConstants {
-    const val MAX_FILE_SIZE = 10 * 1000 * 1000
+    const val MAX_FILE_SIZE: Long = 10L * 1000 * 1000
+
+    /**
+     * Raw (pre-MIME-encoded) combined-size cap for all attachments on a single
+     * email. Chosen so the base64-encoded MIME message stays safely under the
+     * AWS SES 10 MB limit, with headroom for body, headers and MIME boundaries.
+     */
+    const val MAX_RAW_ATTACHMENT_TOTAL_BYTES: Long = 7L * 1000 * 1000
 }
 
 @Configuration
