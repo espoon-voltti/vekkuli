@@ -39,7 +39,8 @@ class AttachmentService(
         )
         return attachmentRepository.addAttachment(
             key,
-            name
+            name,
+            sizeBytes = size,
         )
     }
 

@@ -13,14 +13,18 @@ class AttachmentRepository(
 ) {
     fun addAttachment(
         key: String,
-        name: String
+        name: String,
+        sizeBytes: Long,
     ): UUID {
         val id =
             jdbi.withHandleUnchecked { handle ->
                 handle
-                    .createUpdate("INSERT INTO attachment (key, name) VALUES (:key, :name)")
+                    .createUpdate(
+                        "INSERT INTO attachment (key, name, size_bytes) VALUES (:key, :name, :sizeBytes)"
+                    )
                     .bind("key", key)
                     .bind("name", name)
+                    .bind("sizeBytes", sizeBytes)
                     .executeAndReturnGeneratedKeys("id")
                     .mapTo<UUID>()
                     .one()
@@ -32,8 +36,7 @@ class AttachmentRepository(
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
-                    "" +
-                        "SELECT id, key, name FROM attachment WHERE id = :id"
+                    "SELECT id, key, name, size_bytes AS sizeBytes FROM attachment WHERE id = :id"
                 ).bind("id", id)
                 .mapTo<Attachment>()
                 .singleOrNull()
@@ -72,4 +75,23 @@ class AttachmentRepository(
                 .mapTo<String>()
                 .list()
         }
+
+    fun findSizesByIds(ids: List<UUID>): Map<UUID, Long?> {
+        if (ids.isEmpty()) return emptyMap()
+        return jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    "SELECT id, size_bytes FROM attachment WHERE id IN (<ids>)"
+                )
+                .bindList("ids", ids)
+                .map { rs, _ ->
+                    val uuid = rs.getObject("id", UUID::class.java)
+                    val raw = rs.getLong("size_bytes")
+                    val size: Long? = if (rs.wasNull()) null else raw
+                    uuid to size
+                }
+                .list()
+                .toMap()
+        }
+    }
 }
