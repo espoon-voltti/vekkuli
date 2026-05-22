@@ -20,7 +20,8 @@ class AttachmentService(
         contentType: String?,
         input: InputStream,
         size: Long,
-        name: String
+        name: String,
+        existingAttachmentIds: List<UUID> = emptyList(),
     ): UUID {
         val key = "attachment-${UUID.randomUUID()}"
         if (contentType == null) throw IllegalArgumentException("Content type must not be null")
@@ -31,11 +32,29 @@ class AttachmentService(
         if (size < 0) throw IllegalArgumentException("Size must not be negative")
         if (size > AwsConstants.MAX_FILE_SIZE) throw IllegalArgumentException("File size exceeds maximum allowed size")
 
+        val existingTotal =
+            if (existingAttachmentIds.isEmpty()) {
+                0L
+            } else {
+                attachmentRepository
+                    .findSizesByIds(existingAttachmentIds)
+                    .values
+                    .sumOf { it ?: AwsConstants.MAX_FILE_SIZE }
+            }
+        val projectedTotal = existingTotal + size
+        if (projectedTotal > AwsConstants.MAX_RAW_ATTACHMENT_TOTAL_BYTES) {
+            throw MessageSizeLimitExceededException(
+                currentBytes = existingTotal,
+                attemptedBytes = size,
+                limitBytes = AwsConstants.MAX_RAW_ATTACHMENT_TOTAL_BYTES,
+            )
+        }
+
         storeAttachmentToS3(
             key = key,
             contentType = contentType,
             inputStream = input,
-            size = size
+            size = size,
         )
         return attachmentRepository.addAttachment(
             key,
