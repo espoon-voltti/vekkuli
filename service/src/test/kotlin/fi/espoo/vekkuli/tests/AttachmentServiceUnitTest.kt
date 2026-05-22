@@ -21,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.ByteArrayInputStream
 import java.util.UUID
 
-class AttachmentServiceTest {
+class AttachmentServiceUnitTest {
     private lateinit var s3: S3Client
     private lateinit var repo: AttachmentRepository
     private lateinit var emailEnv: EmailEnv
