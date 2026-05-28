@@ -805,7 +805,7 @@ Paikan varuste/säilytystapa: {{amenityFi}}
 
 Huomioi, mikäli kotikuntasi ei enää ole Espoo, et välttämättä ole oikeutettu jatkamaan paikkaasi.
 
-Jos kausimaksun maksaminen ei onnistu, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984. Puhelinajat löytyvät verkkosivuiltamme.
+Jos kausimaksun maksaminen ei onnistu, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai soittamalla Espoo-infoon 09 81621 , avoinna arkisin 8:30-16.
 
 Voit myös halutessasi vaihtaa nykyisen paikkasi toiseen paikkaan omien tietojen kautta. Paikan vaihto on mahdollista vasta kausimaksun maksamisen jälkeen.
 
@@ -845,7 +845,7 @@ Platsens utrustning/förvaringssätt: {{amenitySv}}
 
 Observera att om din hemkommun inte längre är Esbo kan du eventuellt inte förnya din plats.
 
-Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon 09 81658984. Telefontider finns på vår webbplats.
+Om betalningen av säsongsavgiften inte lyckas, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon via Esbo-info på 09 81621, öppet vardagar kl. 8.30–16.
 
 Du kan också byta din nuvarande plats till en annan via dina egna sidor. Du kan byta plats först efter att du betalat din nuvarande plats.
 
@@ -885,7 +885,7 @@ Amenities/storage type: {{amenityEn}}
 
 Please note that if your home municipality is no longer Espoo, you may not be eligible to renew your place.
 
-If you are unable to make the payment, please contact us via email at venepaikat@espoo.fi or by phone at 09 81658984. Phone hours can be found on our website.
+If you are unable to pay the seasonal fee, please contact us by email at venepaikat@espoo.fi or by calling Espoo Info at 09 81621, open on weekdays from 8:30 a.m. to 4:00 p.m.
 
 You may change your current place to another place through your personal account. A change of place is only possible after the seasonal fee has been paid.
 
@@ -907,7 +907,7 @@ Irtisanomisen syy: *xxxxxx*
 
 Pyydämme teitä ystävällisesti siirtämään vesikulkuneuvonne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
 
-Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
+Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81621, avoinna arkisin 8:30-16.
 
 Terveisin
 Merellinen ulkoilu
