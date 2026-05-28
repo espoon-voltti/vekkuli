@@ -20,7 +20,7 @@ class AttachmentService(
         contentType: String?,
         input: InputStream,
         size: Long,
-        name: String
+        name: String,
     ): UUID {
         val key = "attachment-${UUID.randomUUID()}"
         if (contentType == null) throw IllegalArgumentException("Content type must not be null")
@@ -35,12 +35,54 @@ class AttachmentService(
             key = key,
             contentType = contentType,
             inputStream = input,
-            size = size
+            size = size,
         )
         return attachmentRepository.addAttachment(
             key,
-            name
+            name,
+            sizeBytes = size,
         )
+    }
+
+    /**
+     * Combined raw byte size of the given attachments. NULL stored sizes (legacy rows) are
+     * treated conservatively as [AwsConstants.MAX_FILE_SIZE]. Missing IDs contribute 0.
+     */
+    fun combinedAttachmentSize(attachmentIds: List<UUID>): Long = sumAttachmentSizes(attachmentIds)
+
+    /**
+     * Verifies that subject + body + attachments combined stay within the raw-bytes cap
+     * that keeps the encoded MIME message under the AWS SES limit. Called at send time
+     * to catch the case where attachments are individually under the upload-time cap but
+     * a large body pushes the total over.
+     *
+     * Throws [MessageSizeLimitExceededException] with:
+     *  - currentBytes = subject + body bytes (what the user can trim)
+     *  - attemptedBytes = sum of attachment bytes (what the user can remove)
+     *  - limitBytes = the cap
+     */
+    fun checkMessageSize(
+        messageTitle: String,
+        messageContent: String,
+        attachmentIds: List<UUID>,
+    ) {
+        val textBytes = messageTitle.toByteArray(Charsets.UTF_8).size.toLong() + messageContent.toByteArray(Charsets.UTF_8).size.toLong()
+        val attachmentTotal = sumAttachmentSizes(attachmentIds)
+        if (textBytes + attachmentTotal > AwsConstants.MAX_RAW_ATTACHMENT_TOTAL_BYTES) {
+            throw MessageSizeLimitExceededException(
+                currentBytes = textBytes,
+                attemptedBytes = attachmentTotal,
+                limitBytes = AwsConstants.MAX_RAW_ATTACHMENT_TOTAL_BYTES,
+            )
+        }
+    }
+
+    private fun sumAttachmentSizes(attachmentIds: List<UUID>): Long {
+        if (attachmentIds.isEmpty()) return 0L
+        return attachmentRepository
+            .findSizesByIds(attachmentIds)
+            .values
+            .sumOf { it ?: AwsConstants.MAX_FILE_SIZE }
     }
 
     @Transactional

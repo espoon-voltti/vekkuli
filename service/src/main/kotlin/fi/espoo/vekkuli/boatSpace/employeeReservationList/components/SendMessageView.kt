@@ -89,10 +89,14 @@ class SendMessageView(
         val emails = recipients.joinToString("\n") { it.email }
         val modalBuilder = modal.createModalBuilder()
         val formId = if (reserverId != null) "send-email" else "send-mass-email"
+        val composerSizeChangedHandler =
+            "sizeError = ${'$'}event.detail.message || ''; sendDisabled = !!${'$'}event.detail.over;"
         val formAttributes =
             mutableMapOf(
                 "hx-swap" to "innerHTML",
                 "hx-target" to "#modal-container",
+                "x-data" to "{ sizeError: '', sendDisabled: false }",
+                "@composer-size-changed.window" to composerSizeChangedHandler,
             )
         if (reserverId != null) {
             formAttributes["hx-post"] = "/virkailija/viestit/reserver/$reserverId/laheta"
@@ -163,13 +167,21 @@ class SendMessageView(
                     <div class="column is-full recipients"><a data-emails="$emails" onclick="toggleEmailList(this)">Näytä vastaanottajat</a></div>
                     <div id="recipient-emails"></div>
                     <div class="column is-full">
-                        $messageTitleField                        
+                        $messageTitleField
                         $messageContentField
                     </div>
                     <div class='column'>
                        ${attachmentView.render()}
                     </div>
-                 </div>                 
+                    <div
+                        class="column is-full"
+                        ${addTestId("$formId-size-error")}
+                        x-show="sizeError"
+                        role="alert"
+                    >
+                        <div class="is-error-text" x-text="sizeError"></div>
+                    </div>
+                 </div>
                 """.trimIndent()
             ).addButton {
                 setText(t("cancel"))
@@ -180,6 +192,7 @@ class SendMessageView(
                 setType(ModalButtonType.Submit)
                 setText(t("employee.messages.modal.send.title", listOf(recipients.size.toString())))
                 setTestId("$formId-modal-confirm")
+                addAttribute("x-bind:disabled", "sendDisabled")
             }.build()
     }
 
@@ -210,6 +223,42 @@ class SendMessageView(
                 </div> 
                 """.trimIndent()
             ).build()
+    }
+
+    fun renderMessageSizeError(
+        totalBytes: Long,
+        limitBytes: Long
+    ): String {
+        val totalMb = formatMb(totalBytes)
+        val limitMb = formatMb(limitBytes)
+        val modalBuilder = modal.createModalBuilder()
+        return modalBuilder
+            // language=HTML
+            .setContent(
+                """
+                 <div class="columns is-multiline is-2" ${addTestId("message-size-error-modal")}>
+                    <div class="column is-full has-text-centered">
+                        ${icons.errorNotification}
+                    </div>
+                    <div class="column is-full">
+                        <h2 class="has-text-centered mb-none">
+                            Viestin koko on liian suuri lähetettäväksi ($totalMb MB / $limitMb MB). Lyhennä viestiä tai poista liite.
+                        </h2>
+                    </div>
+                </div>
+                """.trimIndent()
+            ).addButton {
+                setText(t("button.ok"))
+                setType(ModalButtonType.Cancel)
+                setStyle(ModalButtonStyle.Danger)
+                setTestId("employee-messages-modal-size-error-ok")
+            }.setButtonsCentered(true)
+            .build()
+    }
+
+    private fun formatMb(bytes: Long): String {
+        val mb = bytes.toDouble() / 1_000_000.0
+        return String.format(messageUtil.localeFI, "%.1f", mb)
     }
 
     fun renderSendingFailed(): String {

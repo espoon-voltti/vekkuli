@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
+import fi.espoo.vekkuli.boatSpace.emailAttachments.AttachmentService
+import fi.espoo.vekkuli.boatSpace.emailAttachments.MessageSizeLimitExceededException
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
 import fi.espoo.vekkuli.boatSpace.employeeReservationList.components.SendMessageView
 import fi.espoo.vekkuli.common.Unauthorized
@@ -30,6 +32,7 @@ class MessageSendingController(
     private val emailEnv: EmailEnv,
     private val reservationService: ReservationService,
     private val reservationListService: EmployeeReservationListService,
+    private val attachmentService: AttachmentService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -102,6 +105,9 @@ class MessageSendingController(
             sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
+        } catch (e: MessageSizeLimitExceededException) {
+            logger.info { "Mass message rejected at send: total ${e.currentBytes + e.attemptedBytes} > limit ${e.limitBytes}" }
+            return ResponseEntity.ok(sendMessageView.renderMessageSizeError(e.currentBytes + e.attemptedBytes, e.limitBytes))
         } catch (e: Exception) {
             logger.error(e) { "error sending mass message" }
             return ResponseEntity.ok(sendMessageView.renderSendingFailed())
@@ -162,6 +168,9 @@ class MessageSendingController(
             sendMessage(recipients, authenticatedUser, messageTitle, messageContent, attachmentIds ?: emptyList())
 
             return ResponseEntity.ok(sendMessageView.renderMessageSentFeedback(recipients.size))
+        } catch (e: MessageSizeLimitExceededException) {
+            logger.info { "Reserver message rejected at send: total ${e.currentBytes + e.attemptedBytes} > limit ${e.limitBytes}" }
+            return ResponseEntity.ok(sendMessageView.renderMessageSizeError(e.currentBytes + e.attemptedBytes, e.limitBytes))
         } catch (e: Exception) {
             logger.error(e) { "error sending message to reserver $reserverId" }
             return ResponseEntity.ok(
@@ -193,6 +202,7 @@ class MessageSendingController(
         messageContent: String,
         attachmentIds: List<UUID>
     ): List<QueuedMessage> {
+        attachmentService.checkMessageSize(messageTitle, messageContent, attachmentIds)
         logger.info { "Sending message to ${recipients.size} recipients" }
 
         return messageService.sendEmails(

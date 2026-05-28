@@ -16,15 +16,19 @@ class AttachmentView : BaseView() {
         <form
           hx-post="/virkailija/viestit/lisaa-liite"
           hx-encoding="multipart/form-data"
-          hx-target="#attachment-list"  
-          hx-swap="beforeend"          
+          hx-target="#attachment-list"
+          hx-swap="beforeend"
           hx-trigger="change from:#attachment-input"
-          @htmx:after-request="if (event.detail.successful) {
-              document.getElementById('error-box').hidden = true;
-          } else {
-            document.getElementById('error-box').hidden = false;
-          };
-            document.getElementById('attachment-input').value=null;"  
+          hx-include="#attachment-list input[name='attachmentId']"
+          @htmx:after-request="
+            const genericBox = document.getElementById('error-box');
+            if (event.detail.successful) {
+              genericBox.hidden = true;
+            } else {
+              genericBox.hidden = false;
+            }
+            document.getElementById('attachment-input').value = null;
+          "
           hx-indicator="#upload-indicator"
         >
           <input
@@ -33,13 +37,12 @@ class AttachmentView : BaseView() {
             name="file"
             accept="image/png, image/jpeg, image/jpg, application/pdf"
           >
-         <div id="error-box" hidden class="is-centered is-vcentered is-error-text">Liitteen lisäämisessä tapahtui virhe.</div>
-          
+          <div id="error-box" hidden role="alert" class="is-centered is-vcentered is-error-text">Liitteen lisäämisessä tapahtui virhe.</div>
         </form>
         <ul id="attachment-list">
          <div id="upload-indicator" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
         </ul>
-        
+
         """.trimIndent()
 
     // language=HTML
@@ -60,7 +63,7 @@ class AttachmentView : BaseView() {
         val deleteSection = """<a ${addTestId(
             "delete-attachment-$name"
         )} class="icon" hx-delete='/virkailija/viestit/poista-liite/$id' hx-target="closest li"
-      hx-swap="outerHTML">${icons.cross}</a>"""
+      hx-swap="outerHTML" hx-include="#attachment-list input[name='attachmentId']">${icons.cross}</a>"""
         return renderAttachmentListItem(id, name, deleteSection)
     }
 
@@ -70,7 +73,7 @@ class AttachmentView : BaseView() {
         children: String = "",
     ): String {
         //language=HTML
-        return """    
+        return """
             <li class="attachment-view">
                 <a href="/virkailija/viestit/liite/$id" target="_blank" rel="noopener">
                     <span class="icon">${icons.file}</span>
@@ -80,5 +83,20 @@ class AttachmentView : BaseView() {
                 $children
             </li>
             """.trimIndent()
+    }
+
+    fun renderSizeLimitError(
+        totalBytes: Long,
+        limitBytes: Long,
+    ): String {
+        val totalMb = formatMb(totalBytes)
+        val limitMb = formatMb(limitBytes)
+        return "Liitteiden yhteenlaskettu koko ylittää sallitun rajan ($totalMb MB / $limitMb MB). " +
+            "Poista liite tai valitse pienempi tiedosto."
+    }
+
+    private fun formatMb(bytes: Long): String {
+        val mb = bytes.toDouble() / 1_000_000.0
+        return String.format(messageUtil.localeFI, "%.1f", mb)
     }
 }
