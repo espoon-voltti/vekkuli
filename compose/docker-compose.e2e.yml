@@ -16,7 +16,7 @@ services:
       HTTP_SCHEME: http
 
   service:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/service:${TAG:-master}
     build:
       context: ../service/
     read_only: true
@@ -34,7 +34,7 @@ services:
       APP_JWT_PUBLIC_KEYS_URL: classpath:local-development/jwks.json
 
   api-gateway:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/api-gateway:${TAG:-master}
     build:
       context: ../api-gateway/
     read_only: true

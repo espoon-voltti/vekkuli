@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/frontend:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/frontend:${TAG:-master}
     build:
       context: ../frontend/
     ports:
@@ -14,7 +14,7 @@ services:
       - api-gateway
 
   api-gateway:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/api-gateway:${TAG:-master}
     build:
       context: ../api-gateway/
     ports:
