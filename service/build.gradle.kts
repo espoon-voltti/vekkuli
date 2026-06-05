@@ -107,7 +107,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-kotlin")
     implementation("org.jdbi:jdbi3-postgres")
 
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.3"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.0"))
     implementation("com.fasterxml.jackson.core:jackson-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
