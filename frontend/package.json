@@ -52,7 +52,7 @@
     "@types/react": "19.2.16",
     "@types/react-dom": "19.2.3",
     "babel-loader": "10.1.1",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.3",
     "css-loader": "7.1.4",
     "csstype": "3.2.3",
     "esbuild": "0.28.0",
