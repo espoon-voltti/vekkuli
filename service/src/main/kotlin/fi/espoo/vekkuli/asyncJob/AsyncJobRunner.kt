@@ -166,15 +166,12 @@ interface IAsyncJobRepository {
     @Transactional
     fun upsertPermit(pool: AsyncJobPool.Id<*>)
 
-    fun <T : Any> startJob(
-        job: ClaimedJobRef<T>,
-        now: Instant,
-    ): T?
-
-    @Transactional
+    // claimJob/runJob manage their own Jdbi transactions internally (see
+    // AsyncJobRepository) because they use `SET LOCAL` timeouts, which only work
+    // inside a transaction. They are intentionally NOT @Transactional: the Jdbi
+    // handle does not participate in Spring-managed transactions here.
     fun <T : Any> claimJob(pool: AsyncJobPool<T>): ClaimedJobRef<T>?
 
-    @Transactional
     fun <T : Any> runJob(
         pool: AsyncJobPool<T>,
         job: ClaimedJobRef<out T>

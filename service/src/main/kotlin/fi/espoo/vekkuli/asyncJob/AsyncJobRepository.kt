@@ -6,7 +6,9 @@ package fi.espoo.vekkuli.asyncJob
 
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.jdbi.v3.core.qualifier.QualifiedType
@@ -61,48 +63,39 @@ ON CONFLICT DO NOTHING
             }
     }
 
-    private fun claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
+    private fun Handle.claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit =
+        createQuery(
+            """
 SELECT available_at
 FROM async_job_work_permit
 WHERE pool_id = :poolId
 FOR UPDATE
 """
-                ).bind("poolId", pool.toString())
-                .mapTo<WorkPermit>()
-                .one()
-        }
+        ).bind("poolId", pool.toString())
+            .mapTo<WorkPermit>()
+            .one()
 
-    private fun updatePermit(
+    private fun Handle.updatePermit(
         pool: AsyncJobPool.Id<*>,
         availableAt: Instant
     ) {
-        jdbi
-            .withHandleUnchecked { handle ->
-                handle
-                    .createUpdate(
-                        """
+        createUpdate(
+            """
 UPDATE async_job_work_permit
 SET available_at = :availableAt
 WHERE pool_id = :poolId
 """
-                    ).bind("availableAt", availableAt)
-                    .bind("poolId", pool.toString())
-                    .execute()
-            }
+        ).bind("availableAt", availableAt)
+            .bind("poolId", pool.toString())
+            .execute()
     }
 
-    private fun <T : Any> claimJob(
+    private fun <T : Any> Handle.claimJob(
         now: Instant,
         jobTypes: Collection<AsyncJobType<out T>>,
     ): ClaimedJobRef<T>? =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createUpdate(
-                    """
+        createUpdate(
+            """
 WITH claimed_job AS (
   SELECT id
   FROM async_job
@@ -123,31 +116,27 @@ SET
 WHERE id = (SELECT id FROM claimed_job)
 RETURNING id AS jobId, type AS jobType, txid_current() AS txId, retry_count AS remainingAttempts
             """
-                ).bind("now", now)
-                .bind("jobTypes", jobTypes.map { it.name }.toTypedArray())
-                .executeAndReturnGeneratedKeys()
-                .map { rs, _ ->
-                    val jobType = rs.getString("jobType")
-                    val matchedJobType = jobTypes.find { it.name == jobType } ?: error("Job type not found")
-                    ClaimedJobRef(
-                        jobId = UUID.fromString(rs.getString("jobId")),
-                        jobType = matchedJobType as AsyncJobType<T>,
-                        txId = rs.getLong("txId"),
-                        remainingAttempts = rs.getInt("remainingAttempts")
-                    )
-                }.findOne()
-                .orElse(null)
-        }
+        ).bind("now", now)
+            .bind("jobTypes", jobTypes.map { it.name }.toTypedArray())
+            .executeAndReturnGeneratedKeys()
+            .map { rs, _ ->
+                val jobType = rs.getString("jobType")
+                val matchedJobType = jobTypes.find { it.name == jobType } ?: error("Job type not found")
+                ClaimedJobRef(
+                    jobId = UUID.fromString(rs.getString("jobId")),
+                    jobType = matchedJobType as AsyncJobType<T>,
+                    txId = rs.getLong("txId"),
+                    remainingAttempts = rs.getInt("remainingAttempts")
+                )
+            }.findOne()
+            .orElse(null)
 
-    override fun <T : Any> startJob(
+    private fun <T : Any> Handle.startJob(
         job: ClaimedJobRef<T>,
         now: Instant,
     ): T? =
-        jdbi
-            .withHandleUnchecked { handle ->
-                handle
-                    .createUpdate(
-                        """
+        createUpdate(
+            """
 WITH started_job AS (
   SELECT id
   FROM async_job
@@ -160,82 +149,83 @@ SET started_at = :now
 WHERE id = (SELECT id FROM started_job)
 RETURNING payload
 """
-                    ).bind("id", job.jobId)
-                    .bind("txId", job.txId)
-                    .bind("now", now)
-                    .executeAndReturnGeneratedKeys("payload")
-                    .mapTo(QualifiedType.of(job.jobType.payloadClass.java).with(Json::class.java))
-                    .findOne()
-                    .orElse(null)
-            }
+        ).bind("id", job.jobId)
+            .bind("txId", job.txId)
+            .bind("now", now)
+            .executeAndReturnGeneratedKeys("payload")
+            .mapTo(QualifiedType.of(job.jobType.payloadClass.java).with(Json::class.java))
+            .findOne()
+            .orElse(null)
 
-    private fun completeJob(
+    private fun Handle.completeJob(
         job: ClaimedJobRef<*>,
         now: Instant
     ) {
-        jdbi
-            .withHandleUnchecked { handle ->
-                handle
-                    .createUpdate(
-                        """
+        createUpdate(
+            """
 UPDATE async_job
 SET completed_at = :now
 WHERE id = :jobId
 """
-                    ).bind("now", now)
-                    .bind("jobId", job.jobId)
-                    .execute()
+        ).bind("now", now)
+            .bind("jobId", job.jobId)
+            .execute()
+    }
+
+    // Everything that needs the permit lock and the statement/lock timeouts must run
+    // in a SINGLE transaction: `SET LOCAL` only applies for the duration of the
+    // surrounding transaction (and warns + no-ops outside one), and the permit's
+    // `FOR UPDATE` lock must be held across the throttle sleep to serialize workers.
+    // The Jdbi handle here is NOT bound to Spring's @Transactional, so we open the
+    // transaction explicitly with inTransactionUnchecked.
+    override fun <T : Any> claimJob(pool: AsyncJobPool<T>): ClaimedJobRef<T>? =
+        jdbi.inTransactionUnchecked { handle ->
+            handle.setStatementTimeout(Duration.ofSeconds(120))
+            // In the worst case we need to wait for the duration of (N service
+            // instances) * (M workers per pool) * (throttle interval) if every
+            // worker in the cluster is queuing and every one sleeps.
+            //
+            // The value here is just a guess that should be long enough in all
+            // valid cases, and we get a loud exception if this assumption is broken
+            handle.setLockTimeout(Duration.ofSeconds(60))
+            val permit = handle.claimPermit(pool.id)
+            val toMillis =
+                Duration
+                    .between(
+                        Instant.now(),
+                        permit.availableAt
+                    ).toMillis()
+            if (toMillis > 0) {
+                logger.info { "Permit claimed, sleeping for $toMillis ms before running" }
+                Thread.sleep(
+                    toMillis
+                )
             }
-    }
-
-    @Transactional
-    override fun <T : Any> claimJob(pool: AsyncJobPool<T>): ClaimedJobRef<T>? {
-        setStatementTimeout(Duration.ofSeconds(120))
-        // In the worst case we need to wait for the duration of (N service
-        // instances) * (M workers per pool) * (throttle interval) if every
-        // worker in the cluster is queuing and every one sleeps.
-        //
-        // The value here is just a guess that should be long enough in all
-        // valid cases, and we get a loud exception if this assumption is broken
-        setLockTimeout(Duration.ofSeconds(60))
-        val permit = claimPermit(pool.id)
-        val toMillis =
-            Duration
-                .between(
-                    Instant.now(),
-                    permit.availableAt
-                ).toMillis()
-        if (toMillis > 0) {
-            logger.info { "Permit claimed, sleeping for $toMillis ms before running" }
-            Thread.sleep(
-                toMillis
-            )
+            handle
+                .claimJob(timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC), pool.registration.jobTypes())
+                ?.also {
+                    handle.updatePermit(pool.id, Instant.now().plus(pool.throttleInterval))
+                }
         }
-        return claimJob(timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC), pool.registration.jobTypes())?.also {
-            updatePermit(pool.id, Instant.now().plus(pool.throttleInterval))
-        }
-    }
 
-    @Transactional
     override fun <T : Any> runJob(
         pool: AsyncJobPool<T>,
         job: ClaimedJobRef<out T>
     ): Boolean {
-        setLockTimeout(Duration.ofSeconds(5))
-        return startJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))?.let { msg ->
-            pool.registration.handlerFor(job.jobType).run(msg)
-            completeJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))
-            true
-        } ?: false
-    }
-
-    private fun setLockTimeout(duration: Duration) =
-        jdbi.withHandleUnchecked {
-            it.execute("SET LOCAL lock_timeout = '${duration.toMillis()}ms'")
+        // Mark the job started within a transaction so `SET LOCAL lock_timeout`
+        // applies to the `FOR UPDATE` in startJob. The handler runs OUTSIDE the
+        // transaction so a long-running job doesn't hold a db connection open.
+        val msg =
+            jdbi.inTransactionUnchecked { handle ->
+                handle.setLockTimeout(Duration.ofSeconds(5))
+                handle.startJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))
+            } ?: return false
+        pool.registration.handlerFor(job.jobType).run(msg)
+        jdbi.inTransactionUnchecked { handle ->
+            handle.completeJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))
         }
-
-    private fun setStatementTimeout(duration: Duration) =
-        jdbi.withHandleUnchecked { it.execute("SET LOCAL statement_timeout = '${duration.toMillis()}ms'") }
+        return true
+    }
 
     fun removeCompletedJobs(completedBefore: Instant): Int =
         jdbi.withHandleUnchecked {
@@ -291,4 +281,20 @@ WHERE id = :jobId
             logger.info { "Removed $oldCount async jobs originally planned to be run before $runBefore" }
         }
     }
+}
+
+/**
+ * Set `lock_timeout` for the current transaction. Must be called inside a
+ * transaction: `SET LOCAL` is a no-op (and emits a warning) in autocommit mode.
+ */
+fun Handle.setLockTimeout(duration: Duration) {
+    execute("SET LOCAL lock_timeout = '${duration.toMillis()}ms'")
+}
+
+/**
+ * Set `statement_timeout` for the current transaction. Must be called inside a
+ * transaction: `SET LOCAL` is a no-op (and emits a warning) in autocommit mode.
+ */
+fun Handle.setStatementTimeout(duration: Duration) {
+    execute("SET LOCAL statement_timeout = '${duration.toMillis()}ms'")
 }

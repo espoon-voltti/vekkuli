@@ -17,6 +17,12 @@ SPDX-License-Identifier: LGPL-2.1-or-later
         <cve>CVE-2026-34487</cve>
         <cve>CVE-2026-34486</cve>
         <cve>CVE-2026-41417</cve>
+        <cve>CVE-2026-41840</cve>
+        <cve>CVE-2026-41841</cve>
+        <cve>CVE-2026-41842</cve>
+        <cve>CVE-2026-41843</cve>
+        <cve>CVE-2026-41850</cve>
+        <cve>CVE-2026-41851</cve>
         <!-- Tomcat 11.0.21 (fix not yet available) -->
         <cve>CVE-2026-41284</cve>
         <cve>CVE-2026-41293</cve>
