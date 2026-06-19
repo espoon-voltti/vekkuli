@@ -97,7 +97,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
 
-    implementation("com.zaxxer:HikariCP:7.0.2")
+    implementation("com.zaxxer:HikariCP:7.1.0")
     implementation("org.flywaydb:flyway-core:12.8.1")
     implementation("org.flywaydb:flyway-database-postgresql:12.8.1")
     implementation("org.postgresql:postgresql:42.7.11")
