@@ -34,6 +34,14 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should not throw when searching citizens with whitespace-only term`() {
+        // A whitespace-only search term must not cause a 500 (UnableToCreateStatementException).
+        // It should behave like an empty search.
+        val citizens = reserverService.getCitizens(" ")
+        assertNotNull(citizens, "Whitespace-only search should return a result list, not throw")
+    }
+
+    @Test
     fun `should get citizen by last name`() {
         val citizens = reserverService.getCitizens("Virtanen")
         assertEquals(2, citizens.size, "Should find two citizens")

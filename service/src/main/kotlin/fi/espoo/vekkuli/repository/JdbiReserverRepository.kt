@@ -105,7 +105,7 @@ class JdbiReserverRepository(
                     WHERE $nameSearchClause
                     """.trimIndent()
                 )
-            if (!nameSearch.isNullOrEmpty()) {
+            if (!nameSearch.isNullOrBlank()) {
                 query.bind("nameSearch", nameSearch.trim())
             }
             query.mapTo<CitizenWithDetails>().toList()
