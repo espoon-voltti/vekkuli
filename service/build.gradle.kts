@@ -130,10 +130,10 @@ dependencies {
     testImplementation("com.microsoft.playwright:playwright:1.56.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:3.5.0")
-    implementation("io.ktor:ktor-client-cio:3.5.0") // CIO engine
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.0") // Content negotiation
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.0") // kotlinx serialization
+    implementation("io.ktor:ktor-client-core:3.5.1")
+    implementation("io.ktor:ktor-client-cio:3.5.1") // CIO engine
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.1") // Content negotiation
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
     // Version managed by Spring Boot via the kotlin-coroutines.version override above.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
