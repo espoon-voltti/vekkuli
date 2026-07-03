@@ -153,8 +153,8 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
-    implementation("ch.qos.logback:logback-classic:1.5.35")
-    implementation("ch.qos.logback:logback-core:1.5.35")
+    implementation("ch.qos.logback:logback-classic:1.5.37")
+    implementation("ch.qos.logback:logback-core:1.5.37")
     implementation("commons-codec:commons-codec:1.22.0")
 
     downloadOnly("com.datadoghq:dd-java-agent:1.63.1")
