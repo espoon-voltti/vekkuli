@@ -1568,9 +1568,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:5.111.0":
-  version: 5.111.0
-  resolution: "dd-trace@npm:5.111.0"
+"dd-trace@npm:5.112.0":
+  version: 5.112.0
+  resolution: "dd-trace@npm:5.112.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.9.4"
     "@datadog/native-appsec": "npm:11.0.1"
@@ -1582,7 +1582,7 @@ __metadata:
     "@opentelemetry/api": "npm:>=1.0.0 <1.10.0"
     "@opentelemetry/api-logs": "npm:<1.0.0"
     dc-polyfill: "npm:^0.1.11"
-    import-in-the-middle: "npm:^3.2.0"
+    import-in-the-middle: "npm:^3.3.1"
     opentracing: "npm:>=0.14.7"
     oxc-parser: "npm:^0.132.0"
   dependenciesMeta:
@@ -1606,7 +1606,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/ed39d09ae5c7e5b82188fefc83235a416d2ea3dcb460bb65855d48c6855ad4c3cb271e6217312adc4e89bd3475a0e614961a81d41d8b0c1805ecb252d2671979
+  checksum: 10/ccff730040703cfb036162b710db50eaa8a2851c4578988b524781b52b41915fd5dd619c7b4450cd8d270b742bb3d0c026ee2ba5079e1e0de58b37ae33401b2a
   languageName: node
   linkType: hard
 
@@ -2565,7 +2565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-in-the-middle@npm:^3.2.0":
+"import-in-the-middle@npm:^3.3.1":
   version: 3.3.1
   resolution: "import-in-the-middle@npm:3.3.1"
   dependencies:
@@ -4450,7 +4450,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.4.0"
-    dd-trace: "npm:5.111.0"
+    dd-trace: "npm:5.112.0"
     eslint: "npm:10.6.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.6"
