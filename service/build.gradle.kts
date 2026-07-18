@@ -7,12 +7,12 @@ import java.util.regex.Pattern
 plugins {
     id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.4.0"
-    kotlin("plugin.spring") version "2.4.0"
+    kotlin("jvm") version "2.4.10"
+    kotlin("plugin.spring") version "2.4.10"
     id("org.flywaydb.flyway") version "12.11.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.node-gradle.node") version "7.1.0"
-    kotlin("plugin.serialization") version "2.4.0"
+    kotlin("plugin.serialization") version "2.4.10"
     id("org.owasp.dependencycheck") version "12.2.2"
 
     idea
