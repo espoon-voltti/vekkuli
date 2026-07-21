@@ -165,5 +165,5 @@ class BoatSpaceRenewalRepository(
             JOIN reserver r ON bsr.reserver_id = r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
-            JOIN price ON price_id = price.id"""
+            JOIN current_price price ON price_id = price.id"""
 }

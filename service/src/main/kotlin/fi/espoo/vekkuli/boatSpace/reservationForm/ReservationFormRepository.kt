@@ -76,7 +76,7 @@ class ReservationFormRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON bs.location_id = location.id
-                    JOIN price ON bs.price_id = price.id
+                    JOIN current_price price ON bs.price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
                       AND bsr.status IN ('Info', 'Payment')

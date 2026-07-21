@@ -16,7 +16,9 @@ class PriceRepository(
             handle
                 .createQuery(
                     """
-                    SELECT id, name, price_cents, vat_cents, net_price_cents FROM price
+                    SELECT id, name, price_cents, vat_cents, net_price_cents
+                    FROM price
+                    WHERE CURRENT_DATE <@ daterange(start_date, end_date, '[]')
                     """.trimIndent()
                 ).mapTo<Price>()
                 .list()

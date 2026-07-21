@@ -143,7 +143,7 @@ class JdbiBoatSpaceRepository(
                 FROM boat_space
                 JOIN location
                 ON boat_space.location_id = location.id
-                JOIN price
+                JOIN current_price price
                 ON price_id = price.id
                 LEFT JOIN boat_space_reservation
                 ON boat_space.id = boat_space_reservation.boat_space_id
@@ -211,7 +211,7 @@ class JdbiBoatSpaceRepository(
                      ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                  FROM boat_space bs
                  JOIN location ON bs.location_id = location.id
-                 JOIN price ON bs.price_id = price.id
+                 JOIN current_price price ON bs.price_id = price.id
                  LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                  WHERE bs.id = :boatSpaceId
                  GROUP BY bs.id, location.name, location.address
@@ -287,7 +287,7 @@ class JdbiBoatSpaceRepository(
         (
             """FROM boat_space bs    
                     JOIN location ON bs.location_id = location.id
-                    JOIN price ON bs.price_id = price.id
+                    JOIN current_price price ON bs.price_id = price.id
                     LEFT JOIN (
                         SELECT id, boat_space_id, reserver_id, storage_type
                         FROM boat_space_reservation
