@@ -209,7 +209,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
-                    JOIN price ON bs.price_id = price.id
+                    JOIN current_price price ON bs.price_id = price.id
                     JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN invoice i ON i.reservation_id = bsr.id
                     WHERE p.id = :paymentId              
@@ -459,7 +459,7 @@ class JdbiBoatSpaceReservationRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    JOIN current_price price ON price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment')
@@ -1093,7 +1093,7 @@ class JdbiBoatSpaceReservationRepository(
         JOIN reserver r ON bsr.reserver_id =  r.id
         JOIN boat_space bs ON bsr.boat_space_id = bs.id
         JOIN location ON location.id = bs.location_id
-        LEFT JOIN price ON price_id = price.id
+        LEFT JOIN current_price price ON price_id = price.id
         JOIN municipality m ON r.municipality_code = m.code
         LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
         LEFT JOIN invoice i ON i.reservation_id = bsr.id
@@ -1114,6 +1114,6 @@ class JdbiBoatSpaceReservationRepository(
         LEFT JOIN reserver r ON bsr.reserver_id = r.id
         JOIN boat_space bs ON bsr.boat_space_id = bs.id
         JOIN location ON location_id = location.id
-        JOIN price ON price_id = price.id
+        JOIN current_price price ON price_id = price.id
         """.trimIndent()
 }
