@@ -11,7 +11,17 @@
 -- 1. Close the current (open) price period the day before the new prices start.
 UPDATE price SET end_date = DATE '2026-08-01' WHERE end_date IS NULL;
 
--- 2. Install the new prices, valid from 2026-08-02 onward (end_date NULL = infinity).
+-- 2. The existing price rows were loaded with explicit ids, so the id sequence
+--    may still be behind max(id); advance it before inserting so serial ids don't
+--    collide with existing rows. No-op on an empty table (dev/test, where prices
+--    are seeded separately): sets the sequence so the next id is 1.
+SELECT setval(
+    pg_get_serial_sequence('price', 'id'),
+    COALESCE((SELECT max(id) FROM price), 1),
+    (SELECT max(id) FROM price) IS NOT NULL
+);
+
+-- 3. Install the new prices, valid from 2026-08-02 onward (end_date NULL = infinity).
 --    Amounts in cents; vat_cents = 25.5% ALV; net_price_cents + vat_cents = price_cents.
 INSERT INTO price (name, net_price_cents, vat_cents, price_cents, start_date, end_date) VALUES
     -- Summer berths (laituripaikat)
