@@ -79,15 +79,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/pprof@npm:5.15.1":
-  version: 5.15.1
-  resolution: "@datadog/pprof@npm:5.15.1"
+"@datadog/pprof@npm:5.17.0":
+  version: 5.17.0
+  resolution: "@datadog/pprof@npm:5.17.0"
   dependencies:
     node-gyp: "npm:latest"
     node-gyp-build: "npm:^4.8.4"
     pprof-format: "npm:^2.2.1"
-    source-map: "npm:^0.7.4"
-  checksum: 10/6c72c5f954f32d0d4228be17edbbe0763da9a3cd9693901208e6475c2e1dd3b1278f2392645409e98b35874055c76543799b07db6afa375a09fb8f6c55c55938
+    source-map: "npm:^0.8.0"
+  checksum: 10/b50d5cb7d77eca165bdc4a6d81d6d9c44c67aeaf4e86bc7702af3f601ace5d73c255849e5e4a00770f1ffa40fb4bb992b720fe29efd0f0d695da47c16680a83d
   languageName: node
   linkType: hard
 
@@ -1568,16 +1568,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:6.5.0":
-  version: 6.5.0
-  resolution: "dd-trace@npm:6.5.0"
+"dd-trace@npm:6.6.0":
+  version: 6.6.0
+  resolution: "dd-trace@npm:6.6.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.9.4"
     "@datadog/native-appsec": "npm:11.0.1"
     "@datadog/native-iast-taint-tracking": "npm:4.2.0"
     "@datadog/native-metrics": "npm:3.1.2"
     "@datadog/openfeature-node-server": "npm:2.0.0"
-    "@datadog/pprof": "npm:5.15.1"
+    "@datadog/pprof": "npm:5.17.0"
     "@datadog/wasm-js-rewriter": "npm:5.0.1"
     "@opentelemetry/api": "npm:>=1.0.0 <1.10.0"
     "@opentelemetry/api-logs": "npm:<1.0.0"
@@ -1606,7 +1606,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/fb9988f10f04412bc90265c4cbfad84c277c859bf422f5758f154a67b450435b30f94829b983a569e6f27db02efcad3c46bb69d9433bc8d8b4b62f537c8b8703
+  checksum: 10/677a38b5276df23f7237b0a3458559b760a8633883edb8afec1acecc725d3c6c9bc61000054c11ebae0e499e1fe3a56c071c231613767b436b42f9b51d93adcf
   languageName: node
   linkType: hard
 
@@ -4006,10 +4006,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.7.4":
-  version: 0.7.4
-  resolution: "source-map@npm:0.7.4"
-  checksum: 10/a0f7c9b797eda93139842fd28648e868a9a03ea0ad0d9fa6602a0c1f17b7fb6a7dcca00c144476cccaeaae5042e99a285723b1a201e844ad67221bf5d428f1dc
+"source-map@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "source-map@npm:0.8.0"
+  checksum: 10/ad71b0c03715d970c2d114f0d403cc02c1e60e9ce997715f0a69bde2604b1d1ac287760f93d9763313a2a2b2c297df901f3378569f750a240e936ac5ddfd6b31
   languageName: node
   linkType: hard
 
@@ -4450,7 +4450,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.4.0"
-    dd-trace: "npm:6.5.0"
+    dd-trace: "npm:6.6.0"
     eslint: "npm:10.7.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.6"
