@@ -1568,9 +1568,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:6.4.0":
-  version: 6.4.0
-  resolution: "dd-trace@npm:6.4.0"
+"dd-trace@npm:6.5.0":
+  version: 6.5.0
+  resolution: "dd-trace@npm:6.5.0"
   dependencies:
     "@datadog/libdatadog": "npm:0.9.4"
     "@datadog/native-appsec": "npm:11.0.1"
@@ -1582,7 +1582,7 @@ __metadata:
     "@opentelemetry/api": "npm:>=1.0.0 <1.10.0"
     "@opentelemetry/api-logs": "npm:<1.0.0"
     dc-polyfill: "npm:^0.1.11"
-    import-in-the-middle: "npm:^3.3.1"
+    import-in-the-middle: "npm:^3.3.2"
     opentracing: "npm:>=0.14.7"
     oxc-parser: "npm:^0.132.0"
   dependenciesMeta:
@@ -1606,7 +1606,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/c33d71e6ed491e003b3042555201103b3cac00eb354027ab7ea6680e58ef9adcacef55784be3840bdec006fa0be81caae7483f76abb64c9c563abaa693c85b95
+  checksum: 10/fb9988f10f04412bc90265c4cbfad84c277c859bf422f5758f154a67b450435b30f94829b983a569e6f27db02efcad3c46bb69d9433bc8d8b4b62f537c8b8703
   languageName: node
   linkType: hard
 
@@ -2565,14 +2565,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-in-the-middle@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "import-in-the-middle@npm:3.3.1"
+"import-in-the-middle@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "import-in-the-middle@npm:3.3.2"
   dependencies:
     cjs-module-lexer: "npm:^2.2.0"
     es-module-lexer: "npm:^2.2.0"
     module-details-from-path: "npm:^1.0.4"
-  checksum: 10/0b3e9de63816481b0fe07abb145258ecbc3c78251200807dacbff87bfcaaa3e5568e1184f26dba57da520a90843f51cf21d79fe3ea9383b6de3037a5976a96b3
+  checksum: 10/46c4bb22c5b2342547d4efaa5f1d2dc69ca94feb361aac92bbbc26b796bdbbeb0dab81e5e78205b6147b1cf571dbe2b50f219d2977eba951b63469918b411d9f
   languageName: node
   linkType: hard
 
@@ -4450,7 +4450,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.4.0"
-    dd-trace: "npm:6.4.0"
+    dd-trace: "npm:6.5.0"
     eslint: "npm:10.7.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.6"
