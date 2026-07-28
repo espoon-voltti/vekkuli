@@ -126,26 +126,29 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
 
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
+    reportDate: LocalDateTime,
+    today: LocalDate
 ): List<BoatSpaceReportRow> =
-    getBoatSpaceReportRows(jdbi, reportDate).filter {
+    getBoatSpaceReportRows(jdbi, reportDate, today).filter {
         it.startDate != null &&
             (it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced)
     }
 
 fun getTerminatedBoatSpaceReport(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
-): List<BoatSpaceReportRow> = getBoatSpaceReportRows(jdbi, reportDate).filter { it.terminationTimestamp != null }
+    reportDate: LocalDateTime,
+    today: LocalDate
+): List<BoatSpaceReportRow> = getBoatSpaceReportRows(jdbi, reportDate, today).filter { it.terminationTimestamp != null }
 
 fun getAllBoatSpacesReport(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
+    reportDate: LocalDateTime,
+    today: LocalDate
 ): List<BoatSpaceReportRow> {
     val unorderedRows = (
-        getFreeBoatSpaceReportRows(jdbi, reportDate) +
-            getReservedBoatSpaceReport(jdbi, reportDate) +
-            getTerminatedBoatSpaceReport(jdbi, reportDate)
+        getFreeBoatSpaceReportRows(jdbi, reportDate, today) +
+            getReservedBoatSpaceReport(jdbi, reportDate, today) +
+            getTerminatedBoatSpaceReport(jdbi, reportDate, today)
     )
     val orderedRows = unorderedRows.sortedBy { it.harbor + it.pier + it.place }
     return orderedRows

@@ -164,7 +164,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Test
     fun `reports correctly a switch reservation`() {
         val originalReservation = createTestReservationForEspooCitizen()
-        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay(), timeProvider.getCurrentDate())
         assertEquals("Virtanen Mikko", reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
 
         val switchReservation =
@@ -175,7 +175,8 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         val switchInput = createTestSwitchReservationFormFillInput()
         reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
 
-        val reportRowsAfterSwitch = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        val reportRowsAfterSwitch =
+            getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay(), timeProvider.getCurrentDate())
         assertEquals(null, reportRowsAfterSwitch.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
     }
 
