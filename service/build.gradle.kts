@@ -155,7 +155,7 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.6.1")
     implementation("ch.qos.logback:logback-core:1.6.1")
-    implementation("commons-codec:commons-codec:1.22.0")
+    implementation("commons-codec:commons-codec:1.22.1")
 
     downloadOnly("com.datadoghq:dd-java-agent:1.64.2")
 }
