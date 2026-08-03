@@ -62,7 +62,8 @@ extra["kotlin-coroutines.version"] = "1.11.0"
 extra["tomcat.version"] = "11.0.24" // CVE-2026-53434,55276,53404,55955,55956,50229,59083,59084
 extra["netty.version"] = "4.2.16.Final" // CVE-2026-56820,55851,56745,56817,44891,55831,55833,56816,56819,56746
 extra["httpcore5.version"] = "5.4.3" // CVE-2026-54399,54428
-extra["jackson-2-bom.version"] = "2.22.1" // CVE-2026-54515 — Jackson 2 (com.fasterxml); jackson-bom.version is Jackson 3 (tools.jackson), do not touch
+// NB: jackson-2-bom.version is Jackson 2 (com.fasterxml); jackson-bom.version is Jackson 3 (tools.jackson) - do not touch that one.
+extra["jackson-2-bom.version"] = "2.22.1" // CVE-2026-54515
 extra["log4j2.version"] = "2.25.5" // CVE-2026-49844
 
 sourceSets {
