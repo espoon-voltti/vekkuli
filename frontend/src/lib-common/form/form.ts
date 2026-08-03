@@ -278,9 +278,7 @@ export function required<Output, Error extends string, State, Shape>(
 }
 
 export type LabelInfoField =
-  | string
-  | ((i18n: Translations) => string | undefined)
-  | undefined
+  string | ((i18n: Translations) => string | undefined) | undefined
 export interface OneOfOption<Output> {
   domValue: string
   label: string | ((i18n: Translations) => string)

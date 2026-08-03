@@ -51,12 +51,7 @@ export type JsonOf<T> = T extends string | number | boolean | null | undefined
  * Use with the TS satisfies operator: `someValue satisfies JsonCompatible<TypeOfThatValue>`
  */
 export type JsonCompatible<T> = T extends
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | { toJSON(): string }
+  string | number | boolean | null | undefined | { toJSON(): string }
   ? T
   : T extends (infer U)[]
     ? JsonCompatible<U>[]

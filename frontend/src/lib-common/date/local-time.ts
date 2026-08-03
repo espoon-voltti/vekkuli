@@ -190,9 +190,11 @@ export default class LocalTime implements Ordered<LocalTime> {
     if (!(isInteger(hour) && hour >= 0 && hour < 24)) return undefined
     if (!(isInteger(minute) && minute >= 0 && minute < 60)) return undefined
     if (!(isInteger(second) && second >= 0 && second < 60)) return undefined
-    if (
-      !(isInteger(nanosecond) && nanosecond >= 0 && nanosecond < 1_000_000_000)
-    )
+    if (!(
+      isInteger(nanosecond) &&
+      nanosecond >= 0 &&
+      nanosecond < 1_000_000_000
+    ))
       return undefined
     return new LocalTime(hour, minute, second, nanosecond)
   }

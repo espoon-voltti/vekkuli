@@ -93,8 +93,7 @@ export class ValidationError<Output, Error> {
 }
 
 export type ValidationResult<Output, Error> =
-  | ValidationSuccess<Output, Error>
-  | ValidationError<Output, Error>
+  ValidationSuccess<Output, Error> | ValidationError<Output, Error>
 
 export function map<AO, BO, O, AE, BE>(
   ar: ValidationResult<AO, AE>,
