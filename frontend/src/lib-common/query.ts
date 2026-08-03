@@ -373,8 +373,7 @@ export function useSelectMutation<ArgA, DataA, SelectA, ArgB, DataB, SelectB>(
   const onClickB_ = useStableCallback(onClickB)
 
   const onClick = useCallback(():
-    | Either<ArgA, ArgB>
-    | typeof cancelMutation => {
+    Either<ArgA, ArgB> | typeof cancelMutation => {
     const selection = select_()
     if (selection === cancelMutation) return cancelMutation
     if (selection.tag === 'first') {
