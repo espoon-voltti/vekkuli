@@ -45,4 +45,11 @@ SPDX-License-Identifier: LGPL-2.1-or-later
         <cve>CVE-2026-42587</cve>
         <cve>CVE-2026-44248</cve>
     </suppress>
+    <suppress>
+        <notes>Kotlin build-cache metadata deserialization (CVE-2026-53914) — build-time
+            only (compiler / build-tools / scripting jars), not shipped in or reachable from
+            the deployed service runtime. Fixed in Kotlin 2.4.20; defer to the next Kotlin
+            upgrade.</notes>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
 </suppressions>
