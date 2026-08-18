@@ -6,50 +6,39 @@ SPDX-FileCopyrightText: 2017-2025 City of Espoo
 SPDX-License-Identifier: LGPL-2.1-or-later
 -->
 
+<!--
+  Suppressions are scoped by <packageUrl> so a CVE id can only be suppressed on the
+  dependency it actually belongs to (a bare <cve> suppresses it on every jar). Each entry
+  documents WHY it is not remediated by a version bump. Entries that were only "fix not
+  yet available" have been removed now that the fixed versions are on the classpath via the
+  extra["*.version"] overrides in build.gradle.kts (Tomcat 11.0.24, Netty 4.2.17,
+  Spring Framework 7.0.8, Jackson 3.1.4, httpclient5 5.6.4). The owasp CI job is the
+  authoritative confirmation that nothing regressed.
+-->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>Fix not available</notes>
+        <notes>CVE-2022-31691 is attributed by NVD to the Spring Tools IDE tooling
+            (Eclipse / VSCode Spring extensions, which embed SnakeYAML), not to any runtime
+            Maven library we ship. dependency-check false-matches it; the affected product is
+            not present in or reachable from the deployed service. Left unscoped because the
+            match target is a false positive rather than a real coordinate.</notes>
         <cve>CVE-2022-31691</cve>
-        <cve>CVE-2026-29062</cve>
-        <cve>CVE-2026-33871</cve>
-        <cve>CVE-2026-34483</cve>
-        <cve>CVE-2026-34500</cve>
-        <cve>CVE-2026-34487</cve>
-        <cve>CVE-2026-34486</cve>
-        <cve>CVE-2026-41417</cve>
-        <cve>CVE-2026-41840</cve>
-        <cve>CVE-2026-41841</cve>
-        <cve>CVE-2026-41842</cve>
-        <cve>CVE-2026-41843</cve>
-        <cve>CVE-2026-41850</cve>
-        <cve>CVE-2026-41851</cve>
-        <!-- Tomcat 11.0.21 (fix not yet available) -->
-        <cve>CVE-2026-41284</cve>
-        <cve>CVE-2026-41293</cve>
-        <cve>CVE-2026-42498</cve>
-        <cve>CVE-2026-43512</cve>
-        <cve>CVE-2026-43513</cve>
-        <cve>CVE-2026-43514</cve>
-        <cve>CVE-2026-43515</cve>
-        <!-- Netty 4.2.12 (fix not yet available) -->
-        <cve>CVE-2026-42577</cve>
-        <cve>CVE-2026-42578</cve>
-        <cve>CVE-2026-42579</cve>
-        <cve>CVE-2026-42580</cve>
-        <cve>CVE-2026-42581</cve>
-        <cve>CVE-2026-42582</cve>
-        <cve>CVE-2026-42583</cve>
-        <cve>CVE-2026-42584</cve>
-        <cve>CVE-2026-42585</cve>
-        <cve>CVE-2026-42586</cve>
-        <cve>CVE-2026-42587</cve>
-        <cve>CVE-2026-44248</cve>
+    </suppress>
+    <suppress>
+        <notes>Apache Tomcat WebSocket examples-webapp DoS (CVE-2026-66299). The examples
+            webapp is not bundled in embedded Spring Boot Tomcat (only tomcat-embed-*), so the
+            vulnerable code path is not reachable. The fix is Tomcat 11.0.25, which is not yet
+            released (we run 11.0.24 via tomcat.version); drop this suppression once
+            tomcat.version reaches 11.0.25.</notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/.*$</packageUrl>
+        <cve>CVE-2026-66299</cve>
     </suppress>
     <suppress>
         <notes>Kotlin build-cache metadata deserialization (CVE-2026-53914) — build-time
             only (compiler / build-tools / scripting jars), not shipped in or reachable from
             the deployed service runtime. Fixed in Kotlin 2.4.20; defer to the next Kotlin
             upgrade.</notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/.*$</packageUrl>
         <cve>CVE-2026-53914</cve>
     </suppress>
 </suppressions>

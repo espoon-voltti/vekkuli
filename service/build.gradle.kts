@@ -60,8 +60,9 @@ extra["kotlin-coroutines.version"] = "1.11.0"
 // patch brings the fixed version. Same dependency-management override mechanism as the
 // coroutines pin above.
 extra["tomcat.version"] = "11.0.24" // CVE-2026-53434,55276,53404,55955,55956,50229,59083,59084
-extra["netty.version"] = "4.2.16.Final" // CVE-2026-56820,55851,56745,56817,44891,55831,55833,56816,56819,56746
+extra["netty.version"] = "4.2.17.Final" // CVE-2026-56820,55851,56745,56817,44891,55831,55833,56816,56819,56746
 extra["httpcore5.version"] = "5.4.3" // CVE-2026-54399,54428
+extra["httpclient5.version"] = "5.6.4" // CVE-2026-64607 (Spring Boot manages httpclient5 down to 5.6.1; AWS SDK apache5-client)
 // NB: jackson-2-bom.version is Jackson 2 (com.fasterxml); jackson-bom.version is Jackson 3 (tools.jackson) - do not touch that one.
 extra["jackson-2-bom.version"] = "2.22.1" // CVE-2026-54515
 extra["log4j2.version"] = "2.25.5" // CVE-2026-49844
