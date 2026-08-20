@@ -75,6 +75,9 @@ jobs:
           registry: ghcr.io/espoon-voltti
           name: ${{ matrix.name }}
           path: ${{ matrix.path }}
+          # Always re-pull the base image so a re-published tag (fresh OS security
+          # patches) is picked up instead of a stale digest from the registry cache.
+          pull: true
           build-args: |
             CACHE_BUST=${{ needs.cache-bust.outputs.cache-bust }}
             build=${{ github.run_number }}
@@ -122,6 +125,9 @@ jobs:
           registry: ghcr.io/espoon-voltti
           name: ${{ env.name }}
           path: ${{ env.path }}
+          # Always re-pull the base image so a re-published tag (fresh OS security
+          # patches) is picked up instead of a stale digest from the registry cache.
+          pull: true
           build-args: |
             CACHE_BUST=${{ needs.cache-bust.outputs.cache-bust }}
             build=${{ github.run_number }}
