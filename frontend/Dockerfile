@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-ARG NGINX_VERSION=1.29.8
+ARG NGINX_VERSION=1.31.3
 
 FROM node:24.19.0-trixie-slim AS builder
 
@@ -24,7 +24,11 @@ FROM builder AS test
 RUN yarn lint 
 RUN yarn type-check 
 
-FROM nginx:${NGINX_VERSION}
+# The -otel image variant ships the official ngx_otel_module.so, so nginx tracing
+# no longer depends on a per-version prebuilt module (the deprecated
+# opentracing-contrib / dd-opentracing-cpp downloads that pinned us to nginx
+# 1.29.8). Traces are exported over OTLP to the Datadog agent; see nginx.conf.template.
+FROM nginx:${NGINX_VERSION}-otel
 
 ARG CACHE_BUST=none
 
@@ -43,24 +47,8 @@ RUN echo "CACHE_BUST=${CACHE_BUST}" \
     -o /bin/gomplate \
     && chmod +x /bin/gomplate \
     && echo "${GOMPLATE_SHA256}  /bin/gomplate" | sha256sum -c - \
+    && apt-get remove --auto-remove -y curl \
     && rm -rf /var/lib/apt/lists/*
-
-# https://docs.datadoghq.com/tracing/trace_collection/proxy_setup/nginx # update version using get_latest_release
-ARG OPENTRACING_NGINX_VERSION=v0.45.0
-ARG OPENTRACING_NGINX_SHA256="97a42507d99854dabe986f69faae1dc37261104632493b5ed00a5685df3f5729"
-ARG DD_OPENTRACING_CPP_VERSION=v1.3.7
-ARG DD_OPENTRACING_CPP_SHA256="df9a8097c3d6f6e5a96f96db0f3919b5b7b35df3d10c5fcc530707a878e2dd00"
-
-RUN cd /tmp \
-    && curl -sSfLO "https://github.com/opentracing-contrib/nginx-opentracing/releases/download/${OPENTRACING_NGINX_VERSION}/linux-amd64-nginx-${NGINX_VERSION}-ngx_http_module.so.tgz" \
-    && echo "${OPENTRACING_NGINX_SHA256}  linux-amd64-nginx-${NGINX_VERSION}-ngx_http_module.so.tgz" | sha256sum -c - \
-    && tar zxf "linux-amd64-nginx-${NGINX_VERSION}-ngx_http_module.so.tgz" -C /usr/lib/nginx/modules \
-    && rm "linux-amd64-nginx-${NGINX_VERSION}-ngx_http_module.so.tgz" \
-    && curl -sSfLO https://github.com/DataDog/dd-opentracing-cpp/releases/download/${DD_OPENTRACING_CPP_VERSION}/linux-amd64-libdd_opentracing_plugin.so.gz \
-    && echo "${DD_OPENTRACING_CPP_SHA256}  linux-amd64-libdd_opentracing_plugin.so.gz" | sha256sum -c - \
-    && gunzip linux-amd64-libdd_opentracing_plugin.so.gz -c > /usr/local/lib/libdd_opentracing_plugin.so \
-    && rm linux-amd64-libdd_opentracing_plugin.so.gz \
-    && apt-get remove --auto-remove -y curl
 
 COPY ./nginx/bin/ /bin/
 COPY ./nginx/etc/ /etc/
