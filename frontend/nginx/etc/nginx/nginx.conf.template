@@ -27,10 +27,14 @@ http {
 
     otel_trace on;
     otel_trace_context propagate;
+    # Datadog Unified Service Tagging: service.name / service.version /
+    # deployment.environment as resource attrs (env maps to Datadog `env`).
+    # http.route and http.user_agent are auto-populated by the module, so we do
+    # not set them here (a custom otel_span_attr would add a duplicate key with a
+    # high-cardinality $uri value, degrading route aggregation).
     otel_service_name "vekkuli-proxy";
-    otel_span_attr "version" "{{ .Env.APP_COMMIT }}";
-    otel_span_attr "http.user_agent" $http_user_agent;
-    otel_span_attr "http.route" "$uri";
+    otel_resource_attr "service.version" "{{ .Env.APP_COMMIT }}";
+    otel_resource_attr "deployment.environment" "{{ .Env.NGINX_ENV }}";
 {{ end }}
 
     include       /nginx/config/mime.types;
