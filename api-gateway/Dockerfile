@@ -27,10 +27,16 @@ FROM builder
 
 ENV NODE_ENV="production"
 
+# Re-declare in this stage so the weekly CACHE_BUST bump reaches the dist-upgrade
+# below (ARG values do not cross stage boundaries); referenced in the RUN so the
+# apt layer is actually rebuilt with fresh OS security patches.
+ARG CACHE_BUST=none
+
 ARG S3_DOWNLOADER_VERSION=v1.5.2
 ARG S3_DOWNLOADER_SHA256="70a40524bf901d999eb7f85aaebfed25132767a1475cb76147f5c7f01ef5c66d"
 
-RUN apt-get update \
+RUN echo "CACHE_BUST=${CACHE_BUST}" \
+ && apt-get update \
  && apt-get -y dist-upgrade \
  && apt-get -y install curl \
  && curl -sSfL https://github.com/espoon-voltti/s3-downloader/releases/download/${S3_DOWNLOADER_VERSION}/s3downloader-linux-amd64 \

@@ -35,7 +35,8 @@ ENV NGINX_ENV=local \
 ARG GOMPLATE_VERSION=v4.0.1
 ARG GOMPLATE_SHA256="5aeae23cbc51e243967162a62edba0098218668a09cdaa6d6de1b228c070990f"
 
-RUN apt-get update \
+RUN echo "CACHE_BUST=${CACHE_BUST}" \
+    && apt-get update \
     && apt-get -y dist-upgrade \
     && apt-get remove --auto-remove -y nginx-module-image-filter nginx-module-njs nginx-module-xslt \
     && curl -sSfL "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-amd64" \
