@@ -9,7 +9,7 @@ error_log  /dev/stderr notice;
 pid        /nginx/nginx.pid;
 
 {{ if eq (env.Getenv "DD_PROFILING_ENABLED" "false") "true" }}
-load_module modules/ngx_http_opentracing_module.so;
+load_module modules/ngx_otel_module.so;
 {{ end }}
 
 events {
@@ -18,11 +18,23 @@ events {
 
 http {
 {{ if eq (env.Getenv "DD_PROFILING_ENABLED" "false") "true" }}
-    opentracing_load_tracer /usr/local/lib/libdd_opentracing_plugin.so /nginx/config/dd-config.json;
+    otel_exporter {
+        endpoint {{ .Env.DD_AGENT_HOST }}:4317;
+        interval 5s;
+        batch_size 512;
+        batch_count 4;
+    }
 
-    opentracing on;
-    opentracing_tag http_user_agent $http_user_agent; # Add a tag to each trace!
-    opentracing_trace_locations off; # Emit only one span per request.
+    otel_trace on;
+    otel_trace_context propagate;
+    # Datadog Unified Service Tagging: service.name / service.version /
+    # deployment.environment as resource attrs (env maps to Datadog `env`).
+    # http.route and http.user_agent are auto-populated by the module, so we do
+    # not set them here (a custom otel_span_attr would add a duplicate key with a
+    # high-cardinality $uri value, degrading route aggregation).
+    otel_service_name "vekkuli-proxy";
+    otel_resource_attr "service.version" "{{ .Env.APP_COMMIT }}";
+    otel_resource_attr "deployment.environment" "{{ .Env.NGINX_ENV }}";
 {{ end }}
 
     include       /nginx/config/mime.types;
@@ -35,18 +47,12 @@ http {
     uwsgi_temp_path       /nginx/uwsgi;
     scgi_temp_path        /nginx/scgi;
 
-{{ if eq (env.Getenv "DD_PROFILING_ENABLED" "false") "true" }}
-    log_format with_trace_id '$remote_addr - $remote_user [$time_local] "$request" '
-                             '$status $body_bytes_sent "$http_referer" '
-                             '"$http_user_agent" "$http_x_forwarded_for"'
-                             '"$opentracing_context_x_datadog_trace_id" "$opentracing_context_x_datadog_parent_id"';
-    access_log /dev/stdout with_trace_id;
-{{ else }}
+    # Trace correlation is emitted as OTLP spans by ngx_otel_module (see above),
+    # not injected into access logs; the OTel trace id is not a Datadog id.
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
                     '"$http_user_agent" "$http_x_forwarded_for"';
     access_log /dev/stdout main;
-{{ end }}
 
     sendfile        on;
     #tcp_nopush     on;
