@@ -13,7 +13,7 @@
     "alpinejs": "3.16.3",
     "bulma": "1.0.4",
     "htmx.org": "2.0.10",
-    "sass": "1.103.0"
+    "sass": "1.103.1"
   },
   "devDependencies": {
     "webpack": "5.109.2",
