@@ -30,9 +30,7 @@ export default React.memo(function ReservationCancel({
 
   const onReservationCancel = () => {
     cancelReservation(reservationId)
-      .then(() => {
-        return navigate('/kuntalainen/venepaikka')
-      })
+      .then(() => navigate('/kuntalainen/venepaikka'))
       .catch((error) => {
         console.error('Error cancelling reservation', error)
       })
@@ -47,9 +45,7 @@ export default React.memo(function ReservationCancel({
       label: i18n.reservation.yesCancelReservation,
       type: 'primary' as const,
       loading: isPending,
-      action: () => {
-        return onReservationCancel()
-      }
+      action: () => onReservationCancel()
     }
   ]
 

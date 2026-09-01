@@ -2,14 +2,12 @@ import { multiSelect, object, validated } from 'lib-common/form/form'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 export const userAgreementForm = object({
-  certified: validated(multiSelect<boolean>(), (certified) => {
-    return certified !== undefined && certified?.length > 0
-      ? undefined
-      : 'certify'
-  }),
-  terms: validated(multiSelect<boolean>(), (terms) => {
-    return terms !== undefined && terms?.length > 0 ? undefined : 'terms'
-  })
+  certified: validated(multiSelect<boolean>(), (certified) =>
+    certified !== undefined && certified?.length > 0 ? undefined : 'certify'
+  ),
+  terms: validated(multiSelect<boolean>(), (terms) =>
+    terms !== undefined && terms?.length > 0 ? undefined : 'terms'
+  )
 })
 export type UserAgreementForm = typeof userAgreementForm
 

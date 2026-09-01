@@ -366,10 +366,11 @@ export function createUrlSearchParams(
 }
 
 export const wrapResult =
-  <Args extends any[], R>( // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <Args extends any[], R>(
     apiCall: (...args: Args) => Promise<R>
   ): ((...args: Args) => Promise<Result<R>>) =>
-  (...args) =>
-    apiCall(...args)
-      .then((res) => Success.of(res))
-      .catch((e) => Failure.fromError(e))
+    (...args) =>
+      apiCall(...args)
+        .then((res) => Success.of(res))
+        .catch((e) => Failure.fromError(e))

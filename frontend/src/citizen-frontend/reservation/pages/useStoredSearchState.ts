@@ -81,9 +81,7 @@ function convertSpaceStateToBranchSearchState(
     length: parseFloat(spaceState.length) || undefined,
     amenities: amenities as BoatSpaceAmenity[],
     harbors: harbors
-      .filter((h) => {
-        return spaceState.harbor.domValues.includes(h)
-      })
+      .filter((h) => spaceState.harbor.domValues.includes(h))
       .map((h) => h)
   }
 }

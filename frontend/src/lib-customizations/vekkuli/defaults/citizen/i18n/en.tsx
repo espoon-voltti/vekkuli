@@ -400,9 +400,8 @@ const en: Translations = {
       }
       return `until ${endDate.format()}`
     },
-    terminatedAt: (terminationDate: LocalDate): string => {
-      return `Terminated ${terminationDate.format()}`
-    },
+    terminatedAt: (terminationDate: LocalDate): string =>
+      `Terminated ${terminationDate.format()}`,
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,
@@ -415,12 +414,10 @@ const en: Translations = {
           : `You have `
       return `${name} a discount of ${discountPercentage} %. After the discount, price of the boat space is ${discountedPrice} €`
     },
-    paymentState: (paymentDate?: LocalDate) => {
-      return paymentDate ? `Paid ${paymentDate.format()}` : '-'
-    },
-    invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Invoiced, due date ${dueDate.format()}` : '-'
-    },
+    paymentState: (paymentDate?: LocalDate) =>
+      paymentDate ? `Paid ${paymentDate.format()}` : '-',
+    invoiceState: (dueDate?: LocalDate) =>
+      dueDate ? `Invoiced, due date ${dueDate.format()}` : '-',
     errors: {
       startReservation: {
         title: 'Reservation is not possible',

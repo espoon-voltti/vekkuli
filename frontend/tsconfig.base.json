@@ -2,10 +2,7 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "esnext",
-    "lib": [
-      "dom",
-      "es2022"
-    ],
+    "lib": ["dom", "es2022"],
     "types": [],
     "declaration": true,
     "esModuleInterop": true,
@@ -17,7 +14,18 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "baseUrl": "src",
+    "paths": {
+      "citizen-frontend": ["./src/citizen-frontend"],
+      "citizen-frontend/*": ["./src/citizen-frontend/*"],
+      "lib-common": ["./src/lib-common"],
+      "lib-common/*": ["./src/lib-common/*"],
+      "lib-components": ["./src/lib-components"],
+      "lib-components/*": ["./src/lib-components/*"],
+      "lib-customizations": ["./src/lib-customizations"],
+      "lib-customizations/*": ["./src/lib-customizations/*"],
+      "lib-icons": ["./src/lib-icons"],
+      "lib-icons/*": ["./src/lib-icons/*"]
+    },
     "noEmit": true,
     "jsx": "react",
     "skipLibCheck": true,

@@ -45,32 +45,30 @@ export const reserveSpaceForm = mapped(
     userAgreement,
     spaceTypeInfo,
     organization
-  }): FillBoatSpaceReservationInput => {
-    return {
-      citizen: { ...reserver },
-      organization: organization.organization,
-      boat: {
-        id: boat.boatInfo.id || undefined,
-        name: boat.boatInfo.name,
-        type: boat.boatInfo.type,
-        width: boat.boatInfo.width,
-        length: boat.boatInfo.length,
-        depth: boat.boatInfo.depth,
-        weight: boat.boatInfo.weight,
-        registrationNumber: boat.boatInfo.registrationNumber.number,
-        hasNoRegistrationNumber:
-          boat.boatInfo.registrationNumber.noRegisterNumber == undefined ||
-          boat.boatInfo.registrationNumber.noRegisterNumber.length > 0,
-        otherIdentification: boat.boatInfo.otherIdentification,
-        extraInformation: boat.boatInfo.extraInformation,
-        ownership: boat.ownership
-      },
-      certifyInformation: !!userAgreement.certified?.includes(true),
-      agreeToRules: !!userAgreement.terms?.includes(true),
-      storageType: spaceTypeInfo.value?.storageType || null,
-      trailer: spaceTypeInfo.value?.trailerInfo || null
-    }
-  }
+  }): FillBoatSpaceReservationInput => ({
+    citizen: { ...reserver },
+    organization: organization.organization,
+    boat: {
+      id: boat.boatInfo.id || undefined,
+      name: boat.boatInfo.name,
+      type: boat.boatInfo.type,
+      width: boat.boatInfo.width,
+      length: boat.boatInfo.length,
+      depth: boat.boatInfo.depth,
+      weight: boat.boatInfo.weight,
+      registrationNumber: boat.boatInfo.registrationNumber.number,
+      hasNoRegistrationNumber:
+        boat.boatInfo.registrationNumber.noRegisterNumber == undefined ||
+        boat.boatInfo.registrationNumber.noRegisterNumber.length > 0,
+      otherIdentification: boat.boatInfo.otherIdentification,
+      extraInformation: boat.boatInfo.extraInformation,
+      ownership: boat.ownership
+    },
+    certifyInformation: !!userAgreement.certified?.includes(true),
+    agreeToRules: !!userAgreement.terms?.includes(true),
+    storageType: spaceTypeInfo.value?.storageType || null,
+    trailer: spaceTypeInfo.value?.trailerInfo || null
+  })
 )
 
 export type ReserveSpaceForm = typeof reserveSpaceForm
@@ -126,37 +124,34 @@ export const onReserveSpaceUpdate = (
   municipalities: Municipality[],
   organizations: Organization[],
   excludedBoatTypes?: BoatType[]
-): StateOf<ReserveSpaceForm> => {
-  return {
-    ...next,
-    boat: onBoatFormUpdate({
-      prev: prev.boat,
-      next: next.boat,
-      i18n,
-      boats: getBoatsSelection(next, organizationBoats, boats),
-      excludedBoatTypes
-    }),
-    spaceTypeInfo: onSpaceTypeInfoUpdate({
-      prev: prev.spaceTypeInfo,
-      next: next.spaceTypeInfo
-    }),
-    organization: onOrganizationFormUpdate(
-      prev.organization,
-      next.organization,
-      organizations,
-      municipalities
-    )
-  }
-}
+): StateOf<ReserveSpaceForm> => ({
+  ...next,
+  boat: onBoatFormUpdate({
+    prev: prev.boat,
+    next: next.boat,
+    i18n,
+    boats: getBoatsSelection(next, organizationBoats, boats),
+    excludedBoatTypes
+  }),
+  spaceTypeInfo: onSpaceTypeInfoUpdate({
+    prev: prev.spaceTypeInfo,
+    next: next.spaceTypeInfo
+  }),
+  organization: onOrganizationFormUpdate(
+    prev.organization,
+    next.organization,
+    organizations,
+    municipalities
+  )
+})
 const getBoatsSelection = (
   next: StateOf<ReserveSpaceForm>,
   organizationBoats: Record<string, Boat[]>,
   citizenBoats: Boat[]
-) => {
-  return next.organization.renterType.type.domValue === 'Organization'
+) =>
+  next.organization.renterType.type.domValue === 'Organization'
     ? organizationBoats[next.organization.organizationSelection.domValue] || []
     : citizenBoats
-}
 
 /*
 winterStorage: onWinterStorageFormUpdate({

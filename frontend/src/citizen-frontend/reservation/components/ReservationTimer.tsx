@@ -23,9 +23,8 @@ export default React.memo(function ReservationTimer() {
   )
 })
 
-const boldText = (text: string) => {
-  return `<span class="has-text-weight-bold">${text}</span>`
-}
+const boldText = (text: string) =>
+  `<span class="has-text-weight-bold">${text}</span>`
 
 const alertTimeMinutes = [30, 15, 10, 5, 2, 1, 0.5]
 const alertTimeSeconds = alertTimeMinutes.map((time) => time * 60)

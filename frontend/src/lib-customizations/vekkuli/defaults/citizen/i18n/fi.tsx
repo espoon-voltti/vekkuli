@@ -401,9 +401,8 @@ export default {
       }
       return `${endDate.format()} asti`
     },
-    terminatedAt: (terminationDate: LocalDate): string => {
-      return `Irtisanottu ${terminationDate.format()}`
-    },
+    terminatedAt: (terminationDate: LocalDate): string =>
+      `Irtisanottu ${terminationDate.format()}`,
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,
@@ -414,12 +413,10 @@ export default {
         type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
       return `${name} on myönnetty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
     },
-    paymentState: (paymentDate?: LocalDate) => {
-      return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
-    },
-    invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Laskutettu, eräpäivä ${dueDate.format()}` : '-'
-    },
+    paymentState: (paymentDate?: LocalDate) =>
+      paymentDate ? `Maksettu ${paymentDate.format()}` : '-',
+    invoiceState: (dueDate?: LocalDate) =>
+      dueDate ? `Laskutettu, eräpäivä ${dueDate.format()}` : '-',
     errors: {
       startReservation: {
         title: 'Varaaminen ei ole mahdollista',

@@ -8,9 +8,7 @@ export type ReservationInfoForReservation = Omit<ReservationInfo, 'id'> & {
 export const getReservationInfoForReservation = (
   reservation: BoatSpaceReservation,
   reservationInfo: ReservationInfo
-): ReservationInfoForReservation => {
-  return {
-    ...reservationInfo,
-    creationType: reservation.creationType
-  }
-}
+): ReservationInfoForReservation => ({
+  ...reservationInfo,
+  creationType: reservation.creationType
+})

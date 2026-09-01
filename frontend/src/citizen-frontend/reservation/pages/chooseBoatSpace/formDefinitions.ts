@@ -181,14 +181,12 @@ export type SearchFormBranches = BoatSpaceType
 
 const initialUnionCacheFormState = (
   defaults: initialFormStateDefaultValues
-): StateOf<BoatSpaceUnionCache> => {
-  return {
-    Slip: initialUnionFormState('Slip', defaults).state,
-    Trailer: initialUnionFormState('Trailer', defaults).state,
-    Winter: initialUnionFormState('Winter', defaults).state,
-    Storage: initialUnionFormState('Storage', defaults).state
-  }
-}
+): StateOf<BoatSpaceUnionCache> => ({
+  Slip: initialUnionFormState('Slip', defaults).state,
+  Trailer: initialUnionFormState('Trailer', defaults).state,
+  Winter: initialUnionFormState('Winter', defaults).state,
+  Storage: initialUnionFormState('Storage', defaults).state
+})
 
 export const initialUnionFormState = (
   branch: BoatSpaceType,

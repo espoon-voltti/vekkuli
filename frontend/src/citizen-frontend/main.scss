@@ -1,34 +1,43 @@
-$bulma-primary: #0047B6;
-$light-blue: #D9E4F4;
+$bulma-primary: #0047b6;
+$light-blue: #d9e4f4;
 $white: #fff;
 $black: #536076;
-$grey: #A9B0BB;
-$light-gray: #F7F7F7;
+$grey: #a9b0bb;
+$light-gray: #f7f7f7;
 $darkGray: #536076;
 $gainsboro: #dddddd;
-$warning: #FF8E31;
-$error: #FF3D3D;
-$bulma-danger: #EB002F;
+$warning: #ff8e31;
+$error: #ff3d3d;
+$bulma-danger: #eb002f;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-xl: 32px;
 $block-spacing: $spacing-medium;
-$activeColor: #D9E4F4;
+$activeColor: #d9e4f4;
 $checkbox-size: 36px;
 $help-min-height: 18px;
 
-@use "bulma/sass" with (
+@use 'bulma/sass' with (
   $primary: $bulma-primary,
   $link: $bulma-primary,
-  $family-primary: "Lato, sans-serif",
-  $family-secondary: "Lato, sans-serif",
-  $spacing-shortcuts: ("margin": "m", "padding": "p"),
-  $spacing-horizontal: "h",
-  $spacing-vertical: "v",
-  $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
-          "l": $spacing-large, "xl": $spacing-xl, "auto": auto),
+  $family-primary: 'Lato, sans-serif',
+  $family-secondary: 'Lato, sans-serif',
+  $spacing-shortcuts: (
+    'margin': 'm',
+    'padding': 'p'
+  ),
+  $spacing-horizontal: 'h',
+  $spacing-vertical: 'v',
+  $spacing-values: (
+    'none': 0,
+    's': $spacing-small,
+    'm': $spacing-medium,
+    'l': $spacing-large,
+    'xl': $spacing-xl,
+    'auto': auto
+  ),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
@@ -52,9 +61,9 @@ $help-min-height: 18px;
   $subtitle-weight: 600,
   $subtitle-line-height: 24px,
   $danger: $bulma-danger,
-  $footer-padding: 1.5rem,
+  $footer-padding: 1.5rem
 );
-@use "bulma/sass/utilities/mixins";
+@use 'bulma/sass/utilities/mixins';
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
 
 // Custom styles
@@ -71,7 +80,7 @@ $help-min-height: 18px;
 }
 
 .button.is-danger:not(.is-outlined) {
-  color: $white
+  color: $white;
 }
 
 .button.is-transparent {
@@ -79,10 +88,12 @@ $help-min-height: 18px;
   border-color: transparent;
 }
 
-button:focus-visible, .button:focus-visible,
+button:focus-visible,
+.button:focus-visible,
 .link:focus-visible,
 .link:focus-visible .field .control p,
-input:focus-visible, input.input:focus-visible,
+input:focus-visible,
+input.input:focus-visible,
 .select select:focus-visible {
   outline: 2px solid $bulma-primary;
   outline-offset: 2px;
@@ -93,7 +104,8 @@ input:focus-visible, input.input:focus-visible,
   }
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background: $light-gray;
   margin: 0;
@@ -101,15 +113,14 @@ html, body {
 }
 
 #app {
-  height: 100%
+  height: 100%;
 }
 
 .container {
   background: $white;
   padding: $spacing-large;
 
-  &.is-highlight
-  {
+  &.is-highlight {
     background-color: $light-blue;
   }
 }
@@ -130,7 +141,8 @@ html, body {
   left: 12px;
 }
 
-h1, h2.h1 {
+h1,
+h2.h1 {
   font-size: 32px;
   font-weight: 700;
   line-height: 40px;
@@ -196,7 +208,7 @@ h4 {
 .textarea {
   resize: none;
 
-  &.resizable{
+  &.resizable {
     resize: vertical;
   }
 }
@@ -209,11 +221,13 @@ h4 {
   min-width: auto;
 }
 
-.input.compact, .textarea.compact {
+.input.compact,
+.textarea.compact {
   width: 250px;
 }
 
-.input.auto-width, .textarea.auto-width {
+.input.auto-width,
+.textarea.auto-width {
   width: auto;
 }
 
@@ -228,7 +242,7 @@ h4 {
 }
 
 .checkmark::after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
   top: 10px;
@@ -246,8 +260,7 @@ h4 {
   margin-inline-start: 0px !important;
   margin-bottom: $spacing-small;
 
-  &.is-disabled
-  {
+  &.is-disabled {
     opacity: 0.7;
   }
 }
@@ -255,9 +268,9 @@ h4 {
 .radio.has-text-top-aligned {
   align-items: start;
   .label-text {
-    margin-top: calc($checkbox-size/(2*2));
+    margin-top: calc($checkbox-size/ (2*2));
     .information-text {
-      margin-top: calc($checkbox-size/(2*2));
+      margin-top: calc($checkbox-size/ (2*2));
       font-size: 13px;
       line-height: 17.5px;
     }
@@ -268,7 +281,7 @@ h4 {
   cursor: pointer;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   appearance: none;
   background-color: $white;
   min-width: $checkbox-size;
@@ -279,8 +292,8 @@ input[type="radio"] {
   place-content: center;
 }
 
-input[type="radio"]::before {
-  content: "";
+input[type='radio']::before {
+  content: '';
   width: 16px;
   height: 16px;
   transform: scale(0);
@@ -289,11 +302,11 @@ input[type="radio"]::before {
   clip-path: polygon(13% 50%, 34% 66%, 81% 2%, 100% 18%, 39% 100%, 0 71%);
 }
 
-input[type="radio"]:checked::before {
+input[type='radio']:checked::before {
   transform: scale(1);
 }
 
-input[type="radio"]:checked {
+input[type='radio']:checked {
   background-color: $bulma-primary;
   border: 2px solid $bulma-primary;
 }
@@ -305,7 +318,7 @@ input[type="radio"]:checked {
   gap: $spacing-small;
 }
 
-.checkbox input[type="checkbox"] {
+.checkbox input[type='checkbox'] {
   width: 24px;
   height: 24px;
   accent-color: $bulma-primary;
@@ -320,7 +333,6 @@ input[type="radio"]:checked {
   content: ' *';
   margin-left: $spacing-extrasmall;
 }
-
 
 #step-indicator .step {
   border-radius: 5px;
@@ -340,7 +352,8 @@ input[type="radio"]:checked {
   color: $bulma-primary;
 }
 
-.warning, .error {
+.warning,
+.error {
   padding: 16px;
   gap: 64px;
   border-radius: 4px;
@@ -349,7 +362,7 @@ input[type="radio"]:checked {
 .warning {
   display: inline-block;
   border: 1px solid $warning;
-  margin-bottom: 16px
+  margin-bottom: 16px;
 }
 
 .error {
@@ -483,7 +496,8 @@ body > .columns {
   }
 }
 .search-results-table {
-  th, td {
+  th,
+  td {
     width: 25%;
     vertical-align: middle;
   }
@@ -501,8 +515,9 @@ body > .columns {
     margin: 20px 0;
   }
 
-  th, td {
-    border-bottom: 1px solid $gainsboro ;
+  th,
+  td {
+    border-bottom: 1px solid $gainsboro;
     text-align: left;
     padding: $spacing-small;
     vertical-align: middle;
@@ -538,7 +553,7 @@ body > .columns {
 }
 
 .search-input {
-  border: 1px solid #DADDE2;
+  border: 1px solid #dadde2;
 }
 
 .reservation-item {
@@ -562,7 +577,7 @@ body > .columns {
 }
 
 .dropdown-content {
-  border: 1px solid #A9B0BB;
+  border: 1px solid #a9b0bb;
   border-top: 0;
 }
 
@@ -577,9 +592,9 @@ body > .columns {
   color: $white;
 }
 
-.nav-row{
+.nav-row {
   background: white;
-  display:flex;
+  display: flex;
   padding: 20px $spacing-large;
   border-bottom: $spacing-small solid $light-gray;
   justify-content: space-between;
@@ -607,9 +622,9 @@ body > .columns {
   border-bottom: 2px solid $bulma-primary;
 }
 
-.logo{
+.logo {
   width: auto;
-  margin-right: 16px
+  margin-right: 16px;
 }
 
 .menu-container {
@@ -624,7 +639,7 @@ body > .columns {
   text-transform: uppercase;
   background: white;
   padding: 0 $spacing-medium;
-  margin:0;
+  margin: 0;
 }
 
 .menu-label {
@@ -734,8 +749,8 @@ tr.table-borderless th {
 }
 
 .reservation-card .trailer-information .columns:last-child {
-    margin-bottom: 0;
-  }
+  margin-bottom: 0;
+}
 
 .container-tabs {
   @extend .container;
@@ -761,7 +776,6 @@ tr.table-borderless th {
 .secondary-tabs.tabs.is-boxed ul li.is-active a {
   margin: $spacing-extrasmall;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
-
 }
 
 label.filter-button {
@@ -796,7 +810,7 @@ label.filter-button:has(input:checked) .icon {
   width: 120px;
   background: white;
   padding: 4px;
-  border: 1px solid #DADDE2;
+  border: 1px solid #dadde2;
   border-top: 0;
 }
 
@@ -818,7 +832,6 @@ label.filter-button:has(input:checked) .icon {
 }
 
 .memo {
-
   .memo-label {
     background-color: $light-blue;
     padding: 0 4px 0 4px;
@@ -832,7 +845,6 @@ label.filter-button:has(input:checked) .icon {
   .memo-content {
     padding: $spacing-small 0;
   }
-
 }
 
 .memo-edit-area {
@@ -861,7 +873,8 @@ label.filter-button:has(input:checked) .icon {
     color: $darkGray;
   }
 
-  th, td {
+  th,
+  td {
     border-bottom: 1px solid $gainsboro;
     text-align: left;
     padding: $spacing-small;
@@ -879,25 +892,24 @@ label.filter-button:has(input:checked) .icon {
   }
 }
 
-.htmx-indicator{
-  opacity:0;
+.htmx-indicator {
+  opacity: 0;
   transition: opacity 500ms ease-in;
 }
-.htmx-request .htmx-indicator{
-  opacity:1;
+.htmx-request .htmx-indicator {
+  opacity: 1;
 }
-.htmx-request.htmx-indicator{
-  opacity:1;
+.htmx-request.htmx-indicator {
+  opacity: 1;
 }
 
-.htmx-request.loaded-content{
+.htmx-request.loaded-content {
   display: none;
 }
 #citizen-results-container {
   margin-bottom: 0;
   padding-left: 0;
   padding-right: 0;
-
 }
 
 #citizen-results {
@@ -908,7 +920,7 @@ label.filter-button:has(input:checked) .icon {
 }
 
 .select select option:hover,
-.select select option:checked{
+.select select option:checked {
   background-color: $light-blue;
 }
 
@@ -924,7 +936,6 @@ label.filter-button:has(input:checked) .icon {
   display: block;
 }
 
-
 ul {
   margin-left: $spacing-small;
 
@@ -933,14 +944,12 @@ ul {
   }
 }
 
-.no-bullets
-{
+.no-bullets {
   list-style: none;
   margin-left: 0;
 }
 
-.accordion-title
-{
+.accordion-title {
   background-color: $light-gray;
   cursor: pointer;
   text-align: left;
@@ -948,13 +957,11 @@ ul {
   margin-bottom: 1.8em;
 }
 
-.icon-transform
-{
-  transition: transform 0.5s ease
+.icon-transform {
+  transition: transform 0.5s ease;
 }
 
-.icon-rotate-90
-{
+.icon-rotate-90 {
   transform: rotate(90deg);
 }
 
@@ -970,10 +977,9 @@ ul {
   transform: rotate(360deg);
 }
 
-.invoice-line
-{
-  display:inline-block;
-  width: 250px
+.invoice-line {
+  display: inline-block;
+  width: 250px;
 }
 
 .dropdown-title {
@@ -1008,12 +1014,11 @@ ul {
   flex-direction: column;
 }
 
-.icon.is-extra-large
-{
+.icon.is-extra-large {
   width: auto;
   height: auto;
   & svg {
-    width: 120px
+    width: 120px;
   }
 }
 
@@ -1030,8 +1035,7 @@ ul {
   }
 }
 
-.field .help
-{
+.field .help {
   min-height: $help-min-height;
 }
 
@@ -1053,15 +1057,15 @@ ul {
   height: 100%;
 }
 
-.footer a{
+.footer a {
   text-decoration: underline;
 }
 
-.footer .logo{
+.footer .logo {
   position: absolute;
   right: 0;
   top: 50%;
-    transform: translateY(-50%);
+  transform: translateY(-50%);
   height: 86%;
   width: auto;
   @include mixins.mobile {

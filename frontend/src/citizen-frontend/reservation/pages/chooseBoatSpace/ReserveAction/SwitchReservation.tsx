@@ -35,9 +35,7 @@ export default React.memo(function SwitchReservation({
       reservationId: reservation.id,
       spaceId: targetSpaceId
     })
-      .then(() => {
-        return navigate('/kuntalainen/venepaikka/vaihda')
-      })
+      .then(() => navigate('/kuntalainen/venepaikka/vaihda'))
       .catch((error) => {
         const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
         console.error(errorCode)

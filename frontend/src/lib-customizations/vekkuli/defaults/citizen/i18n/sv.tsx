@@ -390,9 +390,8 @@ const sv: Translations = {
       }
       return `Till ${endDate.format()}`
     },
-    terminatedAt: (terminationDate: LocalDate): string => {
-      return `Avslutad ${terminationDate.format()}`
-    },
+    terminatedAt: (terminationDate: LocalDate): string =>
+      `Avslutad ${terminationDate.format()}`,
     reserverDiscountInfo: (
       type: ReserverType,
       reserverName: string,
@@ -402,12 +401,10 @@ const sv: Translations = {
       const name = type === 'Organization' ? `${reserverName}` : `dig `
       return `En rabatt på ${discountPercentage} % har definierats för ${name}. Efter rabatten förblir priset på platsen ${discountedPrice} €`
     },
-    paymentState: (paymentDate?: LocalDate) => {
-      return paymentDate ? `Betald ${paymentDate.format()}` : '-'
-    },
-    invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Faktureras, förfallodag ${dueDate.format()}` : '-'
-    },
+    paymentState: (paymentDate?: LocalDate) =>
+      paymentDate ? `Betald ${paymentDate.format()}` : '-',
+    invoiceState: (dueDate?: LocalDate) =>
+      dueDate ? `Faktureras, förfallodag ${dueDate.format()}` : '-',
     errors: {
       startReservation: {
         title: 'Det går inte att göra en reservation',

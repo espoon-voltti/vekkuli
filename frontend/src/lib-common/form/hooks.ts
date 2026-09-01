@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-/* eslint-disable  */
-/* eslint-enable react-hooks/exhaustive-deps, prettier/prettier, import/order */
+/* eslint-disable @typescript-eslint/no-explicit-any -- generic form library relies on `any` for shape inference */
 
 import range from 'lodash/range'
 import { useCallback, useMemo, useRef, useState } from 'react'
@@ -133,22 +132,20 @@ export function useFormFields<F extends AnyForm>({
   return useMemo(
     () =>
       Object.fromEntries(
-        fieldNames.map((key) => {
-          return [
-            key,
-            {
-              form: shape[key],
-              state: state[key],
-              update: fieldCallbacks[key].fieldUpdate,
-              set: fieldCallbacks[key].fieldSet,
-              ...validationHelpers(
-                () => shape[key].validate(state[key]),
-                translateError,
-                { get: validationError, map: (error) => error[key] }
-              )
-            }
-          ]
-        })
+        fieldNames.map((key) => [
+          key,
+          {
+            form: shape[key],
+            state: state[key],
+            update: fieldCallbacks[key].fieldUpdate,
+            set: fieldCallbacks[key].fieldSet,
+            ...validationHelpers(
+              () => shape[key].validate(state[key]),
+              translateError,
+              { get: validationError, map: (error) => error[key] }
+            )
+          }
+        ])
       ) as any,
     [fieldCallbacks, fieldNames, shape, state, translateError, validationError]
   )

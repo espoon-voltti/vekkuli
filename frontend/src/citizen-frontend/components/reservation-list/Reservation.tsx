@@ -81,9 +81,7 @@ export default React.memo(function Reservation({
   const { form } = useFormUnion(boatSpaceUnionForm)
   const onRenew = () => {
     renewReservation(reservation.id)
-      .then(() => {
-        return navigate('/kuntalainen/venepaikka/jatka')
-      })
+      .then(() => navigate('/kuntalainen/venepaikka/jatka'))
       .catch((error) => {
         const errorCode = reservationStatus
           ? 'UNFINISHED_RESERVATION'

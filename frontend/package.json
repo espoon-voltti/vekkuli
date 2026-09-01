@@ -1,13 +1,14 @@
 {
   "name": "vekkuli-frontend",
   "version": "0.0.1",
-  "description": "Frontend for Vekkuli",
   "private": true,
+  "description": "Frontend for Vekkuli",
   "license": "LGPL-2.1-or-later",
   "scripts": {
     "clean": "rm -rf dist node_modules/.cache",
     "dev": "concurrently -n tsc,esbuild -c blue,green 'yarn type-check:watch' 'yarn build:serve'",
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxfmt -c .oxfmtrc.json --check && oxlint",
+    "lint:fix": "oxfmt -c .oxfmtrc.json && oxlint --fix",
     "type-check": "tsc --build --force .",
     "type-check:watch": "yarn type-check --watch --preserveWatchOutput",
     "build": "node build.js",
@@ -39,8 +40,6 @@
   "devDependencies": {
     "@babel/core": "8.0.1",
     "@babel/preset-env": "8.0.2",
-    "@eslint/compat": "2.1.0",
-    "@eslint/js": "10.0.1",
     "@playwright/test": "1.62.1",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "7.0.1",
@@ -56,17 +55,9 @@
     "css-loader": "7.1.4",
     "csstype": "3.2.3",
     "esbuild": "0.28.2",
-    "eslint": "10.9.1",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-jsx-expressions": "1.3.2",
     "eslint-plugin-lodash": "8.0.0",
-    "eslint-plugin-prettier": "5.5.6",
-    "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "7.1.1",
     "express": "5.2.1",
     "express-http-proxy": "2.1.2",
-    "globals": "17.11.0",
     "html-webpack-plugin": "5.6.8",
     "jest": "30.4.2",
     "jest-circus": "30.4.2",
@@ -75,17 +66,18 @@
     "jest-junit": "17.0.0",
     "lib-common": "link:src/lib-common",
     "lib-customizations": "link:src/lib-customizations",
+    "oxfmt": "0.63.0",
+    "oxlint": "1.78.0",
+    "oxlint-tsgolint": "7.0.2001",
     "postcss": "8.5.26",
     "postcss-loader": "8.2.1",
     "postcss-preset-env": "11.5.0",
-    "prettier": "3.9.6",
     "style-loader": "4.0.0",
     "ts-jest": "29.4.12",
     "ts-loader": "9.6.2",
     "ts-node": "10.9.2",
     "tsconfig-paths-webpack-plugin": "4.2.0",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.68.0",
+    "typescript": "7.0.2",
     "webpack": "5.110.1",
     "webpack-cli": "7.2.2",
     "webpack-pwa-manifest": "4.3.0",
@@ -93,9 +85,6 @@
   },
   "resolutions": {
     "minimatch@npm:9.0.3": "9.0.9"
-  },
-  "engines": {
-    "node": ">= 22.14.0"
   },
   "browserslist": [
     "Firefox ESR",
@@ -110,27 +99,23 @@
     "> 5% in FI",
     "last 3 years"
   ],
-  "prettier": {
-    "bracketSpacing": true,
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "none"
-  },
   "jest": {
-    "testRunner": "jest-circus/runner",
     "projects": [
-      "./src/citizen-frontend",
-      "./eslint-plugin"
-    ]
+      "./src/citizen-frontend"
+    ],
+    "testRunner": "jest-circus/runner"
   },
   "jest-junit": {
     "outputDirectory": "test-results/",
     "addFileAttribute": "true"
   },
+  "engines": {
+    "node": ">= 22.14.0"
+  },
+  "packageManager": "yarn@4.18.0",
   "postcss": {
     "plugins": {
       "postcss-preset-env": true
     }
-  },
-  "packageManager": "yarn@4.18.0"
+  }
 }

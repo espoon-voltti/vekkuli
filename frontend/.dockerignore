@@ -13,3 +13,5 @@
 !*.json
 !*.lock
 !*.mjs
+!.oxlintrc.json
+!.oxfmtrc.json

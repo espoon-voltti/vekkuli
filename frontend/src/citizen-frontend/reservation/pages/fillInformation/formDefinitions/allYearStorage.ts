@@ -26,20 +26,17 @@ export const allYearStorageForm = mapped(
   object({
     storageInfo: storageTypeUnionForm
   }),
-  ({ storageInfo }) => {
-    return {
-      storageType:
-        storageInfo.branch === 'Buck' ? storageInfo.value : 'Trailer',
-      trailerInfo:
-        storageInfo.branch === 'Trailer'
-          ? {
-              length: storageInfo.value.length,
-              width: storageInfo.value.width,
-              registrationNumber: storageInfo.value.registrationNumber
-            }
-          : null
-    }
-  }
+  ({ storageInfo }) => ({
+    storageType: storageInfo.branch === 'Buck' ? storageInfo.value : 'Trailer',
+    trailerInfo:
+      storageInfo.branch === 'Trailer'
+        ? {
+            length: storageInfo.value.length,
+            width: storageInfo.value.width,
+            registrationNumber: storageInfo.value.registrationNumber
+          }
+        : null
+  })
 )
 export type AllYearStorageForm = typeof allYearStorageForm
 

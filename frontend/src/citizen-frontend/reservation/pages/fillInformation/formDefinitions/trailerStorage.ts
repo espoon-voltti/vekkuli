@@ -22,16 +22,14 @@ export const trailerStorageForm = mapped(
   object({
     trailerInfo: trailerInfoForm
   }),
-  ({ trailerInfo }) => {
-    return {
-      storageType: 'Trailer' as const,
-      trailerInfo: {
-        length: trailerInfo.length,
-        width: trailerInfo.width,
-        registrationNumber: trailerInfo.registrationNumber
-      }
+  ({ trailerInfo }) => ({
+    storageType: 'Trailer' as const,
+    trailerInfo: {
+      length: trailerInfo.length,
+      width: trailerInfo.width,
+      registrationNumber: trailerInfo.registrationNumber
     }
-  }
+  })
 )
 
 export type TrailerStorageForm = typeof trailerStorageForm

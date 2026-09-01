@@ -87,7 +87,8 @@ type InputOrRealOnlyProps = {
   required?: boolean
   showError: boolean
   validationError:
-    (() => string | FieldErrors<string> | undefined) | (() => string)
+    | (() => string | FieldErrors<string> | undefined)
+    | (() => string)
   translateError: (error: string) => string
   errorFieldId?: string
   setTouched: (touched: boolean) => void

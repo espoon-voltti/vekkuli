@@ -25,12 +25,12 @@ interface SpaceSizeProps {
 export const SpaceSize = React.memo(function SpaceSize({
   size: { width, length }
 }: SpaceSizeProps) {
-  const f = (num: number) => {
-    return new Intl.NumberFormat('fi-FI', {
+  const f = (num: number) =>
+    new Intl.NumberFormat('fi-FI', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(num / 100)
-  }
+
   return (
     <>
       {f(width)} x {f(length)} m

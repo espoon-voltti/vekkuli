@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "oxc", "react", "typescript"],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true,
+    "maxWarnings": 0,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "builtin": true
+  },
+  "ignorePatterns": ["node_modules", ".yarn", "dist", "test-results"],
+  "jsPlugins": ["eslint-plugin-lodash"],
+  "rules": {
+    "eslint/arrow-body-style": ["error", "as-needed"],
+    "eslint/no-console": ["error", { "allow": ["warn", "error", "info"] }],
+    "eslint/no-constant-binary-expression": "error",
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^.*",
+        "destructuredArrayIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "eslint/prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+
+    "react/jsx-curly-brace-presence": [
+      "error",
+      { "props": "never", "children": "never" }
+    ],
+    "react/self-closing-comp": ["error", { "component": true, "html": true }],
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+
+    "lodash/import-scope": ["error", "method"]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "typescript/no-empty-object-type": [
+          "error",
+          { "allowInterfaces": "always" }
+        ],
+        "typescript/no-misused-promises": [
+          "error",
+          { "checksVoidReturn": false }
+        ],
+        "typescript/no-explicit-any": "error",
+        "typescript/no-namespace": "error",
+        "typescript/require-array-sort-compare": "off"
+      }
+    },
+    {
+      "files": ["build.js"],
+      "rules": {
+        "lodash/import-scope": "off"
+      }
+    }
+  ]
+}

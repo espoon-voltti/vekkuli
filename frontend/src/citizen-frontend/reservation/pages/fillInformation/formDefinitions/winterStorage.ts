@@ -42,19 +42,17 @@ export const winterStorageForm = mapped(
     storageType: storageTypeForm,
     trailerInfo: trailerInfoUnionForm
   }),
-  ({ storageType, trailerInfo }) => {
-    return {
-      storageType,
-      trailerInfo:
-        trailerInfo.branch === 'Trailer'
-          ? {
-              length: trailerInfo.value.length,
-              width: trailerInfo.value.width,
-              registrationNumber: trailerInfo.value.registrationNumber
-            }
-          : null
-    }
-  }
+  ({ storageType, trailerInfo }) => ({
+    storageType,
+    trailerInfo:
+      trailerInfo.branch === 'Trailer'
+        ? {
+            length: trailerInfo.value.length,
+            width: trailerInfo.value.width,
+            registrationNumber: trailerInfo.value.registrationNumber
+          }
+        : null
+  })
 )
 export type WinterStorageForm = typeof winterStorageForm
 
