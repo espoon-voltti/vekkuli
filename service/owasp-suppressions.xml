@@ -11,7 +11,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   dependency it actually belongs to (a bare <cve> suppresses it on every jar). Each entry
   documents WHY it is not remediated by a version bump. Entries that were only "fix not
   yet available" have been removed now that the fixed versions are on the classpath via the
-  extra["*.version"] overrides in build.gradle.kts (Tomcat 11.0.24, Netty 4.2.17,
+  extra["*.version"] overrides in build.gradle.kts (Tomcat 11.0.25, Netty 4.2.17,
   Spring Framework 7.0.8, Jackson 3.1.4, httpclient5 5.6.4). The owasp CI job is the
   authoritative confirmation that nothing regressed.
 -->
@@ -23,15 +23,6 @@ SPDX-License-Identifier: LGPL-2.1-or-later
             not present in or reachable from the deployed service. Left unscoped because the
             match target is a false positive rather than a real coordinate.</notes>
         <cve>CVE-2022-31691</cve>
-    </suppress>
-    <suppress>
-        <notes>Apache Tomcat WebSocket examples-webapp DoS (CVE-2026-66299). The examples
-            webapp is not bundled in embedded Spring Boot Tomcat (only tomcat-embed-*), so the
-            vulnerable code path is not reachable. The fix is Tomcat 11.0.25, which is not yet
-            released (we run 11.0.24 via tomcat.version); drop this suppression once
-            tomcat.version reaches 11.0.25.</notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/.*$</packageUrl>
-        <cve>CVE-2026-66299</cve>
     </suppress>
     <suppress>
         <notes>Kotlin build-cache metadata deserialization (CVE-2026-53914) — build-time
