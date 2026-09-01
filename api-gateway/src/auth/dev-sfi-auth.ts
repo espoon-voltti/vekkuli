@@ -5,6 +5,7 @@
 import { Request, Router, urlencoded } from 'express'
 import _ from 'lodash'
 import passport, { Strategy } from 'passport'
+
 import { citizenLogin, CitizenUser } from '../clients/service-client.js'
 import { citizenRootUrl } from '../config.js'
 import { logWarn } from '../logging/index.js'
@@ -14,10 +15,12 @@ import {
   AsyncRequestHandler,
   toRequestHandler
 } from '../utils/express.js'
-import { AppSessionUser, authenticate, login, logout } from './index.js'
+
 import { injectLoginErrorToUrl } from './saml/common.js'
 import { getRedirectUrl } from './saml/saml-routes.js'
 import { Sessions } from './session.js'
+
+import { AppSessionUser, authenticate, login, logout } from './index.js'
 
 class DevStrategy extends Strategy {
   constructor(private verifyUser: (req: Request) => Promise<AppSessionUser>) {

@@ -7,4 +7,5 @@
 !.yarnrc.yml
 !config
 !entrypoint.sh
-!eslint.config.js
+!.oxlintrc.json
+!.oxfmtrc.json

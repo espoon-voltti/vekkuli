@@ -1,12 +1,14 @@
 import cookieParser from 'cookie-parser'
 import { Router } from 'express'
 import passport from 'passport'
+
 import { requireAuthentication } from './auth/index.js'
 import { sessionSupport } from './auth/session.js'
 import { Config, employeeRootUrl, serviceUrl } from './config.js'
 import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
 import { createProxy } from './utils/proxy.js'
+
 import { VekkuliRedisClient } from './index.js'
 
 export function createDevRouter(

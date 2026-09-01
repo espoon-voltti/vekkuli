@@ -1,0 +1,23 @@
+{
+  "ignorePatterns": ["node_modules", ".yarn", "dist", "build"],
+
+  "printWidth": 80,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "arrowParens": "always",
+  "sortImports": {
+    "groups": [
+      "builtin",
+      "external",
+      "internal",
+      "parent",
+      "sibling",
+      "index",
+      "unknown"
+    ],
+    "order": "asc",
+    "ignoreCase": false,
+    "newlinesBetween": true
+  }
+}

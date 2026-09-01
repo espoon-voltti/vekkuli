@@ -7,11 +7,13 @@ import {
 } from 'date-fns'
 import express from 'express'
 import session from 'express-session'
+
 import { SessionConfig } from '../config.js'
+import { VekkuliRedisClient } from '../index.js'
 import { LogoutToken, toMiddleware } from '../utils/express.js'
 import { fromCallback } from '../utils/promise-utils.js'
+
 import { UserType } from './index.js'
-import { VekkuliRedisClient } from '../index.js'
 
 type SessionType = UserType
 

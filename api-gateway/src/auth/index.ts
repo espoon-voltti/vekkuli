@@ -1,10 +1,13 @@
+import { readFileSync } from 'node:fs'
+
 import express, { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { readFileSync } from 'node:fs'
 import passport, { AuthenticateCallback } from 'passport'
+
 import { jwtKid, jwtPrivateKey } from '../config.js'
 import { logInfo } from '../logging/index.js'
 import { fromCallback } from '../utils/promise-utils.js'
+
 import { Sessions } from './session.js'
 
 export function requireAuthentication(

@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "oxc", "typescript"],
+  "options": {
+    "typeAware": false,
+    "maxWarnings": 0,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "node": true,
+    "builtin": true
+  },
+  "ignorePatterns": ["node_modules", ".yarn", "dist", "build"],
+  "rules": {
+    "eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "error",
+        "typescript/no-empty-object-type": "error",
+        "typescript/no-namespace": "error",
+        "typescript/consistent-indexed-object-style": "error"
+      }
+    }
+  ]
+}

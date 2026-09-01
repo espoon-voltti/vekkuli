@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import { z } from 'zod'
-import _ from 'lodash'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+
 import {
   CacheProvider,
   Profile,
@@ -11,15 +12,16 @@ import {
   Strategy as SamlStrategy,
   VerifyWithRequest
 } from '@node-saml/passport-saml'
+import express from 'express'
+import _ from 'lodash'
+import { z } from 'zod'
 
 import { appBaseUrl, EspooSamlConfig } from '../../config.js'
-import { readFileSync } from 'node:fs'
-import certificates, { TrustedCertificates } from './certificates.js'
-import express from 'express'
-import path from 'node:path'
-import { Sessions } from '../session.js'
-import { AppSessionUser } from '../index.js'
 import { logInfo } from '../../logging/index.js'
+import { AppSessionUser } from '../index.js'
+import { Sessions } from '../session.js'
+
+import certificates, { TrustedCertificates } from './certificates.js'
 
 export function fromCallback<T>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

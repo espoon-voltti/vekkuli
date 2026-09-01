@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser'
 import { Router } from 'express'
 import passport from 'passport'
+
 import { createAdSamlStrategy } from './auth/ad-saml.js'
 import { createDevAdRouter } from './auth/dev-ad-auth.js'
 import { createDevSfiRouter } from './auth/dev-sfi-auth.js'
@@ -12,6 +13,7 @@ import { createSuomiFiStrategy } from './auth/suomifi-saml.js'
 import { citizenRootUrl, Config } from './config.js'
 import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
+
 import { VekkuliRedisClient } from './index.js'
 
 export function createAuthRouter(

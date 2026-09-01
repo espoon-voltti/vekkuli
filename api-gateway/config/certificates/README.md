@@ -15,8 +15,8 @@ Voltti IDP (dev/test):
 ## Update list of trusted IdP certificates
 
 1. Obtain URL for IdP metadata from the provider, for example:
-    - Espoo AD production: <https://login.microsoftonline.com/6bb04228-cfa5-4213-9f39-172454d82584/federationmetadata/2007-06/federationmetadata.xml?appid=7d857df7-95fd-42f1-96e6-296c1094be09>
-    - Espoo AD staging: <https://login.microsoftonline.com/6bb04228-cfa5-4213-9f39-172454d82584/federationmetadata/2007-06/federationmetadata.xml?appid=b73067a1-1f4c-4508-94ea-51c8eeb15793>
+   - Espoo AD production: <https://login.microsoftonline.com/6bb04228-cfa5-4213-9f39-172454d82584/federationmetadata/2007-06/federationmetadata.xml?appid=7d857df7-95fd-42f1-96e6-296c1094be09>
+   - Espoo AD staging: <https://login.microsoftonline.com/6bb04228-cfa5-4213-9f39-172454d82584/federationmetadata/2007-06/federationmetadata.xml?appid=b73067a1-1f4c-4508-94ea-51c8eeb15793>
 2. [Fetch](#fetch-saml-signing-certificates-from-metadata) certificate(s) from IdP's remote metadata
 3. Update [code](https://github.com/espoon-voltti/vekkuli/blob/master/api-gateway/src/certificates.ts) to include any new files
 4. Update apigw deployment configuration to include the name of the new certificate file(s)

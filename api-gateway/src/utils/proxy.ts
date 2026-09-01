@@ -1,4 +1,5 @@
 import expressHttpProxy from 'express-http-proxy'
+
 import { createServiceRequestHeaders } from '../clients/service-client.js'
 
 export function createProxy(serviceUrl: string) {

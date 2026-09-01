@@ -1,14 +1,14 @@
 {
   "name": "vekkuli-api-gateway",
   "version": "0.0.1",
+  "private": true,
   "description": "API gateway for vekkuli",
   "type": "module",
-  "private": true,
   "scripts": {
     "clean": "rm -rf ./build ./dist",
     "build": "yarn clean && yarn install && tsc --build .",
-    "lint": "eslint --max-warnings 0 .",
-    "lint:fix": "yarn lint --fix",
+    "lint": "oxfmt -c .oxfmtrc.json --check && oxlint",
+    "lint:fix": "oxfmt -c .oxfmtrc.json && oxlint --fix",
     "dev": "tsc --build . && concurrently --prefix '[{name}]' --names 'tsc,nodemon' 'tsc --build --preserveWatchOutput -w .' 'NODE_ENV=local nodemon dist/index.js'"
   },
   "dependencies": {
@@ -39,7 +39,6 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@eslint/js": "10.0.1",
     "@types/cookie-parser": "1.4.10",
     "@types/csurf": "1.11.5",
     "@types/express": "5.0.6",
@@ -52,53 +51,14 @@
     "@types/passport-strategy": "0.2.38",
     "@types/source-map-support": "0.5.10",
     "concurrently": "10.0.5",
-    "eslint": "10.9.1",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.6",
     "nodemon": "3.1.14",
-    "prettier": "3.9.6",
+    "oxfmt": "0.63.0",
+    "oxlint": "1.78.0",
     "ts-node": "10.9.2",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.68.0"
+    "typescript": "7.0.2"
   },
   "resolutions": {
     "@node-saml/passport-saml/@types/express": "5.0.6"
-  },
-  "prettier": {
-    "arrowParens": "always",
-    "bracketSpacing": true,
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "none"
-  },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:@typescript-eslint/stylistic",
-      "plugin:prettier/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "project": "./tsconfig.json",
-      "ecmaFeatures": {
-        "modules": true
-      }
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_"
-        }
-      ]
-    }
   },
   "engines": {
     "node": ">= 22.14.0"

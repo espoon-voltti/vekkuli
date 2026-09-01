@@ -6,6 +6,7 @@ import type {
 import express, { Router, urlencoded } from 'express'
 import { ErrorRequestHandler } from 'express-serve-static-core'
 import passport from 'passport'
+
 import { citizenRootUrl, employeeRootUrl } from '../../config.js'
 import { logDebug, logInfo, logWarn } from '../../logging/index.js'
 import { errorOrUndefined } from '../../utils/errorOrUndefined.js'
@@ -13,6 +14,7 @@ import { toMiddleware, toRequestHandler } from '../../utils/express.js'
 import { fromCallback } from '../../utils/promise-utils.js'
 import { login, logout } from '../index.js'
 import { Sessions } from '../session.js'
+
 import {
   createLogoutToken,
   injectLoginErrorToUrl,

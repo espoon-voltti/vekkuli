@@ -1,4 +1,5 @@
 import type { CacheProvider } from '@node-saml/passport-saml'
+
 import { VekkuliRedisClient } from '../../index.js'
 
 export interface ProviderOptions {

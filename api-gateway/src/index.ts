@@ -1,19 +1,19 @@
 import './tracer.js'
-
 import express from 'express'
 import helmet from 'helmet'
 import passport from 'passport'
 import { createClient } from 'redis'
 import sourceMapSupport from 'source-map-support'
+
 import { createAuthRouter } from './authRouter.js'
 import { createCitizenRouter } from './citizenRouter.js'
 import { configFromEnv, httpPort } from './config.js'
+import { createDevRouter } from './devRouter.js'
 import { createEmployeeRouter } from './employeeRouter.js'
 import { logError, loggingMiddleware } from './logging/index.js'
 import { fallbackErrorHandler } from './middleware/errors.js'
 import { createSystemRouter } from './systemRouter.js'
 import { trustReverseProxy } from './utils/express.js'
-import { createDevRouter } from './devRouter.js'
 
 sourceMapSupport.install()
 const config = configFromEnv()

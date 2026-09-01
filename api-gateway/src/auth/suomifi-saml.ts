@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import { z } from 'zod'
 import { SamlConfig, Strategy } from '@node-saml/passport-saml'
+import { z } from 'zod'
+
+import { citizenLogin } from '../clients/service-client.js'
+import { logWarn } from '../logging/index.js'
 
 import { createSamlStrategy } from './saml/common.js'
 import { Sessions } from './session.js'
-import { citizenLogin } from '../clients/service-client.js'
-import { logWarn } from '../logging/index.js'
 
 // Suomi.fi e-Identification – Attributes transmitted on an identified user:
 //   https://esuomi.fi/suomi-fi-services/suomi-fi-e-identification/14247-2/?lang=en

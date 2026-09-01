@@ -1,5 +1,6 @@
-import express from 'express'
 import axios from 'axios'
+import express from 'express'
+
 import { AppSessionUser, createAuthHeader, UserType } from '../auth/index.js'
 import { serviceUrl } from '../config.js'
 
