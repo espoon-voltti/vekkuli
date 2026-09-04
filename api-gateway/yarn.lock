@@ -221,17 +221,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/retry@npm:^0.4.0":
+"@humanwhocodes/retry@npm:^0.4.0, @humanwhocodes/retry@npm:^0.4.2":
   version: 0.4.3
   resolution: "@humanwhocodes/retry@npm:0.4.3"
   checksum: 10/0b32cfd362bea7a30fbf80bb38dcaf77fee9c2cae477ee80b460871d03590110ac9c77d654f04ec5beaf71b6f6a89851bdf6c1e34ccdf2f686bd86fcd97d9e61
-  languageName: node
-  linkType: hard
-
-"@humanwhocodes/retry@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@humanwhocodes/retry@npm:0.4.2"
-  checksum: 10/8910c4cdf8d46ce406e6f0cb4407ff6cfef70b15039bd5713cc059f32e02fe5119d833cfe2ebc5f522eae42fdd453b6d88f3fa7a1d8c4275aaad6eb3d3e9b117
   languageName: node
   linkType: hard
 
@@ -3928,7 +3921,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.68.0"
-    zod: "npm:4.4.3"
+    zod: "npm:4.5.4"
   languageName: unknown
   linkType: soft
 
@@ -4102,9 +4095,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.4.3":
-  version: 4.4.3
-  resolution: "zod@npm:4.4.3"
-  checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36
+"zod@npm:4.5.4":
+  version: 4.5.4
+  resolution: "zod@npm:4.5.4"
+  checksum: 10/b2fd4aaf358359650a1f27f303a462f0f49b4e5582f517ad8894ed566fdceb9da391b59babffe3c70574c8064174883735657eb28e12db5c7021455a631866c4
   languageName: node
   linkType: hard
