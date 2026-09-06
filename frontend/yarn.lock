@@ -3924,12 +3924,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:19.2.6":
-  version: 19.2.6
-  resolution: "@types/react-dom@npm:19.2.6"
+"@types/react-dom@npm:19.2.7":
+  version: 19.2.7
+  resolution: "@types/react-dom@npm:19.2.7"
   peerDependencies:
     "@types/react": ^19.2.0
-  checksum: 10/6e6fb54838a9e51ab4bf3a865bc1b1e841b474835bec0aab3d1b4ae0ed666c328d682c54a40c4b4239697f30d3f08d50029c4f5d1b39d978e506f1b640d7fb24
+  checksum: 10/84079ed3b5470b7fafe4478c9180c2b0f19f8c5aebe666091e1ee5bc15464acb248909553769bd338de5f508afe96fec353997aed0457bb0d3a1e6246bcafcb8
   languageName: node
   linkType: hard
 
@@ -12271,7 +12271,7 @@ __metadata:
     "@types/lodash": "npm:4.17.25"
     "@types/node": "npm:24.13.3"
     "@types/react": "npm:19.2.18"
-    "@types/react-dom": "npm:19.2.6"
+    "@types/react-dom": "npm:19.2.7"
     axios: "npm:1.20.0"
     babel-loader: "npm:10.1.1"
     bulma: "npm:1.0.4"
