@@ -410,9 +410,15 @@ jobs:
           set -euo pipefail
           for image in service api-gateway frontend; do
             src="ghcr.io/espoon-voltti/vekkuli/${image}:${SHA}"
-            dst="${ECR}/vekkuli/${image}:${SHA}"
-            echo "Copying ${src} -> ${dst}"
-            docker buildx imagetools create --prefer-index=false --tag "${dst}" "${src}"
+            dst="${ECR}/vekkuli/${image}"
+            tags=(--tag "${dst}:${SHA}")
+            # The scan reports key on :master, so only a master build may write
+            # it. Both tags go in one call, so the layers are copied once.
+            if [ "${GITHUB_REF}" = "refs/heads/master" ]; then
+              tags+=(--tag "${dst}:master")
+            fi
+            echo "Copying ${src} -> ${dst}:${SHA}"
+            docker buildx imagetools create --prefer-index=false "${tags[@]}" "${src}"
           done
 
   deploy:
