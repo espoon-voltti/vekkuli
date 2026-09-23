@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.*
+import fi.espoo.vekkuli.pages.text
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
@@ -152,12 +153,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             reservationListPage.reservations.filter(
                 Locator.FilterOptions().setHasText("Doe John")
             )
-        assertTrue(reservationRow.textContent().contains("Laskutettu, eräpäivä 22.04.24"))
+        assertTrue(reservationRow.text().contains("Laskutettu, eräpäivä 22.04.24"))
 
         page.getByText("Doe John").click()
 
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
+        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().text())
 
         updateReservationToConfirmed(citizenDetailsPage)
 
@@ -172,21 +173,21 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         invoicePaymentService.fetchAndStoreInvoicePayments()
 
         citizenDetailsPage.paymentsNavi.click()
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Haukilahti D 013") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Laituri") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("100000") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("22.04.2024") }
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("418,00") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("Maksettu") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("Haukilahti D 013") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("Laituri") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("100000") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("Lasku") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("22.04.2024") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("418,00") }
 
-        page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("100000") }
-        page.waitForCondition { citizenDetailsPage.settlementRows.textContent().contains("418,00") }
+        page.waitForCondition { citizenDetailsPage.settlementRows.text().contains("100000") }
+        page.waitForCondition { citizenDetailsPage.settlementRows.text().contains("418,00") }
         citizenDetailsPage.refundPaymentButton.click()
         citizenDetailsPage.refundPaymentModalConfirm.click()
 
         citizenDetailsPage.paymentsNavi.click()
-        page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Hyvitetty") }
+        page.waitForCondition { citizenDetailsPage.paymentsTable.text().contains("Hyvitetty") }
 
         citizenDetailsPage.ackPaymentButton.click()
         citizenDetailsPage.ackPaymentModalConfirm.click()
@@ -195,9 +196,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
     fun updateReservationToConfirmed(citizenDetailsPage: CitizenDetailsPage) {
         page.waitForCondition {
-            citizenDetailsPage.paymentStatus.textContent().contains("Invoiced: due date: 22.04.2024")
+            citizenDetailsPage.paymentStatus.text().contains("Invoiced: due date: 22.04.2024")
         }
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.text().contains("Invoice id: 100000") }
         citizenDetailsPage.updatePaymentStatusLink.click()
 
         assertEquals("100000", citizenDetailsPage.paymentStatusUpdateModalInfoTextInput.inputValue())
@@ -206,8 +207,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         citizenDetailsPage.paymentStatusUpdateModalConfirmed.click()
         citizenDetailsPage.paymentStatusUpdateModalSubmit.click()
 
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 22.04.2024") }
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.text().contains("Confirmed, 22.04.2024") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.text().contains("Invoice id: 100000") }
     }
 
     @Test
@@ -236,7 +237,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         invoicePreviewPage.confirmModalCancel.click()
 
         page.waitForCondition {
-            invoicePreviewPage.reservationValidity.textContent().contains("Valid until further notice")
+            invoicePreviewPage.reservationValidity.text().contains("Valid until further notice")
         }
 
         assertThat(invoicePreviewPage.header).isVisible()
@@ -254,8 +255,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
 
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 01.04.2024") }
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.text().contains("Confirmed, 01.04.2024") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.text().contains("Invoice id: 100000") }
 
         assertCorrectPaymentForReserver(
             "doe",
@@ -375,7 +376,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
 
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
+        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().text())
 
         assertEmailIsSentOfEmployeeIndefiniteWinterSpaceReservationWithInvoice()
         updateReservationToConfirmed(citizenDetailsPage)
@@ -391,7 +392,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
 
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
+        assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().text())
 
         assertEmailIsSentOfEmployeeIndefiniteWinterSpaceReservationWithoutPayment()
     }
@@ -402,7 +403,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
 
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 10.06.2024")
+        assertContains(citizenDetailsPage.reservationValidity.first().text(), "Until 10.06.2024")
 
         assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "10.06.2024")
         updateReservationToConfirmed(citizenDetailsPage)
@@ -417,7 +418,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
 
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 10.06.2024")
+        assertContains(citizenDetailsPage.reservationValidity.first().text(), "Until 10.06.2024")
 
         assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "10.06.2024")
     }
@@ -444,7 +445,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         fillWinterBoatSpaceForm(formPage)
         if (isFixed) {
             formPage.reservationValidityFixedTermRadioButton.click()
-            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 10.06.2024")
+            assertContains(formPage.reservationValidityInformation.text(), "01.04.2024 - 10.06.2024")
         }
 
         formPage.submitButton.click()
@@ -609,7 +610,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             trailerRegistrationNumberInput.fill("ABC-123")
             if (isFixed) {
                 formPage.reservationValidityFixedTermRadioButton.click()
-                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 30.04.2024")
+                assertContains(formPage.reservationValidityInformation.text(), "01.04.2024 - 30.04.2024")
             }
         }
 
@@ -697,7 +698,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         fillAndTestForm(formPage)
         formPage.reservationValidityFixedTermRadioButton.click()
-        assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+        assertContains(formPage.reservationValidityInformation.text(), "01.04.2024 - 31.12.2024")
         formPage.submitButton.click()
 
         val invoicePreviewPage = InvoicePreviewPage(page)
@@ -707,7 +708,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
         page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-        assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().textContent())
+        assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().text())
 
         assertEmailIsSentOfEmployeesFixedTermSlipReservationWithInvoice()
     }
@@ -729,7 +730,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         fillAndTestForm(formPage)
         formPage.reservationValidityFixedTermRadioButton.click()
-        assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+        assertContains(formPage.reservationValidityInformation.text(), "01.04.2024 - 31.12.2024")
         formPage.submitButton.click()
 
         val invoicePreviewPage = InvoicePreviewPage(page)
@@ -797,7 +798,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             trailerRegistrationNumberInput.fill("ABC-123")
             if (isFixed) {
                 formPage.reservationValidityFixedTermRadioButton.click()
-                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 14.09.2024")
+                assertContains(formPage.reservationValidityInformation.text(), "01.04.2024 - 14.09.2024")
             }
         }
         val invoicePreviewPage = InvoicePreviewPage(page)
@@ -1339,8 +1340,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         citizenDetails.paymentsNavi.click()
 
-        citizenDetails.paymentsTable.textContent().contains("101,00")
-        citizenDetails.paymentsTable.textContent().contains("Test description")
+        citizenDetails.paymentsTable.text().contains("101,00")
+        citizenDetails.paymentsTable.text().contains("Test description")
     }
 
     private fun fillBoatAndOtherDetails(formPage: BoatSpaceFormPage) {

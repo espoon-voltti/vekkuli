@@ -6,8 +6,10 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.pages.text
 import fi.espoo.vekkuli.utils.fullDateFormat
 import fi.espoo.vekkuli.utils.paymentStatusToText
+import kotlin.test.assertNotNull
 
 class ReserveTest : EmailSendingTest() {
     protected fun setDiscountForReserver(
@@ -52,11 +54,11 @@ class ReserveTest : EmailSendingTest() {
 
         val matchingRow =
             paymentRows.find { row ->
-                val paymentStatus = citizenDetails.getByDataTestId("payment-status", row).textContent()
-                val place = citizenDetails.getByDataTestId("place", row).textContent()
-                val paymentAmount = citizenDetails.getByDataTestId("payment-amount", row).textContent()
-                val paymentReference = citizenDetails.getByDataTestId("payment-reference", row).textContent()
-                val paymentPaidDate = citizenDetails.getByDataTestId("payment-paid-date", row).textContent()
+                val paymentStatus = citizenDetails.getByDataTestId("payment-status", row).text()
+                val place = citizenDetails.getByDataTestId("place", row).text()
+                val paymentAmount = citizenDetails.getByDataTestId("payment-amount", row).text()
+                val paymentReference = citizenDetails.getByDataTestId("payment-reference", row).text()
+                val paymentPaidDate = citizenDetails.getByDataTestId("payment-paid-date", row).text()
                 paymentStatus == paymentStatusToText(status) &&
                     place == placeName &&
                     paymentAmount == amount &&
@@ -64,7 +66,7 @@ class ReserveTest : EmailSendingTest() {
                     paymentReference == reference
             }
 
-        assertThat(matchingRow).hasCount(1)
+        assertThat(assertNotNull(matchingRow)).hasCount(1)
     }
 
     protected fun citizenPageInEmployeeView(
