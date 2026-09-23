@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.text
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
@@ -240,7 +241,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         citizenDetailsPage.navigateToPage()
 
         val reservation = citizenDetailsPage.getReservationSection(0)
-        assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.textContent())
+        assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.text())
     }
 
     @Test
@@ -401,7 +402,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(confirmationPage.getByDataTestId("citizen-information")).containsText("test@example.com")
 
         val reservation = citizenDetailsPage.getReservationSection(0)
-        assertEquals("Maksettu 01.05.2025", reservation.paymentStatus.textContent())
+        assertEquals("Maksettu 01.05.2025", reservation.paymentStatus.text())
     }
 
     @Test
@@ -538,7 +539,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         citizenDetailsPage.navigateToPage()
 
         val reservation = citizenDetailsPage.getReservationSection(0)
-        assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.textContent())
+        assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.text())
     }
 
     @Test
@@ -749,7 +750,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
         val reservation = citizenDetailsPage.getReservationSection("Haukilahti B 314")
-        assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
+        assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.text())
     }
 
     @Test
@@ -790,7 +791,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
         val reservation = citizenDetailsPage.getReservationSection("Haukilahti B 314")
-        assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
+        assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.text())
     }
 
     @Test
@@ -839,7 +840,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
         val reservation = citizenDetailsPage.getReservationSection(0)
-        assertEquals("-", reservation.paymentStatus.textContent())
+        assertEquals("-", reservation.paymentStatus.text())
     }
 
     @Test
