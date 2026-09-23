@@ -7,12 +7,12 @@ import java.util.regex.Pattern
 plugins {
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.4.10"
+    kotlin("jvm") version "2.4.20"
     kotlin("plugin.spring") version "2.4.10"
     id("org.flywaydb.flyway") version "13.7.0"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.node-gradle.node") version "7.1.0"
-    kotlin("plugin.serialization") version "2.4.10"
+    kotlin("plugin.serialization") version "2.4.20"
     id("org.owasp.dependencycheck") version "13.0.0"
 
     idea
@@ -21,6 +21,21 @@ plugins {
 ktlint {
     version.set("1.6.0")
 }
+
+// ktlint 1.6.0 builds against an older kotlin-compiler-embeddable. The Kotlin plugin aligns it to the
+// project's version, and the intellij-core ktlint bundles cannot initialise against 2.4.20:
+// "Extensions storage is not registered". Only the ktlint classpath is pinned, so the compiler used to
+// build the service stays on the project's version.
+// Remove once ktlint ships a release supporting it.
+configurations
+    .matching { it.name.startsWith("ktlint") }
+    .configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin" && requested.name == "kotlin-compiler-embeddable") {
+                useVersion("2.4.10")
+            }
+        }
+    }
 
 buildscript {
     dependencies {
