@@ -22,6 +22,21 @@ ktlint {
     version.set("1.6.0")
 }
 
+// ktlint 1.6.0 builds against an older kotlin-compiler-embeddable. The Kotlin plugin aligns it to the
+// project's version, and the intellij-core ktlint bundles cannot initialise against 2.4.20:
+// "Extensions storage is not registered". Only the ktlint classpath is pinned, so the compiler used to
+// build the service stays on the project's version.
+// Remove once ktlint ships a release supporting it.
+configurations
+    .matching { it.name.startsWith("ktlint") }
+    .configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin" && requested.name == "kotlin-compiler-embeddable") {
+                useVersion("2.4.10")
+            }
+        }
+    }
+
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.13")
