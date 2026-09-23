@@ -916,8 +916,19 @@ label.filter-button:has(input:checked) .icon {
   display: none;
 }
 
-.select select option:hover,
-.select select option:checked{
+.citizen-search-results {
+  background-color: $white;
+  border: 1px solid $gainsboro;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.citizen-search-option {
+  cursor: pointer;
+  padding: $spacing-extrasmall $spacing-small;
+}
+
+.citizen-search-option:hover {
   background-color: $light-blue;
 }
 
