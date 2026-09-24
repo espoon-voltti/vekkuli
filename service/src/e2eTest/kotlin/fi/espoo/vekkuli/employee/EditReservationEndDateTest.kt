@@ -29,6 +29,7 @@ class EditReservationEndDateTest : PlaywrightTest() {
         citizenDetailsPage.reservationEndDateInput.fill("2024-10-31")
         citizenDetailsPage.reservationEndDateInput.blur()
 
+        // Shortening frees the place early, so the employee is warned before saving.
         assertThat(citizenDetailsPage.reservationEndDateWarning.first()).isVisible()
         assertThat(citizenDetailsPage.reservationEndDateError).not().isVisible()
 
@@ -40,7 +41,7 @@ class EditReservationEndDateTest : PlaywrightTest() {
     }
 
     @Test
-    fun `employee can not extend a reservation over another reservation on the same space`() {
+    fun `a date that overlaps another reservation on the same space is refused`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         EmployeeHomePage(page).employeeLogin()
         citizenDetailsPage.navigateToUserPage(CitizenIds.olivia)
@@ -49,9 +50,16 @@ class EditReservationEndDateTest : PlaywrightTest() {
         citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2023-06-01")
         citizenDetailsPage.reservationEndDateInput.blur()
+        citizenDetailsPage.reservationEndDateModalConfirm.click()
 
         assertThat(citizenDetailsPage.reservationEndDateError).isVisible()
-        assertThat(citizenDetailsPage.reservationEndDateModalConfirm).isDisabled()
+        assertThat(citizenDetailsPage.reservationEndDateSuccessModal).not().isVisible()
+
+        // The reservation keeps its original end date.
+        citizenDetailsPage.navigateToUserPage(CitizenIds.olivia)
+        citizenDetailsPage.toggleExpiredReservationsAccordion()
+        citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
+        assertThat(citizenDetailsPage.reservationEndDateInput).hasValue("2022-12-31")
     }
 
     @Test
@@ -64,9 +72,8 @@ class EditReservationEndDateTest : PlaywrightTest() {
         citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2023-01-31")
         citizenDetailsPage.reservationEndDateInput.blur()
-
-        assertThat(citizenDetailsPage.reservationEndDateError).not().isVisible()
         citizenDetailsPage.reservationEndDateModalConfirm.click()
+
         assertThat(citizenDetailsPage.reservationEndDateSuccessModal).isVisible()
     }
 }
