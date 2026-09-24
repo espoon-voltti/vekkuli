@@ -27,7 +27,7 @@ class EditReservationEndDateTest : PlaywrightTest() {
 
         citizenDetailsPage.openReservationEndDateModal(leoReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2024-10-31")
-        citizenDetailsPage.reservationEndDateInput.blur()
+        citizenDetailsPage.reservationEndDateInput.dispatchEvent("change")
 
         // Shortening frees the place early, so the employee is warned before saving.
         assertThat(citizenDetailsPage.reservationEndDateWarning.first()).isVisible()
@@ -49,7 +49,7 @@ class EditReservationEndDateTest : PlaywrightTest() {
 
         citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2023-06-01")
-        citizenDetailsPage.reservationEndDateInput.blur()
+        citizenDetailsPage.reservationEndDateInput.dispatchEvent("change")
         citizenDetailsPage.reservationEndDateModalConfirm.click()
 
         assertThat(citizenDetailsPage.reservationEndDateError).isVisible()
@@ -71,7 +71,7 @@ class EditReservationEndDateTest : PlaywrightTest() {
 
         citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2023-01-31")
-        citizenDetailsPage.reservationEndDateInput.blur()
+        citizenDetailsPage.reservationEndDateInput.dispatchEvent("change")
         citizenDetailsPage.reservationEndDateModalConfirm.click()
 
         assertThat(citizenDetailsPage.reservationEndDateSuccessModal).isVisible()

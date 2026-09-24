@@ -40,7 +40,7 @@ class ReservationEndDateModalView(
                     attributes =
                         """
                         hx-post="/virkailija/venepaikat/varaukset/loppupaiva/tarkista"
-                        hx-trigger="change"
+                        hx-trigger="change, input delay:300ms"
                         hx-include="closest form"
                         hx-target="#$END_DATE_VALIDATION_ID"
                         hx-swap="innerHTML"
