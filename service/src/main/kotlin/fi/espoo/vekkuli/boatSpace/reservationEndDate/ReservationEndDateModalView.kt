@@ -36,7 +36,15 @@ class ReservationEndDateModalView(
                     labelKey = "reservationEndDate.field.endDate",
                     value = formatAsTestDate(selectedEndDate),
                     required = true,
-                    autoWidth = true
+                    autoWidth = true,
+                    attributes =
+                        """
+                        hx-post="/virkailija/venepaikat/varaukset/loppupaiva/tarkista"
+                        hx-trigger="change"
+                        hx-include="closest form"
+                        hx-target="#$END_DATE_VALIDATION_ID"
+                        hx-swap="innerHTML"
+                        """.trimIndent()
                 )
             )
 
@@ -61,14 +69,7 @@ class ReservationEndDateModalView(
                         reservation.endDate
                     )}"
                 )}
-                        <div
-                            hx-post="/virkailija/venepaikat/varaukset/loppupaiva/tarkista"
-                            hx-trigger="change"
-                            hx-include="closest form"
-                            hx-target="#$END_DATE_VALIDATION_ID"
-                            hx-swap="innerHTML">
-                            $endDateInput
-                        </div>
+                        $endDateInput
                         <input hidden name="reservationId" value="${reservation.id}" />
                         <input hidden name="reserverId" value="$reserverId" />
                     </div>
