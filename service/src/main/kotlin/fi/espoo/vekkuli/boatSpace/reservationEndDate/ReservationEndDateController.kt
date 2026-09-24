@@ -61,7 +61,7 @@ class ReservationEndDateController(
     fun updateEndDate(
         @RequestParam reservationId: Int,
         @RequestParam reserverId: UUID,
-        @RequestParam endDate: LocalDate,
+        @RequestParam(required = false) endDate: LocalDate?,
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val employee = request.getAuthenticatedEmployee()
@@ -76,9 +76,11 @@ class ReservationEndDateController(
         )
 
         val reservation = reservationEndDateService.getEditableReservation(reservationId)
-        val validation = reservationEndDateService.validate(reservation, endDate)
-        if (!validation.isValid) {
-            return ResponseEntity.ok(modalView.render(reserverId, reservation, endDate, validation))
+        val validation =
+            endDate?.let { reservationEndDateService.validate(reservation, it) }
+                ?: EndDateValidationResult(EndDateError.Missing, emptyList())
+        if (endDate == null || !validation.isValid) {
+            return ResponseEntity.ok(modalView.render(reserverId, reservation, endDate ?: reservation.endDate, validation))
         }
 
         reservationEndDateService.updateEndDate(reservationId, endDate, employee.id)
