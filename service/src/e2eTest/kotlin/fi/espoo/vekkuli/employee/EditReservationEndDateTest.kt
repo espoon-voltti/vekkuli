@@ -50,16 +50,10 @@ class EditReservationEndDateTest : PlaywrightTest() {
         citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
         citizenDetailsPage.reservationEndDateInput.fill("2023-06-01")
         citizenDetailsPage.reservationEndDateInput.dispatchEvent("change")
-        citizenDetailsPage.reservationEndDateModalConfirm.click()
 
+        // The space is invoiced for 01.02.2023 - 31.12.2023, so saving is refused.
         assertThat(citizenDetailsPage.reservationEndDateError).isVisible()
-        assertThat(citizenDetailsPage.reservationEndDateSuccessModal).not().isVisible()
-
-        // The reservation keeps its original end date.
-        citizenDetailsPage.navigateToUserPage(CitizenIds.olivia)
-        citizenDetailsPage.toggleExpiredReservationsAccordion()
-        citizenDetailsPage.openReservationEndDateModal(oliviaExpiredReservationId).click()
-        assertThat(citizenDetailsPage.reservationEndDateInput).hasValue("2022-12-31")
+        assertThat(citizenDetailsPage.reservationEndDateModalConfirm).isDisabled()
     }
 
     @Test
