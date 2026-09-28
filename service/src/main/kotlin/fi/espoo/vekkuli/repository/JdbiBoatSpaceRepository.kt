@@ -37,15 +37,6 @@ fun amenityFilter(
 }
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
-    if (filter.boatOrSpaceLength != null && filter.boatOrSpaceLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
-        // Boats over 15 meters will only fit in buoys
-        return OperatorExpr(
-            "amenity",
-            "=",
-            BoatSpaceAmenity.Buoy,
-        )
-    }
-
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
         amenities.map {
