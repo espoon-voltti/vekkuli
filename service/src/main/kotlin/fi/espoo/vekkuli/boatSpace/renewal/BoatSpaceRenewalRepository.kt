@@ -130,11 +130,11 @@ class BoatSpaceRenewalRepository(
                     )
                     (
                       SELECT :created as created,
-                             reserver_id, 
-                             :actingCitizenId as acting_citizen_id, 
-                             boat_space_id, 
-                             start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 
+                             reserver_id,
+                             :actingCitizenId as acting_citizen_id,
+                             boat_space_id,
+                             :startDate as start_date,
+                             (end_date + INTERVAL '1 year') as end_date,
                              'Info' as status, 
                              'Renewal' as creation_type, 
                              validity, 
@@ -149,6 +149,7 @@ class BoatSpaceRenewalRepository(
                     RETURNING id
                     """.trimIndent()
                 ).bind("created", timeProvider.getCurrentDateTime())
+                .bind("startDate", timeProvider.getCurrentDate())
                 .bind("reservationId", reservationId)
                 .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
                 .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
