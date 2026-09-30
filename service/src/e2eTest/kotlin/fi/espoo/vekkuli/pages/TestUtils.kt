@@ -37,3 +37,5 @@ fun Page.getByDataTestId(testId: String): Locator {
     val test = "[data-testid=\"$testId\"]"
     return locator(test)
 }
+
+fun Locator.text(): String = textContent().orEmpty()
