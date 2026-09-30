@@ -122,6 +122,38 @@ class ReservationCardInformation(
             </div>
             """.trimIndent()
 
+        val endDateEditLink =
+            if (reservation.status in endDateEditableStatuses) {
+                modal
+                    .createOpenModalBuilder()
+                    .setType(OpenModalButtonType.Link)
+                    .setText("""<span class="icon">${icons.edit}</span>""")
+                    .setPath("/reservation/modal/update-end-date/${reservation.id}/$reserverId")
+                    .setStyle(ModalButtonStyle.EditIcon)
+                    .setTestId("open-reservation-end-date-modal-${reservation.id}")
+                    .build()
+            } else {
+                ""
+            }
+
+        // The end date is shown as its own editable field only to employees; citizens see it as part of the validity text.
+        val endDateField =
+            if (userType == UserType.EMPLOYEE) {
+                """
+                <div class="field" ${addTestId("reservation-end-date")}>
+                    <div class="edit-label">
+                        <label class="label">${t("boatSpaceReservation.title.endDate")}</label>
+                        <div>$endDateEditLink</div>
+                    </div>
+                    <p ${addTestId("reservation-end-date-value")}>${formatAsFullDate(
+                    getEffectiveEndDate(reservation.status, reservation.endDate)
+                )}</p>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         val boatChangeLink =
             modal
                 .createOpenModalBuilder()
@@ -184,6 +216,7 @@ class ReservationCardInformation(
                          </div>
                          <p>${renderReservationValidity(reservation)}</p>
                      </div>
+                     $endDateField
                  </div>
                  <div class="column">
                      <div class="field">
@@ -222,6 +255,8 @@ class ReservationCardInformation(
 
             """.trimIndent()
     }
+
+    private val endDateEditableStatuses = setOf(ReservationStatus.Confirmed, ReservationStatus.Invoiced)
 
     fun getEffectiveEndDate(
         status: ReservationStatus,

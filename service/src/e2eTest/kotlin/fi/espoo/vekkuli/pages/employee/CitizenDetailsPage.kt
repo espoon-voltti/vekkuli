@@ -73,6 +73,17 @@ class CitizenDetailsPage(
     val reservationValidityIndefiniteRadioButton = page.getByTestId("reservationValidity-Indefinite")
     val reservationValidityModalConfirm = page.getByTestId("reservation-validity-modal-confirm")
 
+    val reservationEndDate = getByDataTestId("reservation-end-date")
+    val reservationEndDateValue = getByDataTestId("reservation-end-date-value")
+    val reservationEndDateInput = page.getByTestId("endDate")
+    val reservationEndDateError = getByDataTestId("reservation-end-date-error")
+    val reservationEndDateWarning = getByDataTestId("reservation-end-date-warning")
+    val reservationEndDateModalConfirm = page.locator("#reservation-end-date-modal-confirm")
+    val reservationEndDateModalCancel = page.locator("#reservation-end-date-modal-cancel")
+    val reservationEndDateSuccessModal = getByDataTestId("reservation-end-date-success-modal")
+
+    fun openReservationEndDateModal(reservationId: Int): Locator = getByDataTestId("open-reservation-end-date-modal-$reservationId")
+
     val paymentStatus = getByDataTestId("payment-status")
 
     val updatePaymentStatusLink = getByDataTestId("update-payment-status-link")
