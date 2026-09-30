@@ -73,7 +73,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + boatSpaceReportToCsv(getAllBoatSpacesReport(jdbi, reportDate)))
+            .body(utf8BOM + boatSpaceReportToCsv(getAllBoatSpacesReport(jdbi, reportDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping("/boat-space-report/free", produces = ["text/csv"])
@@ -89,7 +89,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-vapaat-paikat-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + freeBoatSpaceReportToCsv(getFreeBoatSpaceReportRows(jdbi, reportDate)))
+            .body(utf8BOM + freeBoatSpaceReportToCsv(getFreeBoatSpaceReportRows(jdbi, reportDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping("/boat-space-report/reserved", produces = ["text/csv"])
@@ -105,7 +105,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-varatut-paikat-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + boatSpaceReportToCsv(getReservedBoatSpaceReport(jdbi, reportDate)))
+            .body(utf8BOM + boatSpaceReportToCsv(getReservedBoatSpaceReport(jdbi, reportDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping("/boat-space-report/terminated", produces = ["text/csv"])
@@ -121,7 +121,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-irtisanotut-paikat-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + terminatedBoatSpaceReportToCsv(getTerminatedBoatSpaceReport(jdbi, reportDate)))
+            .body(utf8BOM + terminatedBoatSpaceReportToCsv(getTerminatedBoatSpaceReport(jdbi, reportDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping("/boat-space-report/warnings", produces = ["text/csv"])
@@ -137,7 +137,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-varoitukset-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + warningsBoatSpaceReportToCsv(getWarningsBoatSpaceReportRows(jdbi, reportDate)))
+            .body(utf8BOM + warningsBoatSpaceReportToCsv(getWarningsBoatSpaceReportRows(jdbi, reportDate, timeProvider.getCurrentDate())))
     }
 
     @GetMapping
