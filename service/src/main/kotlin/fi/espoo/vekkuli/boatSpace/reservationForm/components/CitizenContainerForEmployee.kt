@@ -178,25 +178,22 @@ class CitizenContainerForEmployee(
         citizens: List<CitizenWithDetails>,
         reservationId: Int
     ): String {
-        val listSize = if (citizens.size > 5) 5 else citizens.size
-
         // language=HTML
         return (
             """
-            <select 
+            <ul 
                 x-show="citizenFullName != ''" 
-                multiple 
-                size="$listSize" 
-                name='citizenIdOption' 
+                role="listbox" 
+                class="citizen-search-results" 
                 hx-get="/virkailija/venepaikka/varaus/$reservationId"
                 hx-include="#form"
-                hx-trigger="change delay:0.01s" 
+                hx-trigger="citizen-selected delay:0.01s" 
                 hx-select="#form"
                 hx-target="#form"
                 hx-swap="outerHTML"
-                @change="updateFullName">
+                @click="selectCitizen">
                 ${citizensSearchContent.searchContentList(citizens)}
-            </select>
+            </ul>
 
             """.trimIndent()
         )
