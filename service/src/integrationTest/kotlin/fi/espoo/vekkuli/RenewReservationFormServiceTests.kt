@@ -190,4 +190,33 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             "Reservation can be renewed"
         )
     }
+
+    @Test
+    fun `employee renewal starts on the renewal day, not the original start date`() {
+        val originalStartDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate()
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = originalStartDate,
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
+                )
+            )
+
+        val renewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+
+        assertEquals(
+            timeProvider.getCurrentDate(),
+            renewal.startDate,
+            "Renewed reservation should start on the renewal day"
+        )
+        assertNotEquals(
+            originalStartDate,
+            renewal.startDate,
+            "Renewed reservation should not inherit the original start date (would overlap the old reservation on confirm)"
+        )
+    }
 }
