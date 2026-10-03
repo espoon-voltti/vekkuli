@@ -128,7 +128,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:13.8.1")
     implementation("org.flywaydb:flyway-database-postgresql:13.8.1")
     implementation("org.postgresql:postgresql:42.7.13")
-    implementation(platform("org.jdbi:jdbi3-bom:3.54.0"))
+    implementation(platform("org.jdbi:jdbi3-bom:3.55.0"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
     implementation("org.jdbi:jdbi3-kotlin")
