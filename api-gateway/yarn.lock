@@ -357,17 +357,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@node-saml/passport-saml@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@node-saml/passport-saml@npm:5.1.0"
+"@node-saml/passport-saml@npm:5.1.1":
+  version: 5.1.1
+  resolution: "@node-saml/passport-saml@npm:5.1.1"
   dependencies:
     "@node-saml/node-saml": "npm:^5.1.0"
-    "@types/express": "npm:^4.17.23"
+    "@types/express": "npm:^4.17.25"
     "@types/passport": "npm:^1.0.17"
     "@types/passport-strategy": "npm:^0.2.38"
     passport: "npm:^0.7.0"
     passport-strategy: "npm:^1.0.0"
-  checksum: 10/11b6ffd988e7f6a4c8119963eed280280799a5396c5499920518e5a3980e3222f54402244caa3e3f72ab3a759c11b8d2d3d5f1b6d2282b7090f6b05337382d11
+  checksum: 10/3c4656ab615e1edffb843ef70fa5e91024013a61a9d8ac4248bdf490ebeacd8e4752d7b4ff6a3719176b4e4f0260b8494fb18d1ae2b658eb582d7d6e19f7bb13
   languageName: node
   linkType: hard
 
@@ -3977,7 +3977,7 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:10.0.1"
     "@node-saml/node-saml": "npm:5.1.0"
-    "@node-saml/passport-saml": "npm:5.1.0"
+    "@node-saml/passport-saml": "npm:5.1.1"
     "@types/cookie-parser": "npm:1.4.10"
     "@types/csurf": "npm:1.11.5"
     "@types/express": "npm:5.0.6"
