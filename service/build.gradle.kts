@@ -9,7 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.4.20"
     kotlin("plugin.spring") version "2.4.20"
-    id("org.flywaydb.flyway") version "13.7.0"
+    id("org.flywaydb.flyway") version "13.8.1"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.4.20"
@@ -40,7 +40,7 @@ configurations
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.13")
-        classpath("org.flywaydb:flyway-database-postgresql:13.7.0")
+        classpath("org.flywaydb:flyway-database-postgresql:13.8.1")
     }
 }
 
@@ -125,8 +125,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
 
     implementation("com.zaxxer:HikariCP:7.1.0")
-    implementation("org.flywaydb:flyway-core:13.7.0")
-    implementation("org.flywaydb:flyway-database-postgresql:13.7.0")
+    implementation("org.flywaydb:flyway-core:13.8.1")
+    implementation("org.flywaydb:flyway-database-postgresql:13.8.1")
     implementation("org.postgresql:postgresql:42.7.13")
     implementation(platform("org.jdbi:jdbi3-bom:3.54.0"))
     implementation("org.jdbi:jdbi3-core")
