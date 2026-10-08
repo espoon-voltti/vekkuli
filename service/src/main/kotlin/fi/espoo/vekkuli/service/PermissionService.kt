@@ -66,6 +66,15 @@ class PermissionService(
             reservation?.type == BoatSpaceType.Winter
     }
 
+    fun canUpdateReservationEndDate(
+        employeeId: UUID,
+        reservationId: Int
+    ): Boolean {
+        if (!userService.isAppUser(employeeId)) return false
+        val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        return reservation != null && reservation.status in setOf(ReservationStatus.Confirmed, ReservationStatus.Invoiced)
+    }
+
     fun canTerminateBoatSpaceReservationForOtherUser(
         terminatorId: UUID,
         reservationId: Int

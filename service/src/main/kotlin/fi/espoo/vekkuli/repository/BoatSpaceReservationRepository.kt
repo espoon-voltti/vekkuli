@@ -4,6 +4,13 @@ import fi.espoo.vekkuli.domain.*
 import java.time.LocalDate
 import java.util.*
 
+data class OverlappingReservation(
+    val id: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val status: ReservationStatus
+)
+
 data class UpdateReservationParams(
     val reservationId: Int,
     val boatId: Int,
@@ -128,4 +135,16 @@ interface BoatSpaceReservationRepository {
     )
 
     fun getOriginalStartDateForReservation(reservationId: Int): LocalDate?
+
+    fun updateReservationEndDate(
+        reservationId: Int,
+        endDate: LocalDate
+    ): BoatSpaceReservation?
+
+    fun getReservationsOverlappingDateRange(
+        boatSpaceId: Int,
+        excludedReservationId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<OverlappingReservation>
 }
