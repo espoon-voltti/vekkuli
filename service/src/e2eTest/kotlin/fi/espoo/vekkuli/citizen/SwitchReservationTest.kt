@@ -317,12 +317,12 @@ class SwitchReservationTest : ReserveTest() {
         reservationPage: ReserveBoatSpacePage,
         filterSection: ReserveBoatSpacePage.FilterSection,
         winterFilterSection: ReserveBoatSpacePage.WinterFilterSection,
-        width: String?,
-        length: String?,
+        width: String,
+        length: String,
         expectedHarbors: Int = 1,
-        expectedHarbor: String? = null,
-        expectedBoatSpaceSection: String? = null,
-        expectedPlaceNumber: String? = null,
+        expectedHarbor: String,
+        expectedBoatSpaceSection: String,
+        expectedPlaceNumber: String,
         paymentFlow: Boolean = false
     ) {
         mockTimeProvider(timeProvider, startOfWinterSwitchPeriodForEspooCitizen)

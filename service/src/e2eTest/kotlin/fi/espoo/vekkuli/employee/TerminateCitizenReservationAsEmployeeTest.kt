@@ -72,7 +72,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
         val defaultEmailTemplate =
             templateEmailService.getTemplate("marine_employee_reservation_termination_custom_message")
         val defaultMessageTitle = defaultEmailTemplate?.subject ?: ""
-        val defaultMessageContent = defaultEmailTemplate?.body
+        val defaultMessageContent = requireNotNull(defaultEmailTemplate?.body)
 
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
@@ -100,10 +100,10 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
         assertThat(citizenDetailsPage.terminateReservationMessageTitle).hasValue(defaultMessageTitle)
 
         // Make sure that there is text in the content
-        assert(!defaultMessageContent.isNullOrEmpty())
+        assert(defaultMessageContent.isNotEmpty())
         // Default message content contains values replaced (harbor, place) from the data. Would need to somehow replace these values in the test.
         assertThat(citizenDetailsPage.terminateReservationMessageContent).containsText(
-            defaultMessageContent?.substring(
+            defaultMessageContent.substring(
                 0,
                 10
             )
