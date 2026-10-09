@@ -20,23 +20,21 @@ class OrganizationMemberAdd(
         citizens: List<CitizenWithDetails>,
         organizationId: UUID
     ): String {
-        val listSize = if (citizens.size >= 3) 3 else citizens.size
         // language=HTML
         return (
             """
-            <select 
+            <ul 
                 x-show="citizenFullName != ''" 
-                multiple 
-                size="$listSize" 
-                name='citizenIdOption' 
+                role="listbox" 
+                class="citizen-search-results" 
                 hx-get="/virkailija/yhteiso/$organizationId/jasenet/lisaa"
-                hx-trigger="change delay:0.01s" 
+                hx-trigger="citizen-selected delay:0.01s" 
                 hx-include="[name='citizenId']"
                 hx-target="#add-members-container"
                 hx-swap="innerHTML"
-                @change="updateFullName">
+                @click="selectCitizen">
                 ${citizensSearchContent.searchContentList(citizens)}
-            </select>
+            </ul>
 
             """.trimIndent()
         )
