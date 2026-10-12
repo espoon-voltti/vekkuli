@@ -87,16 +87,12 @@ class BoatSpaceForm(
         return (
             """
             <section class="section">
-                <div class="container" id="container" x-data='{modalOpen: false, citizenFullName: "", citizenId:"", updateFullName(event) {
-                    const selectElement = event.target;
-                    if (selectElement.selectedOptions.length > 0) {
-                        const selectedOption = selectElement.selectedOptions[0];
-                        this.citizenFullName = selectedOption.dataset.fullname;
-                        this.citizenId = selectedOption.value;
-                    } else {
-                        this.citizenFullName = "";
-                        this.citizenId = "";
-                    };
+                <div class="container" id="container" x-data='{modalOpen: false, citizenFullName: "", citizenId:"", selectCitizen(event) {
+                    const option = event.target.closest("[role=option]");
+                    if (!option) return;
+                    this.citizenFullName = option.dataset.fullname;
+                    this.citizenId = option.dataset.citizenId;
+                    event.currentTarget.dispatchEvent(new Event("citizen-selected"));
                 }}'> 
                     $goBackButton
                     ${stepIndicator.render(2)}

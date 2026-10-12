@@ -14,11 +14,11 @@ class CitizensSearchContent : BaseView() {
             ${
                 citizens.withIndex().joinToString("\n") { (index, citizen) ->
                     """
-                    <option id="option-$index" role="option" value="${citizen.id}" 
-                        data-fullname="${citizen.fullName}">
+                    <li id="option-$index" role="option" class="citizen-search-option" tabindex="-1"
+                        data-citizen-id="${citizen.id}" data-fullname="${citizen.fullName}">
                         <p>${citizen.fullName}
                         <span class='is-small'>${citizen.birthday}</span></p>
-                    </option>
+                    </li>
                     """.trimIndent()
                 }
             }
