@@ -941,6 +941,58 @@ class JdbiBoatSpaceReservationRepository(
         }
     }
 
+    override fun updateReservationEndDate(
+        reservationId: Int,
+        endDate: LocalDate
+    ): BoatSpaceReservation? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET end_date = :endDate, updated = :updatedTime
+                    WHERE id = :id
+                    RETURNING *
+                    """.trimIndent()
+                ).bind("id", reservationId)
+                .bind("endDate", endDate)
+                .bind("updatedTime", timeProvider.getCurrentDateTime())
+                .mapTo<BoatSpaceReservation>()
+                .singleOrNull()
+        }
+
+    override fun getReservationsOverlappingDateRange(
+        boatSpaceId: Int,
+        excludedReservationId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<OverlappingReservation> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT id, start_date, end_date, status
+                    FROM boat_space_reservation
+                    WHERE boat_space_id = :boatSpaceId
+                      AND id <> :excludedReservationId
+                      AND start_date <= :endDate
+                      AND :startDate <= end_date
+                      AND (
+                          status IN ('Confirmed', 'Invoiced', 'Payment')
+                          OR (status = 'Info' AND created > :currentDateTime - make_interval(secs => :reservationTimeout))
+                      )
+                    ORDER BY start_date
+                    """.trimIndent()
+                ).bind("boatSpaceId", boatSpaceId)
+                .bind("excludedReservationId", excludedReservationId)
+                .bind("startDate", startDate)
+                .bind("endDate", endDate)
+                .bind("currentDateTime", timeProvider.getCurrentDateTime())
+                .bind("reservationTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+                .mapTo<OverlappingReservation>()
+                .list()
+        }
+
     override fun getOriginalStartDateForReservation(reservationId: Int): LocalDate? =
         jdbi.withHandleUnchecked { handle ->
             val query =
