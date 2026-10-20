@@ -26,7 +26,7 @@ class CitizenSearch : BaseView() {
                         </p>
                                
                         <!-- Where the results will be displayed -->                    
-                        <div id="citizen-results" class="select is-multiple" ></div>                   
+                        <div id="citizen-results"></div>                   
                     </div>
                     <input id="citizenId" name="citizenId" x-model.fill="citizenId" data-required hidden />
                     <div id="citizenId-error-container">

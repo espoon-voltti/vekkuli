@@ -44,16 +44,12 @@ class OrganizationMembersContainer : BaseView() {
             """.trimIndent()
         return (
             """
-            <div class="form-section" id="organization-member-table" x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
-                    const selectElement = event.target;
-                    if (selectElement.selectedOptions.length > 0) {
-                        const selectedOption = selectElement.selectedOptions[0];
-                        this.citizenFullName = selectedOption.dataset.fullname;
-                        this.citizenId = selectedOption.value;
-                    } else {
-                        this.citizenFullName = "";
-                        this.citizenId = "";
-                    };
+            <div class="form-section" id="organization-member-table" x-data='{citizenFullName: "", citizenId:"", selectCitizen(event) {
+                    const option = event.target.closest("[role=option]");
+                    if (!option) return;
+                    this.citizenFullName = option.dataset.fullname;
+                    this.citizenId = option.dataset.citizenId;
+                    event.currentTarget.dispatchEvent(new Event("citizen-selected"));
                 }}'>
                 <h4>${t("organizationDetails.title.organizationMembers")}</h4>
                 <table class='container'>
