@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.pages.employee.BoatSpaceDetailsPage
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.text
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -340,7 +341,7 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         if (expectedCount > 0) {
             val modalPage = listingPage.editModalPage
             listingPage.editModalButton.click()
-            assertEquals("Muokataan $expectedCount paikkaa", modalPage.boatSpaceCount.textContent())
+            assertEquals("Muokataan $expectedCount paikkaa", modalPage.boatSpaceCount.text())
             assertThat(modalPage.boatSpaceCount).containsText("Muokataan $expectedCount paikkaa")
             modalPage.cancelButton.click()
         }
