@@ -225,7 +225,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
-        val reportRows = getBoatSpaceReportRows(jdbi, today.atStartOfDay())
+        val reportRows = getBoatSpaceReportRows(jdbi, today.atStartOfDay(), today)
         assertEquals(true, reportRows.size > 0)
         val row = reportRows.find { (it.harbor == "Haukilahti" && it.place == "A 001") }
         assertEquals("Korhonen Leo", row?.name)
@@ -375,22 +375,22 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
-        val freeRows = getFreeBoatSpaceReportRows(jdbi, today.atStartOfDay())
+        val freeRows = getFreeBoatSpaceReportRows(jdbi, today.atStartOfDay(), today)
         assertTrue(freeRows.any { it.harbor == "Haukilahti" && it.place == "A 001" })
         assertTrue(freeRows.none { it.harbor == "Haukilahti" && it.place == "A 002" })
 
-        val reservedRows = getReservedBoatSpaceReport(jdbi, today.atStartOfDay())
+        val reservedRows = getReservedBoatSpaceReport(jdbi, today.atStartOfDay(), today)
         assertTrue(reservedRows.none { it.harbor == "Haukilahti" && it.place == "A 001" })
         assertTrue(reservedRows.any { it.harbor == "Haukilahti" && it.place == "A 002" && it.trailerRegistrationCode == "ABC-987" })
 
-        val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay())
+        val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay(), today)
         assertEquals(1, terminatedRows.size)
         assertEquals("A 003", terminatedRows[0].place)
         assertEquals("RuleViolation", terminatedRows[0].terminationReason.toString())
         assertEquals(today.plusMonths(1).atStartOfDay(), terminatedRows[0].terminationTimestamp)
         assertEquals("leo@noreplytest.fi", terminatedRows[0].email)
 
-        val reservationWarnings = getWarningsBoatSpaceReportRows(jdbi, today.atStartOfDay())
+        val reservationWarnings = getWarningsBoatSpaceReportRows(jdbi, today.atStartOfDay(), today)
         assertEquals(1, reservationWarnings.size)
         assertEquals(2, reservationWarnings[0].warnings.size)
         assertEquals(terminatedId, reservationWarnings[0].boatSpaceReportRow.reservationId)

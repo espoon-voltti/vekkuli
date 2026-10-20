@@ -75,7 +75,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 )
             )
 
-        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        val reportRows = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay(), timeProvider.getCurrentDate())
         assertEquals("Korhonen Leo", reportRows.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
 
         val createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -89,7 +89,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
 
-        val reportRowsAfterRenewal = getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay())
+        val reportRowsAfterRenewal =
+            getBoatSpaceReportRows(jdbi, timeProvider.getCurrentDate().atStartOfDay(), timeProvider.getCurrentDate())
         assertEquals("Korhonen Leo", reportRowsAfterRenewal.find { (it.harbor == "Haukilahti" && it.place == "B 001") }?.name)
     }
 

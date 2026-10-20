@@ -456,13 +456,16 @@ VALUES
     (992, 'Äänekoski')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO price (name, net_price_cents, vat_cents, price_cents)
-VALUES ('ML1', 17823, 4545, 22367),
-       ('ML2', 21290, 5429, 26719),
-       ('ML3', 27500, 7012, 34512),
-       ('ML4', 33306, 8493, 41800),
-       ('ML5', 36048, 9193, 45241),
-       ('ML6', 43548, 11105, 54000);
+-- start_date is set far in the past (matching V025's backfill) so these prices
+-- are valid for any date the tests freeze the clock to. Price resolution follows
+-- the application's TimeProvider, which tests move to dates well before seed time.
+INSERT INTO price (name, net_price_cents, vat_cents, price_cents, start_date)
+VALUES ('ML1', 17823, 4545, 22367, DATE '2020-01-01'),
+       ('ML2', 21290, 5429, 26719, DATE '2020-01-01'),
+       ('ML3', 27500, 7012, 34512, DATE '2020-01-01'),
+       ('ML4', 33306, 8493, 41800, DATE '2020-01-01'),
+       ('ML5', 36048, 9193, 45241, DATE '2020-01-01'),
+       ('ML6', 43548, 11105, 54000, DATE '2020-01-01');
 
 
 

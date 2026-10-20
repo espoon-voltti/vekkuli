@@ -93,7 +93,7 @@ fun getStickerReportRows(
                     JOIN location l ON l.id = bs.location_id
                     JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
                     LEFT JOIN boat b ON b.id = bsr.boat_id
-                    LEFT JOIN current_price price ON price.id = bs.price_id
+                    LEFT JOIN current_price(:today) price ON price.id = bs.price_id
                     LEFT JOIN trailer t ON t.id = bsr.trailer_id
                 WHERE
                     bsr.reserver_id IS NOT NULL
@@ -144,7 +144,8 @@ data class BoatSpaceReportRowWithWarnings(
 
 fun getWarningsBoatSpaceReportRows(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
+    reportDate: LocalDateTime,
+    today: LocalDate
 ): List<BoatSpaceReportRowWithWarnings> {
     val reservationWarnings =
         jdbi.withHandleUnchecked { handle ->
@@ -171,7 +172,7 @@ fun getWarningsBoatSpaceReportRows(
 
     val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
     val reservationsWithWarnings =
-        getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
+        getBoatSpaceReportRows(jdbi, reportDate, today, reservationsWithWarningsIds)
             .map { row ->
                 BoatSpaceReportRowWithWarnings(
                     boatSpaceReportRow = row,
@@ -188,6 +189,7 @@ fun getWarningsBoatSpaceReportRows(
 fun getBoatSpaceReportRows(
     jdbi: Jdbi,
     reportDate: LocalDateTime,
+    today: LocalDate,
     ids: List<Int>? = null
 ): List<BoatSpaceReportRow> =
     jdbi.inTransactionUnchecked { tx ->
@@ -244,12 +246,13 @@ fun getBoatSpaceReportRows(
                          LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status = 'Success'
                          LEFT JOIN boat b ON b.id = bsr.boat_id
                          LEFT JOIN municipality m ON m.code = r.municipality_code
-                         LEFT JOIN current_price price ON price.id = bs.price_id
+                         LEFT JOIN current_price(:today) price ON price.id = bs.price_id
                          LEFT JOIN trailer t ON t.id = bsr.trailer_id
-                    ${if (!ids.isNullOrEmpty()) "WHERE bsr.id in (<ids>)" else ""}     
+                    ${if (!ids.isNullOrEmpty()) "WHERE bsr.id in (<ids>)" else ""}
                     ORDER BY harbor, pier, place
                     """.trimIndent()
                 ).bind("reportDate", reportDate)
+                .bind("today", today)
         if (!ids.isNullOrEmpty()) {
             query.bindList("ids", ids)
         }
@@ -261,7 +264,8 @@ fun getBoatSpaceReportRows(
 
 fun getFreeBoatSpaceReportRows(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
+    reportDate: LocalDateTime,
+    today: LocalDate
 ): List<BoatSpaceReportRow> =
     jdbi.inTransactionUnchecked { tx ->
         val query =
@@ -300,7 +304,7 @@ SELECT
     price.name AS product_code
 FROM boat_space bs
     JOIN location l ON bs.location_id = l.id
-    LEFT JOIN current_price price ON price.id = bs.price_id
+    LEFT JOIN current_price(:today) price ON price.id = bs.price_id
 WHERE
     bs.is_active AND
     NOT EXISTS (
@@ -311,6 +315,7 @@ WHERE
 ORDER BY harbor, pier, place
                     """.trimIndent()
                 ).bind("reportDate", reportDate)
+                .bind("today", today)
 
         query
             .mapTo<BoatSpaceReportRow>()
