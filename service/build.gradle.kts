@@ -79,7 +79,7 @@ extra["netty.version"] = "4.2.18.Final" // CVE-2026-56820,55851,56745,56817,4489
 extra["httpcore5.version"] = "5.4.3" // CVE-2026-54399,54428
 extra["httpclient5.version"] = "5.6.4" // CVE-2026-64607 (Spring Boot manages httpclient5 down to 5.6.1; AWS SDK apache5-client)
 // NB: jackson-2-bom.version is Jackson 2 (com.fasterxml); jackson-bom.version is Jackson 3 (tools.jackson) - do not touch that one.
-extra["jackson-2-bom.version"] = "2.22.1" // CVE-2026-54515
+extra["jackson-2-bom.version"] = "2.22.4" // CVE-2026-54515,89407,68497,91776
 extra["log4j2.version"] = "2.25.5" // CVE-2026-49844
 
 sourceSets {
