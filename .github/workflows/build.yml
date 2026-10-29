@@ -16,7 +16,6 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  id-token: write
   contents: read
   packages: write
 
@@ -373,6 +372,10 @@ jobs:
 
   ecr-push:
     if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     needs:
       - dockerize
       - service
@@ -422,6 +425,10 @@ jobs:
           done
 
   deploy:
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     runs-on: ubuntu-latest
     needs:
       - ecr-push
