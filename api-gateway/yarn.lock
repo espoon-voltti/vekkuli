@@ -1375,14 +1375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"content-type@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "content-type@npm:2.0.0"
-  checksum: 10/0bbb276b790ba7e86c479c7d69fae1861b2e908ff3ce2cb01975b516f93eede2216d242902ed6c5b15cd554014611ce9dfdcf51cd35b16569e45a979e50d0cef
-  languageName: node
-  linkType: hard
-
-"content-type@npm:^2.1.0":
+"content-type@npm:^2.0.0, content-type@npm:^2.1.0":
   version: 2.1.0
   resolution: "content-type@npm:2.1.0"
   checksum: 10/8aac907922538f430d8bfab1d8fe2fbdc1eb890a0fa7a619f712db4bfefe24be951ba464f972007df64840c775bf2db284ca8223547ac5317ad9ab2ee8e6501b
@@ -1496,9 +1489,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dd-trace@npm:6.21.0":
-  version: 6.21.0
-  resolution: "dd-trace@npm:6.21.0"
+"dd-trace@npm:6.22.0":
+  version: 6.22.0
+  resolution: "dd-trace@npm:6.22.0"
   dependencies:
     "@datadog/libdatadog": "npm:^0.21.0"
     "@datadog/libdatadog-extras": "npm:^0.21.0"
@@ -1534,7 +1527,7 @@ __metadata:
       optional: true
     oxc-parser:
       optional: true
-  checksum: 10/39b927ab59f11f5355791fd61d61ff77945d354a6417aeaab444dd7aa721fcc5b3383254cb8ea4c69d116bbc32510c5d2a36e96a6fd5c4d6629c376e1fb06cd4
+  checksum: 10/cdc976da28d771e8c9b3750385196672e4159ec53eef55da26d46db18533ed05f06abcdb4b121e0ca8c738b0e349f35405b9c6de9c07098219fbbfeb210a5bf4
   languageName: node
   linkType: hard
 
@@ -4000,7 +3993,7 @@ __metadata:
     cookie-parser: "npm:1.4.7"
     csurf: "npm:1.11.0"
     date-fns: "npm:4.4.0"
-    dd-trace: "npm:6.21.0"
+    dd-trace: "npm:6.22.0"
     eslint: "npm:10.13.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.7"
