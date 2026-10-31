@@ -33,7 +33,7 @@
     "react-focus-on": "3.10.2",
     "react-router": "8.5.1",
     "sass": "1.106.1",
-    "sass-loader": "17.0.1",
+    "sass-loader": "17.1.0",
     "seamless-scroll-polyfill": "2.3.4"
   },
   "devDependencies": {
