@@ -32,8 +32,8 @@ ENV NODE_ENV="production"
 # apt layer is actually rebuilt with fresh OS security patches.
 ARG CACHE_BUST=none
 
-ARG S3_DOWNLOADER_VERSION=v1.5.2
-ARG S3_DOWNLOADER_SHA256="70a40524bf901d999eb7f85aaebfed25132767a1475cb76147f5c7f01ef5c66d"
+ARG S3_DOWNLOADER_VERSION=v1.6.0
+ARG S3_DOWNLOADER_SHA256="f69116f2e2eeb78fa6297e053ed7f311a1bf120c0ff0ea3c966335223f94a5e9"
 
 RUN echo "CACHE_BUST=${CACHE_BUST}" \
  && apt-get update \
