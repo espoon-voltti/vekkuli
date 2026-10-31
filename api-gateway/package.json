@@ -12,7 +12,7 @@
     "dev": "tsc --build . && concurrently --prefix '[{name}]' --names 'tsc,nodemon' 'tsc --build --preserveWatchOutput -w .' 'NODE_ENV=local nodemon dist/index.js'"
   },
   "dependencies": {
-    "@node-saml/node-saml": "5.1.0",
+    "@node-saml/node-saml": "5.2.0",
     "@node-saml/passport-saml": "5.1.1",
     "axios": "1.20.0",
     "connect-redis": "10.0.0",
