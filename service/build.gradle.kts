@@ -168,7 +168,7 @@ dependencies {
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
     // AWS dependencies
-    implementation(platform("software.amazon.awssdk:bom:2.57.5"))
+    implementation(platform("software.amazon.awssdk:bom:2.57.6"))
     implementation("software.amazon.awssdk:ses")
     implementation("software.amazon.awssdk:regions")
     implementation("software.amazon.awssdk:s3")
