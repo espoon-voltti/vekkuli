@@ -207,6 +207,32 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Select all also selects rows loaded with show more`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateToWithParams(mapOf("pageSize" to "2"))
+
+        page.waitForCondition { listingPage.reservations.count() == 2 }
+        assertThat(listingPage.loadMoreButton).isVisible()
+
+        // Selecting all triggers a filter-form reload; wait for it to settle
+        page.waitForHtmxSettle { listingPage.selectAllReservations.click() }
+        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
+        assertThat(listingPage.reservationRowCheckBoxes).hasCount(2)
+
+        page.waitForHtmxSettle { listingPage.loadMoreButton.click() }
+        page.waitForCondition { listingPage.reservations.count() == 6 }
+
+        // All rows, including the ones just loaded, are selected while select-all is active
+        assertThat(listingPage.reservationRowCheckBoxes).hasCount(6)
+        for (i in 0 until 6) {
+            assertThat(listingPage.reservationRowCheckBoxes.nth(i)).isChecked()
+        }
+        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
+    }
+
+    @Test
     fun `Send mass email link is disabled when reservation list is empty`() {
         val listingPage = reservationListPage()
         listingPage.selectAllReservations.click()

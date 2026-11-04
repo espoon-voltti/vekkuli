@@ -30,6 +30,7 @@ class EmployeeReservationListView(
         params: BoatSpaceReservationFilter,
         sections: List<String>,
         paginationSize: Int = 25,
+        pageSize: Int? = null,
     ): String {
         val paginationStartFrom = reservations.end
         val paginationEndTo = reservations.end + paginationSize
@@ -89,6 +90,13 @@ class EmployeeReservationListView(
                             const visibleIds = this.getCurrentlyVisibleReservationIds();
                             this.reservationIds = this.reservationIds.filter(id => visibleIds.includes(id));
                         },
+                        syncSelectionAfterLoad() {
+                            if (this.selectAll) {
+                                this.reservationIds = this.getCurrentlyVisibleReservationIds();
+                            } else {
+                                this.pruneFilteredReservationsFromSelection();
+                            }
+                        },
                         getCurrentlyVisibleReservationIds() {
                             const table = this.${'$'}refs.tableBody;
                             const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
@@ -106,10 +114,11 @@ class EmployeeReservationListView(
                           hx-history="false"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
-                          @htmx:after-settle.window="pruneFilteredReservationsFromSelection()">
+                          @htmx:after-settle.window="syncSelectionAfterLoad()">
                           
                         <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
                         <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
+                        ${if (pageSize != null) """<input type="hidden" name="pageSize" value="$pageSize">""" else ""}
                    
                     <div id='reservation-filter-container'>
                         <div class="employee-filter-container">                        
@@ -224,8 +233,9 @@ class EmployeeReservationListView(
                                 </table>
                             </div>
                             <div id="reservation-list-load-more-container" hx-swap-oob="true" class="has-text-centered" >
-                                <button 
+                                <button
                                     class="button is-primary is-fullwidth"
+                                    ${addTestId("load-more")}
                                     hx-get="/virkailija/venepaikat/varaukset/rivit"
                                     hx-trigger="click"
                                     hx-target="#table-body"
