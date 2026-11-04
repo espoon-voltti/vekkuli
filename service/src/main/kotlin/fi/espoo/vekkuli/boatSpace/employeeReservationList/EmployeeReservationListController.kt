@@ -31,12 +31,11 @@ class EmployeeReservationListController(
     fun reservationListView(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceReservationFilter,
-        @RequestParam(name = "pageSize", required = false) pageSize: Int?,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_RESERVATION_SEARCH")
         }
-        val initialPageSize = pageSize ?: 50
+        val initialPageSize = 50
         val loadMorePageSize = 25
 
         val reservations =
@@ -53,16 +52,7 @@ class EmployeeReservationListController(
             layout.render(
                 true,
                 request.requestURI,
-                reservationListView.render(
-                    harbors,
-                    boatSpaceTypes,
-                    actualAmenities,
-                    reservations,
-                    params,
-                    sections,
-                    loadMorePageSize,
-                    pageSize
-                )
+                reservationListView.render(harbors, boatSpaceTypes, actualAmenities, reservations, params, sections, loadMorePageSize)
             )
         )
     }

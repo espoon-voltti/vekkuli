@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
 import fi.espoo.vekkuli.utils.formatAsTestDate
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -208,28 +209,30 @@ class EmployeeReservationListingTest : PlaywrightTest() {
 
     @Test
     fun `Select all also selects rows loaded with show more`() {
-        val employeeHome = EmployeeHomePage(page)
-        employeeHome.employeeLogin()
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateToWithParams(mapOf("pageSize" to "2"))
+        // 50 extra reservations on top of the 6 seeded ones, so the list spans more than the first page of 50
+        jdbi.withHandleUnchecked { handle ->
+            handle.execute(
+                """
+                INSERT INTO boat_space_reservation (reserver_id, boat_space_id, created, start_date, end_date, status, boat_id, validity)
+                SELECT '${CitizenIds.leo}', id, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite'
+                FROM generate_series(100, 149) AS id
+                """.trimIndent()
+            )
+        }
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 50 }
 
-        page.waitForCondition { listingPage.reservations.count() == 2 }
-        assertThat(listingPage.loadMoreButton).isVisible()
-
-        // Selecting all triggers a filter-form reload; wait for it to settle
-        page.waitForHtmxSettle { listingPage.selectAllReservations.click() }
-        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
-        assertThat(listingPage.reservationRowCheckBoxes).hasCount(2)
+        listingPage.selectAllReservations.click()
+        assertThat(listingPage.sendMassMessageLink).containsText("(56 varausta)")
 
         page.waitForHtmxSettle { listingPage.loadMoreButton.click() }
-        page.waitForCondition { listingPage.reservations.count() == 6 }
+        page.waitForCondition { listingPage.reservations.count() == 56 }
 
-        // All rows, including the ones just loaded, are selected while select-all is active
-        assertThat(listingPage.reservationRowCheckBoxes).hasCount(6)
-        for (i in 0 until 6) {
-            assertThat(listingPage.reservationRowCheckBoxes.nth(i)).isChecked()
+        val checkBoxes = listingPage.reservationRowCheckBoxes
+        for (i in 0 until checkBoxes.count()) {
+            assertThat(checkBoxes.nth(i)).isChecked()
         }
-        assertThat(listingPage.sendMassMessageLink).containsText("(6 varausta)")
+        assertThat(listingPage.sendMassMessageLink).containsText("(56 varausta)")
     }
 
     @Test

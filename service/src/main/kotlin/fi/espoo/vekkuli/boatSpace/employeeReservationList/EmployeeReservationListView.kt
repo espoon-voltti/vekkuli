@@ -30,7 +30,6 @@ class EmployeeReservationListView(
         params: BoatSpaceReservationFilter,
         sections: List<String>,
         paginationSize: Int = 25,
-        pageSize: Int? = null,
     ): String {
         val paginationStartFrom = reservations.end
         val paginationEndTo = reservations.end + paginationSize
@@ -52,6 +51,7 @@ class EmployeeReservationListView(
                             getCurrentlyVisibleReservationIds().every(id => reservationIds.includes(id));
                     "
                     hx-on:change="event.stopPropagation()"
+                    hx-on:input="event.stopPropagation()"
                 />
             </label>
             """.trimIndent()
@@ -90,8 +90,9 @@ class EmployeeReservationListView(
                             const visibleIds = this.getCurrentlyVisibleReservationIds();
                             this.reservationIds = this.reservationIds.filter(id => visibleIds.includes(id));
                         },
-                        syncSelectionAfterLoad() {
-                            if (this.selectAll) {
+                        syncSelectionAfterSettle(event) {
+                            const isLoadMore = event.detail.requestConfig?.elt?.closest('#reservation-list-load-more-container');
+                            if (isLoadMore && this.selectAll) {
                                 this.reservationIds = this.getCurrentlyVisibleReservationIds();
                             } else {
                                 this.pruneFilteredReservationsFromSelection();
@@ -114,11 +115,10 @@ class EmployeeReservationListView(
                           hx-history="false"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
-                          @htmx:after-settle.window="syncSelectionAfterLoad()">
-                          
+                          @htmx:after-settle.window="syncSelectionAfterSettle(${'$'}event)">
+
                         <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
                         <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
-                        ${if (pageSize != null) """<input type="hidden" name="pageSize" value="$pageSize">""" else ""}
                    
                     <div id='reservation-filter-container'>
                         <div class="employee-filter-container">                        

@@ -51,7 +51,7 @@ class ReservationListPage(
     val reservationValidUntilInput: Locator = page.getByTestId("reservationValidUntil")
     val selectAllReservations = getByDataTestId("select-all-toggle")
     val loadMoreButton = getByDataTestId("load-more")
-    val reservationRowCheckBoxes = page.locator("#table-body input.reservation-checkbox")
+    val reservationRowCheckBoxes = reservations.locator("input[name=spaceId]")
     val reservationRowCheckBox = { reservationId: Int ->
         getByDataTestId("reservation-$reservationId")
     }
