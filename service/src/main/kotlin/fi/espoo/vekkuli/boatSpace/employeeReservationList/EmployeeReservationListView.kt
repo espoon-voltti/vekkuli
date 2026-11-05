@@ -51,6 +51,7 @@ class EmployeeReservationListView(
                             getCurrentlyVisibleReservationIds().every(id => reservationIds.includes(id));
                     "
                     hx-on:change="event.stopPropagation()"
+                    hx-on:input="event.stopPropagation()"
                 />
             </label>
             """.trimIndent()
@@ -89,6 +90,14 @@ class EmployeeReservationListView(
                             const visibleIds = this.getCurrentlyVisibleReservationIds();
                             this.reservationIds = this.reservationIds.filter(id => visibleIds.includes(id));
                         },
+                        syncSelectionAfterSettle(event) {
+                            const isLoadMore = event.detail.requestConfig?.elt?.closest('#reservation-list-load-more-container');
+                            if (isLoadMore && this.selectAll) {
+                                this.reservationIds = this.getCurrentlyVisibleReservationIds();
+                            } else {
+                                this.pruneFilteredReservationsFromSelection();
+                            }
+                        },
                         getCurrentlyVisibleReservationIds() {
                             const table = this.${'$'}refs.tableBody;
                             const checkboxes = table.querySelectorAll('tbody input[type=checkbox][name=spaceId]');
@@ -106,8 +115,8 @@ class EmployeeReservationListView(
                           hx-history="false"
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
-                          @htmx:after-settle.window="pruneFilteredReservationsFromSelection()">
-                          
+                          @htmx:after-settle.window="syncSelectionAfterSettle(${'$'}event)">
+
                         <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
                         <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
                    
@@ -224,8 +233,9 @@ class EmployeeReservationListView(
                                 </table>
                             </div>
                             <div id="reservation-list-load-more-container" hx-swap-oob="true" class="has-text-centered" >
-                                <button 
+                                <button
                                     class="button is-primary is-fullwidth"
+                                    ${addTestId("load-more")}
                                     hx-get="/virkailija/venepaikat/varaukset/rivit"
                                     hx-trigger="click"
                                     hx-target="#table-body"

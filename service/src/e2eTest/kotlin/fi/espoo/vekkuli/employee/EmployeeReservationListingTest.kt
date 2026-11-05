@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
 import fi.espoo.vekkuli.utils.formatAsTestDate
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -204,6 +205,34 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         assertThat(listingPage.sendMassMessageLink).containsText("(1 varausta)")
         listingPage.sendMassMessageLink.click()
         assertThat(listingPage.sendMassMessageForm).isVisible()
+    }
+
+    @Test
+    fun `Select all also selects rows loaded with show more`() {
+        // 50 extra reservations on top of the 6 seeded ones, so the list spans more than the first page of 50
+        jdbi.withHandleUnchecked { handle ->
+            handle.execute(
+                """
+                INSERT INTO boat_space_reservation (reserver_id, boat_space_id, created, start_date, end_date, status, boat_id, validity)
+                SELECT '${CitizenIds.leo}', id, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite'
+                FROM generate_series(100, 149) AS id
+                """.trimIndent()
+            )
+        }
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 50 }
+
+        listingPage.selectAllReservations.click()
+        assertThat(listingPage.sendMassMessageLink).containsText("(56 varausta)")
+
+        page.waitForHtmxSettle { listingPage.loadMoreButton.click() }
+        page.waitForCondition { listingPage.reservations.count() == 56 }
+
+        val checkBoxes = listingPage.reservationRowCheckBoxes
+        for (i in 0 until checkBoxes.count()) {
+            assertThat(checkBoxes.nth(i)).isChecked()
+        }
+        assertThat(listingPage.sendMassMessageLink).containsText("(56 varausta)")
     }
 
     @Test
