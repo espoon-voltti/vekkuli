@@ -5,15 +5,17 @@
 
 ARG NGINX_VERSION=1.31.3
 
-FROM node:24.22.1-trixie-slim AS builder
+FROM node:26.13.0-trixie-slim AS builder
 
 ARG CACHE_BUST=none
+# Node 25+ no longer bundles corepack
+ARG COREPACK_VERSION=0.36.0
 
 WORKDIR /project
 
 #COPY ./.yarn ./.yarn
 COPY ./package.json ./yarn.lock ./.yarnrc.yml ./
-RUN corepack enable && yarn install --immutable
+RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable && yarn install --immutable
 
 COPY . .
 

@@ -774,12 +774,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:25.9.9":
-  version: 25.9.9
-  resolution: "@types/node@npm:25.9.9"
+"@types/node@npm:*, @types/node@npm:26.6.6":
+  version: 26.6.6
+  resolution: "@types/node@npm:26.6.6"
   dependencies:
-    undici-types: "npm:>=7.24.0 <7.24.7"
-  checksum: 10/8accbdd15bc035db3b20bf9353dabce847a5d3dd1f3976c25e67907f4fd287b00b8163f661fe48cd6d644e30a11e1dffd67e2742233209c7b7cbc500d14d394c
+    undici-types: "npm:~8.9.0"
+  checksum: 10/07c6c6fc1f5cc89c700ac9ebcebd42b000fef234bf0b80e9461a8f077105f15faf16df95b83745e0c0e37338d1fbc28cb402ef27b5787fd7a57b492c926ff7ae
   languageName: node
   linkType: hard
 
@@ -3329,13 +3329,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"real-require@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "real-require@npm:0.2.0"
-  checksum: 10/ddf44ee76301c774e9c9f2826da8a3c5c9f8fc87310f4a364e803ef003aa1a43c378b4323051ced212097fff1af459070f4499338b36a7469df1d4f7e8c0ba4c
-  languageName: node
-  linkType: hard
-
 "real-require@npm:^1.0.0":
   version: 1.0.0
   resolution: "real-require@npm:1.0.0"
@@ -3707,11 +3700,11 @@ __metadata:
   linkType: hard
 
 "thread-stream@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "thread-stream@npm:4.0.0"
+  version: 4.2.1
+  resolution: "thread-stream@npm:4.2.1"
   dependencies:
-    real-require: "npm:^0.2.0"
-  checksum: 10/698ac8bd104c6cf91dda8421c30790979b867d7b6c878f914ddef18f1b1bc846f8776976d9f0113ed0ee90043f2e9e6554b96f4c1154ff84cd199da657f214fa
+    real-require: "npm:^1.0.0"
+  checksum: 10/43150261b3a3a050f5828277c1ca53572bf9b5b31c2616ec6d2be70c7aacb3f7ac4fe78eb9470e4fbf710df5f10050af3a21b344947d582b396bb89d13bc93a8
   languageName: node
   linkType: hard
 
@@ -3900,10 +3893,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:>=7.24.0 <7.24.7":
-  version: 7.24.6
-  resolution: "undici-types@npm:7.24.6"
-  checksum: 10/defc9538b952e3c15b8526596c591f7c1f0c7605ad27a2b7feddbea7ef2e3003f3eda2cdb051a3cb1a2185e3893100fd9cb925c799db99d48131ea63b5233d10
+"undici-types@npm:~8.9.0":
+  version: 8.9.0
+  resolution: "undici-types@npm:8.9.0"
+  checksum: 10/8785591929de2b71d281c684e915c4a8c41becc225adbf42a3e89148f8b384724a21533494c30a1cbb85b4cbccd088d020788ff4f2d605013eb2863cd47a1639
   languageName: node
   linkType: hard
 
@@ -3965,7 +3958,7 @@ __metadata:
     "@types/express-session": "npm:1.19.0"
     "@types/jsonwebtoken": "npm:9.0.7"
     "@types/lodash": "npm:4.17.27"
-    "@types/node": "npm:25.9.9"
+    "@types/node": "npm:26.6.6"
     "@types/passport": "npm:1.0.17"
     "@types/passport-strategy": "npm:0.2.38"
     "@types/source-map-support": "npm:0.5.10"

@@ -24,7 +24,8 @@ The application consists of
 - Docker or similar
 - Docker-Compose
 - Node.js (recommended setup using NVM)
-- yarn
+- yarn via corepack. Node 25+ no longer bundles corepack, so run
+  `npm install -g corepack && corepack enable` once for each installed Node version
 - Java JDK (21+)
 
 ### Compose
