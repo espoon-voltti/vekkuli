@@ -46,6 +46,13 @@
       depNameTemplate: 'espoon-voltti/s3-downloader',
       datasourceTemplate: 'github-release-attachments',
     },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/(^|/)Dockerfile$/'],
+      matchStrings: ['ARG COREPACK_VERSION=(?<currentValue>\\S+)'],
+      depNameTemplate: 'corepack',
+      datasourceTemplate: 'npm',
+    },
   ],
 
   packageRules: [
