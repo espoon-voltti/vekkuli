@@ -44,8 +44,7 @@ class CreateBoatSpaceModal(
                 "boatSpaceList.label.boatSpaceAmenity",
                 "boatSpaceAmenityCreation",
                 "",
-                BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
-                required = true
+                BoatSpaceAmenity.entries.map { Pair(it.name, amenityOptionText(it)) }
             )
         val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "widthCreation", null, true)
         val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "lengthCreation", null, true)
