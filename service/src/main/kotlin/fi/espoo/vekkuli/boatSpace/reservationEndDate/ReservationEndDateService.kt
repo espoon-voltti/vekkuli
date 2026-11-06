@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.fullDateFormat
 import fi.espoo.vekkuli.utils.reservationToText
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -52,6 +53,8 @@ class ReservationEndDateService(
     private val memoService: MemoService,
     private val timeProvider: TimeProvider
 ) {
+    private val logger = KotlinLogging.logger {}
+
     fun getEditableReservation(reservationId: Int): ReservationWithDependencies {
         val reservation =
             boatSpaceReservationRepository.getReservationWithDependencies(reservationId)
@@ -116,6 +119,10 @@ class ReservationEndDateService(
                 throw Conflict("Boat space is reserved for the new date range", cause = e)
             }
                 ?: throw NotFound("Reservation not found")
+
+        logger.warn {
+            "Reservation $reservationId end date changed from ${reservation.endDate} to ${updated.endDate} by $employeeId"
+        }
 
         val reserverId = reservation.reserverId ?: return
         memoService.insertMemo(
