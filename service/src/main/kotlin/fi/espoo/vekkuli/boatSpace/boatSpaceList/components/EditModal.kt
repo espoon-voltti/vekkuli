@@ -43,7 +43,7 @@ class EditModal(
                 "boatSpaceList.label.boatSpaceAmenity",
                 "boatSpaceAmenity",
                 "",
-                listOf(Pair("", "Ei valittu")) + BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
+                listOf(Pair("", "Ei valittu")) + BoatSpaceAmenity.entries.map { Pair(it.name, amenityOptionText(it)) },
             )
         val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "width", null)
         val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "length", null)
