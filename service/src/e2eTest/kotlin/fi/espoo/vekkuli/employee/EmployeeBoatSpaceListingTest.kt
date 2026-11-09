@@ -242,6 +242,28 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `should be able to add a winter place without an amenity`() {
+        val listingPage = boatSpaceListPage()
+        listingPage.addBoatSpaceButton.click()
+        val createModal = listingPage.createModal
+        val suomenoja = "6"
+
+        assertThat(createModal.boatSpaceAmenityCreation.locator("option:checked")).hasText("No amenity")
+        createModal.fillForm(
+            "2.5",
+            "7",
+            harbor = suomenoja,
+            section = "Z",
+            placeNumber = "999",
+            boatSpaceType = "Winter",
+            boatSpaceAmenity = "None",
+            payment = "2"
+        )
+        createModal.submitButton.click()
+        assertThat(createModal.successModal).isVisible()
+    }
+
+    @Test
     fun `Employee can toggle selection of all visible boat spaces`() {
         val listingPage = boatSpaceListPage()
         val selectAllToggle = listingPage.selectAllToggle
