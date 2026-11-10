@@ -6,7 +6,9 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWarning
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -102,6 +104,59 @@ fun getStickerReportRows(
             ).bind("reportingDate", reportingDate)
             .bind("today", today)
             .mapTo<StickerReportRow>()
+            .list()
+    }
+
+data class BillingReportRow(
+    val reserverName: String,
+    val creationType: CreationType?,
+    val validity: ReservationValidity?,
+    val placeType: BoatSpaceType?,
+    val harbor: String?,
+    val pier: String?,
+    val placeNumber: Int?,
+    val paid: LocalDateTime,
+    val totalCents: Int,
+    val paymentType: PaymentType,
+    val productCode: String,
+    val reference: String?
+)
+
+fun getBillingReportRows(
+    jdbi: Jdbi,
+    startDate: LocalDate,
+    endDate: LocalDate
+): List<BillingReportRow> =
+    jdbi.withHandleUnchecked { handle ->
+        handle
+            .createQuery(
+                """
+                SELECT
+                    r.name AS reserver_name,
+                    bsr.creation_type,
+                    bsr.validity,
+                    bs.type AS place_type,
+                    l.name AS harbor,
+                    bs.section AS pier,
+                    bs.place_number,
+                    p.paid,
+                    p.total_cents,
+                    p.payment_type,
+                    p.product_code,
+                    COALESCE(i.reference, p.reference) AS reference
+                FROM payment p
+                    JOIN reserver r ON r.id = p.reserver_id
+                    LEFT JOIN boat_space_reservation bsr ON bsr.id = p.reservation_id
+                    LEFT JOIN boat_space bs ON bs.id = bsr.boat_space_id
+                    LEFT JOIN location l ON l.id = bs.location_id
+                    LEFT JOIN invoice i ON i.payment_id = p.id
+                WHERE
+                    p.status = 'Success'
+                    AND p.paid::date BETWEEN :startDate AND :endDate
+                """.trimIndent()
+            ).bind("startDate", startDate)
+            .bind("endDate", endDate)
+            .mapTo<BillingReportRow>()
             .list()
     }
 
