@@ -6,7 +6,10 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.domain.ReservationWarningType
 import fi.espoo.vekkuli.service.*
@@ -170,6 +173,155 @@ class ReportingIntegrationTest : IntegrationTestBase() {
 
         val terminatedRow = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 002" }
         assertEquals("leo@noreplytest.fi", terminatedRow?.email)
+    }
+
+    @Test
+    fun `billing report lists payments paid within the date range sorted by place`() {
+        val haukilahti = 1
+        val suomenoja = 6
+        val startDate = LocalDate.of(2025, 3, 1)
+        val endDate = LocalDate.of(2025, 3, 31)
+        val inRange = startDate.plusDays(10).atTime(12, 0)
+
+        fun insertPaidReservation(
+            id: Int,
+            type: BoatSpaceType,
+            locationId: Int,
+            section: String,
+            placeNumber: Int,
+            creationType: CreationType = CreationType.New,
+            validity: ReservationValidity = ReservationValidity.Indefinite,
+            reservationYear: Int = 2025,
+            payment: DevPayment = DevPayment(reserverId = citizenIdLeo, reservationId = id, paid = inRange)
+        ) {
+            insertDevBoatSpace(
+                DevBoatSpace(
+                    id = id,
+                    type = type,
+                    locationId = locationId,
+                    priceId = 1,
+                    section = section,
+                    placeNumber = placeNumber,
+                    amenity = BoatSpaceAmenity.None,
+                    widthCm = 250,
+                    lengthCm = 700,
+                    description = "Billing report test space"
+                )
+            )
+            insertDevBoatSpaceReservation(
+                DevBoatSpaceReservation(
+                    id = id,
+                    reserverId = payment.reserverId,
+                    boatSpaceId = id,
+                    startDate = LocalDate.of(reservationYear, 1, 1),
+                    endDate = LocalDate.of(reservationYear, 12, 31),
+                    status = ReservationStatus.Confirmed,
+                    creationType = creationType,
+                    validity = validity
+                )
+            )
+            insertDevPayment(payment.copy(reservationId = id))
+        }
+
+        insertPaidReservation(5001, BoatSpaceType.Winter, haukilahti, "B", 2)
+        insertPaidReservation(
+            5002,
+            BoatSpaceType.Slip,
+            suomenoja,
+            "A",
+            3,
+            creationType = CreationType.Renewal,
+            validity = ReservationValidity.FixedTerm,
+            payment =
+                DevPayment(
+                    reserverId = citizenIdOlivia,
+                    reservationId = 5002,
+                    paymentType = PaymentType.Invoice,
+                    totalCents = 25050,
+                    productCode = "ML2",
+                    paid = endDate.atTime(23, 30)
+                )
+        )
+        insertPaidReservation(5003, BoatSpaceType.Slip, haukilahti, "A", 10)
+        insertPaidReservation(5004, BoatSpaceType.Slip, haukilahti, "A", 2)
+        // Same place as 5004 a year earlier, renewed: sorts before 5004 by reservation type
+        insertPaidReservation(5005, BoatSpaceType.Slip, haukilahti, "C", 2, creationType = CreationType.Renewal)
+        jdbi.inTransactionUnchecked { tx ->
+            tx.execute(
+                "UPDATE boat_space_reservation SET boat_space_id = 5004, start_date = '2024-01-01', end_date = '2024-12-31' WHERE id = 5005"
+            )
+            tx.execute(
+                """
+                INSERT INTO invoice (due_date, reference, reservation_id, payment_id, reserver_id)
+                SELECT '2025-04-15', 'INVOICE-REF-1', reservation_id, id, reserver_id FROM payment WHERE reservation_id = 5002
+                """.trimIndent()
+            )
+        }
+
+        // Not in the report: paid outside the range, refunded, or not paid at all
+        insertPaidReservation(
+            5101,
+            BoatSpaceType.Slip,
+            haukilahti,
+            "D",
+            1,
+            payment = DevPayment(reserverId = citizenIdLeo, reservationId = 5101, paid = startDate.minusDays(1).atTime(23, 59))
+        )
+        insertPaidReservation(
+            5102,
+            BoatSpaceType.Slip,
+            haukilahti,
+            "D",
+            2,
+            payment = DevPayment(reserverId = citizenIdLeo, reservationId = 5102, paid = endDate.plusDays(1).atStartOfDay())
+        )
+        insertPaidReservation(
+            5103,
+            BoatSpaceType.Slip,
+            haukilahti,
+            "D",
+            3,
+            payment = DevPayment(reserverId = citizenIdLeo, reservationId = 5103, status = PaymentStatus.Refunded, paid = inRange)
+        )
+        insertPaidReservation(
+            5104,
+            BoatSpaceType.Slip,
+            haukilahti,
+            "D",
+            4,
+            payment =
+                DevPayment(
+                    reserverId = citizenIdLeo,
+                    reservationId = 5104,
+                    paymentType = PaymentType.Invoice,
+                    status = PaymentStatus.Created,
+                    paid = null
+                )
+        )
+
+        val csvRows = billingReportToCsv(getBillingReportRows(jdbi, startDate, endDate)).trimEnd().split("\r\n")
+
+        assertEquals(
+            "varaaja;varauksen tyyppi;varauksen kesto;paikan tyyppi;satama;laituri;paikka;maksupäivä;summa;maksutapa;hintaluokka;viite",
+            csvRows[0]
+        )
+        assertEquals(
+            listOf(
+                "Laituripaikka;Haukilahti;A;2;Jatko",
+                "Laituripaikka;Haukilahti;A;2;Uusi",
+                "Laituripaikka;Haukilahti;A;10;Uusi",
+                "Laituripaikka;Suomenoja;A;3;Jatko",
+                "Talvipaikka;Haukilahti;B;2;Uusi"
+            ),
+            csvRows.drop(1).map {
+                val c = it.split(";")
+                listOf(c[3], c[4], c[5], c[6], c[1]).joinToString(";")
+            }
+        )
+        assertEquals(
+            "\"Virtanen Olivia\";Jatko;\"Määräaikainen\";Laituripaikka;Suomenoja;A;3;\"2025-03-31 23:30:00\";\"250,5\";Lasku;ML2;\"INVOICE-REF-1\"",
+            csvRows[4]
+        )
     }
 
     @Test
