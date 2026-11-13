@@ -178,7 +178,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
     implementation("org.commonmark:commonmark:0.32.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
-    implementation("org.unbescape:unbescape:1.1.6.RELEASE")
+    implementation("org.unbescape:unbescape:1.1.8.RELEASE")
 
     implementation("ch.qos.logback:logback-classic:1.6.6")
     implementation("ch.qos.logback:logback-core:1.6.6")
