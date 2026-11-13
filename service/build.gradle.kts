@@ -145,7 +145,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.15")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.7")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
