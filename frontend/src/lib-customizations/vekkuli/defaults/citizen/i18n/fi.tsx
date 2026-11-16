@@ -163,7 +163,8 @@ export default {
     periods: {
       Slip: {
         title: 'Laituripaikka 2027',
-        season: (season: string) => `Veneilykausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
+        season: (season: string) =>
+          `Veneilykausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
         periods: [
           (period: string) =>
             `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa laituripaikansa vuokrausta`,
@@ -188,7 +189,8 @@ export default {
       },
       Winter: {
         title: 'Talvipaikka 2027',
-        season: (season: string) => `Talvisäilytyskausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
+        season: (season: string) =>
+          `Talvisäilytyskausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
         periods: [
           (period: string) =>
             `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikkansa vuokrausta`,
@@ -200,19 +202,21 @@ export default {
       },
       Storage: {
         title: 'Ämmäsmäki 2027',
-        season: (season: string) => `Säilytyskausia ovat ${season}. Vuokrasopimus on voimassa yhden säilytyskauden kerrallaan.`,
+        season: (season: string) =>
+          `Säilytyskausia ovat ${season}. Vuokrasopimus on voimassa yhden säilytyskauden kerrallaan.`,
         periods: [
           (period: string) =>
             `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2027-14.9.2028`,
           (period: string) =>
-              `${period} kaikki voivat varata paikan kaudelle 15.9.2027–14.9.2028**`,
+            `${period} kaikki voivat varata paikan kaudelle 15.9.2027–14.9.2028**`,
           (period: string) =>
-              `${period} säilytyspaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Säilytyspaikan voi vaihtaa vain toiseen säilytyspaikkaan`
+            `${period} säilytyspaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Säilytyspaikan voi vaihtaa vain toiseen säilytyspaikkaan`
         ]
       },
       footNote:
         '*Voitte varata vesikulkuneuvolle paikan espoolaisena, jos vähintään puolet vesikulkuneuvon omistajista ja/tai haltijoista asuu Espoossa. Varauksen tulee olla Espoossa asuvan omistajan tai haltijan nimissä.',
-      footNote2: '**Ämmäsmäen säilytysalue on poikkeuksellisesti suljettu ajalla 1.5.–1.7.2028. Kaikki alueella oleva omaisuus on poistettava viimeistään 30.4.2028. Sulun aikana alueella ei saa säilyttää omaisuutta eikä alueella saa liikkua.'
+      footNote2:
+        '**Ämmäsmäen säilytysalue on poikkeuksellisesti suljettu ajalla 1.5.–1.7.2028. Kaikki alueella oleva omaisuus on poistettava viimeistään 30.4.2028. Sulun aikana alueella ei saa säilyttää omaisuutta eikä alueella saa liikkua.'
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'
