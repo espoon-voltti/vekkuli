@@ -162,53 +162,57 @@ export default {
     },
     periods: {
       Slip: {
-        title: 'Laituripaikka 2026',
-        season: (season: string) => `Vuokrakausi ${season}`,
+        title: 'Laituripaikka 2027',
+        season: (season: string) => `Veneilykausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
         periods: [
           (period: string) =>
-            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa laituripaikansa vuokrausta`,
+            `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa laituripaikansa vuokrausta`,
           (period: string) =>
-            `${period} vain espoolaiset* voivat varata laituripaikkoja`,
+            `${period} espoolaiset* voivat varata laituripaikkoja`,
           (period: string) => `${period} kaikki voivat varata laituripaikkoja`,
           (period: string) =>
-            `${period} laituripaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen)`
+            `${period} laituripaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Laituripaikan voi vaihtaa vain toiseen laituripaikkaan`
         ]
       },
       Trailer: {
-        title: 'Traileripaikka 2026',
+        title: 'Traileripaikka 2027',
         season: (season: string) =>
-          `Vuokrakausi ${season}. Vene trailerilla, vesillelasku luiskalta`,
+          `Trailerikausi on ${season}. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
         periods: [
           (period: string) =>
-            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikkansa vuokrausta`,
+            `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikkansa vuokrausta`,
           (period: string) => `${period} kaikki voivat varata traileripaikkoja`,
           (period: string) =>
-            `${period} traileripaikan vaihtaminen toiseen traileripaikkaan (on mahdollista vasta paikan maksamisen jälkeen)`
+            `${period} traileripaikan vaihtaminen toiseen traileripaikkaan (on mahdollista vasta paikan maksamisen jälkeen). Traileripaikan voi vaihtaa vain toiseen traileripaikkaan`
         ]
       },
       Winter: {
-        title: 'Talvipaikka 2026',
-        season: (season: string) => `Vuokrakausi ${season}`,
+        title: 'Talvipaikka 2027',
+        season: (season: string) => `Talvisäilytyskausi on kunkin kalenterivuoden ${season} välinen aika. Vuokrasopimus on voimassa yhden kauden kerrallaan.`,
         periods: [
           (period: string) =>
-            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikan vuokrausta`,
+            `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikkansa vuokrausta`,
           (period: string) =>
-            `${period} vain espoolaiset* voivat varata talvipaikkoja`,
+            `${period} espoolaiset* voivat varata talvipaikkoja`,
           (period: string) =>
-            `${period} talvipaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen)`
+            `${period} talvipaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Talvipaikan voi vaihtaa vain toiseen talvipaikkaan`
         ]
       },
       Storage: {
-        title: 'Ämmäsmäki 2026',
-        season: (season: string) => `Vuokrakausi ${season}`,
+        title: 'Ämmäsmäki 2027',
+        season: (season: string) => `Säilytyskausia ovat ${season}. Vuokrasopimus on voimassa yhden säilytyskauden kerrallaan.`,
         periods: [
           (period: string) =>
-            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2026-14.9.2027. Maksettuaan paikan, voi paikan vaihtaa seuraavalle kaudelle. Koko kauden ajan voi sekä varata uuden paikan että vaihtaa paikan`
+            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2027-14.9.2028`,
+          (period: string) =>
+              `${period} kaikki voivat varata paikan kaudelle 15.9.2027–14.9.2028**`,
+          (period: string) =>
+              `${period} säilytyspaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Säilytyspaikan voi vaihtaa vain toiseen säilytyspaikkaan`
         ]
       },
       footNote:
-        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista ja/tai haltijoista asuu Espoossa, voitte varata laituri-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
-      footNote2: ''
+        '*Voitte varata vesikulkuneuvolle paikan espoolaisena, jos vähintään puolet vesikulkuneuvon omistajista ja/tai haltijoista asuu Espoossa. Varauksen tulee olla Espoossa asuvan omistajan tai haltijan nimissä.',
+      footNote2: '**Ämmäsmäen säilytysalue on poikkeuksellisesti suljettu ajalla 1.5.–1.7.2028. Kaikki alueella oleva omaisuus on poistettava viimeistään 30.4.2028. Sulun aikana alueella ei saa säilyttää omaisuutta eikä alueella saa liikkua.'
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'
@@ -284,18 +288,20 @@ export default {
       switchInfoText:
         'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',
       infoText: {
-        title: 'Venepaikkojen varaaminen 2026',
+        title: 'Venepaikkojen varaaminen 2027',
         periods: {
           newReservations:
-            'Laituripaikkojen varaaminen espoolaisille 2.3. alkaen ja muille 1.4.–30.9.2026. Varaus on veneilykaudelle 10.6.–14.9.2026.',
+            'Laituripaikat: espoolaiset 1.3.–31.10.2027, kaikki 1.4.–31.10.2027. Varaus on kaudelle 10.6.–14.9.2027.',
           trailerReservations:
-            'Suomenojan traileripaikkojen varaaminen 2.5.–31.12.2026. Varaus on kaudelle 2.5.2026–30.4.2027.',
+            'Suomenojan traileripaikat: 1.5.–15.12.2027. Varaus on kaudelle 1.5.2027–30.4.2028.',
           winter:
-            'Talvipaikkojen varaaminen espoolaisille 15.9.–15.12.2026. Varaus on talvisäilytyskaudelle 15.9.2026–10.6.2027.',
+            'Talvipaikat: espoolaiset 15.9.–15.12.2027. Varaus on kaudelle 15.9.2027–10.6.2028.',
           storage1:
-            'Ämmäsmäen säilytyspaikkojen varaaminen kaudelle 15.9.2025–14.9.2026 on auki 14.9.2026 asti.',
+            'Ämmäsmäen säilytyspaikat: varaaminen kaudelle 15.9.2026–14.9.2027 on auki 31.7.2027 asti.',
           storage2:
-            'Ämmäsmäen säilytyspaikkojen varaaminen kaudelle 15.9.2026–14.9.2027 aukeaa 15.9.2026.'
+            'Ämmäsmäen säilytyspaikat: varaaminen kaudelle 15.9.2027–14.9.2028* aukeaa 15.9.2027 ja on auki 31.7.2028 asti.',
+          storage3:
+            '*Ämmäsmäen säilytysalue on poikkeuksellisesti suljettu ajalla 1.5.–1.7.2028. Kaikki alueella oleva omaisuus on poistettava viimeistään 30.4.2028. Sulun aikana alueella ei saa säilyttää omaisuutta eikä alueella saa liikkua.'
         }
       },
       modal: {
