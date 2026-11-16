@@ -1,4 +1,4 @@
-FROM node:26.13.0-bookworm-slim AS base
+FROM node:26.13.1-bookworm-slim AS base
 
 ARG CACHE_BUST=none
 # Node 25+ no longer bundles corepack

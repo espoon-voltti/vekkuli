@@ -5,7 +5,7 @@
 
 ARG NGINX_VERSION=1.31.3
 
-FROM node:26.13.0-trixie-slim AS builder
+FROM node:26.13.1-trixie-slim AS builder
 
 ARG CACHE_BUST=none
 # Node 25+ no longer bundles corepack
