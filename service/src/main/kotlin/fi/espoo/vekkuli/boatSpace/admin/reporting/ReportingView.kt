@@ -60,6 +60,28 @@ class ReportingView(
                 )
             )
 
+        val billingReportStartDateInputField =
+            formComponents.dateInputContainer(
+                DateInputOptions(
+                    id = "startDate",
+                    labelKey = "reporting.filter.paymentStartDate",
+                    value = timeProvider.getCurrentDate().withDayOfMonth(1).toString(),
+                    required = true,
+                    autoWidth = true
+                )
+            )
+
+        val billingReportEndDateInputField =
+            formComponents.dateInputContainer(
+                DateInputOptions(
+                    id = "endDate",
+                    labelKey = "reporting.filter.paymentEndDate",
+                    value = timeProvider.getCurrentDate().toString(),
+                    required = true,
+                    autoWidth = true
+                )
+            )
+
         // language=HTML
         return """
             <section class="section reports-container">
@@ -199,6 +221,36 @@ class ReportingView(
                     </form>
                 </div>
                 
+                <div class="container">
+                    <form id="billing-report-form"
+                          method="get"
+                          action="/virkailija/admin/reporting/billing-report"
+                          class="block"
+                    >
+                        <h2>${t("reporting.billingReport")}</h2>
+
+                        <p class="reports-info">${t("reporting.billingReportInfo")}</p>
+
+                        <div class='columns'>
+                            <div class='column'>
+                                $billingReportStartDateInputField
+                            </div>
+                            <div class='column'>
+                                $billingReportEndDateInputField
+                            </div>
+                            <div class='column'>
+                                <button id="submit-button"
+                                    class="button is-primary"
+                                    type="submit"
+                                    data-testid="billing-report-button"
+                                >
+                                    ${t("reporting.submit")}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="container">
                     <form id="form"
                           method="get"

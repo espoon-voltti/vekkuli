@@ -1,11 +1,14 @@
 package fi.espoo.vekkuli.boatSpace.admin.reporting
 
 import fi.espoo.vekkuli.boatSpace.admin.Layout
+import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
+import fi.espoo.vekkuli.service.billingReportToCsv
 import fi.espoo.vekkuli.service.boatSpaceReportToCsv
 import fi.espoo.vekkuli.service.freeBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.getAllBoatSpacesReport
+import fi.espoo.vekkuli.service.getBillingReportRows
 import fi.espoo.vekkuli.service.getFreeBoatSpaceReportRows
 import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReportRows
@@ -138,6 +141,28 @@ class ReportingController(
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-varoitukset-raportti-$todayFormatted.csv\"")
             .body(utf8BOM + warningsBoatSpaceReportToCsv(getWarningsBoatSpaceReportRows(jdbi, reportDate)))
+    }
+
+    @GetMapping("/billing-report", produces = ["text/csv"])
+    @ResponseBody
+    fun billingReport(
+        request: HttpServletRequest,
+        @RequestParam("startDate") startDate: LocalDate,
+        @RequestParam("endDate") endDate: LocalDate,
+    ): ResponseEntity<String> {
+        logger.audit(
+            request.getAuthenticatedEmployee(),
+            "DOWNLOAD_BILLING_REPORT",
+            mapOf("startDate" to startDate.toString(), "endDate" to endDate.toString())
+        )
+        if (endDate.isBefore(startDate)) {
+            throw BadRequest("End date $endDate is before start date $startDate")
+        }
+
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-laskutusraportti-$startDate-$endDate.csv\"")
+            .body(utf8BOM + billingReportToCsv(getBillingReportRows(jdbi, startDate, endDate)))
     }
 
     @GetMapping

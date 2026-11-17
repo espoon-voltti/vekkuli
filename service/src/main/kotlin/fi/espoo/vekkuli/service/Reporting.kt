@@ -9,8 +9,10 @@ import fi.espoo.vekkuli.utils.amenityToText
 import fi.espoo.vekkuli.utils.boatSpaceTypeToText
 import fi.espoo.vekkuli.utils.boatTypeToText
 import fi.espoo.vekkuli.utils.ownershipStatusToText
+import fi.espoo.vekkuli.utils.paymentTypeToText
 import fi.espoo.vekkuli.utils.placeTypeToText
 import fi.espoo.vekkuli.utils.reservationCreationTypeToText
+import fi.espoo.vekkuli.utils.reservationValidityToText
 import fi.espoo.vekkuli.utils.terminationReasonToText
 import org.jdbi.v3.core.Jdbi
 import org.unbescape.csv.CsvEscape
@@ -119,6 +121,58 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.trailerLengthCm)))
             .append(CSV_RECORD_SEPARATOR)
+    }
+
+    return csvContent.toString()
+}
+
+private val billingReportOrder =
+    compareBy<BillingReportRow>(
+        { it.placeType == null },
+        { placeTypeToText(it.placeType) },
+        { it.harbor },
+        { it.pier },
+        { it.placeNumber },
+        { reservationCreationTypeToText(it.creationType) },
+        { reservationValidityToText(it.validity) },
+        { it.paid }
+    )
+
+fun billingReportToCsv(reportRows: List<BillingReportRow>): String {
+    val csvHeader =
+        listOf(
+            "varaaja",
+            "varauksen tyyppi",
+            "varauksen kesto",
+            "paikan tyyppi",
+            "satama",
+            "laituri",
+            "paikka",
+            "maksupäivä",
+            "summa",
+            "maksutapa",
+            "hintaluokka",
+            "viite"
+        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
+
+    val csvContent = StringBuilder()
+    csvContent.append(csvHeader)
+
+    for (row in reportRows.sortedWith(billingReportOrder)) {
+        listOf(
+            row.reserverName,
+            reservationCreationTypeToText(row.creationType),
+            reservationValidityToText(row.validity),
+            placeTypeToText(row.placeType),
+            row.harbor,
+            row.pier,
+            row.placeNumber?.toString(),
+            localDateTimeToText(row.paid),
+            intToDecimal(row.totalCents.toString()),
+            paymentTypeToText(row.paymentType),
+            row.productCode,
+            row.reference
+        ).joinTo(csvContent, CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR) { sanitizeCsvCellData(it) }
     }
 
     return csvContent.toString()
