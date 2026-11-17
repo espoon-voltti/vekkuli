@@ -118,7 +118,7 @@ data class BillingReportRow(
     val paid: LocalDateTime,
     val totalCents: Int,
     val paymentType: PaymentType,
-    val productCode: String,
+    val productCode: String?,
     val reference: String?
 )
 

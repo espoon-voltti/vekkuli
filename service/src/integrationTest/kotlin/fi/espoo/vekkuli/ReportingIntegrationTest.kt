@@ -189,6 +189,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             locationId: Int,
             section: String,
             placeNumber: Int,
+            priceId: Int = 1,
             creationType: CreationType = CreationType.New,
             validity: ReservationValidity = ReservationValidity.Indefinite,
             reservationYear: Int = 2025,
@@ -199,7 +200,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                     id = id,
                     type = type,
                     locationId = locationId,
-                    priceId = 1,
+                    priceId = priceId,
                     section = section,
                     placeNumber = placeNumber,
                     amenity = BoatSpaceAmenity.None,
@@ -230,6 +231,8 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             suomenoja,
             "A",
             3,
+            // The price class column shows the place's price class (ML2), not the payment's product code
+            priceId = 2,
             creationType = CreationType.Renewal,
             validity = ReservationValidity.FixedTerm,
             payment =
@@ -238,7 +241,6 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                     reservationId = 5002,
                     paymentType = PaymentType.Invoice,
                     totalCents = 25050,
-                    productCode = "ML2",
                     paid = endDate.atTime(23, 30)
                 )
         )
