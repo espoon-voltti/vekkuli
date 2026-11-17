@@ -1,6 +1,9 @@
 -- Replace any manually added 2027 booking periods
 DELETE FROM booking_period WHERE start_date >= '2027-01-01'::date AND start_date <= '2027-12-31'::date;
 
+-- Fix wrong 2026-2027 end date
+UPDATE booking_period SET end_date = '2027-07-31'::date WHERE boat_space_type = 'Storage' AND operation = 'Change' AND start_date = '2026-08-23'::date;
+
 INSERT INTO booking_period (start_date, end_date, start_time, is_espoo_citizen, operation, boat_space_type) VALUES ('2027-01-11', '2027-12-15', '09:00:00', 'true', 'Change', 'Slip');
 INSERT INTO booking_period (start_date, end_date, start_time, is_espoo_citizen, operation, boat_space_type) VALUES ('2027-01-11', '2027-01-31', '09:00:00', 'true', 'Renew', 'Slip');
 INSERT INTO booking_period (start_date, end_date, start_time, is_espoo_citizen, operation, boat_space_type) VALUES ('2027-03-01', '2027-10-31', '09:00:00', 'true', 'New', 'Slip');
