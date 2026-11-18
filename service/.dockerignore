@@ -6,6 +6,7 @@
 !src
 !.editorconfig
 !package.json
+!package-lock.json
 !webpack.config.js
 !index.js
 !htmx.js
