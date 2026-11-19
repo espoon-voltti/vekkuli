@@ -118,7 +118,7 @@ data class BillingReportRow(
     val paid: LocalDateTime,
     val totalCents: Int,
     val paymentType: PaymentType,
-    val productCode: String,
+    val productCode: String?,
     val reference: String?
 )
 
@@ -142,7 +142,7 @@ fun getBillingReportRows(
                     p.paid,
                     p.total_cents,
                     p.payment_type,
-                    p.product_code,
+                    price.name AS product_code,
                     COALESCE(i.reference, p.reference) AS reference
                 FROM payment p
                     JOIN reserver r ON r.id = p.reserver_id
@@ -150,6 +150,7 @@ fun getBillingReportRows(
                     LEFT JOIN boat_space bs ON bs.id = bsr.boat_space_id
                     LEFT JOIN location l ON l.id = bs.location_id
                     LEFT JOIN invoice i ON i.payment_id = p.id
+                    LEFT JOIN price ON bs.price_id = price.id
                 WHERE
                     p.status = 'Success'
                     AND p.paid::date BETWEEN :startDate AND :endDate

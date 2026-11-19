@@ -161,53 +161,61 @@ const en: Translations = {
     },
     periods: {
       Slip: {
-        title: 'Pier Place 2026',
-        season: (season: string) => `Rental period ${season}`,
+        title: 'Berth Place 2027',
+        season: (season: string) =>
+          `The boating season is the period ${season} of each calendar year. The rental agreement is valid for one season at a time.`,
         periods: [
           (period: string) =>
-            `${period} Only Espoo residents* with an existing permanent rental place can continue renting their pier place`,
+            `${period} Espoo residents* with an existing permanent rental place can continue renting their berth place`,
           (period: string) =>
-            `${period} Only Espoo residents* can reserve pier places`,
-          (period: string) => `${period} Everyone can reserve pier places`,
+            `${period} Espoo residents* can reserve berth places`,
+          (period: string) => `${period} everyone can reserve berth places`,
           (period: string) =>
-            `${period} Pier place changes (possible only after the place has been paid for)`
+            `${period} berth place changes (possible only after the place has been paid for). A berth can only be exchanged for another berth place`
         ]
       },
       Trailer: {
-        title: 'Trailer Place 2026',
+        title: 'Trailer Place 2027',
         season: (season: string) =>
-          `Rental period ${season}. Boat on trailer, launching from ramp.`,
+          `The trailer season is ${season}. The rental agreement is valid for one season at a time.`,
         periods: [
           (period: string) =>
-            `${period} Only Espoo residents* with an existing permanent rental place can continue renting their trailer place`,
-          (period: string) => `${period} Everyone can reserve trailer places`,
+            `${period} Espoo residents* with an existing permanent rental place can continue renting their trailer place`,
+          (period: string) => `${period} everyone can reserve trailer places`,
           (period: string) =>
-            `${period} Changing a trailer place to another trailer place (possible only after the place has been paid for)`
+            `${period} trailer place changes (possible only after the place has been paid for). A trailer place can only be exchanged for another trailer place`
         ]
       },
       Winter: {
-        title: 'Winter Place 2026',
-        season: (season: string) => `Rental period ${season}`,
+        title: 'Winter Place 2027',
+        season: (season: string) =>
+          `The winter storage season is ${season} of each calendar year. The rental agreement is valid for one season at a time.`,
         periods: [
           (period: string) =>
-            `${period} Only Espoo residents* with an existing permanent rental place can continue renting their winter place`,
+            `${period} Espoo residents* with an existing permanent rental place can continue renting their winter place`,
           (period: string) =>
-            `${period} Only Espoo residents* can reserve winter places`,
+            `${period} only Espoo residents* can reserve winter places`,
           (period: string) =>
-            `${period} Changing a winter place (possible only after the place has been paid for)`
+            `${period} winter place changes (possible only after the place has been paid for). A winter storage space may only be exchanged for another winter storage place`
         ]
       },
       Storage: {
-        title: 'Ämmäsmäki 2026',
-        season: (season: string) => `Rental period ${season}`,
+        title: 'Ämmäsmäki 2027',
+        season: (season: string) =>
+          `The storage seasons are ${season}. The rental agreement is valid for one storage season at a time.`,
         periods: [
           (period: string) =>
-            `${period} Storage place renters can continue renting their storage place for the next season 15.9.2026–14.9.2027. After paying for the place, it is possible to change the place for the next season. Throughout the entire season, it is possible both to reserve a new place and to change a place.`
+            `${period} storage place renters can continue renting their storage place for the next season 15.9.2027–14.9.2028`,
+          (period: string) =>
+            `${period} everyone can reserve a place for the season 15.9.2027–14.9.2028**`,
+          (period: string) =>
+            `${period} storage place changes (available only after payment of the storage space). A storage place may only be exchanged for another storage space.`
         ]
       },
       footNote:
-        '* If a boat is co-owned and over 50% of the owners and/or operators reside in Espoo, you can book berths, winter, or storage spaces as an Espoo resident. In this case, an Espoo resident must make the reservation.',
-      footNote2: ''
+        '*You may reserve a place for a watercraft at the resident rate if at least half of the watercraft’s owners and/or operators reside in Espoo. The reservation must be made in the name of an owner or operator who resides in Espoo.',
+      footNote2:
+        '**The Ämmäsmäki storage area will be exceptionally closed from 1 May to 1 July 2028. All property must be removed from the area by 30 April 2028 at the latest. During the closure, no property may be stored in the area and entry to the area is not permitted.'
     },
     button: {
       browseBoatSpaces: 'Browse boat spaces'
@@ -227,7 +235,7 @@ const en: Translations = {
       error: 'Error'
     },
     searchPage: {
-      title: 'Espoo City boat space rental',
+      title: 'Espoo City boat place rental',
       image: {
         harbors: {
           altText: "Espoo's marinas"
@@ -283,18 +291,20 @@ const en: Translations = {
       switchInfoText:
         'You are changing your boat space. The space can only be changed to another space of the same type.',
       infoText: {
-        title: 'Booking Boat Spaces 2026',
+        title: 'Reserve Boat Places 2027',
         periods: {
           newReservations:
-            'Booking boat spaces for Espoo residents starting 2.3. and for others from 1.4.–30.9.2026. The reservation is for the boating season 10.6.–14.9.2026.',
+            'Berth places: Espoo residents 1.3.–31.10.2027 and for others 1.4.–31.10.2027. The resevation is for season 10.6.–14.9.2027.',
           trailerReservations:
-            'Booking Suomenoja trailer spaces for everyone from 2.5.–31.12.2026. The reservation is for the boating season 2.5.2026–30.4.2027.',
+            'Trailer places: 1.5.–15.12. The reservation is for season 1.5.2027–30.4.2028.',
           winter:
-            'Booking winter spaces for Espoo residents from 15.9.–31.12.2026. The reservation is for the winter season 15.9.2026–10.6.2027.',
+            'Winter places:  Espoo residents 15.9.–15.12.2027. The reservation is for season 15.9.2027–10.6.2028.',
           storage1:
-            'Booking Ämmäsmäki storage spaces for season 15.9.2025–14.9.2026 is open until 14.9.2026.',
+            'Ämmäsmäki storage places: reservation for season 15.9.2026–14.9.2027 is open until 31.7.2027.',
           storage2:
-            'Booking Ämmäsmäki storage spaces for season 15.9.2026–14.9.2027 opens on 15.9.2026.'
+            'Ämmäsmäki storage places: reservation for season 15.9.2027–14.9.2028* opens on 15.9.2027 and is open until 31.7.2028.',
+          storage3:
+            '*The Ämmäsmäki storage area will be exceptionally closed from 1 May to 1 July 2028. All property must be removed from the area by 30 April 2028 at the latest. During the closure, no property may be stored in the area and entry to the area is not permitted.'
         }
       },
       modal: {

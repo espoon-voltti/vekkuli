@@ -162,52 +162,60 @@ const sv: Translations = {
     },
     periods: {
       Slip: {
-        title: 'Båtplats 2026',
-        season: (season: string) => `Hyresperiod ${season}`,
+        title: 'Båtplats 2027',
+        season: (season: string) =>
+          `Båtsäsongen är ${season} varje kalenderår. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
-            `${period} endast esbobor* som hyr en tillsvidare gällande plats kan förnya sin båtplats`,
-          (period: string) => `${period} endast esbobor* kan boka båtplats`,
+            `${period} esbobor* som hyr en tillsvidare gällande plats kan förnya sin båtplats`,
+          (period: string) => `${period} esbobor* kan boka båtplats`,
           (period: string) => `${period} alla kan boka båtplats`,
           (period: string) =>
-            `${period} byte av båtplats (möjligt först efter att platsen är betald)`
+            `${period} byte av båtplats (möjligt först efter att platsen har betalats). En båtplats kan endast bytas mot en annan båtplats`
         ]
       },
       Trailer: {
-        title: 'Trailerplats 2026',
+        title: 'Trailerplats 2027',
         season: (season: string) =>
-          `Hyresperiod ${season}. Båt på trailer, sjösättning från ramp`,
+          `Trailersäsongen är  ${season}. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
-            `${period} endast esbobor* som hyr en tillsvidare gällande plats kan förnya sin trailerplats`,
+            `${period} esbobor* med tillsvidareavtal för trailerplats kan förnya sin trailerplats`,
           (period: string) => `${period} alla kan boka trailerplats`,
           (period: string) =>
-            `${period} byte av trailerplats till en annan trailerplats (möjligt först efter att platsen är betald)`
+            `${period} byte av trailerplats (möjligt först efter att platsen har betalats). En trailerplats kan endast bytas mot en annan trailerplats`
         ]
       },
       Winter: {
-        title: 'Vinteruppläggningsplats 2026',
-        season: (season: string) => `Hyresperiod ${season}`,
+        title: 'Vinteruppläggningsplats 2027',
+        season: (season: string) =>
+          `Vinteruppläggningssäsongen är ${season} varje kalenderår. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
-            `${period} endast esbobor* som hyr en tillsvidare gällande plats kan förnya sin vinteruppläggningsplats`,
+            `${period} esbobor* med tillsvidareavtal för vinteruppläggningsplats kan förnya sin plats`,
           (period: string) =>
             `${period} endast esbobor* kan boka vinterförvaringsplats`,
           (period: string) =>
-            `${period} byte av vinteruppläggningsplats (möjligt först efter att platsen är betald)`
+            `${period} byte av vinteruppläggningsplats (möjligt först efter att platsen har betalats). En vinteruppläggningsplats kan endast bytas mot en annan vinteruppläggningsplats`
         ]
       },
       Storage: {
-        title: 'Käringbacken 2026',
-        season: (season: string) => `Hyresperiod ${season}`,
+        title: 'Käringbackens förvaringsplats 2027',
+        season: (season: string) =>
+          `Förvaringssäsongerna är ${season}. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
-            `${period} kan förvaringsplatsen förnyas för säsongen 15.9.2026–14.9.2027. Byte av plats möjligt först efter att platsen är betald. Under hela säsongen kan man både boka en ny plats och byta plats`
+            `${period} Förvaringsplatsen kan förnyas för nästa säsong 15.9.2027–14.9.2028`,
+          (period: string) =>
+            `${period} Alla kan boka plats för säsongen 15.9.2027–14.9.2028**`,
+          (period: string) =>
+            `${period} Byte av förvaringsplats (möjligt först efter att platsen har betalats). En förvaringsplats kan endast bytas mot en annan förvaringsplats`
         ]
       },
       footNote:
-        '* Om en båt är delägd och över 50% av ägarna och/eller innehavare bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbobo. I detta fall måste en Esbo-bo göra bokningen.',
-      footNote2: ''
+        '*För att kunna reservera en plats ska du vara ägare eller innehavare av vattenfarkosten och bosatt i Esbo. Dessutom ska minst hälften av vattenfarkostens ägare och/eller innehavare vara bosatta i Esbo.',
+      footNote2:
+        '**Käringbackens förvaringsområde är undantagsvis stängt under perioden 1.5.–1.7.2028. All egendom ska vara bortförd senast den 30.4.2028. Under stängningstiden är förvaring av egendom och vistelse på området förbjuden.'
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
@@ -275,18 +283,20 @@ const sv: Translations = {
       switchInfoText:
         'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
       infoText: {
-        title: 'Bokning av båtplatser 2026',
+        title: 'Bokning av båtplatser 2027',
         periods: {
           newReservations:
-            'Bokning av båtplatser för esbobor från och med 2.3. och för andra från 1.4.–30.9.2026. Bokningen är för båtsäsongen 10.6–14.9.2026.',
+            'Båtplatser: esbobor 1.3.–31.10.2027, alla 1.4.–31.10.2027. Bokningen gäller för säsongen 10.6.–14.9.2027.',
           trailerReservations:
-            'Bokning av trailerplatser i Finno för alla från 2.5.–31.12.2026. Bokningen är för båtsäsongen 2.5.2026–30.4.2027.',
+            'Trailerplatser i Finno: 1.5.–15.12.2027. Bokningen gäller för säsongen 1.5.2027–30.4.2028.',
           winter:
-            'Bokning av vinterplatser för esbobor från 15.9.–31.12.2026. Bokningen är för vintersäsongen 15.9.2026–10.6.2027.',
+            'Vinteruppläggningsplatser: esbobor 15.9.–15.12.2027. Bokningen gäller för säsongen 15.9.2027–10.6.2028.',
           storage1:
-            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2025–14.9.2026 är öppen till 14.9.2026.',
+            'Förvaringsplatser i Käringbacken: Bokningen för säsongen 15.9.2026–14.9.2027 är öppen till och med 31.7.2027.',
           storage2:
-            'Bokningen av förvaringsplatser i Käringbacken för säsongen 15.9.2026–14.9.2027 öppnar den 15.9.2026.'
+            'Förvaringsplatser i Käringbacken: Bokningen för säsongen 15.9.2027–14.9.2028* öppnar 15.9.2027 och är öppen till och med 31.7.2028.',
+          storage3:
+            '*Käringbackens förvaringsområde är undantagsvis stängt under perioden 1.5.-1.7.2028. All egendom ska vara bortförd senast den 30.4.2028. Under stängningstiden är förvaring av egendom och vistelse på området förbjuden.'
         }
       },
       modal: {

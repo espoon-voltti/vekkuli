@@ -47,6 +47,9 @@ export default React.memo(function ReservationSeasons() {
         <h3 className="label">
           {i18n.reservation.searchPage.infoText.periods.storage2}
         </h3>
+        <h3 className="label">
+          {i18n.reservation.searchPage.infoText.periods.storage3}
+        </h3>
       </div>
 
       <MapsLink />
