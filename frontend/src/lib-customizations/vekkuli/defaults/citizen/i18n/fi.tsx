@@ -184,7 +184,7 @@ export default {
             `${period} espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikkansa vuokrausta`,
           (period: string) => `${period} kaikki voivat varata traileripaikkoja`,
           (period: string) =>
-            `${period} traileripaikan vaihtaminen toiseen traileripaikkaan (on mahdollista vasta paikan maksamisen jälkeen). Traileripaikan voi vaihtaa vain toiseen traileripaikkaan`
+            `${period} traileripaikan vaihtaminen (on mahdollista vasta paikan maksamisen jälkeen). Traileripaikan voi vaihtaa vain toiseen traileripaikkaan`
         ]
       },
       Winter: {

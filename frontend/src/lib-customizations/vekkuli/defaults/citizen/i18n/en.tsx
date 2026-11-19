@@ -161,7 +161,7 @@ const en: Translations = {
     },
     periods: {
       Slip: {
-        title: 'Pier Place 2027',
+        title: 'Berth Place 2027',
         season: (season: string) =>
           `The boating season is the period ${season} of each calendar year. The rental agreement is valid for one season at a time.`,
         periods: [
@@ -177,7 +177,7 @@ const en: Translations = {
       Trailer: {
         title: 'Trailer Place 2027',
         season: (season: string) =>
-          `The trailer season is ${season}. The rental agreement is valid for one period at a time.`,
+          `The trailer season is ${season}. The rental agreement is valid for one season at a time.`,
         periods: [
           (period: string) =>
             `${period} Espoo residents* with an existing permanent rental place can continue renting their trailer place`,
@@ -235,7 +235,7 @@ const en: Translations = {
       error: 'Error'
     },
     searchPage: {
-      title: 'Espoo City boat space rental',
+      title: 'Espoo City boat place rental',
       image: {
         harbors: {
           altText: "Espoo's marinas"
@@ -291,7 +291,7 @@ const en: Translations = {
       switchInfoText:
         'You are changing your boat space. The space can only be changed to another space of the same type.',
       infoText: {
-        title: 'Booking Boat Spaces 2027',
+        title: 'Reserve Boat Places 2027',
         periods: {
           newReservations:
             'Berth places: Espoo residents 1.3.–31.10.2027 and for others 1.4.–31.10.2027. The resevation is for season 10.6.–14.9.2027.',
@@ -300,7 +300,7 @@ const en: Translations = {
           winter:
             'Winter places:  Espoo residents 15.9.–15.12.2027. The reservation is for season 15.9.2027–10.6.2028.',
           storage1:
-            'Ämmäsmäki storage places: reservation for season 15.9.2027–14.9.2028* opens on 15.9.2027 and is open until 31.7.2028.',
+            'Ämmäsmäki storage places: reservation for season 15.9.2026–14.9.2027 is open until 31.7.2027.',
           storage2:
             'Ämmäsmäki storage places: reservation for season 15.9.2027–14.9.2028* opens on 15.9.2027 and is open until 31.7.2028.',
           storage3:
