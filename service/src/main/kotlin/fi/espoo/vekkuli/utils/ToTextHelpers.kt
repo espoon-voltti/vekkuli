@@ -108,7 +108,7 @@ fun reservationCreationTypeToText(creationType: CreationType?): String =
 fun reservationValidityToText(validity: ReservationValidity?): String =
     when (validity) {
         ReservationValidity.FixedTerm -> "Määräaikainen"
-        ReservationValidity.Indefinite -> "Jatkuva"
+        ReservationValidity.Indefinite -> "Toistaiseksi"
         else -> ""
     }
 

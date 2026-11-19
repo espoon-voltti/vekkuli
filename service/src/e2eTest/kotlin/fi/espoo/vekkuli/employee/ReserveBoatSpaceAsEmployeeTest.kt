@@ -289,7 +289,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(citizenDetailsPage.reservationValidity.getByText("Valid until further notice (Until 14.09.2024)")).isVisible()
 
         citizenDetailsPage.memoNavi.click()
-        assertThat(page.getByText("Varauksen Haukilahti Talvi B 021 tyyppi vaihdettu: Jatkuva, loppupäivä (14.09.2024)")).isVisible()
+        assertThat(page.getByText("Varauksen Haukilahti Talvi B 021 tyyppi vaihdettu: Toistaiseksi, loppupäivä (14.09.2024)")).isVisible()
     }
 
     @Test
