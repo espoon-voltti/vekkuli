@@ -202,7 +202,7 @@ const en: Translations = {
       Storage: {
         title: 'Ämmäsmäki 2027',
         season: (season: string) =>
-          `The storage seasons are ${season}. The rental agreement is valid for one storage season at a time.`,
+          `The storage seasons are ${season}. The rental agreement is valid for one storage season at a time. 15.9.2026–31.7.2027 Everyone can reserve storage place 15.9.2026–14.9.2027.`,
         periods: [
           (period: string) =>
             `${period} storage place renters can continue renting their storage place for the next season 15.9.2027–14.9.2028`,
