@@ -143,7 +143,7 @@ dependencies {
     implementation("com.auth0:java-jwt:4.6.2")
 
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.15")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.16")
 
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.7")
 
