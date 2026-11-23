@@ -164,7 +164,7 @@ const sv: Translations = {
       Slip: {
         title: 'Båtplats 2027',
         season: (season: string) =>
-          `Båtsäsongen är ${season} varje kalenderår. Hyresavtalet gäller för en säsong i taget. 15.9.2026–31.7.2027: Alla kan boka eller byta plats för säsongen 15.9.2026–14.9.2027.`,
+          `Båtsäsongen är ${season} varje kalenderår. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
             `${period} esbobor* som hyr en tillsvidare gällande plats kan förnya sin båtplats`,
@@ -205,7 +205,7 @@ const sv: Translations = {
           `Förvaringssäsongerna är ${season}. Hyresavtalet gäller för en säsong i taget.`,
         periods: [
           (period: string) =>
-            `${period} Förvaringsplatsen kan förnyas för nästa säsong 15.9.2027–14.9.2028`,
+            `${period} Förvaringsplatsen kan förnyas för nästa säsong 15.9.2027–14.9.2028. 15.9.2026–31.7.2027: Alla kan boka eller byta plats för säsongen 15.9.2026–14.9.2027.`,
           (period: string) =>
             `${period} Alla kan boka plats för säsongen 15.9.2027–14.9.2028**`,
           (period: string) =>
