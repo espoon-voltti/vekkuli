@@ -203,10 +203,10 @@ export default {
       Storage: {
         title: 'Ämmäsmäki 2027',
         season: (season: string) =>
-          `Säilytyskausia ovat ${season}. Vuokrasopimus on voimassa yhden säilytyskauden kerrallaan. 15.9.2026–31.7.2027 kaikki voivat varata tai vaihtaa paikan kaudelle 15.9.2026–14.9.2027.`,
+          `Säilytyskausia ovat ${season}. Vuokrasopimus on voimassa yhden säilytyskauden kerrallaan.`,
         periods: [
           (period: string) =>
-            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2027-14.9.2028`,
+            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta seuraavalle kaudelle 15.9.2027-14.9.2028. 15.9.2026–31.7.2027 kaikki voivat varata tai vaihtaa paikan kaudelle 15.9.2026–14.9.2027.`,
           (period: string) =>
             `${period} kaikki voivat varata paikan kaudelle 15.9.2027–14.9.2028**`,
           (period: string) =>
