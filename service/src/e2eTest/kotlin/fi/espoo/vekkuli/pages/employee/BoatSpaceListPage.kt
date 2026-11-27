@@ -61,6 +61,8 @@ class BoatSpaceListPage(
     val addBoatSpaceButton = page.getByDataTestId("create-boat-space")
 
     fun placeColumn(boatSpaceId: Int) = boatSpaceRow(boatSpaceId).locator("[data-testid='place']")
+
+    fun inactiveReason(boatSpaceId: Int) = boatSpaceRow(boatSpaceId).getByDataTestId("inactive-reason")
 }
 
 class BoatSpaceEditModalPage(
@@ -78,6 +80,8 @@ class BoatSpaceEditModalPage(
 
     fun boatSpaceStateEdit(state: BoatSpaceState) = page.getByTestId("boatSpaceStateEdit-$state")
 
+    val inactiveReasonEdit = page.getByTestId("inactiveReason")
+
     val submitButton = page.getByDataTestId("edit-modal-confirm")
     val cancelButton = page.getByDataTestId("edit-modal-cancel")
     val deleteButton = page.getByDataTestId("open-delete-modal")
@@ -93,7 +97,8 @@ class BoatSpaceEditModalPage(
         boatSpaceType: String = "Storage",
         boatSpaceAmenity: String = "None",
         payment: String = "2",
-        boatSpaceState: BoatSpaceState = BoatSpaceState.Active
+        boatSpaceState: BoatSpaceState = BoatSpaceState.Active,
+        inactiveReason: String? = null
     ) {
         harborEdit.selectOption(harbor)
         sectionEdit.fill(section)
@@ -104,6 +109,7 @@ class BoatSpaceEditModalPage(
         lengthEdit.fill(length)
         paymentEdit.selectOption(payment)
         boatSpaceStateEdit(boatSpaceState).click()
+        inactiveReason?.let { inactiveReasonEdit.fill(it) }
     }
 }
 
@@ -121,6 +127,8 @@ class BoatSpaceCreationModal(
 
     fun boatSpaceStateCreation(state: BoatSpaceState) = page.getByTestId("boatSpaceStateCreation-${state.name}")
 
+    val inactiveReasonCreation = page.getByTestId("inactiveReasonCreation")
+
     val submitButton = page.getByDataTestId("create-modal-confirm")
     val cancelButton = page.getByTestId("cancel-create-boat-space")
     val successModal = page.getByDataTestId("creation-success-modal")
@@ -134,7 +142,8 @@ class BoatSpaceCreationModal(
         boatSpaceType: String = "Storage",
         boatSpaceAmenity: String = "None",
         payment: String = "2",
-        boatSpaceState: BoatSpaceState = BoatSpaceState.Active
+        boatSpaceState: BoatSpaceState = BoatSpaceState.Active,
+        inactiveReason: String? = null
     ) {
         harborCreation.selectOption(harbor)
         sectionCreation.fill(section)
@@ -145,5 +154,6 @@ class BoatSpaceCreationModal(
         lengthCreation.fill(length)
         paymentCreation.selectOption(payment)
         boatSpaceStateCreation(boatSpaceState).click()
+        inactiveReason?.let { inactiveReasonCreation.fill(it) }
     }
 }

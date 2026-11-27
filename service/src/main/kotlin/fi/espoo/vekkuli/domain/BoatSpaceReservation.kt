@@ -36,6 +36,7 @@ data class BoatSpace(
     val locationAddress: String?,
     val locationId: Int?,
     val active: Boolean,
+    val inactiveReason: String? = null,
 )
 
 data class BoatSpaceReservation(

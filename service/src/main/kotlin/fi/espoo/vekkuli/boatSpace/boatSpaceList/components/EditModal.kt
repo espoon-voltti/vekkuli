@@ -62,13 +62,16 @@ class EditModal(
                 defaultValue = "",
                 options =
                     listOf(RadioOption("", "Ei valittu")) +
-                        BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
+                        BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) },
+                staticAttributesForOptions = mapOf("x-model" to "boatSpaceStateEdit")
             )
+        val inactiveReasonInput =
+            formComponents.textInput("boatSpaceList.label.inactiveReason", "inactiveReason", null, required = true)
         // language=HTML
         return (
             """
-            <div class="modal" x-show="openEditModal" style="display:none;" x-data="{closeModal() {
-                    document.getElementById('edit-form').reset(); openEditModal = false;
+            <div class="modal" x-show="openEditModal" style="display:none;" x-data="{boatSpaceStateEdit: '', closeModal() {
+                    document.getElementById('edit-form').reset(); boatSpaceStateEdit = ''; openEditModal = false;
                 }}">
                 <div class="modal-underlay" @click="closeModal()"></div>
                 <div class="modal-content" >
@@ -129,6 +132,9 @@ class EditModal(
                                     </div>
                                     <div class="column is-half">
                                         $isActiveInput
+                                        <template x-if="boatSpaceStateEdit === '${BoatSpaceState.Inactive.name}'">
+                                            $inactiveReasonInput
+                                        </template>
                                     </div>
                                 </div>
                             </div>

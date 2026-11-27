@@ -63,12 +63,15 @@ class CreateBoatSpaceModal(
                 "boatSpaceStateCreation",
                 defaultValue = BoatSpaceState.Active.name,
                 options =
-                    BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
+                    BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) },
+                staticAttributesForOptions = mapOf("x-model" to "boatSpaceStateCreation")
             )
+        val inactiveReasonInput =
+            formComponents.textInput("boatSpaceList.label.inactiveReason", "inactiveReasonCreation", null, required = true)
         // language=HTML
         return (
             """
-            <div class="modal" x-show="openCreateModal" style="display:none;">
+            <div class="modal" x-show="openCreateModal" style="display:none;" x-data="{boatSpaceStateCreation: '${BoatSpaceState.Active.name}'}">
                 <div class="modal-underlay" @click="openCreateModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
@@ -121,6 +124,9 @@ class CreateBoatSpaceModal(
                                     </div>
                                     <div class="column is-half">
                                         $isActiveInput
+                                        <template x-if="boatSpaceStateCreation === '${BoatSpaceState.Inactive.name}'">
+                                            $inactiveReasonInput
+                                        </template>
                                     </div>
                                 </div>
                             </div>

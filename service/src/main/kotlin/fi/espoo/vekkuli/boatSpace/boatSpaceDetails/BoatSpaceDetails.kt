@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.utils.formatAsFullDateTime
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -33,6 +34,8 @@ class BoatSpaceDetails(
 ) : BaseView() {
     fun render(
         boatSpaceName: String,
+        active: Boolean,
+        inactiveReason: String?,
         boatSpaceReservationHistory: List<BoatSpaceHistory>
     ): String {
         fun getReserverDetailsUrl(reservation: BoatSpaceHistory) =
@@ -60,12 +63,26 @@ class BoatSpaceDetails(
                 .joinToString("")
 
         // language=HTML
+        val inactiveSection =
+            if (active) {
+                ""
+            } else {
+                """
+                <div class='container block' ${addTestId("inactive-section")}>
+                    <p><span id='status-ball' class='inactive'></span> ${t("boatSpaceDetails.inactive.title")}</p>
+                    ${inactiveReason?.let { "<p ${addTestId("inactive-reason")}>${htmlEscape(it)}</p>" } ?: ""}
+                </div>
+                """.trimIndent()
+            }
+
+        // language=HTML
         return """
             <div class='section' ${addTestId("boat-space-details-container")}>
                 <div class='container block'>
                 ${commonComponents.goBackButton("/virkailija/venepaikat/selaa")}
                    <h2>$boatSpaceName</h2>
                 </div>
+                $inactiveSection
                 <div class='container block'>
                         <h3>${t("boatSpaceDetails.history.title")}</h3>
                         <div class='table-container'>

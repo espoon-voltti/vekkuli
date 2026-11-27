@@ -51,12 +51,19 @@ class BoatSpaceRow : BaseView() {
                     <td>${result.priceClass}</td>
                     <td>${result.priceInEuro}</td>
                     <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
-                    <td> <a href=${getReserverPage(
-            result.reserverId,
-            result.reserverType
-        )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>
+                    <td>${reserverCell(result)}</td>
                 </tr>
         """.trimIndent()
+
+    private fun reserverCell(result: BoatSpaceListRow): String {
+        val inactiveReason = result.inactiveReason?.takeIf { !result.active }
+        val reserverLink =
+            """<a href=${getReserverPage(result.reserverId, result.reserverType)} >${htmlEscape(result.reserverName ?: "-")}</a>"""
+        if (inactiveReason == null) return reserverLink
+
+        val reasonText = """<p class="information-text" ${addTestId("inactive-reason")}>${htmlEscape(inactiveReason)}</p>"""
+        return if (result.reserverName != null) reserverLink + reasonText else reasonText
+    }
 
     private fun getBoatSpaceDetailsUrl(id: Int): String = "/virkailija/venepaikat/$id"
 }
