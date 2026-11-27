@@ -198,12 +198,9 @@ data class BoatSpaceReportRowWithWarnings(
     val warnings: List<ReservationWarning>
 )
 
-fun getWarningsBoatSpaceReportRows(
-    jdbi: Jdbi,
-    reportDate: LocalDateTime
-): List<BoatSpaceReportRowWithWarnings> {
-    val reservationWarnings =
-        jdbi.withHandleUnchecked { handle ->
+fun getReservationWarningsByReservationId(jdbi: Jdbi): Map<Int, List<ReservationWarning>> =
+    jdbi
+        .withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
@@ -219,26 +216,25 @@ fun getWarningsBoatSpaceReportRows(
                     """.trimIndent()
                 ).mapTo<ReservationWarning>()
                 .list()
-        }
+        }.groupBy { it.reservationId }
 
-    if (reservationWarnings.isEmpty()) {
+fun getWarningsBoatSpaceReportRows(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRowWithWarnings> {
+    val warningsByReservationId = getReservationWarningsByReservationId(jdbi)
+
+    if (warningsByReservationId.isEmpty()) {
         return emptyList()
     }
 
-    val reservationsWithWarningsIds: List<Int> = reservationWarnings.map { it.reservationId }.distinct()
-    val reservationsWithWarnings =
-        getBoatSpaceReportRows(jdbi, reportDate, reservationsWithWarningsIds)
-            .map { row ->
-                BoatSpaceReportRowWithWarnings(
-                    boatSpaceReportRow = row,
-                    warnings =
-                        reservationWarnings.filter { warning ->
-                            row.reservationId == warning.reservationId
-                        }
-                )
-            }
-
-    return reservationsWithWarnings
+    return getBoatSpaceReportRows(jdbi, reportDate, warningsByReservationId.keys.toList())
+        .map { row ->
+            BoatSpaceReportRowWithWarnings(
+                boatSpaceReportRow = row,
+                warnings = row.reservationId?.let { warningsByReservationId[it] }.orEmpty()
+            )
+        }
 }
 
 fun getBoatSpaceReportRows(

@@ -550,4 +550,88 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals(terminatedId, reservationWarnings[0].boatSpaceReportRow.reservationId)
         assertEquals("leo@noreplytest.fi", reservationWarnings[0].boatSpaceReportRow.email)
     }
+
+    @Test
+    fun `boat place reports show the reservation's warnings in the last column`() {
+        val today = LocalDate.of(2024, 10, 1)
+        val warnedReservationId = 3131
+        val unwarnedReservationId = 3232
+
+        // A 001 is free, A 002 is reserved with two warnings and A 003 is reserved without warnings
+        listOf(4242, 4243, 4244).forEachIndexed { index, boatSpaceId ->
+            insertDevBoatSpace(
+                DevBoatSpace(
+                    id = boatSpaceId,
+                    type = BoatSpaceType.Slip,
+                    locationId = 1,
+                    priceId = 1,
+                    section = "A",
+                    placeNumber = index + 1,
+                    amenity = BoatSpaceAmenity.Beam,
+                    widthCm = 100,
+                    lengthCm = 200,
+                    description = "Test boat space"
+                )
+            )
+        }
+        listOf(warnedReservationId to 4243, unwarnedReservationId to 4244).forEach { (reservationId, boatSpaceId) ->
+            insertDevBoatSpaceReservation(
+                DevBoatSpaceReservation(
+                    id = reservationId,
+                    reserverId = citizenIdLeo,
+                    boatSpaceId = boatSpaceId,
+                    startDate = today,
+                    endDate = today.plusMonths(12),
+                    status = ReservationStatus.Confirmed
+                )
+            )
+        }
+        insertDevReservationWarning(
+            ReservationWarning(
+                id = UUID.randomUUID(),
+                reservationId = warnedReservationId,
+                boatId = null,
+                trailerId = null,
+                invoiceNumber = null,
+                key = ReservationWarningType.BoatWidth,
+                infoText = "Boat width is too big"
+            )
+        )
+        insertDevReservationWarning(
+            ReservationWarning(
+                id = UUID.randomUUID(),
+                reservationId = warnedReservationId,
+                boatId = null,
+                trailerId = null,
+                invoiceNumber = null,
+                key = ReservationWarningType.GeneralReservationWarning,
+                infoText = null
+            )
+        )
+
+        val warningsByReservationId = getReservationWarningsByReservationId(jdbi)
+        val expectedWarnings = setOf("Veneen leveys: Boat width is too big", "Yleinen")
+
+        fun warningsCellsByPlace(csv: String): Map<String, String> {
+            val lines = csv.split(CSV_RECORD_SEPARATOR).filter { it.isNotEmpty() }
+            assertTrue(lines.first().endsWith(";varoitukset"))
+            return lines.drop(1).associate { line ->
+                val cells = line.split(CSV_FIELD_SEPARATOR)
+                cells[2].trim('"') to cells.last().trim('"')
+            }
+        }
+
+        val reservedReport =
+            warningsCellsByPlace(boatSpaceReportToCsv(getReservedBoatSpaceReport(jdbi, today.atStartOfDay()), warningsByReservationId))
+        assertEquals(setOf("A 002", "A 003"), reservedReport.keys)
+        assertEquals(expectedWarnings, reservedReport.getValue("A 002").split(", ").toSet())
+        assertEquals("", reservedReport.getValue("A 003"))
+
+        val allPlacesReport =
+            warningsCellsByPlace(boatSpaceReportToCsv(getAllBoatSpacesReport(jdbi, today.atStartOfDay()), warningsByReservationId))
+        assertEquals(setOf("A 001", "A 002", "A 003"), allPlacesReport.keys)
+        assertEquals("", allPlacesReport.getValue("A 001"))
+        assertEquals(expectedWarnings, allPlacesReport.getValue("A 002").split(", ").toSet())
+        assertEquals("", allPlacesReport.getValue("A 003"))
+    }
 }
