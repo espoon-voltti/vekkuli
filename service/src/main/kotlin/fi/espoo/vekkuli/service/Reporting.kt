@@ -205,7 +205,10 @@ fun getAllBoatSpacesReport(
     return orderedRows
 }
 
-fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+fun boatSpaceReportToCsv(
+    reportRows: List<BoatSpaceReportRow>,
+    warningsByReservationId: Map<Int, List<ReservationWarning>>
+): String {
     val csvHeader =
         listOf(
             "satama",
@@ -233,7 +236,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "vene",
             "trailerin rekno",
             "trailerin leveys",
-            "trailerin pituus"
+            "trailerin pituus",
+            "varoitukset"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -292,6 +296,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(intToDecimal(report.trailerWidthCm)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.trailerLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(warningsToText(report.reservationId?.let { warningsByReservationId[it] }.orEmpty())))
             .append(CSV_RECORD_SEPARATOR)
     }
 
