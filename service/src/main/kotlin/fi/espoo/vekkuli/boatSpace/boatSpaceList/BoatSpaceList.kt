@@ -39,7 +39,8 @@ data class BoatSpaceListEditParams(
     val width: BigDecimal?,
     val length: BigDecimal?,
     val payment: Int?,
-    val boatSpaceStateEdit: BoatSpaceState?
+    val boatSpaceStateEdit: BoatSpaceState?,
+    val inactiveReason: String? = null
 )
 
 data class BoatSpaceListAddParams(
@@ -51,7 +52,8 @@ data class BoatSpaceListAddParams(
     val widthCreation: BigDecimal,
     val lengthCreation: BigDecimal,
     val paymentCreation: Int,
-    val boatSpaceStateCreation: BoatSpaceState
+    val boatSpaceStateCreation: BoatSpaceState,
+    val inactiveReasonCreation: String? = null
 )
 
 @Service
