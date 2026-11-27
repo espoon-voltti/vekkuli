@@ -433,6 +433,60 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `inactive reason is set when a boat space is taken out of use and cleared when it is put back`() {
+        val boatSpaceId = 1
+
+        fun editState(
+            active: Boolean?,
+            inactiveReason: String? = null
+        ) = boatSpaceService.editBoatSpaces(
+            listOf(boatSpaceId),
+            EditBoatSpaceParams(null, null, null, null, null, null, null, null, active, inactiveReason)
+        )
+
+        editState(active = false, inactiveReason = "Laituri korjauksessa")
+        assertEquals("Laituri korjauksessa", boatSpaceRepository.getBoatSpace(boatSpaceId)?.inactiveReason)
+        val listRow =
+            boatSpaceService
+                .getBoatSpacesFiltered(BoatSpaceListParams(boatSpaceState = listOf(BoatSpaceState.Inactive)))
+                .items
+                .first { it.id == boatSpaceId }
+        assertEquals("Laituri korjauksessa", listRow.inactiveReason, "Reason is shown in the boat space list")
+
+        // Editing other fields without choosing a state keeps the reason
+        editState(active = null)
+        assertEquals("Laituri korjauksessa", boatSpaceRepository.getBoatSpace(boatSpaceId)?.inactiveReason)
+
+        editState(active = true)
+        val reactivated = boatSpaceRepository.getBoatSpace(boatSpaceId)
+        assertEquals(true, reactivated?.active)
+        assertNull(reactivated?.inactiveReason, "Reason is cleared when the boat space is put back in use")
+    }
+
+    @Test
+    fun `boat space can be added out of use with a reason`() {
+        val boatSpaceId =
+            boatSpaceService.createBoatSpace(
+                CreateBoatSpaceParams(
+                    1,
+                    BoatSpaceType.Storage,
+                    "A",
+                    1,
+                    BoatSpaceAmenity.Trailer,
+                    100,
+                    200,
+                    1,
+                    false,
+                    "Uusi paikka, ei vielä valmis"
+                )
+            )
+
+        val boatSpace = boatSpaceRepository.getBoatSpace(boatSpaceId)
+        assertEquals(false, boatSpace?.active)
+        assertEquals("Uusi paikka, ei vielä valmis", boatSpace?.inactiveReason)
+    }
+
+    @Test
     fun `boat space can be deleted`() {
         val boatSpaceId = listOf(100, 101)
         boatSpaceService.deleteBoatSpaces(boatSpaceId)

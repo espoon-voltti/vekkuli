@@ -221,7 +221,8 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
             boatSpaceType = "Storage",
             boatSpaceAmenity = "RearBuoy",
             payment = "2",
-            boatSpaceState = BoatSpaceState.Inactive
+            boatSpaceState = BoatSpaceState.Inactive,
+            inactiveReason = "Not finished yet"
         )
         createModal.submitButton.click()
         assertThat(createModal.successModal).isVisible()
@@ -342,6 +343,40 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         assertThat(boatSpaceDetails.reservationHistoryListContainer).isVisible()
         boatSpaceDetails.goBack.click()
         assertThat(listingPage.boatSpaceRow(boatSpaceId)).isVisible()
+    }
+
+    @Test
+    fun `employee can take a boat space out of use with a reason`() {
+        val listingPage = boatSpaceListPage()
+        val editModal = listingPage.editModalPage
+        val boatSpaceId = 1
+        val reason = "Pier under repair"
+
+        listingPage.checkBox(boatSpaceId).click()
+        listingPage.editModalButton.click()
+        assertThat(editModal.inactiveReasonEdit).not().isVisible()
+        editModal.boatSpaceStateEdit(BoatSpaceState.Inactive).click()
+        editModal.inactiveReasonEdit.fill(reason)
+        editModal.submitButton.click()
+
+        assertThat(listingPage.inactiveReason(boatSpaceId)).hasText(reason)
+
+        listingPage.placeColumn(boatSpaceId).click()
+        val boatSpaceDetails = BoatSpaceDetailsPage(page)
+        assertThat(boatSpaceDetails.inactiveSection).containsText("Place not in use")
+        assertThat(boatSpaceDetails.inactiveReason).hasText(reason)
+
+        listingPage.navigateTo()
+        assertThat(listingPage.inactiveReason(boatSpaceId)).hasText(reason)
+        listingPage.checkBox(boatSpaceId).click()
+        listingPage.editModalButton.click()
+        editModal.boatSpaceStateEdit(BoatSpaceState.Active).click()
+        assertThat(editModal.inactiveReasonEdit).not().isVisible()
+        editModal.submitButton.click()
+
+        assertThat(listingPage.inactiveReason(boatSpaceId)).hasCount(0)
+        listingPage.placeColumn(boatSpaceId).click()
+        assertThat(boatSpaceDetails.inactiveSection).hasCount(0)
     }
 
     private fun boatSpaceListPage(): BoatSpaceListPage {

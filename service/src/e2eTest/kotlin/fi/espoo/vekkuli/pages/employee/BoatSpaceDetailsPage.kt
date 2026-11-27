@@ -17,4 +17,6 @@ class BoatSpaceDetailsPage(
 
     val reserverColumn = { index: Int -> reservationRow(index).getByDataTestId("reserver-column-$index") }
     val goBack = page.getByDataTestId("go-back")
+    val inactiveSection = page.getByDataTestId("inactive-section")
+    val inactiveReason = inactiveSection.getByDataTestId("inactive-reason")
 }

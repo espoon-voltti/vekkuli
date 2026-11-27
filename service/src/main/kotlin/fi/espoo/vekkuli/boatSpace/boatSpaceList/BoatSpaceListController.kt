@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.DeletionError
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.FailModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.SuccessModalView
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
+import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -38,6 +39,7 @@ data class BoatSpaceListRow(
     val reserverName: String? = null,
     val reserverId: UUID?,
     val reserverType: ReserverType?,
+    val inactiveReason: String? = null,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)
@@ -170,7 +172,8 @@ class BoatSpaceListController {
                 decimalToInt(editParams.width),
                 decimalToInt(editParams.length),
                 editParams.payment,
-                if (editParams.boatSpaceStateEdit == null) null else editParams.boatSpaceStateEdit == BoatSpaceState.Active
+                if (editParams.boatSpaceStateEdit == null) null else editParams.boatSpaceStateEdit == BoatSpaceState.Active,
+                inactiveReasonFor(editParams.boatSpaceStateEdit, editParams.inactiveReason)
             )
         )
 
@@ -212,6 +215,7 @@ class BoatSpaceListController {
         }
 
         request.ensureEmployeeId()
+        val inactiveReason = inactiveReasonFor(params.boatSpaceStateCreation, params.inactiveReasonCreation)
         try {
             boatSpaceService.createBoatSpace(
                 CreateBoatSpaceParams(
@@ -223,7 +227,8 @@ class BoatSpaceListController {
                     decimalToInt(params.widthCreation),
                     decimalToInt(params.lengthCreation),
                     params.paymentCreation,
-                    params.boatSpaceStateCreation == BoatSpaceState.Active
+                    params.boatSpaceStateCreation == BoatSpaceState.Active,
+                    inactiveReason
                 )
             )
             return ResponseEntity.ok(
@@ -272,6 +277,15 @@ class BoatSpaceListController {
         }
     }
 
+    private fun inactiveReasonFor(
+        state: BoatSpaceState?,
+        reason: String?
+    ): String? {
+        if (state != BoatSpaceState.Inactive) return null
+        return reason?.trim()?.takeIf { it.isNotEmpty() }
+            ?: throw BadRequest("A reason is required when a boat space is taken out of use")
+    }
+
     @GetMapping("/{boatSpaceId}")
     @ResponseBody
     fun boatSpaceDetails(
@@ -302,7 +316,7 @@ class BoatSpaceListController {
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceDetails.render(boatSpaceName, boatSpaceHistory)
+                boatSpaceDetails.render(boatSpaceName, boatSpace.active, boatSpace.inactiveReason, boatSpaceHistory)
             )
         )
     }
