@@ -39,7 +39,7 @@ configurations
 
 buildscript {
     dependencies {
-        classpath("org.postgresql:postgresql:42.7.14")
+        classpath("org.postgresql:postgresql:42.7.15")
         classpath("org.flywaydb:flyway-database-postgresql:13.13.0")
     }
 }
@@ -127,7 +127,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:7.1.0")
     implementation("org.flywaydb:flyway-core:13.13.0")
     implementation("org.flywaydb:flyway-database-postgresql:13.13.0")
-    implementation("org.postgresql:postgresql:42.7.14")
+    implementation("org.postgresql:postgresql:42.7.15")
     implementation(platform("org.jdbi:jdbi3-bom:3.55.0"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
